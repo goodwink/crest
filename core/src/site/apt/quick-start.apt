@@ -1,0 +1,116 @@
+    -----
+    Quick Start
+    -----
+
+Quick Start
+
+* Interface
+
+    <<CRest>> relies on a <<<CRest>>> instance to automatically build instances of any given java interfaces.
+
+    The interface's methods can contains any kind of arguments and any kind of result type, with some specials cases:
+
+    <<<java.io.InputStream>>> and <<<java.io.Reader>>> when used as return types, are both always returning the server raw response. It is of the client responsability to always call the <<<close()>>> method on them to release network resources.
+
+    <<<java.io.InputStream>>> and <<<java.io.File>>> when used as arguments, are always written into the request body, as long as the method is configured to use POST or PUT Http method.
+
+    Finally, if the <<<CRestBuilder.returnRawResults()>>> is invoked during the <<<CRest>>> creation, then even <<<java.lang.String>>> used as a return type will then be the server raw response.
+
+* CRest
+
+    <<<CRest>>> interface will return the working instances of any interface to bind to a REST service.
+
+    The <<<CRest>>> default implementation requires a few informations reguarding the way the interfaces that will be passed to it should be build, how the mapping is done, the way to handle response data formats etc..
+
+    To get a pre-configured instance of a <<<CRest>>>, you should use the <<<CRestBuilder>>>, eg:
+
++-----
+CRest crest = new CRestBuilder().build();
++-----
+
+    This <<<CRest>>> instance is thread-safe, and should be created only once. The builder allows you to easily customize the resulting <<<CRest>>> instance, please refer to its java-doc to see all the possible options available.
+
+    Once you have a <<<CRest>>> instance, you can pass it any java Interface that should be bind to any REST service, as follow:
+
++-----
+MyInterface interfaze = crest.build(MyInterface.class);
++-----
+
+* Configuration
+
+    In order for the <<<CRest>>> to properly bind a user interface to its remote REST service destination, the user should give some informations reguarding how the mapping between the java interface method calls and the remote REST service are done, how to handle the response etc...
+
+    Currently <<CRest>> offers two approach, annotation driven and properties driven.
+
+** Annotations
+
+    The aim of <<CRest>> is to make the binding of a remote REST service and its relative java interface as simple and readable as possible. The prefered approach for the user to provide the required mapping informations then is through annotation put on the interface itself.
+
+    Currently <<CRest>> offer three different annotations:
+
+        * <<RestApi>>: Used to annotate the Interface itself with top meta informations such as the server end-point and base path.
+
+        * <<RestMethod>>: Used to annotate the Interface methods with meta informations such as the method specific path fragment.
+
+        * <<RestParam>>: Used to annotate the method arguments with meta informations such as serialization and/or request injection options.
+
+    Here how a <<CRest>> annotated interface will look like:
+
++-----
+@RestApi(endPoint = "http://ajax.googleapis.com", path = "/ajax/services")
+public interface LanguageService {
+
+    @RestMethod(path = "/language/detect?v=1.0&q={0}", connectionTimeout = 10000)
+    Response<LanguageGuess> detectLanguage(String text);
+
+    @RestMethod(path = "/language/translate?v=1.0&q={0}&langpair={1}%7C{2}")
+    Response<Translation> translate(String text, String from, String to);
+
+}
++-----
+
+    Annotation driven configuration is the prefered one for its conciseness and readability. But annotation informations are set in stone, unless defining somekind of placeholders convention.
+
+    In the day to day development process, you may want to be able to switch <<<RestApi.endPoint>>> to point to different server dependending on which environment you are running your application on.
+
+    In order to do so, you can use the Properties driven configuration in addition to the annotation driven one in order to override some informations.
+
+** Properties
+
+    The properties driven configuration can be used to make the <<<CRest>>> looks for interface mapping configuration from a Map instead than interface annotations.
+    This approach should be used only on top of the annotation driven configuration in order to override some configuration options rather than expects the property driven configuration to handle everything.
+
+    Here what the <<CRest>> configuration properties file would looks like for the previous <<<LanguageService>>> interface:
+
++-----
+service.langservice.class=my.project.LanguageService
+service.langservice.end-point=http://ajax.googleapis.com
+service.langservice.path=/ajax/services
+
+service.langservice.method.m1.pattern=detectLanguage\\(.*\\)
+service.langservice.method.m1.connection-timeout=10000
+service.langservice.method.m1.path=/language/detect?v=1.0&q={0}
+
+service.langservice.method.m2.pattern=translate\\(.*\\)
+service.langservice.method.m2.path=/language/translate?v=1.0&q={0}&langpair={1}%7C{2}
++-----
+
+    Be aware that by prefering the properties driven configuration over the annotation one, the <<<CRest>>> will need to have a preconfigured properties set able to configure any possible interface given to it.
+
+    In a real world use case scenario, one will use the properties configuration approach on top of the annotated approach, as the following:
+
++-----
+Properties props = new Properties();
+props.setProperty("service.end-point", "http://127.0.0.1:8080");
+
+CRest crest = new CRestBuilder()
+                        .expectsJson()
+                        .overrideDefaultConfigWith(props)
+                        .build();
++-----
+
+    Note that the property "service.end-point" is a special one that will apply the given end-point to any interface given to the property driven configurator.
+
+    The previous code is creating a <<<CRest>>> expecting JSON response format, using Annotation Driven configuration. The mapping configuration deduced from the annotation will then be overriden with the given properties, in this case the end-point will be the one coming from the properties rather than from the annotations.
+
+

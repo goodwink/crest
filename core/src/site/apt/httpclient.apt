@@ -1,0 +1,17 @@
+    ----
+    ASF Http Client
+    ----
+
+HTTP Client
+
+    By default, <<CRest>> comes with a default rest service implementation (<<<DefaultRestService>>>) based on <<<java.net.HttpURLConnection>>>.
+
+    However it is recommended to make use of <<<HttpClientRestService>>>, implementation based on the latest {{{http://hc.apache.org/}ASF Http Client 4.x}}. The <<CRest>> POM contains an optional dependency for it that will need to be activated by the user if necessary.
+
+    The <<<CRestBuilder>>> offers a handy method to switch from the default implementation to the ASF one:
+
++-----
+    CRest crest = new CRestBuilder()
+                        .useHttpClientRestService()
+                        .build();
++-----

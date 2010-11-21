@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.codegist</groupId>
+        <artifactId>codegist-parent</artifactId>
+        <version>1.0.0</version>
+        <relativePath>..</relativePath>
+    </parent>
+
+    <groupId>org.codegist.crest</groupId>
+    <artifactId>crest-parent</artifactId>
+    <version>1.0.0</version>
+    <packaging>pom</packaging>
+    <name>CRest Parent</name>
+    <url>http://crest.codegist.org/</url>
+
+    <description>CRest - Client Representational State Transfer</description>
+
+    <scm>
+        <url>https://github.com/codegist/crest</url>
+        <connection>scm:git:git://github.com/codegist/crest.git</connection>
+        <developerConnection>scm:git:git://github.com/codegist/crest.git</developerConnection>
+    </scm>
+
+    <issueManagement>
+        <system>Github Issue Tracker</system>
+        <url>https://github.com/codegist/crest/issues</url>
+    </issueManagement>
+
+    <modules>
+        <module>core</module>
+        <module>sample</module>
+    </modules>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.mortbay.jetty</groupId>
+            <artifactId>jetty-servlet-tester</artifactId>
+            <version>6.1.25</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+</project>

@@ -1,0 +1,45 @@
+    ------
+    Going Deeper
+    ------
+
+Going Deeper
+
+    They are few concepts you may need to grasp before using CRest, mostly in order to map non trivial REST services implementations. Most of the time the default implementations <<CRest>> provides is enough but if not, you can easily extend it to make it do what you want.
+
+* Request Interceptor
+
+        A request interceptor is notified before and after parameters have been added to the request during the request generation process.
+
+        It can be used to cancel a request from being fired by returning false, or arbitrary modify the request before it gets fired.
+
+        They are two level of request interceptors:
+
+            * Global: Can be used to set up some globally shared intercepting policy, such as setting the request authentification policy meta-datas.
+
+            * Method: Can be used to specifically intercept a given method call and customize its http request.
+
+* Serializer
+
+    Parameter serialize can be used to serialize an object to a single String. One either use a Serializer or a Injector. Serializer are usefull when an argument value can be reduced to a single String, otherwise for more complex data type, Injectors are the way to go
+
+* Injector
+
+    A request injector is used to inject any method arguments values in the request before it gets fired. Can modify the http request as wanted.
+
+* Response Handler
+
+    Response handler is invoked for each request's as long as the interface doesn't specifically requested for the raw response (Reader or InputStream method return types.)
+
+    Response handler role is to check for thirdparties specific error formatted content in the response, and returns the expected return type for method calls.
+
+    Nota Bene: if the response code if different from HTTP 200, this handler won't be called, error handler will be directly invoked
+
+* Error Handler
+
+    Error handler gets invoked when an exception occurs during each request lifecyle:
+
+        * Generation:  involves RequestInterceptors, RequestInjectors, Serializer.
+
+        * Firing:  Any non 200 response status code while fire an exception.
+
+        * Response handling:  involves ResponseHandlers.

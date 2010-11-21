@@ -1,0 +1,11 @@
+    ----
+    Support
+    ----
+
+Support
+
+    By default <<CRest>> doesn't rely on any library third party library.
+
+    However, since <<CRest>> is based on mechanism such as dynamic proxies, HTTP calls, marshalling, it offers support for some popular third party libraries.
+
+    This support is made easily accessible through the <<<CRestBuilder>>> methods.

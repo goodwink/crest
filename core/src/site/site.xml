@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project name="${project.name}">
+    <bannerLeft>
+        <name>${project.name}</name>
+        <src>images/logo.png</src>
+        <href>#</href>
+    </bannerLeft>
+    <body>
+        
+        <head>
+            <script type="text/javascript">
+
+              var _gaq = _gaq || [];
+              _gaq.push(['_setAccount', 'UA-19826844-1']);
+              _gaq.push(['_setDomainName', '.codegist.org']);
+              _gaq.push(['_trackPageview']);
+
+              (function() {
+                var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+                ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+                var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+              })();
+
+            </script>
+        </head>
+
+        <links>
+            <item name="CodeGist Commons" href="http://common.codegist.org"/>
+        </links>
+
+        <menu name="About CRest">
+            <item name="What is CRest" href="index.html"/>
+            <item name="Quick Start" href="quick-start.html"/>
+            <item name="Going Deeper" href="deeper.html"/>
+            <!--item name="Downloads" href="downloads.html"/-->
+        </menu>
+
+        <menu name="Support" href="support.html">
+            <item name="CGLib" href="cglib.html"/>
+            <item name="OAuth" href="oauth.html"/>
+            <item name="ASF HttpClient" href="httpclient.html"/>
+            <item name="Jackson Processor" href="jackson.html"/>
+        </menu>
+
+        <menu name="Examples">
+            <item name="Twitter Services" href="sample-twitter.html"/>
+            <item name="Google Services" href="sample-google.html"/>
+            <item name="Flickr Services" href="sample-flickr.html"/>
+            <item name="More" href="sample/index.html"/>
+        </menu>
+
+        <menu ref="reports"/>
+
+        <menu ref="javadoc"/>
+
+    </body>
+</project>

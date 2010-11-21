@@ -1,0 +1,115 @@
+    -----
+    Google Samples
+    -----
+
+Google Samples
+
+    This sample contains the implementation of a two Google public Rest APIs: Search and Translate.
+
+    This example is more complex than the Twitter since Google wraps all API responses into a generic response format. To keep it simple we could have written the interface to return directly the google's response object with its nested payload, but we'll show here how to extract the payload and do some error checking before returning it.
+
+    <NB: The following are partial mappings of the available services and their main purpose is to give a quick example of a real world use case scenario of CRest usage, thus the mappings may not reflect all the services offered by the API.>
+
+* Search
+
+    This sample maps the legacy Google's {{{http://code.google.com/apis/websearch/docs/} Search REST API}}.
+
+    Below the mapped interface.
+
++-----
+@RestApi(endPoint = "http://ajax.googleapis.com", path = "/ajax/services/search", methodsResponseHandler = GoogleResponseHandler.class)
+public interface SearchService {
+
+    @RestMethod(path = "/web?v=1.0&q={0}")
+    SearchResult<Address> search(String text);
+
+}
++-----
+
+    And here's how to get an instance of the <<<SearchService>>>:
+
++-----
+// Get a CRest instance. Should be done once.
+CRest crest = new CRestBuilder().expectsJson().build();
+
+// get a service instance
+SearchService service = crest.build(SearchService.class);
+
+// use it !
+SearchResult<Address> results = service.search("codegist crest");
++-----
+
+* Translate
+
+    This sample maps the Google's {{{http://code.google.com/apis/language/translate/v1/using_rest_translate.html} Translate API v1}}, part of Google's {{{http://code.google.com/apis/language/} Language REST API}}.
+
+    Below the mapped interface.
+
++-----
+@RestApi(endPoint = "http://ajax.googleapis.com", path = "/ajax/services/language", methodsResponseHandler = GoogleResponseHandler.class)
+public interface LanguageService {
+
+    @RestMethod(path = "/detect?v=1.0&q={0}")
+    LanguageGuess detectLanguage(String text);
+
+    @RestMethod(path = "/translate?v=1.0&q={0}&langpair={1}%7C{2}")
+    Translation translate(String text, String from, String to);
+
+}
++-----
+
+    And here's how to get an instance of the <<<LanguageService>>>:
+
++-----
+// Get a CRest instance. Should be done once.
+CRest crest = new CRestBuilder().expectsJson().build();
+
+// get a service instance
+SearchService service = crest.build(SearchService.class);
+
+// use it !
+LanguageGuess guess = service.detectLanguage("Guess it!");
+Translation translation = service.translate("Translate me if you can!", "en", "it");
++-----
+
+* Response Handler
+
+    Here is the code for the custom response handling. As said, this class is not stricly necessary as we could have always returned the generic Response object with its nested payload for every method whatever happens, but this approach makes the interface looks better and less coupled to the google response format.
+
++-----
+public class GoogleResponseHandler implements ResponseHandler {
+
+    private Marshaller marshaller;
+
+    public final Object handle(ResponseContext context) {
+        try {
+            /* Get the marshaller, save the ref to avoid accessing the map each time (since custom properties map could get quite big!) */
+            if(marshaller == null) {
+                marshaller = context.getRequestContext().getCustomProperty(Marshaller.class.getName());
+            }
+
+            /* Marshall the response */
+            Response<?> res = marshaller.marshall(context.getResponse().asStream(), Types.newType(Response.class, context.getExpectedGenericType()));
+
+            /* Check for google OK status */
+            if (res.status == 200) {
+                return res.data; /* Returns the nested payload */
+            } else {
+                throw new CRestException(res.details + " (status=" + res.status + ")"); /* Throw exception with google error details */
+            }
+        } finally {
+            context.getResponse().close();
+        }
+    }
+
+    /* ... Response inner-class declaration ... */
+}
++-----
+
+* Model & Sources
+
+    The data model used by these samples hasn't been documented in this page as it only limits itself to plain java bean objects. The model have been deduced from the API response format and documentation and isn't guaranteed to reflect the full available model the API offers.
+
+    Do get a look at it, please refer to the sample source code {{{./sample/xref/index.html} HTML-based version}}.
+
+    This code is part of a project containing more sample, go to the {{{./sample/index.html} project home page}} to get more information.

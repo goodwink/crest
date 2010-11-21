@@ -1,0 +1,192 @@
+    -----
+    Flickr Samples
+    -----
+
+Flickr Samples
+
+    This sample contains the implementation of a some {{{http://www.flickr.com/services/api/} Flickr Rest APIs}}.
+
+    This example is more complex than the Google or Twitter ones as it requires a bit of implementation for :
+
+        * Flickr specific authentification method.
+
+        * Response handling : Flickr error-specific checking and payload extraction from generic response format, similar process as the google sample.
+
+        * Param serialization : Twitter handle boolean as 0/1 values, we show here how to still use boolean argument and serialize them the way Twitter expects. 
+
+    <NB: The following are partial mappings of the available services and their main purpose is to give a quick example of a real world use case scenario of CRest usage, thus the mappings may not reflect all the services offered by the API.>
+
+* Interface
+
+    This sample maps some of the Flickr's {{{http://www.flickr.com/services/api/} Rest APIs}}.
+
+    Below the mapped interface. <Note: the mapping below only shows some mapped method, to have a look at all of them, refer to the sample source code.>
+
++-----
+@RestApi(
+    endPoint = "http://flickr.com", path = "/services",
+    requestInterceptor = FlickrAuthInterceptor.class,       /* Global request interceptor : generates and adds twitter's specific authentification parameter in the request */
+    paramsSerializer = FlickParamSerializer.class,          /* Twitter specific param serializer, applies to all params */
+    methodsResponseHandler = FlickrResponseHandler.class,   /* Custom response handler for twitter-specific error checking and payload extraction */
+    methodsHttpMethod = HttpMethod.POST                     /* Shortcut to set all method to use POST instead of default GET */
+)
+public interface Flickr {
+
+    (...)
+
+    @RestMethod(path = "/rest?method=flickr.galleries.create")
+    Gallery newGallery(
+            @RestParam(name = "title") String title,
+            @RestParam(name = "description") String description);
+
+    @RestMethod(path = "/rest?method=flickr.galleries.addPhoto&gallery_id={0}&photo_id={1}&comment={2}")
+    void addPhotoToGallery(String galleryId, long photoId, String comment);
+
+    @RestMethod(path = "/rest?method=flickr.photos.comments.addComment&photo_id={0}&comment_text={1}")
+    String comment(long photoId, String comment);
+
+    @RestMethod(path = "/rest?method=flickr.photos.comments.editComment&comment_id={0}&comment_text={1}")
+    void editComment(String commentId, String comment);
+
+    @RestMethod(path = "/rest?method=flickr.photos.comments.getList&photo_id={0}")
+    Comment[] getComments(long photoId);
+
+    @RestMethod(path = "/rest?method=flickr.photos.comments.getList&photo_id={0}&min_comment_date={1}&max_comment_date={2}")
+    Comment[] getComments(long photoId, Date from, Date to);
+
+    @RestMethod(path = "/rest?method=flickr.photos.comments.deleteComment&comment_id={0}")
+    void deleteComment(String commentId);
+
+    @RestMethod(path = "/upload", paramsDestination = "BODY")
+    long uploadPhoto(@RestParam(name = "photo") File photo);
+
+    @RestMethod(path = "/upload", paramsDestination = "BODY")
+    long uploadPhoto(@RestParam(name = "photo") InputStream photo);
+
+    @RestMethod(path = "/upload", paramsDestination = "BODY")
+    long uploadPhoto(
+            @RestParam(name = "photo") InputStream photo,
+            @RestParam(name = "title") String title,
+            @RestParam(name = "description") String description,
+            @RestParam(name = "tags") String[] tags,
+            @RestParam(name = "is_public") boolean isPublic,
+            @RestParam(name = "is_friend") boolean isFriend,
+            @RestParam(name = "is_family") boolean isFamily,
+            @RestParam(name = "safety_level") SafetyLevel safetyLevel,  
+            @RestParam(name = "content_type") ContentType contentLype,
+            @RestParam(name = "hidden") Visibility searchVisibility
+    );
+
+
+    @RestMethod(path = "/replace", paramsDestination = "BODY")
+    long replacePhoto(
+            @RestParam(name = "photo") InputStream photo,
+            @RestParam(name = "photo_id") long photoId
+    );
+
+    (...)
+}
++-----
+
+    And here's how to get an instance of the <<<Flickr>>>:
+
++-----
+// Get a CRest instance. Should be done once.
+CRest crest = new CRestBuilder()
+                        .expectsXml(TwitterModelFactory.class)
+                        .addCustomProperty(FlickrAuthInterceptor.API_KEY_PROP, apiKey)
+                        .addCustomProperty(FlickrAuthInterceptor.APP_SECRET_PROP, appSecret)
+                        .addCustomProperty(FlickrAuthInterceptor.AUTH_TOKEN_PROP, authToken)
+                        .build();
+
+// get a service instance
+Flickr flickr = crest.build(Flickr.class);
+
+// use it !
+long photoId = flickr.uploadPhoto(new File("/path/to/my/photo.jpg"));
+(...)
++-----
+
+* Response Handler
+
+    Here is the code for the custom response handling. This class is not stricly necessary as we could have always returned the generic Response object for every method whatever happens, but this approach makes the interface looks better and less coupled to the twitter response format.
+
++-----
+public class FlickrResponseHandler implements ResponseHandler {
+
+    private Marshaller marshaller;
+
+    public final Object handle(ResponseContext context) {
+        try {
+            /* Get the marshaller, save the ref to avoid accessing the map each time (since custom properties map could get quite big!) */
+            if(marshaller == null) {
+                marshaller = context.getRequestContext().getCustomProperty(Marshaller.class.getName());
+            }
+
+            /* Marshall the response */
+            Response res = marshaller.marshall(context.getResponse().asStream(), Types.newType(Response.class, context.getExpectedGenericType()));
+            /* Check for twitter OK status */
+            if ("ok".equals(res.getStatus())) {
+                /* Get the nested payload and returns it */
+                Payload payload = res.getPayload();
+                if (payload instanceof SimplePayload) {
+                    return ((SimplePayload) payload).getValue();
+                } else {
+                    return payload;
+                }
+            } else {
+                if(res.getPayload() instanceof Error) {
+                    /* Status is not OK, try to get the error cause */
+                    Error error = ((Error) res.getPayload());
+                    throw new CRestException(error.getMsg() + " (code=" + error.getCode() + ")");
+                }else{
+                    /* Response format is not the one expected. */
+                    throw new CRestException("Unkown error");
+                }
+            }
+        } finally {
+            context.getResponse().close();
+        }
+    }
+
+}
++-----
+
+* Param Serializer
+
+    Here is the twitter specific param serializer
+
++-----
+public class FlickParamSerializer implements Serializer {
+
+    // create the default serializer passing " " default list separator to respect Twitter's list format
+    private final Serializer serializer = new DefaultSerializer(" ");
+
+    public String serialize(ParamContext context) {
+        Object o = context.getArgValue();
+        if (o instanceof Boolean) {
+            // Twitter's boolean format
+            return ((Boolean) o) ? "1" : "0";
+        }else if(o instanceof Date) {
+            // Twitter's date format
+            return String.valueOf(((Date)o).getTime());
+        }else {
+            return serializer.serialize(context);
+        }
+    }
+}
++-----
+
+* Authentificator
+
+     The FlickrAuthInterceptor implements the signing logic part of {{{http://www.flickr.com/services/api/auth.howto.desktop.html} Twitter's authentification mechanism}}, assuming we already have a authentified token available.
+
+     For more details, checkout the {{{./sample/index.html} sample project page}} or browse directly the {{{./sample/xref/index.html} source code}}.
+
+* Model & Sources
+
+    The data model used by these samples hasn't been documented in this page as it only limits itself to plain java bean objects. The model have been deduced from the API response format and documentation and isn't guaranteed to reflect the full available model the API offers.
+
+    Do get a look at it, please refer to the sample source code {{{./sample/xref/index.html} HTML-based version}}.
+
+    This code is part of a project containing more sample, go to the {{{./sample/index.html} project home page}} to get more information.

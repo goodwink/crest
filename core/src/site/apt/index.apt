@@ -1,0 +1,46 @@
+    ----
+    What is CRest
+    ----
+
+What is CRest
+
+    <<CRest>> (Client Representational State Transfer or Client REST) is a lightweight framework aiming to simplify the integration of external REST services into java applications, somewhat in the way most of the current SOAP WSDL oriented client framework works.
+
+    While SOAP is a protocol, based on a service descriptor format (WSDL) that can be used to automatically generate the client stubs, REST isn't, and REST service implementation varies from one provider to another.
+
+    <<CRest>> allows the developer to only focus on the essential aspects of the integration of a REST service, such as the definition of:
+
+        * the java interface that maps the remote REST methods.
+
+        * the data model the interface will deal with.
+
+    The rest is achieved by annotating the java interface with the relevant informations such as the service end-point, the desired timeouts, url formats etc...
+
+    <<CRest>> will handle everything else, from http request generation, execution and auto marshalling of the response.
+
+    Here is a quick example of what a <<CRest>> annotated interface looks like:
+
++-----
+@RestApi(endPoint = "http://api.twitter.com", path = "/1/statuses")
+public interface StatusService {
+
+    @RestMethod(path = "/retweets/{0}.json")
+    Status[] getRetweets(long id);
+
+    @RestMethod(path = "/{0}/retweeted_by.json?count={1}&page={2}")
+    User[] getRetweetedBy(long id, long count, long page);
+
+    @RestMethod(path = "/{0}/retweeted_by/ids.json?count={1}&page={2}")
+    long[] getRetweetedByIds(long id, long count, long page);
+
+    @RestMethod(method = "POST", path = "/update.json", paramsDestination = "BODY")
+    Status updateStatus(@RestParam(name = "status") String status);
+
+    @RestMethod(method = "POST", path = "/update.json?lat={1}&long={2}")
+    Status changeStatus(@RestParam(name = "status", destination = "BODY") String status, float lat, float longitude);
+
+}
++-----
+
+
+

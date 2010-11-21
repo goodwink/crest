@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.codegist.crest</groupId>
+        <artifactId>crest-parent</artifactId>
+        <version>1.0.0</version>
+        <relativePath>..</relativePath>
+    </parent>
+    <artifactId>crest</artifactId>
+    <version>1.0.0</version>
+    <name>CRest</name>
+    <packaging>jar</packaging>
+    <url>http://crest.codegist.org/</url>
+
+    <description>CRest Core - Interfaces and default implementation.</description>
+
+    <properties>
+        <codegist.common.version>1.0.0</codegist.common.version>
+    </properties>
+    
+    <scm>
+        <url>https://github.com/codegist/crest</url>
+        <connection>scm:git:git://github.com/codegist/crest.git</connection>
+        <developerConnection>scm:git:git://github.com/codegist/crest.git</developerConnection>
+    </scm>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>1.4</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <shadedGroupFilter>org.codegist</shadedGroupFilter>
+                    <shadedArtifactAttached>true</shadedArtifactAttached>
+                    <shadedClassifierName>all</shadedClassifierName>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.7</version>
+                <configuration>
+                    <charset>UTF-8</charset>
+                    <show>public</show>
+                    <source>1.5</source>
+                    <links>
+                        <link>../../../common/apidocs/</link>
+                        <link>${project.javadoc.javase}</link>
+                        <link>http://hc.apache.org/httpcomponents-client-ga/httpclient/apidocs/</link>
+                    </links>
+                </configuration>
+            </plugin>
+        </plugins>
+    </reporting>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.codegist</groupId>
+            <artifactId>codegist-common</artifactId>
+            <version>${codegist.common.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.0.3</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpmime</artifactId>
+            <version>4.0.3</version>
+            <optional>true</optional>
+        </dependency>
+    </dependencies>
+
+</project>

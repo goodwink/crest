@@ -1,0 +1,17 @@
+    ----
+    Jackson Processor
+    ----
+
+Jackson Processor
+
+    <<CRest>> handles the http response auto-marshalling to user object model. By default <<CRest>> returns the raw response, but it can handles XML marshalling without any additional dependency by using <<JAXB>>.
+
+    However, as most REST services today are using JSON response format, <<CRest>> allows you to switch to the JSON {{{http://jackson.codehaus.org/}Jackson Processor}} marshaller implementation, the <<CRest>> POM contains an optional dependency for it that will need to be activated by the user if necessary.
+
+    The <<<CRestBuilder>>> offers a handy method to switch from the default implementation to the Jackson one:
+
++-----
+    CRest crest = new CRestBuilder()
+                        .expectsJson()
+                        .build();
++-----

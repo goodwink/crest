@@ -1,0 +1,179 @@
+    -----
+    Twitter Samples
+    -----
+
+Twitter Samples
+
+    This sample contains the implementation of a some {{{http://apiwiki.twitter.com/w/page/22554679/Twitter-API-Documentation} Twitter Rest APIs}}: Status, Direct Message and User.
+
+    <NB: The following are partial mappings of the available services and their main purpose is to give a quick example of a real world use case scenario of CRest usage, thus the mappings may not reflect all the services offered by the API.>
+
+* Status
+
+    This sample maps some of the Twitter's {{{http://dev.twitter.com/doc/statuses} Statuses Rest API}}.
+
+    Below the mapped interface. <Note: the mapping below only shows some mapped method, to have a look at all of them, refer to the sample source code.>
+
++-----
+@RestApi(endPoint = "http://api.twitter.com", path = "/1/statuses")
+public interface StatusService {
+
+    @RestMethod(method = "POST", path = "/update.json", paramsDestination = "BODY")
+    Status updateStatus(@RestParam(name = "status") String status);
+
+    @RestMethod(method = "POST", path = "/update.json?lat={1}&long={2}")
+    Status changeStatus(
+            @RestParam(name = "status", destination = "BODY") String status,
+            float lat, float longitude);
+
+    @RestMethod(method = "POST", path = "/destroy/{0}.json")
+    Status removeStatus(long id);
+
+    @RestMethod(method = "POST", path = "/retweet/{0}.json")
+    Status retweetStatus(long id);
+
+    @RestMethod(path = "/show/{0}.json")
+    Status getStatus(long id);
+
+    @RestMethod(path = "/retweets/{0}.json")
+    Status[] getRetweets(long id);
+
+    (...)
+
+    @RestMethod(path = "/friends.json?screen_name={0}")
+    User[] getFriends(String screenName);
+
+    @RestMethod(path = "/friends.json?user_id={0}&screen_name={1}&cursor={2}")
+    Cursor.User getFriends(long userId, String screenName, long cursor);
+
+    (...)
+
+}
++-----
+
+    And here's how to get an instance of the <<<StatusService>>>:
+
++-----
+// Get a CRest instance. Should be done once.
+CRest crest = new CRestBuilder()
+                        .expectsJson()
+                        .addGlobalRequestHeader("Accept-Encoding", "gzip") /* Not required */
+                        .usePreauthentifiedOAuth(consumerKey, consumerSecret, accessToken, accessTokenSecret)
+                        .build();
+
+// get a service instance
+StatusService service = crest.build(StatusService.class);
+
+// use it !
+Status status = service.updateStatus("Status updated!");
+(...)
++-----
+
+* Direct Message
+
+    This sample maps some of the Twitter's {{{http://dev.twitter.com/doc/direct_messages} Direct Message Rest API}}.
+
+    Below the mapped interface.
+
++-----
+@RestApi(endPoint = "http://api.twitter.com", path = "/1/direct_messages")
+public interface DirectMessageService {
+
+    @RestMethod(path = ".json?since_id={0}&max_id={1}&count={2}&page={3}")
+    Message[] getReceived(long sinceId, long maxId, long count, long page);
+
+    @RestMethod(path = ".json?count={0}&page={1}")
+    Message[] getReceived(long count, long page);
+
+    @RestMethod(path = "/sent.json?since_id={0}&max_id={1}&count={2}&page={3}")
+    Message[] getSent(long sinceId, long maxId, long count, long page);
+
+    @RestMethod(path = "/sent.json?count={0}&page={1}")
+    Message[] getSent(long count, long page);
+
+    @RestMethod(method = "POST", path = "/new.json?user_id={0}&text={1}")
+    Message send(long userId, String msg);
+
+    @RestMethod(method = "POST", path = "/new.json?user_id={0}&screen_name={1}&text={2}")
+    Message send(long userId, String screenName, String msg);
+
+    @RestMethod(method = "DELETE", path = "/destroy/{0}.json")
+    Message destroy(long msgId);
+
+}
++-----
+
+    And here's how to get an instance of the <<<DirectMessageService>>>:
+
++-----
+// Get a CRest instance. Should be done once.
+CRest crest = new CRestBuilder()
+                            .expectsJson()
+                            .addGlobalRequestHeader("Accept-Encoding", "gzip") /* Not required */
+                            .usePreauthentifiedOAuth(consumerKey, consumerSecret, accessToken, accessTokenSecret)
+                            .build();
+
+// get a service instance
+DirectMessageService service = crest.build(DirectMessageService.class);
+
+// use it !
+Message msg = service.send(userId, "Hi mate, what's up!");
+(...)
++-----
+
+* User
+
+    This sample maps some of the Twitter's {{{http://dev.twitter.com/doc/user} User Rest API}}.
+
+    Below the mapped interface.
+
++-----
+@RestApi(endPoint = "http://api.twitter.com", path = "/1/users")
+public interface UserService {
+
+    @RestMethod(path = "/search.json?q={0}")
+    User[] search(String search);
+
+    @RestMethod(path = "/search.json?q={0}&per_page={1}&page={2}")
+    User[] search(String search, long count, long page);
+
+    @RestMethod(path = "/show.json?user_id={0}")
+    User get(long id);
+
+    @RestMethod(path = "/show.json?screen_name={0}")
+    User get(String screenName);
+
+    @RestMethod(path = "/lookup.json?user_id={0}&screen_name={1}")
+    User[] lookup(long id, String... screenName);
+
+    @RestMethod(path = "/lookup.json?screen_name={0}")
+    User[] lookup(String[] screenName);
+}
++-----
+
+    And here's how to get an instance of the <<<DirectMessageService>>>:
+
++-----
+// Get a CRest instance. Should be done once.
+CRest crest = new CRestBuilder()
+                            .expectsJson()
+                            .addGlobalRequestHeader("Accept-Encoding", "gzip") /* Not required */
+                            .usePreauthentifiedOAuth(consumerKey, consumerSecret, accessToken, accessTokenSecret)
+                            .build();
+
+// get a service instance
+UserService service = crest.build(UserService.class);
+
+// use it !
+User user = service.get(userId);
+(...)
++-----
+
+
+* Model & Sources
+
+    The data model used by these samples hasn't been documented in this page as it only limits itself to plain java bean objects. The model have been deduced from the API response format and documentation and isn't guaranteed to reflect the full available model the API offers.
+
+    Do get a look at it, please refer to the sample source code {{{./sample/xref/index.html} HTML-based version}}.
+
+    This code is part of a project containing more sample, go to the {{{./sample/index.html} project home page}} to get more information.

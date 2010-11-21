@@ -1,0 +1,71 @@
+    ------
+    OAuth
+    ------
+        
+OAuth
+
+    <<CRest>> offers a pre-authentified <<<OAuth v1.0>>> request authentification mechanism implemented as an interceptor (<<<org.codegist.crest.interceptor.OAuthInterceptor>>>).
+
+    All you need to provide are four informations:
+
+        * Consumer Token
+
+        * Consumer Secret
+
+        * Access Token
+
+        * Access Token Secret
+
+    Given that, the following: 
+
++-----
+CRest crest = new CRestBuilder()
+                    .usePreauthentifiedOAuth(consumerKey, consumerSecret, accessToken, accessTokenSecret)
+                    .build();
++-----
+
+        will create a <<<CRest>>> with an instance of <<<OAuthInterceptor>>> set as a global request interceptor. Any interface that will be passed to this crest instance will gets all its http request authentified using OAuth v1.0.
+
+        Another way to get the same result is by settings the interceptor manually on the interface:
+
++-----
+@RestApi(
+    endPoint = "http://api.twitter.com",
+    path = "/1/statuses",
+    requestInterceptor = OAuthInterceptor.class
+)
+public interface StatusService {
+
+    @RestMethod(method = "POST", path = "/update.json", paramsDestination = "BODY")
+    Status updateStatus(@RestParam(name = "status") String status);
+
+}
++-----
+
+        and to give the <<<CRest>>> the informations required by the <<<OAuthInterceptor>>> to generate the authentification meta datas:
+
++-----
+CRest crest = new CRestBuilder()
+                     .addCustomProperty(OAuthInterceptor.ACCESS_TOKEN_PROP, accessToken)
+                     .addCustomProperty(OAuthInterceptor.ACCESS_TOKEN_SECRET_PROP, accessTokenSecret)
+                     .addCustomProperty(OAuthInterceptor.CONSUMER_KEY_PROP, consumerKey)
+                     .addCustomProperty(OAuthInterceptor.CONSUMER_SECRET_PROP, consumerSecret)
+                     .build();
++-----
+
+        Alternatively, if you only need to authentify some methods and some not, you can do it as follow:
+
++-----
+@RestApi(
+    endPoint = "http://api.twitter.com",
+    path = "/1/statuses"
+)
+public interface StatusService {
+
+    @RestMethod(method = "POST", path = "/update.json", paramsDestination = "BODY", requestInterceptor = OAuthInterceptor.class)
+    Status updateStatus(@RestParam(name = "status") String status);
+
+    @RestMethod(path = "/show/{0}.json")
+    Status getStatus(long id);
+}
++-----

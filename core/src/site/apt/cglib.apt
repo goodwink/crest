@@ -1,0 +1,17 @@
+    ----
+    CGLib
+    ----
+
+CGLib
+
+    <<CRest>> is based on dynamic proxies to build the instances of the given user rest interfaces, and by default it relies on the native JDK dynamic proxies.
+
+    <<CRest>> offers the possibility to use {{{http://cglib.sourceforge.net/}CGLib}}, the <<CRest>> POM contains an optional dependency for it that will need to be activated by the user if necessary.
+
+    The <<<CRestBuilder>>> offers a handy method to switch from the default implementation to the CGLib one:
+
++-----
+    CRest crest = new CRestBuilder()
+                        .useCglibProxies()
+                        .build();
++-----
