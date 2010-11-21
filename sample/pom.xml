@@ -5,11 +5,11 @@
     <parent>
         <groupId>org.codegist.crest</groupId>
         <artifactId>crest-parent</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.1-SNAPSHOT</version>
         <relativePath>..</relativePath>
     </parent>
     <artifactId>crest-sample</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1-SNAPSHOT</version>
     <name>CRest Samples</name>
     <packaging>jar</packaging>
     <url>http://crest.codegist.org/sample/</url>
@@ -17,7 +17,7 @@
     <description>Small set of java implementation samples of some well known public rest services using CRest.</description>
 
     <properties>
-        <crest.core.version>1.0.0</crest.core.version>
+        <crest.core.version>1.0.1-SNAPSHOT</crest.core.version>
     </properties>
 
     <scm>

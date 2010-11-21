@@ -5,13 +5,13 @@
     <parent>
         <groupId>org.codegist</groupId>
         <artifactId>codegist-parent</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.1-SNAPSHOT</version>
         <relativePath>..</relativePath>
     </parent>
 
     <groupId>org.codegist.crest</groupId>
     <artifactId>crest-parent</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>CRest Parent</name>
     <url>http://crest.codegist.org/</url>
