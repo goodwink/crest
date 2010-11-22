@@ -33,16 +33,24 @@
     <artifactId>crest-parent</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <name>CRest Parent</name>
+    <name>CRest</name>
     <url>http://crest.codegist.org/</url>
 
     <description>CRest - Client Representational State Transfer</description>
 
     <scm>
-        <url>https://github.com/codegist/crest</url>
+        <url>git://github.com/codegist/crest.git</url>
         <connection>scm:git:git://github.com/codegist/crest.git</connection>
         <developerConnection>scm:git:git://github.com/codegist/crest.git</developerConnection>
     </scm>
+
+    <licenses>
+        <license>
+            <name>Apache Software License - Version 2.0</name>
+            <url>http://crest.codegist.org/LICENSE.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
 
     <issueManagement>
         <system>Github Issue Tracker</system>

@@ -34,14 +34,14 @@
     <packaging>jar</packaging>
     <url>http://crest.codegist.org/sample/</url>
 
-    <description>Small set of java implementation samples of some well known public rest services using CRest.</description>
+    <description>CRest Samples offers a small set of java implementation samples of some well known public rest services using CRest.</description>
 
     <properties>
         <crest.core.version>1.0.0-SNAPSHOT</crest.core.version>
     </properties>
 
     <scm>
-        <url>https://github.com/codegist/crest</url>
+        <url>git://github.com/codegist/crest.git</url>
         <connection>scm:git:git://github.com/codegist/crest.git</connection>
         <developerConnection>scm:git:git://github.com/codegist/crest.git</developerConnection>
     </scm>

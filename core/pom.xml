@@ -30,18 +30,18 @@
     </parent>
     <artifactId>crest</artifactId>
     <version>1.0.0-SNAPSHOT</version>
-    <name>CRest</name>
+    <name>CRest Core</name>
     <packaging>jar</packaging>
     <url>http://crest.codegist.org/</url>
 
-    <description>CRest Core - Interfaces and default implementation.</description>
+    <description>CRest - Client Representational State Transfer - is a lightweight framework aiming to simplify the integration of external REST services into java applications by simply declaring a annotated interface and an optional data model.</description>
 
     <properties>
         <codegist.common.version>1.0.0-SNAPSHOT</codegist.common.version>
     </properties>
     
     <scm>
-        <url>https://github.com/codegist/crest</url>
+        <url>git://github.com/codegist/crest.git</url>
         <connection>scm:git:git://github.com/codegist/crest.git</connection>
         <developerConnection>scm:git:git://github.com/codegist/crest.git</developerConnection>
     </scm>
