@@ -12,7 +12,7 @@ Flickr Samples
 
         * Response handling : Flickr error-specific checking and payload extraction from generic response format, similar process as the google sample.
 
-        * Param serialization : Twitter handle boolean as 0/1 values, we show here how to still use boolean argument and serialize them the way Twitter expects. 
+        * Param serialization : Flickr handle boolean as 0/1 values, we show here how to still use boolean argument and serialize them the way Flickr expects. 
 
     <NB: The following are partial mappings of the available services and their main purpose is to give a quick example of a real world use case scenario of CRest usage, thus the mappings may not reflect all the services offered by the API.>
 
@@ -25,9 +25,9 @@ Flickr Samples
 +-----
 @RestApi(
     endPoint = "http://flickr.com", path = "/services",
-    requestInterceptor = FlickrAuthInterceptor.class,       /* Global request interceptor : generates and adds twitter's specific authentification parameter in the request */
-    paramsSerializer = FlickParamSerializer.class,          /* Twitter specific param serializer, applies to all params */
-    methodsResponseHandler = FlickrResponseHandler.class,   /* Custom response handler for twitter-specific error checking and payload extraction */
+    requestInterceptor = FlickrAuthInterceptor.class,       /* Global request interceptor : generates and adds flickr's specific authentification parameter in the request */
+    paramsSerializer = FlickParamSerializer.class,          /* Flickr specific param serializer, applies to all params */
+    methodsResponseHandler = FlickrResponseHandler.class,   /* Custom response handler for flickr-specific error checking and payload extraction */
     methodsHttpMethod = HttpMethod.POST                     /* Shortcut to set all method to use POST instead of default GET */
 )
 public interface Flickr {
@@ -93,7 +93,7 @@ public interface Flickr {
 +-----
 // Get a CRest instance. Should be done once.
 CRest crest = new CRestBuilder()
-                        .expectsXml(TwitterModelFactory.class)
+                        .expectsXml(FlickrModelFactory.class)
                         .addCustomProperty(FlickrAuthInterceptor.API_KEY_PROP, apiKey)
                         .addCustomProperty(FlickrAuthInterceptor.APP_SECRET_PROP, appSecret)
                         .addCustomProperty(FlickrAuthInterceptor.AUTH_TOKEN_PROP, authToken)
@@ -109,7 +109,7 @@ long photoId = flickr.uploadPhoto(new File("/path/to/my/photo.jpg"));
 
 * Response Handler
 
-    Here is the code for the custom response handling. This class is not stricly necessary as we could have always returned the generic Response object for every method whatever happens, but this approach makes the interface looks better and less coupled to the twitter response format.
+    Here is the code for the custom response handling. This class is not stricly necessary as we could have always returned the generic Response object for every method whatever happens, but this approach makes the interface looks better and less coupled to the flickr response format.
 
 +-----
 public class FlickrResponseHandler implements ResponseHandler {
@@ -125,7 +125,7 @@ public class FlickrResponseHandler implements ResponseHandler {
 
             /* Marshall the response */
             Response res = marshaller.marshall(context.getResponse().asStream(), Types.newType(Response.class, context.getExpectedGenericType()));
-            /* Check for twitter OK status */
+            /* Check for flickr OK status */
             if ("ok".equals(res.getStatus())) {
                 /* Get the nested payload and returns it */
                 Payload payload = res.getPayload();
@@ -154,21 +154,21 @@ public class FlickrResponseHandler implements ResponseHandler {
 
 * Param Serializer
 
-    Here is the twitter specific param serializer
+    Here is the flickr specific param serializer
 
 +-----
-public class FlickParamSerializer implements Serializer {
+public class FlickrParamSerializer implements Serializer {
 
-    // create the default serializer passing " " default list separator to respect Twitter's list format
+    // create the default serializer passing " " default list separator to respect Flickr's list format
     private final Serializer serializer = new DefaultSerializer(" ");
 
     public String serialize(ParamContext context) {
         Object o = context.getArgValue();
         if (o instanceof Boolean) {
-            // Twitter's boolean format
+            // Flickr's boolean format
             return ((Boolean) o) ? "1" : "0";
         }else if(o instanceof Date) {
-            // Twitter's date format
+            // Flickr's date format
             return String.valueOf(((Date)o).getTime());
         }else {
             return serializer.serialize(context);
@@ -177,9 +177,9 @@ public class FlickParamSerializer implements Serializer {
 }
 +-----
 
-* Authentificator
+* Authenticator
 
-     The FlickrAuthInterceptor implements the signing logic part of {{{http://www.flickr.com/services/api/auth.howto.desktop.html} Twitter's authentification mechanism}}, assuming we already have a authentified token available.
+     The FlickrAuthInterceptor implements the signing logic part of {{{http://www.flickr.com/services/api/auth.howto.desktop.html} Flickr's authentification mechanism}}, assuming we already have a authentified token available.
 
      For more details, checkout the {{{./sample/index.html} sample project page}} or browse directly the {{{./sample/xref/index.html} source code}}.
 

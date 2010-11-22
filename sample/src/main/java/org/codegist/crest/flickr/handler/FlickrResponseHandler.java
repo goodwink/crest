@@ -45,7 +45,7 @@ public class FlickrResponseHandler implements ResponseHandler {
             }
             /* Marshall the response */
             Response res = marshaller.marshall(context.getResponse().asStream(), Types.newType(Response.class, context.getExpectedGenericType()));
-            /* Check for twitter OK status */
+            /* Check for flickr OK status */
             if ("ok".equals(res.getStatus())) {
                 /* Get the nested payload and returns it */
                 Payload payload = res.getPayload();

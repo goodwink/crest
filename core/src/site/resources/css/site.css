@@ -22,6 +22,10 @@
     float: left;
 }
 
+#banner img {
+	margin:10px 0 0 10px;
+}
+
 #banner {
 	background-image:none!important;
 }

@@ -125,7 +125,7 @@ public class OAuthInterceptor extends RequestInterceptorAdapter {
         authParams.put("oauth_consumer_key", accessToken.getConsumerKey());
         authParams.put("oauth_version", "1.0");
         authParams.put("oauth_token", accessToken.getToken());
-        authParams.putAll(getParamsForAuth(builder));
+        authParams.putAll(getParamsForAuth(builder));                                             
         authParams.put("oauth_signature", generateSignature(SIGN_METH_4_J, accessToken, builder.getMeth() + "&" + encode(constructRequestURL(builder.getBaseUri()), enc) + "&" + encode(encodeParams(authParams, enc, "&", true, false), enc)));
 
         if (OAuthParamDest.HEADERS.equals(accessToken.getDest())) {

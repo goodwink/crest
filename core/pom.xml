@@ -80,7 +80,7 @@
                     <show>public</show>
                     <source>1.5</source>
                     <links>
-                        <link>../../../common/apidocs/</link>
+                        <link>http://common.codegist.org/apidocs/</link>
                         <link>${project.javadoc.javase}</link>
                         <link>http://hc.apache.org/httpcomponents-client-ga/httpclient/apidocs/</link>
                     </links>

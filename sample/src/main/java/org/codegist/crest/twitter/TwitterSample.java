@@ -40,7 +40,7 @@ public class TwitterSample {
 
     public static void main(String[] args) throws IOException {
         String consumerKey = args[0];
-        String consumerSecret = args[1];
+        String consumerSecret = args[1];     
         String accessToken = args[2];
         String accessTokenSecret = args[3];
 

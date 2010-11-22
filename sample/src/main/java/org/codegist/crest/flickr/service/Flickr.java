@@ -28,7 +28,7 @@ import org.codegist.crest.flickr.handler.FlickrResponseHandler;
 import org.codegist.crest.flickr.interceptor.FlickrAuthInterceptor;
 import org.codegist.crest.flickr.model.Comment;
 import org.codegist.crest.flickr.model.Gallery;
-import org.codegist.crest.flickr.serializer.FlickParamSerializer;
+import org.codegist.crest.flickr.serializer.FlickrParamSerializer;
 
 import java.io.File;
 import java.io.InputStream;
@@ -41,7 +41,7 @@ import java.util.Date;
 @RestApi(
         endPoint = "http://flickr.com", path = "/services",
         requestInterceptor = FlickrAuthInterceptor.class,
-        paramsSerializer = FlickParamSerializer.class,
+        paramsSerializer = FlickrParamSerializer.class,
         methodsResponseHandler = FlickrResponseHandler.class,
         methodsHttpMethod = HttpMethod.POST
 )

@@ -29,7 +29,7 @@ import java.util.Date;
 /**
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
-public class FlickParamSerializer implements Serializer {
+public class FlickrParamSerializer implements Serializer {
 
     private final Serializer serializer = new DefaultSerializer(" ");
 

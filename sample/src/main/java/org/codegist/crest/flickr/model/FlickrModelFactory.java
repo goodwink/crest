@@ -28,7 +28,7 @@ import java.lang.Error;
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
 @XmlRegistry
-public class TwitterModelFactory {
+public class FlickrModelFactory {
     public <T extends Payload> Response<T> createResponse() {
         return new Response<T>();
     }

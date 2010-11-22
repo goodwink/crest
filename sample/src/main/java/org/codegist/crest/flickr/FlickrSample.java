@@ -23,8 +23,8 @@ package org.codegist.crest.flickr;
 import org.codegist.crest.CRest;
 import org.codegist.crest.CRestBuilder;
 import org.codegist.crest.flickr.interceptor.FlickrAuthInterceptor;
+import org.codegist.crest.flickr.model.FlickrModelFactory;
 import org.codegist.crest.flickr.model.Gallery;
-import org.codegist.crest.flickr.model.TwitterModelFactory;
 import org.codegist.crest.flickr.service.Flickr;
 
 /**
@@ -39,7 +39,7 @@ public class FlickrSample {
 
         /* Get the factory */
         CRest crest = new CRestBuilder()
-                .expectsXml(TwitterModelFactory.class)
+                .expectsXml(FlickrModelFactory.class)
                 .addCustomProperty(FlickrAuthInterceptor.API_KEY_PROP, apiKey)
                 .addCustomProperty(FlickrAuthInterceptor.APP_SECRET_PROP, appSecret)
                 .addCustomProperty(FlickrAuthInterceptor.AUTH_TOKEN_PROP, authToken)
