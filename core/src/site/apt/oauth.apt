@@ -6,7 +6,7 @@ OAuth
 
     <<CRest>> offers a pre-authentified <<<OAuth v1.0>>> request authentification mechanism implemented as an interceptor (<<<org.codegist.crest.interceptor.OAuthInterceptor>>>).
 
-    All you need to provide are four informations:
+    All you need to provide are four information:
 
         * Consumer Token
 
@@ -42,7 +42,7 @@ public interface StatusService {
 }
 +-----
 
-        and to give the <<<CRest>>> the informations required by the <<<OAuthInterceptor>>> to generate the authentification meta datas:
+        and to give the <<<CRest>>> the information required by the <<<OAuthInterceptor>>> to generate the authentification meta datas:
 
 +-----
 CRest crest = new CRestBuilder()

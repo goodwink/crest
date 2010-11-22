@@ -20,7 +20,7 @@ Quick Start
 
     <<<CRest>>> interface will return the working instances of any interface to bind to a REST service.
 
-    The <<<CRest>>> default implementation requires a few informations reguarding the way the interfaces that will be passed to it should be build, how the mapping is done, the way to handle response data formats etc..
+    The <<<CRest>>> default implementation requires a few information reguarding the way the interfaces that will be passed to it should be build, how the mapping is done, the way to handle response data formats etc..
 
     To get a pre-configured instance of a <<<CRest>>>, you should use the <<<CRestBuilder>>>, eg:
 
@@ -38,21 +38,21 @@ MyInterface interfaze = crest.build(MyInterface.class);
 
 * Configuration
 
-    In order for the <<<CRest>>> to properly bind a user interface to its remote REST service destination, the user should give some informations reguarding how the mapping between the java interface method calls and the remote REST service are done, how to handle the response etc...
+    In order for the <<<CRest>>> to properly bind a user interface to its remote REST service destination, the user should give some information reguarding how the mapping between the java interface method calls and the remote REST service are done, how to handle the response etc...
 
     Currently <<CRest>> offers two approach, annotation driven and properties driven.
 
 ** Annotations
 
-    The aim of <<CRest>> is to make the binding of a remote REST service and its relative java interface as simple and readable as possible. The prefered approach for the user to provide the required mapping informations then is through annotation put on the interface itself.
+    The aim of <<CRest>> is to make the binding of a remote REST service and its relative java interface as simple and readable as possible. The prefered approach for the user to provide the required mapping information then is through annotation put on the interface itself.
 
     Currently <<CRest>> offer three different annotations:
 
-        * <<RestApi>>: Used to annotate the Interface itself with top meta informations such as the server end-point and base path.
+        * <<RestApi>>: Used to annotate the Interface itself with top meta information such as the server end-point and base path.
 
-        * <<RestMethod>>: Used to annotate the Interface methods with meta informations such as the method specific path fragment.
+        * <<RestMethod>>: Used to annotate the Interface methods with meta information such as the method specific path fragment.
 
-        * <<RestParam>>: Used to annotate the method arguments with meta informations such as serialization and/or request injection options.
+        * <<RestParam>>: Used to annotate the method arguments with meta information such as serialization and/or request injection options.
 
     Here how a <<CRest>> annotated interface will look like:
 
@@ -69,11 +69,11 @@ public interface LanguageService {
 }
 +-----
 
-    Annotation driven configuration is the prefered one for its conciseness and readability. But annotation informations are set in stone, unless defining somekind of placeholders convention.
+    Annotation driven configuration is the prefered one for its conciseness and readability. But annotation information are set in stone, unless defining somekind of placeholders convention.
 
     In the day to day development process, you may want to be able to switch <<<RestApi.endPoint>>> to point to different server dependending on which environment you are running your application on.
 
-    In order to do so, you can use the Properties driven configuration in addition to the annotation driven one in order to override some informations.
+    In order to do so, you can use the Properties driven configuration in addition to the annotation driven one in order to override some information.
 
 ** Properties
 

@@ -14,7 +14,7 @@ What is CRest
 
         * the data model the interface will deal with.
 
-    The rest is achieved by annotating the java interface with the relevant informations such as the service end-point, the desired timeouts, url formats etc...
+    The rest is achieved by annotating the java interface with the relevant information such as the service end-point, the desired timeouts, url formats etc...
 
     <<CRest>> will handle everything else, from http request generation, execution and auto marshalling of the response.
 
