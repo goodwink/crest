@@ -44,12 +44,12 @@ class DefaultParamContext<V> extends DefaultRequestContext implements ParamConte
         return getParamConfig(index);
     }
 
-    public V getArgValue() {
-        return (V) getArgValue(index);
+    public V getRawValue() {
+        return (V) getRawValue(index);
     }
 
-    public String getArgSerialized() {
-        return getArgSerialized(index);
+    public String getSerializedValue() {
+        return getSerializedValue(index);
     }
 
     /**

@@ -28,6 +28,7 @@ import org.codegist.crest.config.ConfigBuilders;
 import org.codegist.crest.config.InterfaceConfig;
 import org.codegist.crest.config.PreconfiguredInterfaceConfigFactory;
 import org.codegist.crest.injector.RequestInjector;
+import org.codegist.crest.serializer.DateSerializer;
 import org.codegist.crest.serializer.Serializer;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -72,7 +73,7 @@ public class DefaultCRestTest {
     private ProxyFactory mockProxyFactory = TestUtils.mockProxyFactory();
 
     @BeforeClass
-    public static void setup() {
+    public static void setup() {   
         when(mockMarshaller.<Object>marshall(any(InputStream.class), any(Type.class))).thenReturn(MODEL_RESPONSE);
 
     }
@@ -280,7 +281,7 @@ public class DefaultCRestTest {
 
     public static class Ser implements Serializer {
         @Override
-        public String serialize(ParamContext context) {
+        public String serialize(Object value) {
             return "oooo";
         }
     }
@@ -340,10 +341,10 @@ public class DefaultCRestTest {
 
         @Override
         public void inject(HttpRequest.Builder builder, ParamContext context) {
-            if (context.getArgValue() == null) return;
+            if (context.getRawValue() == null) return;
 
             Map map = new HashMap();
-            Field[] fields = context.getArgValue().getClass().getDeclaredFields();
+            Field[] fields = context.getRawValue().getClass().getDeclaredFields();
 
             for (final Field f : fields) {
                 AccessController.doPrivileged(new SetAccessible(f));
@@ -354,7 +355,7 @@ public class DefaultCRestTest {
 
                 Object val = null;
                 try {
-                    val = f.get(context.getArgValue());
+                    val = f.get(context.getRawValue());
                 } catch (IllegalAccessException e) {
                     throw new RuntimeException(e);
                 }

@@ -28,9 +28,12 @@ import org.codegist.crest.HttpMethod;
 import org.codegist.crest.ResponseHandler;
 import org.codegist.crest.injector.RequestInjector;
 import org.codegist.crest.interceptor.RequestInterceptor;
+import org.codegist.crest.serializer.ArraySerializer;
 import org.codegist.crest.serializer.Serializer;
+import org.codegist.crest.serializer.Serializers;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -71,10 +74,19 @@ public abstract class ConfigBuilders {
         private String encoding;
         private RequestInterceptor requestInterceptor;
 
+        /**
+         * <p>This will create an unbound builder, eg to attached to any interface, thus it cannot contains any method configuration.
+         */
         public InterfaceConfigBuilder() {
             this(null, null);
         }
 
+        /**
+         * Given properties map can contains user-defined default values, that override interface predefined defauts.
+         * <p>Expected map keys are of the following : {@link org.codegist.crest.config.InterfaceConfig}.*_PROP
+         * <p>This will create an unbound builder, eg to attached to any interface, thus it cannot contains any method configuration.
+         * @param customProperties default values holder
+         */
         public InterfaceConfigBuilder(Map<String, Object> customProperties) {
             this(null, null, customProperties);
         }
@@ -83,6 +95,13 @@ public abstract class ConfigBuilders {
             this(interfaze, server, null);
         }
 
+        /**
+         * Given properties map can contains user-defined default values, that override interface predefined defauts.
+         * <p>Expected map keys are of the following : {@link org.codegist.crest.config.InterfaceConfig}.*_PROP
+         * @param interfaze interface to bind the config to
+         * @param server endpoint
+         * @param customProperties default values holder
+         */
         public InterfaceConfigBuilder(Class interfaze, String server, Map<String, Object> customProperties) {
             super(customProperties);
             this.interfaze = interfaze;
@@ -379,6 +398,12 @@ public abstract class ConfigBuilders {
             this(method, null);
         }
 
+        /**
+         * Given properties map can contains user-defined default values, that override interface predefined defauts.
+         * <p>Expected map keys are of the following : {@link org.codegist.crest.config.MethodConfig}.*_PROP
+         * @param method method being configured
+         * @param customProperties default values holder
+         */
         public MethodConfigBuilder(Method method, Map<String, Object> customProperties) {
             this(null, method, customProperties);
         }
@@ -393,7 +418,7 @@ public abstract class ConfigBuilders {
             this.method = method;
             this.paramConfigBuilders = new ParamConfigBuilder[method.getParameterTypes().length];
             for (int i = 0; i < this.paramConfigBuilders.length; i++) {
-                this.paramConfigBuilders[i] = new ParamConfigBuilder(this, customProperties);
+                this.paramConfigBuilders[i] = new ParamConfigBuilder(this, method.getGenericParameterTypes()[i], customProperties);
             }
         }
 
@@ -612,26 +637,29 @@ public abstract class ConfigBuilders {
     @SuppressWarnings("unchecked")
     public static class ParamConfigBuilder extends ConfigBuilders {
         private final MethodConfigBuilder parent;
+        private final Type type;
         private String name;
         private Destination dest;
         private Serializer serializer;
         private RequestInjector injector;
 
 
-        public ParamConfigBuilder() {
-            this(null, null);
+        /**
+         * Given properties map can contains user-defined default values, that override interface predefined defauts.
+         * <p>Expected map keys are of the following : {@link org.codegist.crest.config.ParamConfig}.*_PROP
+         * @param customProperties default values holder
+         */
+        public ParamConfigBuilder(Type type, Map<String, Object> customProperties) {
+            this(null, type, customProperties);
         }
 
-        public ParamConfigBuilder(Map<String, Object> customProperties) {
-            this(null, customProperties);
+        private ParamConfigBuilder(MethodConfigBuilder parent, Type type) {
+            this(parent, type, null);
         }
 
-        private ParamConfigBuilder(MethodConfigBuilder parent) {
-            this(parent, null);
-        }
-
-        private ParamConfigBuilder(MethodConfigBuilder parent, Map<String, Object> customProperties) {
+        private ParamConfigBuilder(MethodConfigBuilder parent, Type type, Map<String, Object> customProperties) {
             super(customProperties);
+            this.type = type;
             this.parent = parent;
         }
 
@@ -647,8 +675,13 @@ public abstract class ConfigBuilders {
             if (useDefaults) {
                 name = defaultIfUndefined(name, ParamConfig.DEFAULT_NAME_PROP, ParamConfig.DEFAULT_NAME);
                 dest = defaultIfUndefined(dest, ParamConfig.DEFAULT_DESTINATION_PROP, ParamConfig.DEFAULT_DESTINATION);
-                serializer = defaultIfUndefined(serializer, ParamConfig.DEFAULT_SERIALIZER_PROP, (ParamConfig.DEFAULT_SERIALIZER));
                 injector = defaultIfUndefined(injector, ParamConfig.DEFAULT_INJECTOR_PROP, (ParamConfig.DEFAULT_INJECTOR));
+                serializer = defaultIfUndefined(serializer, ParamConfig.DEFAULT_SERIALIZER_PROP, ParamConfig.DEFAULT_SERIALIZER);
+
+                if(serializer == null) {
+                    // if null, then choose which serializer to apply using default rules
+                    serializer = Serializers.getFor(customProperties, type);
+                }
             }
             return new DefaultParamConfig(
                     name,
@@ -684,19 +717,35 @@ public abstract class ConfigBuilders {
             return this;
         }
 
+        /**
+         * Sets the argument's serializer. If not set, the system automatically choose a serializer based on the argument type. See {@link org.codegist.crest.serializer.Serializers#getFor(java.util.Map, java.lang.reflect.Type)} for the selection rules.
+         * @param serializer the serializer to use for this argument
+         * @return current builder
+         */
         public ParamConfigBuilder setSerializer(Serializer serializer) {
             if (ignore(serializer)) return this;
             this.serializer = serializer;
             return this;
         }
 
+        /**
+         * Sets the argument's serializer. If not set, the system automatically choose a serializer based on the argument type. See {@link org.codegist.crest.serializer.Serializers#getFor(java.util.Map, java.lang.reflect.Type)} for the selection rules.
+         * @param serializerClassName the serializer classname to use for this argument
+         * @return current builder
+         */
         public ParamConfigBuilder setSerializer(String serializerClassName) throws IllegalAccessException, InstantiationException, ClassNotFoundException {
             if (ignore(serializerClassName)) return this;
             return setSerializer((Class<? extends Serializer>) Class.forName(serializerClassName));
         }
 
+        /**
+         * Sets the argument's serializer. If not set, the system automatically choose a serializer based on the argument type. See {@link org.codegist.crest.serializer.Serializers#getFor(java.util.Map, java.lang.reflect.Type)} for the selection rules.
+         * @param serializer the serializer to use for this argument
+         * @return current builder
+         */
         public ParamConfigBuilder setSerializer(Class<? extends Serializer> serializer) throws IllegalAccessException, InstantiationException {
             if (ignore(serializer)) return this;
+            if(serializer.equals(Fallbacks.FallbackSerializer.class)) return this;
             return setSerializer(serializer.newInstance());
         }
 
@@ -717,10 +766,10 @@ public abstract class ConfigBuilders {
         }
     }
 
-    private final Map<String, ?> customProperties;
+    protected final Map<String, Object> customProperties;
     private boolean ignoreNullOrEmptyValues;
 
-    private ConfigBuilders(Map<String, ?> customProperties) {
+    private ConfigBuilders(Map<String, Object> customProperties) {
         this.customProperties = Maps.unmodifiable(customProperties);
     }
 

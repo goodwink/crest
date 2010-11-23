@@ -26,7 +26,6 @@ Flickr Samples
 @RestApi(
     endPoint = "http://flickr.com", path = "/services",
     requestInterceptor = FlickrAuthInterceptor.class,       /* Global request interceptor : generates and adds flickr's specific authentification parameter in the request */
-    paramsSerializer = FlickParamSerializer.class,          /* Flickr specific param serializer, applies to all params */
     methodsResponseHandler = FlickrResponseHandler.class,   /* Custom response handler for flickr-specific error checking and payload extraction */
     methodsHttpMethod = HttpMethod.POST                     /* Shortcut to set all method to use POST instead of default GET */
 )
@@ -92,12 +91,20 @@ public interface Flickr {
 
 +-----
 // Get a CRest instance. Should be done once.
+/* Get the factory */
 CRest crest = new CRestBuilder()
-                        .expectsXml(FlickrModelFactory.class)
-                        .addCustomProperty(FlickrAuthInterceptor.API_KEY_PROP, apiKey)
-                        .addCustomProperty(FlickrAuthInterceptor.APP_SECRET_PROP, appSecret)
-                        .addCustomProperty(FlickrAuthInterceptor.AUTH_TOKEN_PROP, authToken)
-                        .build();
+        .expectsXml(FlickrModelFactory.class)
+        .addCustomProperty(FlickrAuthInterceptor.API_KEY_PROP, apiKey)
+        .addCustomProperty(FlickrAuthInterceptor.APP_SECRET_PROP, appSecret)
+        .addCustomProperty(FlickrAuthInterceptor.AUTH_TOKEN_PROP, authToken)
+        /* Customize default serialization process */
+        /* override the default boolean serializer to use the flickr specific one */
+        .setSerializer(boolean.class, new FlickrBooleanSerializer())
+        /* configure the date serializer to format the date to milliseconds */
+        .addCustomProperty(DateSerializer.DATEFORMAT_TYPE_PROP, DateSerializer.FormatType.Millis)
+        /* configure the array serializer to use space as item separator */
+        .addCustomProperty(ArraySerializer.SEPARATOR_PROP, " ")
+        .build();
 
 // get a service instance
 Flickr flickr = crest.build(Flickr.class);
@@ -152,27 +159,14 @@ public class FlickrResponseHandler implements ResponseHandler {
 }
 +-----
 
-* Param Serializer
+* Boolean Serializer
 
-    Here is the flickr specific param serializer
+    Here is the flickr specific boolean serializer
 
 +-----
-public class FlickrParamSerializer implements Serializer {
-
-    // create the default serializer passing " " default list separator to respect Flickr's list format
-    private final Serializer serializer = new DefaultSerializer(" ");
-
-    public String serialize(ParamContext context) {
-        Object o = context.getArgValue();
-        if (o instanceof Boolean) {
-            // Flickr's boolean format
-            return ((Boolean) o) ? "1" : "0";
-        }else if(o instanceof Date) {
-            // Flickr's date format
-            return String.valueOf(((Date)o).getTime());
-        }else {
-            return serializer.serialize(context);
-        }
+public class FlickrBooleanSerializer implements Serializer<Boolean> {
+    public String serialize(Boolean value) {
+        return Boolean.TRUE.equals(value) ? "1" : "0";
     }
 }
 +-----

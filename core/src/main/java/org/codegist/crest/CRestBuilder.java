@@ -34,8 +34,10 @@ import org.codegist.crest.interceptor.CompositeRequestInterceptor;
 import org.codegist.crest.interceptor.OAuthInterceptor;
 import org.codegist.crest.interceptor.RequestInterceptor;
 import org.codegist.crest.interceptor.RequestParamDefaultsInterceptor;
+import org.codegist.crest.serializer.Serializer;
 
 import javax.xml.bind.JAXBException;
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -84,6 +86,7 @@ public class CRestBuilder {
     private Class<?> modelPackageFactory = null;
 
     private Map<String, Object> customProperties = new HashMap<String, Object>();
+    private Map<Type, Serializer> serializersMap = new HashMap<Type, Serializer>();
 
     private Map<String, Object> body = new HashMap<String, Object>();
     private Map<String, String> queryString = new HashMap<String, String>();
@@ -204,9 +207,10 @@ public class CRestBuilder {
             }
         }
 
-        customProperties = customProperties != null ? customProperties : new HashMap<String, Object>();
+        customProperties = Maps.defaultsIfNull(customProperties);
         Maps.putIfNotPresent(customProperties, Marshaller.class.getName(), marshaller);
         Maps.putIfNotPresent(customProperties, Unmarshaller.class.getName(), unmarshaller);
+        Maps.putIfNotPresent(customProperties, ParamConfig.DEFAULT_SERIALIZERS_MAP_PROP, serializersMap);
 
         CRestContext context = new DefaultCRestContext(restService, proxyFactory, configFactory, customProperties);
         return new DefaultCRest(context);
@@ -371,6 +375,19 @@ public class CRestBuilder {
      */
     public CRestBuilder addCustomProperty(String name, Object value) {
         customProperties.put(name, value);
+        return this;
+    }
+
+    /**
+     * Sets a custom serializer for the given type the resulting CRest instance will use to serialize method arguments.
+     * <p>The given type reflects the given Interface type, polymorphism is not considered.
+     * @param type Type to seralize
+     * @param serializer Serializer
+     * @return current builder
+     * @see CRestContext#getCustomProperties()
+     */
+    public CRestBuilder setSerializer(Type type, Serializer serializer) {
+        serializersMap.put(type, serializer);
         return this;
     }
 

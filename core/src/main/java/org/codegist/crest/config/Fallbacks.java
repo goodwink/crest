@@ -61,7 +61,7 @@ public final class Fallbacks {
         private FallbackSerializer() {
         }
 
-        public String serialize(ParamContext context) {
+        public String serialize(Object value) {
             return null;
         }
     }

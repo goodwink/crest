@@ -60,21 +60,21 @@ public class Stubs {
 
     public static class Serializer1 implements org.codegist.crest.serializer.Serializer {
         @Override
-        public String serialize(ParamContext context) {
+        public String serialize(Object value) {
             return null;
         }
     }
 
     public static class Serializer2 implements org.codegist.crest.serializer.Serializer {
         @Override
-        public String serialize(ParamContext context) {
+        public String serialize(Object value) {
             return null;
         }
     }
 
     public static class Serializer3 implements org.codegist.crest.serializer.Serializer {
         @Override
-        public String serialize(ParamContext context) {
+        public String serialize(Object value) {
             return null;
         }
     }

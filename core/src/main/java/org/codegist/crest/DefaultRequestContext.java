@@ -22,6 +22,7 @@ package org.codegist.crest;
 
 import org.codegist.crest.config.MethodConfig;
 import org.codegist.crest.config.ParamConfig;
+import org.codegist.crest.serializer.Serializer;
 
 import java.lang.reflect.Method;
 
@@ -52,12 +53,14 @@ class DefaultRequestContext extends DefaultInterfaceContext implements RequestCo
         return getMethodConfig().getParamConfig(index);
     }
 
-    public Object getArgValue(int index) {
+    public Object getRawValue(int index) {
         return args[index];
     }
 
-    public String getArgSerialized(int index) {
-        return getParamConfig(index).getSerializer().serialize(new DefaultParamContext(this, index));
+    public String getSerializedValue(int index) {
+        Object value = getRawValue(index);
+        Serializer serializer = getParamConfig(index).getSerializer();
+        return serializer.serialize(value);
     }
 
     public int getArgCount() {

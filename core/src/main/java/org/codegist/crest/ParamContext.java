@@ -40,9 +40,9 @@ public interface ParamContext<V> extends RequestContext {
 
     ParamConfig getParamConfig();
 
-    V getArgValue();
+    V getRawValue();
 
-    String getArgSerialized();
+    String getSerializedValue();
 
     /**
      * @return Index of the current method call argument

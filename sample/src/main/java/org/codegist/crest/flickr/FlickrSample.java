@@ -25,7 +25,10 @@ import org.codegist.crest.CRestBuilder;
 import org.codegist.crest.flickr.interceptor.FlickrAuthInterceptor;
 import org.codegist.crest.flickr.model.FlickrModelFactory;
 import org.codegist.crest.flickr.model.Gallery;
+import org.codegist.crest.flickr.serialize.FlickrBooleanSerializer;
 import org.codegist.crest.flickr.service.Flickr;
+import org.codegist.crest.serializer.ArraySerializer;
+import org.codegist.crest.serializer.DateSerializer;
 
 /**
  * @author Laurent Gilles (laurent.gilles@codegist.org)
@@ -40,6 +43,9 @@ public class FlickrSample {
         /* Get the factory */
         CRest crest = new CRestBuilder()
                 .expectsXml(FlickrModelFactory.class)
+                .setSerializer(boolean.class, new FlickrBooleanSerializer())
+                .addCustomProperty(DateSerializer.DATEFORMAT_TYPE_PROP, DateSerializer.FormatType.Millis)
+                .addCustomProperty(ArraySerializer.SEPARATOR_PROP, " ")
                 .addCustomProperty(FlickrAuthInterceptor.API_KEY_PROP, apiKey)
                 .addCustomProperty(FlickrAuthInterceptor.APP_SECRET_PROP, appSecret)
                 .addCustomProperty(FlickrAuthInterceptor.AUTH_TOKEN_PROP, authToken)

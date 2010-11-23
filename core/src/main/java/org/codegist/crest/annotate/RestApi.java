@@ -21,15 +21,11 @@
 package org.codegist.crest.annotate;
 
 import org.codegist.crest.*;
-import org.codegist.crest.config.Destination;
-import org.codegist.crest.config.InterfaceConfig;
-import org.codegist.crest.config.MethodConfig;
-import org.codegist.crest.config.ParamConfig;
+import org.codegist.crest.config.*;
 import org.codegist.crest.injector.DefaultRequestInjector;
 import org.codegist.crest.injector.RequestInjector;
 import org.codegist.crest.interceptor.EmptyRequestInterceptor;
 import org.codegist.crest.interceptor.RequestInterceptor;
-import org.codegist.crest.serializer.DefaultSerializer;
 import org.codegist.crest.serializer.Serializer;
 
 import java.lang.annotation.ElementType;
@@ -216,15 +212,15 @@ public @interface RestApi {
     /**
      * Param serializer fallback for all params
      * <p>Can be overridden by {@link org.codegist.crest.annotate.RestMethod#paramsSerializer()} or by {@link org.codegist.crest.annotate.RestParam#serializer()}.
-     * <p>Defaults to {@link org.codegist.crest.serializer.DefaultSerializer}.
-     *
+     * <p>If no serializer is specified, the system will automatically choose a serializer based on the argument type.
+     * <p>See {@link org.codegist.crest.serializer.Serializers#getFor(java.util.Map, java.lang.reflect.Type)} for the selection rules.
      * @return default param's serializer fallback
      * @see org.codegist.crest.serializer.Serializer
-     * @see org.codegist.crest.serializer.DefaultSerializer
+     * @see org.codegist.crest.serializer.Serializers
      * @see org.codegist.crest.annotate.RestMethod#paramsSerializer()
      * @see org.codegist.crest.annotate.RestParam#serializer()
      */
-    Class<? extends Serializer> paramsSerializer() default DefaultSerializer.class;
+    Class<? extends Serializer> paramsSerializer() default Fallbacks.FallbackSerializer.class;
 
     /**
      * Param injector fallback for all params, overrides the {@link org.codegist.crest.annotate.RestMethod#paramsInjector()} configuration.

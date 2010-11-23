@@ -36,7 +36,7 @@ import java.lang.annotation.Target;
  * // Interceptor for a single Class Type (loosing the generic argument will make it shareable accross different class type though.).
  * class MyCustomRequestInjector implements RequestInjector<MyValueObject> {
  *       public void inject(HttpRequest.Builder builder, ParamContext<MyValueObject> context) {
- *          MyValueObject myObject = context.getArgValue();
+ *          MyValueObject myObject = context.getRawValue();
  *          builder.addQueryParam("MyCustomParam1", myObject.getValue1());
  *          builder.addQueryParam("MyCustomParam2", myObject.getValue2());
  *          // anything else...

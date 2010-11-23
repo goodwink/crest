@@ -20,7 +20,13 @@ Going Deeper
 
 * Serializer
 
-    Parameter serialize can be used to serialize an object to a single String. One either use a Serializer or a Injector. Serializer are usefull when an argument value can be reduced to a single String, otherwise for more complex data type, Injectors are the way to go
+    Parameter serialize can be used to serialize an object to a single String. One either use a Serializer or a Injector. Serializer are usefull when an argument value can be reduced to a single String, otherwise for more complex data type, Injectors are the way to go.
+
+    The default serialization process serialize every objects/primitives using the String.valueOf() method, except for :
+
+        * Arrays/Collection: uses an ArraySerializer instance that serialize each array/collection item with its type relative serializer, to a string separated by the default separator, comma.
+
+        * java.util.Date: uses a DateSerializer instance that transform the date to milliseconds.
 
 * Injector
 

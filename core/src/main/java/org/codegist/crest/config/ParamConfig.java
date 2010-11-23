@@ -22,7 +22,6 @@ package org.codegist.crest.config;
 
 import org.codegist.crest.injector.DefaultRequestInjector;
 import org.codegist.crest.injector.RequestInjector;
-import org.codegist.crest.serializer.DefaultSerializer;
 import org.codegist.crest.serializer.Serializer;
 
 /**
@@ -83,11 +82,21 @@ public interface ParamConfig {
     String DEFAULT_SERIALIZER_PROP = ParamConfig.class.getName() + "#serializer";
 
     /**
+     * Use this parameter in the {@link org.codegist.crest.CRestContext#getCustomProperties()} to specify a type/serializer map to use for selection of serializer to apply for any given type (see {@link org.codegist.crest.serializer.Serializers#getFor(java.util.Map, java.lang.reflect.Type)})
+     * <p>Expects an instance of {@link java.util.Map}&lt;{@link java.lang.reflect.Type},{@link org.codegist.crest.serializer.Serializer}&gt;.
+     *
+     * @see ParamConfig#DEFAULT_SERIALIZER
+     * @see org.codegist.crest.serializer.Serializer
+     * @see org.codegist.crest.CRestContext#getCustomProperties()
+     */
+    String DEFAULT_SERIALIZERS_MAP_PROP = ParamConfig.class.getName() + "#serializers-map";
+
+    /**
      * Default serializer applied when non specified.
      *
      * @see org.codegist.crest.config.ParamConfig#getSerializer()
      */
-    Serializer DEFAULT_SERIALIZER = new DefaultSerializer();
+    Serializer DEFAULT_SERIALIZER = null;
 
     /**
      * Use this parameter in the {@link org.codegist.crest.CRestContext#getCustomProperties()} to override the default name {@link ParamConfig#DEFAULT_NAME}.
@@ -113,7 +122,6 @@ public interface ParamConfig {
      *
      * @return The serializer used to transform this argument value in a string
      * @see org.codegist.crest.serializer.Serializer
-     * @see org.codegist.crest.serializer.DefaultSerializer
      * @see org.codegist.crest.injector.RequestInjector
      */
     Serializer getSerializer();

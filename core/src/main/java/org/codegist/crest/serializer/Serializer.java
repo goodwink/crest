@@ -20,18 +20,21 @@
 
 package org.codegist.crest.serializer;
 
-import org.codegist.crest.ParamContext;
-
 /**
  * Parameter serialize can be used to serialize a object to a single String.
+ *
+ * @param <T> Optional parameter value type
+ * @see org.codegist.crest.serializer.Serializers
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
-public interface Serializer {
+public interface Serializer<T> {
+
     /**
      * Serialize the current arg context into a single string
      *
-     * @param context Context of the argument
+     * @param value argument value
      * @return serialized version of the argument
      */
-    String serialize(ParamContext context);
+    String serialize(T value);
+
 }

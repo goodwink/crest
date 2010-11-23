@@ -23,10 +23,11 @@ package org.codegist.crest.config;
 import org.codegist.crest.*;
 import org.codegist.crest.injector.RequestInjector;
 import org.codegist.crest.interceptor.RequestInterceptor;
-import org.codegist.crest.serializer.Serializer;
+import org.codegist.crest.serializer.*;
 import org.junit.Test;
 
 import java.lang.reflect.Method;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -102,6 +103,12 @@ public class ConfigBuildersTest {
                                             (Destination) defaultOverrides.get(DEFAULT_DESTINATION_PROP),
                                             (Serializer) defaultOverrides.get(DEFAULT_SERIALIZER_PROP),
                                             (RequestInjector) defaultOverrides.get(DEFAULT_INJECTOR_PROP)
+                                    ),
+                                    new DefaultParamConfig(
+                                            (String) defaultOverrides.get(DEFAULT_NAME_PROP),
+                                            (Destination) defaultOverrides.get(DEFAULT_DESTINATION_PROP),
+                                            (Serializer) defaultOverrides.get(DEFAULT_SERIALIZER_PROP),
+                                            (RequestInjector) defaultOverrides.get(DEFAULT_INJECTOR_PROP)
                                     )
                             }
                     ));
@@ -133,7 +140,7 @@ public class ConfigBuildersTest {
                                     new DefaultParamConfig(
                                             DEFAULT_NAME,
                                             DEFAULT_DESTINATION,
-                                            DEFAULT_SERIALIZER,
+                                            new ToStringSerializer(),
                                             DEFAULT_INJECTOR
                                     )
                             }
@@ -151,13 +158,19 @@ public class ConfigBuildersTest {
                                     new DefaultParamConfig(
                                             DEFAULT_NAME,
                                             DEFAULT_DESTINATION,
-                                            DEFAULT_SERIALIZER,
+                                            new ToStringSerializer(),
                                             DEFAULT_INJECTOR
                                     ),
                                     new DefaultParamConfig(
                                             DEFAULT_NAME,
                                             DEFAULT_DESTINATION,
-                                            DEFAULT_SERIALIZER,
+                                            new ArraySerializer(),
+                                            DEFAULT_INJECTOR
+                                    ),
+                                    new DefaultParamConfig(
+                                            DEFAULT_NAME,
+                                            DEFAULT_DESTINATION,
+                                            new DateSerializer(),
                                             DEFAULT_INJECTOR
                                     )
                             }
@@ -205,6 +218,12 @@ public class ConfigBuildersTest {
                             new Stubs.ResponseHandler2(),
                             new Stubs.ErrorHandler2(),
                             new ParamConfig[]{
+                                    new DefaultParamConfig(
+                                            "name",
+                                            Destination.BODY,
+                                            new Stubs.Serializer2(),
+                                            new Stubs.RequestParameterInjector2()
+                                    ),
                                     new DefaultParamConfig(
                                             "name",
                                             Destination.BODY,
@@ -274,6 +293,12 @@ public class ConfigBuildersTest {
                             new Stubs.ResponseHandler3(),
                             new Stubs.ErrorHandler3(),
                             new ParamConfig[]{
+                                    new DefaultParamConfig(
+                                            "name2",
+                                            Destination.URL,
+                                            new Stubs.Serializer3(),
+                                            new Stubs.RequestParameterInjector3()
+                                    ),
                                     new DefaultParamConfig(
                                             "name2",
                                             Destination.URL,
@@ -367,6 +392,12 @@ public class ConfigBuildersTest {
                                             Destination.URL,
                                             new Stubs.Serializer3(),
                                             new Stubs.RequestParameterInjector3()
+                                    ),
+                                    new DefaultParamConfig(
+                                            "name2",
+                                            Destination.URL,
+                                            new Stubs.Serializer3(),
+                                            new Stubs.RequestParameterInjector3()
                                     )
                             }
                     ));
@@ -434,6 +465,7 @@ public class ConfigBuildersTest {
                             null, null, null, null, null, null, null,
                             new ParamConfig[]{
                                     new DefaultParamConfig(null, null, null, null),
+                                    new DefaultParamConfig(null, null, null, null),
                                     new DefaultParamConfig(null, null, null, null)
                             }
                     ));
@@ -447,9 +479,9 @@ public class ConfigBuildersTest {
     public static interface Interface {
         void a(String a);
 
-        int b(String a, int b);
+        int b(String a, int[] b, Date date);
 
         Method A = TestUtils.getMethod(Interface.class, "a", String.class);
-        Method B = TestUtils.getMethod(Interface.class, "b", String.class, int.class);
+        Method B = TestUtils.getMethod(Interface.class, "b", String.class, int[].class, Date.class);
     }
 }

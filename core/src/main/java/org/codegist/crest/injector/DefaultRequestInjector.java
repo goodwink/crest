@@ -45,11 +45,11 @@ public class DefaultRequestInjector implements RequestInjector {
      */
     @Override
     public void inject(HttpRequest.Builder builder, ParamContext context) {
-        if (Params.isForUpload(context.getArgValue())) {
+        if (Params.isForUpload(context.getRawValue())) {
             // add it raw
-            builder.addBodyParam(context.getParamConfig().getName(), context.getArgValue());
+            builder.addBodyParam(context.getParamConfig().getName(), context.getRawValue());
         } else {
-            String paramValue = context.getArgSerialized();
+            String paramValue = context.getSerializedValue();
             if (Strings.isBlank(paramValue)) return;
 
             if (context.isForUrl()) {

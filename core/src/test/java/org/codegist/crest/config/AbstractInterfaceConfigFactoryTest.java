@@ -38,16 +38,13 @@ public abstract class AbstractInterfaceConfigFactoryTest {
 
     public void assertMinimalExpected(InterfaceConfig test, Class clazz) {
         InterfaceConfigTestHelper.assertExpected(MINIMAL_EXPECTED_CONFIG, test, clazz);
-        InterfaceConfigTestHelper.assertExpected(MINIMAL_EXPECTED_CONFIG, test, clazz);
     }
 
     public void assertPartialExpected(InterfaceConfig test, Class clazz) {
         InterfaceConfigTestHelper.assertExpected(PARTIAL_EXPECTED_CONFIG, test, clazz);
-        InterfaceConfigTestHelper.assertExpected(PARTIAL_EXPECTED_CONFIG, test, clazz);
     }
 
     public void assertFullExpected(InterfaceConfig test, Class clazz) {
-        InterfaceConfigTestHelper.assertExpected(FULLY_EXPECTED_CONFIG, test, clazz);
         InterfaceConfigTestHelper.assertExpected(FULLY_EXPECTED_CONFIG, test, clazz);
     }
 

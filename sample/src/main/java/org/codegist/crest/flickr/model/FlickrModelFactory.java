@@ -21,8 +21,6 @@
 package org.codegist.crest.flickr.model;
 
 import javax.xml.bind.annotation.XmlRegistry;
-import java.lang.*;
-import java.lang.Error;
 
 /**
  * @author Laurent Gilles (laurent.gilles@codegist.org)
@@ -41,7 +39,7 @@ public class FlickrModelFactory {
         return new PhotoId();
     }
 
-    public java.lang.Error createError() {
+    public Error createError() {
         return new Error();
     }
 

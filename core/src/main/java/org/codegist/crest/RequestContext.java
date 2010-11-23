@@ -37,9 +37,9 @@ public interface RequestContext extends InterfaceContext {
 
     ParamConfig getParamConfig(int index);
 
-    Object getArgValue(int index);
+    Object getRawValue(int index);
 
-    String getArgSerialized(int index);
+    String getSerializedValue(int index);
 
     int getArgCount();
 
