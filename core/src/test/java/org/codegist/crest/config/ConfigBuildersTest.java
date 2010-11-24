@@ -34,6 +34,7 @@ import java.util.Map;
 import static org.codegist.crest.config.InterfaceConfig.DEFAULT_ENCODING;
 import static org.codegist.crest.config.MethodConfig.*;
 import static org.codegist.crest.config.ParamConfig.*;
+import static org.codegist.crest.CRestProperty.*;
 
 /**
  * @author Laurent Gilles (laurent.gilles@codegist.org)
@@ -43,72 +44,72 @@ public class ConfigBuildersTest {
     @Test
     public void testDefaultOverrides() throws InstantiationException, IllegalAccessException {
         final Map<String, Object> defaultOverrides = new HashMap<String, Object>();
-        defaultOverrides.put(InterfaceConfig.DEFAULT_PATH_PROP, "/path");
-        defaultOverrides.put(InterfaceConfig.DEFAULT_ENCODING_PROP, "ISO-8859-1");
-        defaultOverrides.put(InterfaceConfig.DEFAULT_REQUEST_INTERCEPTOR_PROP, new Stubs.RequestInterceptor1());
-        defaultOverrides.put(DEFAULT_PATH_PROP, "/meth-path");
-        defaultOverrides.put(DEFAULT_REQUEST_INTERCEPTOR_PROP, new Stubs.RequestInterceptor2());
-        defaultOverrides.put(DEFAULT_SO_TIMEOUT_PROP, 120l);
-        defaultOverrides.put(DEFAULT_CO_TIMEOUT_PROP, 121l);
-        defaultOverrides.put(DEFAULT_ERROR_HANDLER_PROP, new Stubs.ErrorHandler1());
-        defaultOverrides.put(DEFAULT_HTTP_METHOD_PROP, HttpMethod.HEAD);
-        defaultOverrides.put(DEFAULT_RESPONSE_HANDLER_PROP, new Stubs.ResponseHandler1());
-        defaultOverrides.put(DEFAULT_DESTINATION_PROP, Destination.BODY);
-        defaultOverrides.put(DEFAULT_INJECTOR_PROP, new Stubs.RequestParameterInjector1());
-        defaultOverrides.put(DEFAULT_SERIALIZER_PROP, new Stubs.Serializer1());
-        defaultOverrides.put(DEFAULT_NAME_PROP, "name");
+        defaultOverrides.put(CONFIG_INTERFACE_DEFAULT_PATH, "/path");
+        defaultOverrides.put(CONFIG_INTERFACE_DEFAULT_ENCODING, "ISO-8859-1");
+        defaultOverrides.put(CONFIG_INTERFACE_DEFAULT_REQUEST_INTERCEPTOR, new Stubs.RequestInterceptor1());
+        defaultOverrides.put(CONFIG_METHOD_DEFAULT_PATH, "/meth-path");
+        defaultOverrides.put(CONFIG_METHOD_DEFAULT_REQUEST_INTERCEPTOR, new Stubs.RequestInterceptor2());
+        defaultOverrides.put(CONFIG_METHOD_DEFAULT_SO_TIMEOUT, 120l);
+        defaultOverrides.put(CONFIG_METHOD_DEFAULT_CO_TIMEOUT, 121l);
+        defaultOverrides.put(CONFIG_METHOD_DEFAULT_ERROR_HANDLER, new Stubs.ErrorHandler1());
+        defaultOverrides.put(CONFIG_METHOD_DEFAULT_HTTP_METHOD, HttpMethod.HEAD);
+        defaultOverrides.put(CONFIG_METHOD_DEFAULT_RESPONSE_HANDLER, new Stubs.ResponseHandler1());
+        defaultOverrides.put(CONFIG_PARAM_DEFAULT_DESTINATION, Destination.BODY);
+        defaultOverrides.put(CONFIG_PARAM_DEFAULT_INJECTOR, new Stubs.RequestParameterInjector1());
+        defaultOverrides.put(CONFIG_PARAM_DEFAULT_SERIALIZER, new Stubs.Serializer1());
+        defaultOverrides.put(CONFIG_PARAM_DEFAULT_NAME, "name");
         InterfaceConfig expected = new DefaultInterfaceConfig(
                 Interface.class,
                 "http://server:8080",
-                (String) defaultOverrides.get(InterfaceConfig.DEFAULT_PATH_PROP),
-                (String) defaultOverrides.get(InterfaceConfig.DEFAULT_ENCODING_PROP),
-                (RequestInterceptor) defaultOverrides.get(InterfaceConfig.DEFAULT_REQUEST_INTERCEPTOR_PROP),
+                (String) defaultOverrides.get(CONFIG_INTERFACE_DEFAULT_PATH),
+                (String) defaultOverrides.get(CONFIG_INTERFACE_DEFAULT_ENCODING),
+                (RequestInterceptor) defaultOverrides.get(CONFIG_INTERFACE_DEFAULT_REQUEST_INTERCEPTOR),
                 new HashMap<Method, MethodConfig>() {{
                     put(Interface.A, new DefaultMethodConfig(
                             Interface.A,
-                            (String) defaultOverrides.get(DEFAULT_PATH_PROP),
-                            (HttpMethod) defaultOverrides.get(DEFAULT_HTTP_METHOD_PROP),
-                            (Long) defaultOverrides.get(DEFAULT_SO_TIMEOUT_PROP),
-                            (Long) defaultOverrides.get(DEFAULT_CO_TIMEOUT_PROP),
-                            (RequestInterceptor) defaultOverrides.get(DEFAULT_REQUEST_INTERCEPTOR_PROP),
-                            (ResponseHandler) defaultOverrides.get(DEFAULT_RESPONSE_HANDLER_PROP),
-                            (ErrorHandler) defaultOverrides.get(DEFAULT_ERROR_HANDLER_PROP),
+                            (String) defaultOverrides.get(CONFIG_METHOD_DEFAULT_PATH),
+                            (HttpMethod) defaultOverrides.get(CONFIG_METHOD_DEFAULT_HTTP_METHOD),
+                            (Long) defaultOverrides.get(CONFIG_METHOD_DEFAULT_SO_TIMEOUT),
+                            (Long) defaultOverrides.get(CONFIG_METHOD_DEFAULT_CO_TIMEOUT),
+                            (RequestInterceptor) defaultOverrides.get(CONFIG_METHOD_DEFAULT_REQUEST_INTERCEPTOR),
+                            (ResponseHandler) defaultOverrides.get(CONFIG_METHOD_DEFAULT_RESPONSE_HANDLER),
+                            (ErrorHandler) defaultOverrides.get(CONFIG_METHOD_DEFAULT_ERROR_HANDLER),
                             new ParamConfig[]{
                                     new DefaultParamConfig(
-                                            (String) defaultOverrides.get(DEFAULT_NAME_PROP),
-                                            (Destination) defaultOverrides.get(DEFAULT_DESTINATION_PROP),
-                                            (Serializer) defaultOverrides.get(DEFAULT_SERIALIZER_PROP),
-                                            (RequestInjector) defaultOverrides.get(DEFAULT_INJECTOR_PROP)
+                                            (String) defaultOverrides.get(CONFIG_PARAM_DEFAULT_NAME),
+                                            (Destination) defaultOverrides.get(CONFIG_PARAM_DEFAULT_DESTINATION),
+                                            (Serializer) defaultOverrides.get(CONFIG_PARAM_DEFAULT_SERIALIZER),
+                                            (RequestInjector) defaultOverrides.get(CONFIG_PARAM_DEFAULT_INJECTOR)
                                     )
                             }
                     ));
                     put(Interface.B, new DefaultMethodConfig(
                             Interface.B,
-                            (String) defaultOverrides.get(DEFAULT_PATH_PROP),
-                            (HttpMethod) defaultOverrides.get(DEFAULT_HTTP_METHOD_PROP),
-                            (Long) defaultOverrides.get(DEFAULT_SO_TIMEOUT_PROP),
-                            (Long) defaultOverrides.get(DEFAULT_CO_TIMEOUT_PROP),
-                            (RequestInterceptor) defaultOverrides.get(DEFAULT_REQUEST_INTERCEPTOR_PROP),
-                            (ResponseHandler) defaultOverrides.get(DEFAULT_RESPONSE_HANDLER_PROP),
-                            (ErrorHandler) defaultOverrides.get(DEFAULT_ERROR_HANDLER_PROP),
+                            (String) defaultOverrides.get(CONFIG_METHOD_DEFAULT_PATH),
+                            (HttpMethod) defaultOverrides.get(CONFIG_METHOD_DEFAULT_HTTP_METHOD),
+                            (Long) defaultOverrides.get(CONFIG_METHOD_DEFAULT_SO_TIMEOUT),
+                            (Long) defaultOverrides.get(CONFIG_METHOD_DEFAULT_CO_TIMEOUT),
+                            (RequestInterceptor) defaultOverrides.get(CONFIG_METHOD_DEFAULT_REQUEST_INTERCEPTOR),
+                            (ResponseHandler) defaultOverrides.get(CONFIG_METHOD_DEFAULT_RESPONSE_HANDLER),
+                            (ErrorHandler) defaultOverrides.get(CONFIG_METHOD_DEFAULT_ERROR_HANDLER),
                             new ParamConfig[]{
                                     new DefaultParamConfig(
-                                            (String) defaultOverrides.get(DEFAULT_NAME_PROP),
-                                            (Destination) defaultOverrides.get(DEFAULT_DESTINATION_PROP),
-                                            (Serializer) defaultOverrides.get(DEFAULT_SERIALIZER_PROP),
-                                            (RequestInjector) defaultOverrides.get(DEFAULT_INJECTOR_PROP)
+                                            (String) defaultOverrides.get(CONFIG_PARAM_DEFAULT_NAME),
+                                            (Destination) defaultOverrides.get(CONFIG_PARAM_DEFAULT_DESTINATION),
+                                            (Serializer) defaultOverrides.get(CONFIG_PARAM_DEFAULT_SERIALIZER),
+                                            (RequestInjector) defaultOverrides.get(CONFIG_PARAM_DEFAULT_INJECTOR)
                                     ),
                                     new DefaultParamConfig(
-                                            (String) defaultOverrides.get(DEFAULT_NAME_PROP),
-                                            (Destination) defaultOverrides.get(DEFAULT_DESTINATION_PROP),
-                                            (Serializer) defaultOverrides.get(DEFAULT_SERIALIZER_PROP),
-                                            (RequestInjector) defaultOverrides.get(DEFAULT_INJECTOR_PROP)
+                                            (String) defaultOverrides.get(CONFIG_PARAM_DEFAULT_NAME),
+                                            (Destination) defaultOverrides.get(CONFIG_PARAM_DEFAULT_DESTINATION),
+                                            (Serializer) defaultOverrides.get(CONFIG_PARAM_DEFAULT_SERIALIZER),
+                                            (RequestInjector) defaultOverrides.get(CONFIG_PARAM_DEFAULT_INJECTOR)
                                     ),
                                     new DefaultParamConfig(
-                                            (String) defaultOverrides.get(DEFAULT_NAME_PROP),
-                                            (Destination) defaultOverrides.get(DEFAULT_DESTINATION_PROP),
-                                            (Serializer) defaultOverrides.get(DEFAULT_SERIALIZER_PROP),
-                                            (RequestInjector) defaultOverrides.get(DEFAULT_INJECTOR_PROP)
+                                            (String) defaultOverrides.get(CONFIG_PARAM_DEFAULT_NAME),
+                                            (Destination) defaultOverrides.get(CONFIG_PARAM_DEFAULT_DESTINATION),
+                                            (Serializer) defaultOverrides.get(CONFIG_PARAM_DEFAULT_SERIALIZER),
+                                            (RequestInjector) defaultOverrides.get(CONFIG_PARAM_DEFAULT_INJECTOR)
                                     )
                             }
                     ));

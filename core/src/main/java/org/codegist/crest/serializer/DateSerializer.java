@@ -29,34 +29,26 @@ import java.util.Date;
  */
 public class DateSerializer implements Serializer<Date> {
 
-    /**
-     * Use this parameter in the {@link org.codegist.crest.CRestContext#getCustomProperties()} to format the date with the given date format.
-     * <p>Expects a date format string.
-     */
-    public static final String DATEFORMAT_PROP = DateSerializer.class.getName() + "#date-format";
-
-    /**
-     * Use this parameter in the {@link org.codegist.crest.CRestContext#getCustomProperties()} to format the date as a time unit from January 1, 1970, 00:00:00 GMT to this date.
-     * <p>Expects a enum from {@link org.codegist.crest.serializer.DateSerializer.FormatType}.
-     */
-    public static final String DATEFORMAT_TYPE_PROP = DateSerializer.class.getName() + "#format";
+    public static final String DEFAULT_DATEFORMAT = "yyyy-MM-dd'T'HH:mm:ssz";
 
     private final DateFormat formatter;
     private final FormatType formatType;
 
     public DateSerializer() {
-        this(FormatType.Millis);
-    }
-    public DateSerializer(FormatType type) {
-        this.formatter = null;
-        this.formatType = type;
+        this(DEFAULT_DATEFORMAT);
     }
     public DateSerializer(String dateFormat) {
-        this(new SimpleDateFormat(dateFormat));
-    }
-    public DateSerializer(DateFormat formatter) {
+        DateFormat formatter;
+        FormatType formatType;
+        try {
+            formatType = FormatType.valueOf(dateFormat);
+            formatter = null;
+        } catch (IllegalArgumentException e) {
+            formatType = null;
+            formatter = new SimpleDateFormat(dateFormat);
+        }
         this.formatter = formatter;
-        this.formatType = null;
+        this.formatType = formatType;
     }
 
     public String serialize(Date value) {
@@ -71,7 +63,7 @@ public class DateSerializer implements Serializer<Date> {
     }
 
 
-    public enum FormatType {
+    private enum FormatType {
         Millis(1),
         Second(1000),
         Minutes(1000*60),

@@ -24,6 +24,7 @@ import org.codegist.common.codec.Base64;
 import org.codegist.crest.HttpRequest;
 import org.codegist.crest.Params;
 import org.codegist.crest.RequestContext;
+import static org.codegist.crest.CRestProperty.*;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -37,18 +38,19 @@ import java.util.*;
 /**
  * Simple OAuth interceptor, required a valid pregenerated access token. Only support HMAC-SHA1 signature method.
  * <p>Can be configured either be constructor parameters, or indirectly via {@link org.codegist.crest.RequestContext#getCustomProperties()} with the following key :
- * <p>OAuthInterceptor.{@link OAuthInterceptor#OAUTH_PARAM_DEST_PROP}
- * <p>OAuthInterceptor.{@link OAuthInterceptor#CONSUMER_SECRET_PROP}
- * <p>OAuthInterceptor.{@link OAuthInterceptor#CONSUMER_KEY_PROP}
- * <p>OAuthInterceptor.{@link OAuthInterceptor#ACCESS_TOKEN_SECRET_PROP}
- * <p>OAuthInterceptor.{@link OAuthInterceptor#ACCESS_TOKEN_PROP}
+ * <p>OAuthInterceptor.{@link org.codegist.crest.CRestProperty#INTERCEPTOR_OAUTH_PARAM_DEST}
+ * <p>OAuthInterceptor.{@link org.codegist.crest.CRestProperty#INTERCEPTOR_OAUTH_ACCESS_TOKEN}
+ * <p>OAuthInterceptor.{@link org.codegist.crest.CRestProperty#INTERCEPTOR_OAUTH_ACCESS_TOKEN_SECRET}
+ * <p>OAuthInterceptor.{@link org.codegist.crest.CRestProperty#INTERCEPTOR_OAUTH_CONSUMER_KEY}
+ * <p>OAuthInterceptor.{@link org.codegist.crest.CRestProperty#INTERCEPTOR_OAUTH_CONSUMER_SECRET}
  *
  * @see org.codegist.crest.RequestContext
- * @see OAuthInterceptor#OAUTH_PARAM_DEST_PROP
- * @see OAuthInterceptor#CONSUMER_SECRET_PROP
- * @see OAuthInterceptor#ACCESS_TOKEN_SECRET_PROP
- * @see OAuthInterceptor#ACCESS_TOKEN_PROP
- * @see org.codegist.crest.CRestContext#getCustomProperties()
+ * @see org.codegist.crest.CRestProperty#INTERCEPTOR_OAUTH_PARAM_DEST
+ * @see org.codegist.crest.CRestProperty#INTERCEPTOR_OAUTH_ACCESS_TOKEN
+ * @see org.codegist.crest.CRestProperty#INTERCEPTOR_OAUTH_ACCESS_TOKEN_SECRET
+ * @see org.codegist.crest.CRestProperty#INTERCEPTOR_OAUTH_CONSUMER_KEY
+ * @see org.codegist.crest.CRestProperty#INTERCEPTOR_OAUTH_CONSUMER_SECRET
+ * @see org.codegist.crest.CRestContext#getProperties()
  * @see org.codegist.crest.DefaultCRest#DefaultCRest(org.codegist.crest.CRestContext)
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
@@ -57,47 +59,6 @@ public class OAuthInterceptor extends RequestInterceptorAdapter {
     private final static String SIGN_METH = "HMAC-SHA1";
     private final static String SIGN_METH_4_J = "HmacSHA1";
     private final static Random RDM = new SecureRandom();
-
-    /**
-     * Use this parameter in the {@link org.codegist.crest.CRestContext#getCustomProperties()} to specify where should the authentification parameter be added in the request, either in the URL or in the headers.
-     * <p>Expects a value of type {@link OAuthParamDest}.
-     *
-     * @see OAuthParamDest
-     * @see org.codegist.crest.CRestContext#getCustomProperties()
-     */
-    public static final String OAUTH_PARAM_DEST_PROP = OAuthInterceptor.class.getName() + "#oauth.param.dest";
-
-    /**
-     * Use this parameter in the {@link org.codegist.crest.RequestContext#getCustomProperties()} to specify the preconfigured consumer secret.
-     * <p>Expects a string.
-     *
-     * @see org.codegist.crest.CRestContext#getCustomProperties()
-     */
-    public static final String CONSUMER_SECRET_PROP = OAuthInterceptor.class.getName() + "#consumer.secret";
-
-    /**
-     * Use this parameter in the {@link org.codegist.crest.RequestContext#getCustomProperties()} to specify the preconfigured consumer key.
-     * <p>Expects a string value.
-     *
-     * @see org.codegist.crest.CRestContext#getCustomProperties()
-     */
-    public static final String CONSUMER_KEY_PROP = OAuthInterceptor.class.getName() + "#consumer.key";
-
-    /**
-     * Use this parameter in the {@link org.codegist.crest.RequestContext#getCustomProperties()} to specify the preconfigured access token key.
-     * <p>Expects a string.
-     *
-     * @see org.codegist.crest.CRestContext#getCustomProperties()
-     */
-    public static final String ACCESS_TOKEN_PROP = OAuthInterceptor.class.getName() + "#access.token.key";
-
-    /**
-     * Use this parameter in the {@link org.codegist.crest.RequestContext#getCustomProperties()} to specify the preconfigured access token secret.
-     * <p>Expects a string.
-     *
-     * @see org.codegist.crest.CRestContext#getCustomProperties()
-     */
-    public static final String ACCESS_TOKEN_SECRET_PROP = OAuthInterceptor.class.getName() + "#access.token.secret";
 
     public static enum OAuthParamDest {
         URL, HEADERS
@@ -140,23 +101,23 @@ public class OAuthInterceptor extends RequestInterceptorAdapter {
 
     private OAuthToken getAccessToken(RequestContext context) {
         if (accessToken != null) return accessToken;  // No need for more synchronization, can be done twice, better than synchronizing for every requests.
-        if (!context.getCustomProperties().containsKey(ACCESS_TOKEN_PROP)) {
-            throw new IllegalStateException("No default access token key set for interceptor. Please either construct the interceptor with the access token key, or pass it into the context (key=" + ACCESS_TOKEN_PROP + ")");
-        } else if (!context.getCustomProperties().containsKey(ACCESS_TOKEN_SECRET_PROP)) {
-            throw new IllegalStateException("No default access token secret set for interceptor. Please either construct the interceptor with the access token secret, or pass it into the context (key=" + ACCESS_TOKEN_SECRET_PROP + ")");
-        } else if (!context.getCustomProperties().containsKey(CONSUMER_KEY_PROP)) {
-            throw new IllegalStateException("No default consumer key set for interceptor. Please either construct the interceptor with the consumer key, or pass the consumer key into the context (key=" + CONSUMER_KEY_PROP + ")");
-        } else if (!context.getCustomProperties().containsKey(CONSUMER_SECRET_PROP)) {
-            throw new IllegalStateException("No default consumer secret set for intecteptor. Please either construct the interceptor passing consumer and access secrect/token, or pass customer properties in the context (key=" + CONSUMER_SECRET_PROP + ")");
+        if (!context.getCustomProperties().containsKey(INTERCEPTOR_OAUTH_ACCESS_TOKEN)) {
+            throw new IllegalStateException("No default access token key set for interceptor. Please either construct the interceptor with the access token key, or pass it into the context (key=" + INTERCEPTOR_OAUTH_ACCESS_TOKEN + ")");
+        } else if (!context.getCustomProperties().containsKey(INTERCEPTOR_OAUTH_ACCESS_TOKEN_SECRET)) {
+            throw new IllegalStateException("No default access token secret set for interceptor. Please either construct the interceptor with the access token secret, or pass it into the context (key=" + INTERCEPTOR_OAUTH_ACCESS_TOKEN_SECRET + ")");
+        } else if (!context.getCustomProperties().containsKey(INTERCEPTOR_OAUTH_CONSUMER_KEY)) {
+            throw new IllegalStateException("No default consumer key set for interceptor. Please either construct the interceptor with the consumer key, or pass the consumer key into the context (key=" + INTERCEPTOR_OAUTH_CONSUMER_KEY + ")");
+        } else if (!context.getCustomProperties().containsKey(INTERCEPTOR_OAUTH_CONSUMER_SECRET)) {
+            throw new IllegalStateException("No default consumer secret set for intecteptor. Please either construct the interceptor passing consumer and access secrect/token, or pass customer properties in the context (key=" + INTERCEPTOR_OAUTH_CONSUMER_SECRET + ")");
         }
-        OAuthParamDest dest = (OAuthParamDest) context.getCustomProperties().get(OAUTH_PARAM_DEST_PROP);
+        String dest = context.getCustomProperty(INTERCEPTOR_OAUTH_PARAM_DEST);
         return accessToken = new OAuthToken(
-                (String) context.getCustomProperties().get(ACCESS_TOKEN_PROP),
-                (String) context.getCustomProperties().get(ACCESS_TOKEN_SECRET_PROP),
-                (String) context.getCustomProperties().get(CONSUMER_KEY_PROP),
-                (String) context.getCustomProperties().get(CONSUMER_SECRET_PROP),
+                (String) context.getCustomProperties().get(INTERCEPTOR_OAUTH_ACCESS_TOKEN),
+                (String) context.getCustomProperties().get(INTERCEPTOR_OAUTH_ACCESS_TOKEN_SECRET),
+                (String) context.getCustomProperties().get(INTERCEPTOR_OAUTH_CONSUMER_KEY),
+                (String) context.getCustomProperties().get(INTERCEPTOR_OAUTH_CONSUMER_SECRET),
                 SIGN_METH_4_J,
-                dest != null ? dest : OAuthParamDest.HEADERS
+                dest != null ? OAuthParamDest.valueOf(dest) : OAuthParamDest.HEADERS
         );
     }
 

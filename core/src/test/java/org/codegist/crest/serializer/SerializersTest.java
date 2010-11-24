@@ -21,7 +21,8 @@
 package org.codegist.crest.serializer;
 
 import org.codegist.common.reflect.Types;
-import org.codegist.crest.config.ParamConfig;
+
+import static org.codegist.crest.CRestProperty.*;
 import org.junit.Test;
 
 import java.lang.reflect.Type;
@@ -32,15 +33,15 @@ import static org.junit.Assert.assertEquals;
 public class SerializersTest {
 
     @Test
-    public void testDateSerilization(){
+    public void testDateSerialization(){
         Serializer datesSerializer = Serializers.getFor(null, Date[].class);
         Serializer dateSerializer = Serializers.getFor(null, Date.class);
-        assertEquals("1290522494365", dateSerializer.serialize(new Date(1290522494365l)));
-        assertEquals("1290522494365,1291522494365", datesSerializer.serialize(new Date[]{new Date(1290522494365l),new Date(1291522494365l)}));
+        assertEquals("2010-11-23T14:28:14GMT", dateSerializer.serialize(new Date(1290522494365l)));
+        assertEquals("2010-11-23T14:28:14GMT,2010-12-05T04:14:54GMT", datesSerializer.serialize(new Date[]{new Date(1290522494365l),new Date(1291522494365l)}));
 
         Map<String,Object> customProperties = new HashMap<String, Object>(){{
-            put(ArraySerializer.SEPARATOR_PROP, "-");
-            put(DateSerializer.DATEFORMAT_PROP, "dd/yyyy/MM");
+            put(SERIALIZER_LIST_SEPARATOR, "-");
+            put(SERIALIZER_DATE_FORMAT, "dd/yyyy/MM");
         }};
         datesSerializer = Serializers.getFor(customProperties, Date[].class);
         dateSerializer = Serializers.getFor(customProperties, Date.class);
@@ -48,8 +49,8 @@ public class SerializersTest {
         assertEquals("23/2010/11-05/2010/12", datesSerializer.serialize(new Date[]{new Date(1290522494365l),new Date(1291522494365l)}));
 
         customProperties = new HashMap<String, Object>(){{
-            put(ArraySerializer.SEPARATOR_PROP, "-");
-            put(DateSerializer.DATEFORMAT_TYPE_PROP, DateSerializer.FormatType.Second);
+            put(SERIALIZER_LIST_SEPARATOR, "-");
+            put(SERIALIZER_DATE_FORMAT, "Second");
         }};
         datesSerializer = Serializers.getFor(customProperties, Date[].class);
         dateSerializer = Serializers.getFor(customProperties, Date.class);
@@ -57,10 +58,10 @@ public class SerializersTest {
         assertEquals("1290522494-1291522494", datesSerializer.serialize(new Date[]{new Date(1290522494365l),new Date(1291522494365l)}));
     }
     @Test
-    public void testSerilization(){
+    public void testSerialization(){
         Map<String,Object> customProperties = new HashMap<String, Object>(){{
-            put(ArraySerializer.SEPARATOR_PROP, "-");
-            put(ParamConfig.DEFAULT_SERIALIZERS_MAP_PROP, new HashMap<Type, Serializer>() {{
+            put(SERIALIZER_LIST_SEPARATOR, "-");
+            put(SERIALIZER_CUSTOM_SERIALIZER_MAP, new HashMap<Type, Serializer>() {{
                 put(int.class, new IntSerializer());
                 put(boolean.class, new BooleanSerializer());
             }});
@@ -78,9 +79,9 @@ public class SerializersTest {
     }
 
     @Test
-    public void testSerilization1(){
+    public void testSerialization1(){
         Map<String,Object> customProperties = new HashMap<String, Object>(){{
-            put(ArraySerializer.SEPARATOR_PROP, "-");
+            put(SERIALIZER_LIST_SEPARATOR, "-");
         }};
         Serializer serializer = Serializers.getFor(customProperties, int[].class);
         assertEquals("1-2-3-4", serializer.serialize(new int[]{1,2,3,4}));
@@ -93,10 +94,10 @@ public class SerializersTest {
     }
 
     @Test
-    public void testSerilization2(){
+    public void testSerialization2(){
         Map<String,Object> customProperties = new HashMap<String, Object>(){{
-            put(ArraySerializer.SEPARATOR_PROP, "-");
-            put(ParamConfig.DEFAULT_SERIALIZERS_MAP_PROP, new HashMap<Type, Serializer>() {{
+            put(SERIALIZER_LIST_SEPARATOR, "-");
+            put(SERIALIZER_CUSTOM_SERIALIZER_MAP, new HashMap<Type, Serializer>() {{
                 put(int.class, new IntSerializer());
             }});
         }};
@@ -108,10 +109,10 @@ public class SerializersTest {
     }
 
     @Test
-    public void testSerilization3(){
+    public void testSerialization3(){
         Map<String,Object> customProperties = new HashMap<String, Object>(){{
-            put(ArraySerializer.SEPARATOR_PROP, "-");
-            put(ParamConfig.DEFAULT_SERIALIZERS_MAP_PROP, new HashMap<Type, Serializer>() {{
+            put(SERIALIZER_LIST_SEPARATOR, "-");
+            put(SERIALIZER_CUSTOM_SERIALIZER_MAP, new HashMap<Type, Serializer>() {{
                 put(Integer.class, new IntSerializer());
             }});
         }};
@@ -122,7 +123,7 @@ public class SerializersTest {
     }
 
     @Test
-    public void testSerilization4(){
+    public void testSerialization4(){
         Serializer serializer = Serializers.getFor(null, Types.newType(List.class, Integer.class));
         assertEquals("1,2,3,4", serializer.serialize(new int[]{1,2,3,4}));
         assertEquals("1,2,3,4", serializer.serialize(new Integer[]{1,2,3,4}));
@@ -130,10 +131,10 @@ public class SerializersTest {
     }
 
     @Test
-    public void testSerilization5(){
+    public void testSerialization5(){
         Map<String,Object> customProperties = new HashMap<String, Object>(){{
-            put(ArraySerializer.SEPARATOR_PROP, "-");
-            put(ParamConfig.DEFAULT_SERIALIZERS_MAP_PROP, new HashMap<Type, Serializer>() {{
+            put(SERIALIZER_LIST_SEPARATOR, "-");
+            put(SERIALIZER_CUSTOM_SERIALIZER_MAP, new HashMap<Type, Serializer>() {{
                 put(Integer.class, new IntSerializer());
             }});
         }};
@@ -144,10 +145,10 @@ public class SerializersTest {
     }
 
     @Test
-    public void testSerilization6(){
+    public void testSerialization6(){
         Map<String,Object> customProperties = new HashMap<String, Object>(){{
-            put(ArraySerializer.SEPARATOR_PROP, "-");
-            put(ParamConfig.DEFAULT_SERIALIZERS_MAP_PROP, new HashMap<Type, Serializer>() {{
+            put(SERIALIZER_LIST_SEPARATOR, "-");
+            put(SERIALIZER_CUSTOM_SERIALIZER_MAP, new HashMap<Type, Serializer>() {{
                 put(Integer.class, new IntSerializer());
             }});
         }};
@@ -175,8 +176,8 @@ public class SerializersTest {
     public void testSerializerArray2() {
 
         Map<String,Object> customProperties = new HashMap<String, Object>(){{
-            put(ArraySerializer.SEPARATOR_PROP, "-");
-            put(ParamConfig.DEFAULT_SERIALIZERS_MAP_PROP, new HashMap<Type, Serializer>() {{
+            put(SERIALIZER_LIST_SEPARATOR, "-");
+            put(SERIALIZER_CUSTOM_SERIALIZER_MAP, new HashMap<Type, Serializer>() {{
                 put(int.class, new IntSerializer());
             }});
         }};
@@ -190,8 +191,8 @@ public class SerializersTest {
     public void testSerializerArray3() {
 
         Map<String,Object> customProperties = new HashMap<String, Object>(){{
-            put(ArraySerializer.SEPARATOR_PROP, "-");
-            put(ParamConfig.DEFAULT_SERIALIZERS_MAP_PROP, new HashMap<Type, Serializer>() {{
+            put(SERIALIZER_LIST_SEPARATOR, "-");
+            put(SERIALIZER_CUSTOM_SERIALIZER_MAP, new HashMap<Type, Serializer>() {{
                 put(int.class, new IntSerializer());
             }});
         }};
@@ -205,8 +206,8 @@ public class SerializersTest {
     public void testSerializerArray4() {
 
         Map<String,Object> customProperties = new HashMap<String, Object>(){{
-            put(ArraySerializer.SEPARATOR_PROP, "-");
-            put(ParamConfig.DEFAULT_SERIALIZERS_MAP_PROP, new HashMap<Type, Serializer>() {{
+            put(SERIALIZER_LIST_SEPARATOR, "-");
+            put(SERIALIZER_CUSTOM_SERIALIZER_MAP, new HashMap<Type, Serializer>() {{
                 put(int.class, new IntSerializer());
                 put(int[].class, new ArraySerializer());
             }});
@@ -222,7 +223,7 @@ public class SerializersTest {
     public void testSerializerList1() {
 
         Map<String,Object> customProperties = new HashMap<String, Object>(){{
-            put(ArraySerializer.SEPARATOR_PROP, "-");
+            put(SERIALIZER_LIST_SEPARATOR, "-");
         }};
         Serializer serializer = Serializers.getFor(customProperties, Types.newType(List.class, Object.class));
         assertEquals(ArraySerializer.class, serializer.getClass());
@@ -233,8 +234,8 @@ public class SerializersTest {
     @Test
     public void testSerializerList2() {
         Map<String,Object> customProperties = new HashMap<String, Object>(){{
-            put(ArraySerializer.SEPARATOR_PROP, "-");
-            put(ParamConfig.DEFAULT_SERIALIZERS_MAP_PROP, new HashMap<Type, Serializer>() {{
+            put(SERIALIZER_LIST_SEPARATOR, "-");
+            put(SERIALIZER_CUSTOM_SERIALIZER_MAP, new HashMap<Type, Serializer>() {{
                 put(Integer.class, new IntSerializer());
             }});
         }};
@@ -247,8 +248,8 @@ public class SerializersTest {
     @Test
     public void testSerializerList3() {
         Map<String,Object> customProperties = new HashMap<String, Object>(){{
-            put(ArraySerializer.SEPARATOR_PROP, "-");
-            put(ParamConfig.DEFAULT_SERIALIZERS_MAP_PROP, new HashMap<Type, Serializer>() {{
+            put(SERIALIZER_LIST_SEPARATOR, "-");
+            put(SERIALIZER_CUSTOM_SERIALIZER_MAP, new HashMap<Type, Serializer>() {{
                 put(Integer.class, new IntSerializer());
             }});
         }};
@@ -261,8 +262,8 @@ public class SerializersTest {
     @Test
     public void testSerializerList4() {
         Map<String,Object> customProperties = new HashMap<String, Object>(){{
-            put(ArraySerializer.SEPARATOR_PROP, "-");
-            put(ParamConfig.DEFAULT_SERIALIZERS_MAP_PROP, new HashMap<Type, Serializer>() {{
+            put(SERIALIZER_LIST_SEPARATOR, "-");
+            put(SERIALIZER_CUSTOM_SERIALIZER_MAP, new HashMap<Type, Serializer>() {{
                 put(Integer.class, new IntSerializer());
                 put(Types.newType(List.class, Integer.class), new ArraySerializer());
             }});

@@ -210,7 +210,7 @@ public class CRestBuilder {
         customProperties = Maps.defaultsIfNull(customProperties);
         Maps.putIfNotPresent(customProperties, Marshaller.class.getName(), marshaller);
         Maps.putIfNotPresent(customProperties, Unmarshaller.class.getName(), unmarshaller);
-        Maps.putIfNotPresent(customProperties, ParamConfig.DEFAULT_SERIALIZERS_MAP_PROP, serializersMap);
+        Maps.putIfNotPresent(customProperties, CRestProperty.SERIALIZER_CUSTOM_SERIALIZER_MAP, serializersMap);
 
         CRestContext context = new DefaultCRestContext(restService, proxyFactory, configFactory, customProperties);
         return new DefaultCRest(context);
@@ -371,9 +371,9 @@ public class CRestBuilder {
      * @param name  property key
      * @param value property value
      * @return current builder
-     * @see CRestContext#getCustomProperties()
+     * @see CRestContext#getProperties()
      */
-    public CRestBuilder addCustomProperty(String name, Object value) {
+    public CRestBuilder addProperty(String name, Object value) {
         customProperties.put(name, value);
         return this;
     }
@@ -384,7 +384,7 @@ public class CRestBuilder {
      * @param type Type to seralize
      * @param serializer Serializer
      * @return current builder
-     * @see CRestContext#getCustomProperties()
+     * @see CRestContext#getProperties()
      */
     public CRestBuilder setSerializer(Type type, Serializer serializer) {
         serializersMap.put(type, serializer);
@@ -396,9 +396,9 @@ public class CRestBuilder {
      *
      * @param customProperties properties map
      * @return current builder
-     * @see CRestContext#getCustomProperties()
+     * @see CRestContext#getProperties()
      */
-    public CRestBuilder addCustomProperties(Map<String, Object> customProperties) {
+    public CRestBuilder addProperties(Map<String, Object> customProperties) {
         this.customProperties.putAll(customProperties);
         return this;
     }
@@ -408,9 +408,9 @@ public class CRestBuilder {
      *
      * @param customProperties properties map
      * @return current builder
-     * @see CRestContext#getCustomProperties()
+     * @see CRestContext#getProperties()
      */
-    public CRestBuilder setCustomProperties(Map<String, Object> customProperties) {
+    public CRestBuilder setProperties(Map<String, Object> customProperties) {
         this.customProperties = customProperties;
         return this;
     }

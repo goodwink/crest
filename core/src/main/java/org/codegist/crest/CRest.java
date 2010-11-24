@@ -21,18 +21,20 @@
 package org.codegist.crest;
 
 /**
- * CRest main interface.
- *
+ * CRest rest-bounded instances behave as follow :
+ * <p>- methods with a java.io.InputStream or java.io.Reader return type are always considered as expecting the raw server response. Server InputStream/Reader is then return. It is of the responsability of the client to properly call close() on the given Stream in order to free network resources.
+ * <p>- otherwise response is auto-marshalled to the method's return type.
+ * <p>- method's arguments are serialized as follow for the normal default case :
+ * <p>&nbsp;&nbsp;. Objects and primitives types are being serialized using the String.valueOf() method
+ * <p>&nbsp;&nbsp;. Primitive Arrays/Object Arrays/Collections are serialized by calling String.valueOf() for each item and joining the result in a comma separated string.
+ * <p>&nbsp;&nbsp;. java.util.Date are serialized to the ISO-8601 date format
  * @see CRest#build(Class)
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
 public interface CRest {
 
     /**
-     * Returns an instance of the given interface where all methods point to a REST service.
-     * <p>Returned interface instances will behave as follow :
-     * <p>- methods with a java.io.InputStream or java.io.Reader return type are always considered as expecting the raw server response. Server InputStream/Reader is then return. It is of the responsability of the client to properly call close() on the given Stream in order to free network resources.
-     * <p>- for all other methods, response handling is delegated to the preconfigured response handler.
+     * Build rest-bounded instances of the given interface
      *
      * @param interfaze Interface class to get the instance from
      * @param <T>       Interface class to get the instance from

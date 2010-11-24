@@ -40,27 +40,27 @@ public class DateSerializerTest {
     }
     @Test
     public void testDateFormatMillis(){
-        DateSerializer serializer = new DateSerializer(DateSerializer.FormatType.Millis);
+        DateSerializer serializer = new DateSerializer("Millis");
         assertEquals("1290524180273", serializer.serialize(new Date(1290524180273l)));
     }
     @Test
     public void testDateFormatSeconds(){
-        DateSerializer serializer = new DateSerializer(DateSerializer.FormatType.Second);
+        DateSerializer serializer = new DateSerializer("Second");
         assertEquals("1290524180", serializer.serialize(new Date(1290524180273l)));
     }
     @Test
     public void testDateFormatMinutes(){
-        DateSerializer serializer = new DateSerializer(DateSerializer.FormatType.Minutes);
+        DateSerializer serializer = new DateSerializer("Minutes");
         assertEquals("21508736", serializer.serialize(new Date(1290524180273l)));
     }
     @Test
     public void testDateFormatHours(){
-        DateSerializer serializer = new DateSerializer(DateSerializer.FormatType.Hours);
+        DateSerializer serializer = new DateSerializer("Hours");
         assertEquals("358478", serializer.serialize(new Date(1290524180273l)));
     }
     @Test
     public void testDateFormatDays(){
-        DateSerializer serializer = new DateSerializer(DateSerializer.FormatType.Days);
+        DateSerializer serializer = new DateSerializer("Days");
         assertEquals("14936", serializer.serialize(new Date(1290524180273l)));
     }
 }

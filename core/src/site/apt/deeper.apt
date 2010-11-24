@@ -24,9 +24,9 @@ Going Deeper
 
     The default serialization process serialize every objects/primitives using the String.valueOf() method, except for :
 
-        * Arrays/Collection: uses an ArraySerializer instance that serialize each array/collection item with its type relative serializer, to a string separated by the default separator, comma.
+        * Primitive Arrays/Object Arrays/Collections: uses an ArraySerializer instance that serialize each array/collection item with its type relative serializer, to a string separated by the default separator, comma.
 
-        * java.util.Date: uses a DateSerializer instance that transform the date to milliseconds.
+        * java.util.Date: uses a DateSerializer instance that transform the date to the ISO-8601 date format.
 
 * Injector
 

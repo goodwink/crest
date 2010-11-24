@@ -33,6 +33,13 @@ import java.lang.reflect.Method;
 import java.net.URISyntaxException;
 
 /**
+ * Default CRest implementation based on {@link org.codegist.crest.CRestContext} interface data model.
+ * <p>On top of the behavior described in {@link org.codegist.crest.CRest}, this implementation adds :
+ * <p>- {@link org.codegist.crest.interceptor.RequestInterceptor} to intercept any requests before it gets fired.
+ * <p>- {@link org.codegist.crest.serializer.Serializer} to customize the serialization process of any types.
+ * <p>- {@link org.codegist.crest.injector.RequestInjector} to inject complexe types that can't be reduced to a String via the serializers.
+ * <p>- {@link org.codegist.crest.ResponseHandler} to customize response handling when interface method's response type is not one of raw types.
+ * <p>- {@link org.codegist.crest.ErrorHandler} to customize how the created interface behaves when any error occurs during the method call process.
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
 public class DefaultCRest implements CRest {
@@ -43,7 +50,7 @@ public class DefaultCRest implements CRest {
      * @param context The CRest configuration holder
      */
     public DefaultCRest(CRestContext context) {
-        this.context = context;
+        this.context = context;   
     }
 
     /**
@@ -64,7 +71,7 @@ public class DefaultCRest implements CRest {
 
         private RestInterfacer(Class<T> interfaze) throws ConfigFactoryException {
             InterfaceConfig config = context.getConfigFactory().newConfig(interfaze, context);
-            this.interfaceContext = new DefaultInterfaceContext(config, context.getCustomProperties());
+            this.interfaceContext = new DefaultInterfaceContext(config, context.getProperties());
         }
 
         @Override

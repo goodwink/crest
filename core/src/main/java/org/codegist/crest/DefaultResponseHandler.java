@@ -29,7 +29,7 @@ import org.codegist.common.marshal.Marshaller;
  * <p>- Response is just ignored for voids methods.
  *
  * @see org.codegist.common.marshal.Marshaller
- * @see org.codegist.crest.CRestContext#getCustomProperties()
+ * @see org.codegist.crest.CRestContext#getProperties()
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
 public class DefaultResponseHandler implements ResponseHandler {

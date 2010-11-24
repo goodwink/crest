@@ -57,7 +57,7 @@ public class AnnotationDrivenInterfaceConfigFactory implements InterfaceConfigFa
             if (restAPI == null)
                 throw new IllegalArgumentException("RestAPI annotation (" + RestApi.class + ") not fould in interface (" + interfaze + ").");
 
-            ConfigBuilders.InterfaceConfigBuilder config = new ConfigBuilders.InterfaceConfigBuilder(interfaze, restAPI.endPoint(), context != null ? context.getCustomProperties() : null)
+            ConfigBuilders.InterfaceConfigBuilder config = new ConfigBuilders.InterfaceConfigBuilder(interfaze, restAPI.endPoint(), context != null ? context.getProperties() : null)
                     .setPath(restAPI.path())
                     .setMethodsSocketTimeout(restAPI.methodsSocketTimeout() == Fallbacks.FALLBACK_LONG ? null : restAPI.methodsSocketTimeout())
                     .setMethodsConnectionTimeout(restAPI.methodsConnectionTimeout() == Fallbacks.FALLBACK_LONG ? null : restAPI.methodsConnectionTimeout())

@@ -29,7 +29,7 @@ import java.lang.reflect.Method;
  * Interface configuration holder object.
  * <p>Implementors must respect the following contract :
  * <p>- No method return null except for the ones documented or when used as an override template (see {@link Configs#override(InterfaceConfig, InterfaceConfig)})
- * <p>- Defaults values must either be taken from interface's defaults constant or from {@link org.codegist.crest.CRestContext#getCustomProperties()}'s defaults overrides.
+ * <p>- Defaults values must either be taken from interface's defaults constant or from {@link org.codegist.crest.CRestContext#getProperties()}'s defaults overrides.
  * <p>- Every methods in the interface must have it's respective {@link MethodConfig} configured.
  * <p>- Every arguments of every methods in the interface must have it's respective {@link org.codegist.crest.config.ParamConfig} configured in its respective {@link MethodConfig} object.
  *
@@ -41,29 +41,11 @@ import java.lang.reflect.Method;
 public interface InterfaceConfig {
 
     /**
-     * Use this parameter in the {@link org.codegist.crest.CRestContext#getCustomProperties()} to override the default encoding {@link InterfaceConfig#DEFAULT_ENCODING}.
-     * <p>Expects a string.
-     *
-     * @see InterfaceConfig#DEFAULT_ENCODING
-     * @see org.codegist.crest.CRestContext#getCustomProperties()
-     */
-    String DEFAULT_ENCODING_PROP = InterfaceConfig.class.getName() + "#encoding";
-
-    /**
      * Default encoding applied when non specified.
      *
      * @see InterfaceConfig#getEncoding()
      */
     String DEFAULT_ENCODING = "UTF-8";
-
-    /**
-     * Use this parameter in the {@link org.codegist.crest.CRestContext#getCustomProperties()} to override the default path {@link InterfaceConfig#DEFAULT_PATH}.
-     * <p>Expects a string.
-     *
-     * @see InterfaceConfig#DEFAULT_PATH
-     * @see org.codegist.crest.CRestContext#getCustomProperties()
-     */
-    String DEFAULT_PATH_PROP = InterfaceConfig.class.getName() + "#path";
 
     /**
      * Default service url fragment applied when non specified.
@@ -72,16 +54,6 @@ public interface InterfaceConfig {
      */
     String DEFAULT_PATH = "";
 
-
-    /**
-     * Use this parameter in the {@link org.codegist.crest.CRestContext#getCustomProperties()} to override the default global request interceptor {@link InterfaceConfig#DEFAULT_REQUEST_INTERCEPTOR}.
-     * <p>Expects an instance of {@link org.codegist.crest.interceptor.RequestInterceptor}.
-     *
-     * @see InterfaceConfig#DEFAULT_REQUEST_INTERCEPTOR
-     * @see org.codegist.crest.interceptor.RequestInterceptor
-     * @see org.codegist.crest.CRestContext#getCustomProperties()
-     */
-    String DEFAULT_REQUEST_INTERCEPTOR_PROP = InterfaceConfig.class.getName() + "#request.interceptor";
 
     /**
      * Default request interceptor applied when non specified.

@@ -23,6 +23,7 @@ package org.codegist.crest.config;
 import org.codegist.common.collect.Maps;
 import org.codegist.common.lang.Objects;
 import org.codegist.common.lang.Strings;
+import org.codegist.crest.CRestProperty;
 import org.codegist.crest.ErrorHandler;
 import org.codegist.crest.HttpMethod;
 import org.codegist.crest.ResponseHandler;
@@ -83,7 +84,6 @@ public abstract class ConfigBuilders {
 
         /**
          * Given properties map can contains user-defined default values, that override interface predefined defauts.
-         * <p>Expected map keys are of the following : {@link org.codegist.crest.config.InterfaceConfig}.*_PROP
          * <p>This will create an unbound builder, eg to attached to any interface, thus it cannot contains any method configuration.
          * @param customProperties default values holder
          */
@@ -97,7 +97,6 @@ public abstract class ConfigBuilders {
 
         /**
          * Given properties map can contains user-defined default values, that override interface predefined defauts.
-         * <p>Expected map keys are of the following : {@link org.codegist.crest.config.InterfaceConfig}.*_PROP
          * @param interfaze interface to bind the config to
          * @param server endpoint
          * @param customProperties default values holder
@@ -132,9 +131,9 @@ public abstract class ConfigBuilders {
                 mConfig.put(entry.getKey(), entry.getValue().build(useDefaults));
             }
             if (useDefaults) {
-                path = defaultIfUndefined(path, InterfaceConfig.DEFAULT_PATH_PROP, InterfaceConfig.DEFAULT_PATH);
-                encoding = defaultIfUndefined(encoding, InterfaceConfig.DEFAULT_ENCODING_PROP, InterfaceConfig.DEFAULT_ENCODING);
-                requestInterceptor = defaultIfUndefined(requestInterceptor, InterfaceConfig.DEFAULT_REQUEST_INTERCEPTOR_PROP, InterfaceConfig.DEFAULT_REQUEST_INTERCEPTOR);
+                path = defaultIfUndefined(path, CRestProperty.CONFIG_INTERFACE_DEFAULT_PATH, InterfaceConfig.DEFAULT_PATH);
+                encoding = defaultIfUndefined(encoding, CRestProperty.CONFIG_INTERFACE_DEFAULT_ENCODING, InterfaceConfig.DEFAULT_ENCODING);
+                requestInterceptor = defaultIfUndefined(requestInterceptor, CRestProperty.CONFIG_INTERFACE_DEFAULT_REQUEST_INTERCEPTOR, InterfaceConfig.DEFAULT_REQUEST_INTERCEPTOR);
             }
             return new DefaultInterfaceConfig(
                     interfaze,
@@ -400,7 +399,6 @@ public abstract class ConfigBuilders {
 
         /**
          * Given properties map can contains user-defined default values, that override interface predefined defauts.
-         * <p>Expected map keys are of the following : {@link org.codegist.crest.config.MethodConfig}.*_PROP
          * @param method method being configured
          * @param customProperties default values holder
          */
@@ -437,13 +435,13 @@ public abstract class ConfigBuilders {
                 pConfig[i] = this.paramConfigBuilders[i].build(useDefaults);
             }
             if (useDefaults) {
-                path = defaultIfUndefined(path, MethodConfig.DEFAULT_PATH_PROP, MethodConfig.DEFAULT_PATH);
-                meth = defaultIfUndefined(meth, MethodConfig.DEFAULT_HTTP_METHOD_PROP, MethodConfig.DEFAULT_HTTP_METHOD);
-                socketTimeout = defaultIfUndefined(socketTimeout, MethodConfig.DEFAULT_SO_TIMEOUT_PROP, MethodConfig.DEFAULT_SO_TIMEOUT);
-                connectionTimeout = defaultIfUndefined(connectionTimeout, MethodConfig.DEFAULT_CO_TIMEOUT_PROP, MethodConfig.DEFAULT_CO_TIMEOUT);
-                requestInterceptor = defaultIfUndefined(requestInterceptor, MethodConfig.DEFAULT_REQUEST_INTERCEPTOR_PROP, MethodConfig.DEFAULT_REQUEST_INTERCEPTOR);
-                responseHandler = defaultIfUndefined(responseHandler, MethodConfig.DEFAULT_RESPONSE_HANDLER_PROP, MethodConfig.DEFAULT_RESPONSE_HANDLER);
-                errorHandler = defaultIfUndefined(errorHandler, MethodConfig.DEFAULT_ERROR_HANDLER_PROP, MethodConfig.DEFAULT_ERROR_HANDLER);
+                path = defaultIfUndefined(path, CRestProperty.CONFIG_METHOD_DEFAULT_PATH, MethodConfig.DEFAULT_PATH);
+                meth = defaultIfUndefined(meth, CRestProperty.CONFIG_METHOD_DEFAULT_HTTP_METHOD, MethodConfig.DEFAULT_HTTP_METHOD);
+                socketTimeout = defaultIfUndefined(socketTimeout, CRestProperty.CONFIG_METHOD_DEFAULT_SO_TIMEOUT, MethodConfig.DEFAULT_SO_TIMEOUT);
+                connectionTimeout = defaultIfUndefined(connectionTimeout, CRestProperty.CONFIG_METHOD_DEFAULT_CO_TIMEOUT, MethodConfig.DEFAULT_CO_TIMEOUT);
+                requestInterceptor = defaultIfUndefined(requestInterceptor, CRestProperty.CONFIG_METHOD_DEFAULT_REQUEST_INTERCEPTOR, MethodConfig.DEFAULT_REQUEST_INTERCEPTOR);
+                responseHandler = defaultIfUndefined(responseHandler, CRestProperty.CONFIG_METHOD_DEFAULT_RESPONSE_HANDLER, MethodConfig.DEFAULT_RESPONSE_HANDLER);
+                errorHandler = defaultIfUndefined(errorHandler, CRestProperty.CONFIG_METHOD_DEFAULT_ERROR_HANDLER, MethodConfig.DEFAULT_ERROR_HANDLER);
             }
             return new DefaultMethodConfig(
                     method,
@@ -646,7 +644,6 @@ public abstract class ConfigBuilders {
 
         /**
          * Given properties map can contains user-defined default values, that override interface predefined defauts.
-         * <p>Expected map keys are of the following : {@link org.codegist.crest.config.ParamConfig}.*_PROP
          * @param customProperties default values holder
          */
         public ParamConfigBuilder(Type type, Map<String, Object> customProperties) {
@@ -673,10 +670,10 @@ public abstract class ConfigBuilders {
 
         public DefaultParamConfig build(boolean useDefaults) {
             if (useDefaults) {
-                name = defaultIfUndefined(name, ParamConfig.DEFAULT_NAME_PROP, ParamConfig.DEFAULT_NAME);
-                dest = defaultIfUndefined(dest, ParamConfig.DEFAULT_DESTINATION_PROP, ParamConfig.DEFAULT_DESTINATION);
-                injector = defaultIfUndefined(injector, ParamConfig.DEFAULT_INJECTOR_PROP, (ParamConfig.DEFAULT_INJECTOR));
-                serializer = defaultIfUndefined(serializer, ParamConfig.DEFAULT_SERIALIZER_PROP, ParamConfig.DEFAULT_SERIALIZER);
+                name = defaultIfUndefined(name, CRestProperty.CONFIG_PARAM_DEFAULT_NAME, ParamConfig.DEFAULT_NAME);
+                dest = defaultIfUndefined(dest, CRestProperty.CONFIG_PARAM_DEFAULT_DESTINATION, ParamConfig.DEFAULT_DESTINATION);
+                injector = defaultIfUndefined(injector, CRestProperty.CONFIG_PARAM_DEFAULT_INJECTOR, (ParamConfig.DEFAULT_INJECTOR));
+                serializer = defaultIfUndefined(serializer, CRestProperty.CONFIG_PARAM_DEFAULT_SERIALIZER, ParamConfig.DEFAULT_SERIALIZER);
 
                 if(serializer == null) {
                     // if null, then choose which serializer to apply using default rules
@@ -718,7 +715,7 @@ public abstract class ConfigBuilders {
         }
 
         /**
-         * Sets the argument's serializer. If not set, the system automatically choose a serializer based on the argument type. See {@link org.codegist.crest.serializer.Serializers#getFor(java.util.Map, java.lang.reflect.Type)} for the selection rules.
+         * Sets the argument's serializer. If not set, the system automatically choose a serializer based on the argument type. See {@link org.codegist.crest.CRest} for the selection rules.
          * @param serializer the serializer to use for this argument
          * @return current builder
          */
@@ -729,7 +726,7 @@ public abstract class ConfigBuilders {
         }
 
         /**
-         * Sets the argument's serializer. If not set, the system automatically choose a serializer based on the argument type. See {@link org.codegist.crest.serializer.Serializers#getFor(java.util.Map, java.lang.reflect.Type)} for the selection rules.
+         * Sets the argument's serializer. If not set, the system automatically choose a serializer based on the argument type. See {@link org.codegist.crest.CRest} for the selection rules.
          * @param serializerClassName the serializer classname to use for this argument
          * @return current builder
          */
@@ -739,7 +736,7 @@ public abstract class ConfigBuilders {
         }
 
         /**
-         * Sets the argument's serializer. If not set, the system automatically choose a serializer based on the argument type. See {@link org.codegist.crest.serializer.Serializers#getFor(java.util.Map, java.lang.reflect.Type)} for the selection rules.
+         * Sets the argument's serializer. If not set, the system automatically choose a serializer based on the argument type. See {@link org.codegist.crest.CRest} for the selection rules.
          * @param serializer the serializer to use for this argument
          * @return current builder
          */

@@ -49,6 +49,6 @@ public interface CRestContext {
      * @see org.codegist.crest.config.MethodConfig
      * @see org.codegist.crest.config.ParamConfig
      */
-    Map<String, Object> getCustomProperties();
+    Map<String, Object> getProperties();
 
 }

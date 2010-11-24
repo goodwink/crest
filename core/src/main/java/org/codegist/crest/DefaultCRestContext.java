@@ -37,7 +37,7 @@ class DefaultCRestContext implements CRestContext {
     private final Map<String, Object> customProperties;
 
     public DefaultCRestContext(CRestContext context) {
-        this(context.getRestService(), context.getProxyFactory(), context.getConfigFactory(), context.getCustomProperties());
+        this(context.getRestService(), context.getProxyFactory(), context.getConfigFactory(), context.getProperties());
     }
 
     public DefaultCRestContext(RestService restService, ProxyFactory proxyFactory, InterfaceConfigFactory configFactory, Map<String, Object> customProperties) {
@@ -57,7 +57,7 @@ class DefaultCRestContext implements CRestContext {
     }
 
     @Override
-    public Map<String, Object> getCustomProperties() {
+    public Map<String, Object> getProperties() {
         return customProperties;
     }
 

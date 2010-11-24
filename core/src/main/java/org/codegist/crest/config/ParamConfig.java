@@ -28,7 +28,7 @@ import org.codegist.crest.serializer.Serializer;
  * Method's argument configuration holder object.
  * <p>Implementors must respect the following contract :
  * <p>- No method return null except for the ones documented or when used as an override template (see {@link Configs#override(ParamConfig, ParamConfig)})
- * <p>- Defaults values must either be taken from interface's defaults constant or from {@link org.codegist.crest.CRestContext#getCustomProperties()}'s defaults overrides.
+ * <p>- Defaults values must either be taken from interface's defaults constant or from {@link org.codegist.crest.CRestContext#getProperties()}'s defaults overrides.
  *
  * @see org.codegist.crest.config.MethodConfig
  * @see org.codegist.crest.config.ParamConfig
@@ -38,31 +38,11 @@ import org.codegist.crest.serializer.Serializer;
 public interface ParamConfig {
 
     /**
-     * Use this parameter in the {@link org.codegist.crest.CRestContext#getCustomProperties()} to override the default destination {@link ParamConfig#DEFAULT_DESTINATION}.
-     * <p>Expects a member of {@link org.codegist.crest.config.Destination}.
-     *
-     * @see ParamConfig#DEFAULT_DESTINATION
-     * @see org.codegist.crest.config.Destination
-     * @see org.codegist.crest.CRestContext#getCustomProperties()
-     */
-    String DEFAULT_DESTINATION_PROP = ParamConfig.class.getName() + "#destination";
-
-    /**
      * Default destination applied when non specified.
      *
      * @see ParamConfig#getDestination()
      */
     Destination DEFAULT_DESTINATION = Destination.URL;
-
-    /**
-     * Use this parameter in the {@link org.codegist.crest.CRestContext#getCustomProperties()} to override the default injector {@link ParamConfig#DEFAULT_INJECTOR}.
-     * <p>Expects an instance of {@link org.codegist.crest.injector.RequestInjector}.
-     *
-     * @see ParamConfig#DEFAULT_INJECTOR
-     * @see org.codegist.crest.injector.RequestInjector
-     * @see org.codegist.crest.CRestContext#getCustomProperties()
-     */
-    String DEFAULT_INJECTOR_PROP = ParamConfig.class.getName() + "#injector";
 
     /**
      * Default injector applied when non specified.
@@ -72,40 +52,11 @@ public interface ParamConfig {
     RequestInjector DEFAULT_INJECTOR = new DefaultRequestInjector();
 
     /**
-     * Use this parameter in the {@link org.codegist.crest.CRestContext#getCustomProperties()} to override the default serializer {@link ParamConfig#DEFAULT_SERIALIZER}.
-     * <p>Expects an instance of {@link org.codegist.crest.serializer.Serializer}.
-     *
-     * @see ParamConfig#DEFAULT_SERIALIZER
-     * @see org.codegist.crest.serializer.Serializer
-     * @see org.codegist.crest.CRestContext#getCustomProperties()
-     */
-    String DEFAULT_SERIALIZER_PROP = ParamConfig.class.getName() + "#serializer";
-
-    /**
-     * Use this parameter in the {@link org.codegist.crest.CRestContext#getCustomProperties()} to specify a type/serializer map to use for selection of serializer to apply for any given type (see {@link org.codegist.crest.serializer.Serializers#getFor(java.util.Map, java.lang.reflect.Type)})
-     * <p>Expects an instance of {@link java.util.Map}&lt;{@link java.lang.reflect.Type},{@link org.codegist.crest.serializer.Serializer}&gt;.
-     *
-     * @see ParamConfig#DEFAULT_SERIALIZER
-     * @see org.codegist.crest.serializer.Serializer
-     * @see org.codegist.crest.CRestContext#getCustomProperties()
-     */
-    String DEFAULT_SERIALIZERS_MAP_PROP = ParamConfig.class.getName() + "#serializers-map";
-
-    /**
      * Default serializer applied when non specified.
      *
      * @see org.codegist.crest.config.ParamConfig#getSerializer()
      */
     Serializer DEFAULT_SERIALIZER = null;
-
-    /**
-     * Use this parameter in the {@link org.codegist.crest.CRestContext#getCustomProperties()} to override the default name {@link ParamConfig#DEFAULT_NAME}.
-     * <p>Expects a string.
-     *
-     * @see ParamConfig#DEFAULT_NAME
-     * @see org.codegist.crest.CRestContext#getCustomProperties()
-     */
-    String DEFAULT_NAME_PROP = ParamConfig.class.getName() + "#name";
 
     /**
      * Default name applied when non specified.

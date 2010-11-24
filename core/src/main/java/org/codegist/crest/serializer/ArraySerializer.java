@@ -35,15 +35,12 @@ import java.util.List;
 public class ArraySerializer<T> implements Serializer<T> {
 
     /**
-     * Use this parameter in the {@link org.codegist.crest.CRestContext#getCustomProperties()} to override the default item separator {@link ArraySerializer#DEFAULT_SEPARATOR}.
-     * <p>Expects a String.
-     *
-     * @see ArraySerializer#DEFAULT_SEPARATOR
+     * Default array item separator
      */
-    public static final String SEPARATOR_PROP = ArraySerializer.class.getName() + "#separator";
-
     public static final String DEFAULT_SEPARATOR = ",";
-    public static final Serializer DEFAULT_ITEM_SERIALIZER = new ToStringSerializer();
+
+    private static final Serializer DEFAULT_ITEM_SERIALIZER = new ToStringSerializer();
+
     final String separator;
     final Serializer itemSerializer;
 
@@ -80,7 +77,7 @@ public class ArraySerializer<T> implements Serializer<T> {
     }
 
     private String serialize(Collection params) {
-        StringBuilder sb = new StringBuilder("");
+        StringBuilder sb = new StringBuilder();
         int i = 0;
         for (Object p : params) {
             String s = itemSerializer.serialize(p);
