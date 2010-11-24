@@ -35,7 +35,7 @@ class DefaultInterfaceContext implements InterfaceContext {
     private final Map<String, Object> customProperties;
 
     public DefaultInterfaceContext(InterfaceContext context) {
-        this(context.getConfig(), context.getCustomProperties());
+        this(context.getConfig(), context.getProperties());
     }
 
     public DefaultInterfaceContext(InterfaceConfig config, Map<String, Object> customProperties) {
@@ -49,12 +49,12 @@ class DefaultInterfaceContext implements InterfaceContext {
     }
 
     @Override
-    public Map<String, Object> getCustomProperties() {
+    public Map<String, Object> getProperties() {
         return customProperties;
     }
 
     @Override
-    public <T> T getCustomProperty(String name) {
+    public <T> T getProperty(String name) {
         return (T) customProperties.get(name);
     }
 }

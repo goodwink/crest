@@ -41,7 +41,7 @@ public class FlickrResponseHandler implements ResponseHandler {
         try {
             /* Get the marshaller, save the ref to avoid accessing the map each time (since custom properties map could get quite big!) */
             if (marshaller == null) {
-                marshaller = context.getRequestContext().getCustomProperty(Marshaller.class.getName());
+                marshaller = context.getRequestContext().getProperty(Marshaller.class.getName());
             }
             /* Marshall the response */
             Response res = marshaller.marshall(context.getResponse().asStream(), Types.newType(Response.class, context.getExpectedGenericType()));

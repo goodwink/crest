@@ -42,7 +42,7 @@ public class DefaultResponseHandler implements ResponseHandler {
             if (context.getExpectedType().toString().equals("void")) return null;
             // no need to more synchronization, this is a merely optimisation in order to limit access the the custom properties map, better do it twice than synchronize every time.
             if (marshaller == null) {
-                marshaller = context.getRequestContext().getCustomProperty(Marshaller.class.getName());
+                marshaller = context.getRequestContext().getProperty(Marshaller.class.getName());
             }
             // if not in custom properties, then no marshaller has been set in the configuration, check that return type is String and return the response as string.
             if (marshaller == null) {

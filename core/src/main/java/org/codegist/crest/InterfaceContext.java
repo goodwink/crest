@@ -32,8 +32,8 @@ public interface InterfaceContext {
 
     InterfaceConfig getConfig();
 
-    Map<String, Object> getCustomProperties();
+    Map<String, Object> getProperties();
 
-    <T> T getCustomProperty(String name);
+    <T> T getProperty(String name);
 
 }

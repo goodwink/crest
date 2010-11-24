@@ -44,9 +44,9 @@ public class FlickrAuthInterceptor extends RequestInterceptorAdapter {
 
     @Override
     public boolean afterParamsInjectionHandle(HttpRequest.Builder builder, RequestContext context) {
-        StringBuilder sb = new StringBuilder((String) context.getCustomProperties().get(APP_SECRET_PROP));
-        String apiKey = (String) context.getCustomProperties().get(API_KEY_PROP);
-        String authToken = (String) context.getCustomProperties().get(AUTH_TOKEN_PROP);
+        StringBuilder sb = new StringBuilder((String) context.getProperties().get(APP_SECRET_PROP));
+        String apiKey = (String) context.getProperties().get(API_KEY_PROP);
+        String authToken = (String) context.getProperties().get(AUTH_TOKEN_PROP);
 
         if (isForBody(builder.getMeth())) {
             builder.addBodyParam("api_key", apiKey);
