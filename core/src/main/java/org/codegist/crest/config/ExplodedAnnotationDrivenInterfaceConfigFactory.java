@@ -122,7 +122,13 @@ public class ExplodedAnnotationDrivenInterfaceConfigFactory implements Interface
                     if(serializer != null) paramConfigBuilder.setSerializer(serializer.value());
                     if(name != null) paramConfigBuilder.setName(name.value());
                     if(destination != null) paramConfigBuilder.setDestination(destination.value());
-                    paramConfigBuilder.setInjector(injector != null ? Configs.chooseInjector(typeInjector, injector.value()) : typeInjector);
+
+                    if(injector != null) {
+                        paramConfigBuilder.setInjector(Configs.chooseInjector(typeInjector, injector.value()));
+                    }else if(typeInjector != null) {
+                        paramConfigBuilder.setInjector(typeInjector);
+                    }
+
 
                     paramConfigBuilder.endParamConfig();
                 }

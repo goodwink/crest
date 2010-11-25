@@ -20,9 +20,6 @@
 
 package org.codegist.crest.annotate.exploded;
 
-import org.codegist.crest.config.Destination;
-import org.codegist.crest.interceptor.RequestInterceptor;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

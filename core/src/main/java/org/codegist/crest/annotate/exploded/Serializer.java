@@ -20,8 +20,6 @@
 
 package org.codegist.crest.annotate.exploded;
 
-import org.codegist.crest.serializer.Serializer;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
