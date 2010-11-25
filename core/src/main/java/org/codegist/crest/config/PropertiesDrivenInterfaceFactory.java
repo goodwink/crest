@@ -133,7 +133,7 @@ public class PropertiesDrivenInterfaceFactory implements InterfaceConfigFactory 
             String server = defaultIfBlank(getServiceProp(serviceAlias, "end-point"), globalServer);
             if (isBlank(server)) throw new IllegalArgumentException("server not found!");
 
-            ConfigBuilders.InterfaceConfigBuilder ricb = new ConfigBuilders.InterfaceConfigBuilder(interfaze, server, context != null ? context.getProperties() : null).setIgnoreNullOrEmptyValues(true);
+            ConfigBuilders.InterfaceConfigBuilder ricb = new ConfigBuilders.InterfaceConfigBuilder(interfaze, server, context.getProperties()).setIgnoreNullOrEmptyValues(true);
             ricb.setPath(getServiceProp(serviceAlias, "path"))
                     .setMethodsConnectionTimeout(getServiceProp(serviceAlias, "methods-connection-timeout"))
                     .setMethodsSocketTimeout(getServiceProp(serviceAlias, "methods-socket-timeout"))

@@ -45,9 +45,7 @@ public interface CRestContext {
      * <p>Can be used to override defaults values for config objects or any other user's specifics data to be passed to custom interceptors,injectors,serializers.
      *
      * @return user custom properties map.
-     * @see org.codegist.crest.config.InterfaceConfig
-     * @see org.codegist.crest.config.MethodConfig
-     * @see org.codegist.crest.config.ParamConfig
+     * @see org.codegist.crest.CRestProperty
      */
     Map<String, Object> getProperties();
 

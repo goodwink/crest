@@ -77,7 +77,7 @@ public interface CRestProperty {
      *
      * @see org.codegist.crest.CRestContext#getProperties()
      */
-    String INTERCEPTOR_OAUTH_PARAM_DEST = "interceptor.oauth.dest";
+    String OAUTH_PARAM_DEST = "authentification.oauth.dest";
 
     /**
      * specify the preconfigured consumer secret.
@@ -85,7 +85,7 @@ public interface CRestProperty {
      *
      * @see org.codegist.crest.CRestContext#getProperties()
      */
-    String INTERCEPTOR_OAUTH_CONSUMER_SECRET = "interceptor.oauth.consumer.secret";
+    String OAUTH_CONSUMER_SECRET = "authentification.oauth.consumer.secret";
 
     /**
      * specify the preconfigured consumer key.
@@ -93,7 +93,7 @@ public interface CRestProperty {
      *
      * @see org.codegist.crest.CRestContext#getProperties()
      */
-    String INTERCEPTOR_OAUTH_CONSUMER_KEY = "interceptor.oauth.consumer.key";
+    String OAUTH_CONSUMER_KEY = "authentification.oauth.consumer.key";
 
     /**
      * specify the preconfigured access token key.
@@ -101,7 +101,7 @@ public interface CRestProperty {
      *
      * @see org.codegist.crest.CRestContext#getProperties()
      */
-    String INTERCEPTOR_OAUTH_ACCESS_TOKEN = "interceptor.oauth.access.token";
+    String OAUTH_ACCESS_TOKEN = "authentification.oauth.access.token";
 
     /**
      * specify the preconfigured access token secret.
@@ -109,7 +109,7 @@ public interface CRestProperty {
      *
      * @see org.codegist.crest.CRestContext#getProperties()
      */
-    String INTERCEPTOR_OAUTH_ACCESS_TOKEN_SECRET = "interceptor.oauth.access.secret";
+    String OAUTH_ACCESS_TOKEN_SECRET = "authentification.oauth.access.secret";
 
 
     /*********************************************************

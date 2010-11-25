@@ -38,18 +38,18 @@ import java.util.*;
 /**
  * Simple OAuth interceptor, required a valid pregenerated access token. Only support HMAC-SHA1 signature method.
  * <p>Can be configured either be constructor parameters, or indirectly via {@link org.codegist.crest.RequestContext#getProperties()} with the following key :
- * <p>OAuthInterceptor.{@link org.codegist.crest.CRestProperty#INTERCEPTOR_OAUTH_PARAM_DEST}
- * <p>OAuthInterceptor.{@link org.codegist.crest.CRestProperty#INTERCEPTOR_OAUTH_ACCESS_TOKEN}
- * <p>OAuthInterceptor.{@link org.codegist.crest.CRestProperty#INTERCEPTOR_OAUTH_ACCESS_TOKEN_SECRET}
- * <p>OAuthInterceptor.{@link org.codegist.crest.CRestProperty#INTERCEPTOR_OAUTH_CONSUMER_KEY}
- * <p>OAuthInterceptor.{@link org.codegist.crest.CRestProperty#INTERCEPTOR_OAUTH_CONSUMER_SECRET}
+ * <p>OAuthInterceptor.{@link org.codegist.crest.CRestProperty#OAUTH_PARAM_DEST}
+ * <p>OAuthInterceptor.{@link org.codegist.crest.CRestProperty#OAUTH_ACCESS_TOKEN}
+ * <p>OAuthInterceptor.{@link org.codegist.crest.CRestProperty#OAUTH_ACCESS_TOKEN_SECRET}
+ * <p>OAuthInterceptor.{@link org.codegist.crest.CRestProperty#OAUTH_CONSUMER_KEY}
+ * <p>OAuthInterceptor.{@link org.codegist.crest.CRestProperty#OAUTH_CONSUMER_SECRET}
  *
  * @see org.codegist.crest.RequestContext
- * @see org.codegist.crest.CRestProperty#INTERCEPTOR_OAUTH_PARAM_DEST
- * @see org.codegist.crest.CRestProperty#INTERCEPTOR_OAUTH_ACCESS_TOKEN
- * @see org.codegist.crest.CRestProperty#INTERCEPTOR_OAUTH_ACCESS_TOKEN_SECRET
- * @see org.codegist.crest.CRestProperty#INTERCEPTOR_OAUTH_CONSUMER_KEY
- * @see org.codegist.crest.CRestProperty#INTERCEPTOR_OAUTH_CONSUMER_SECRET
+ * @see org.codegist.crest.CRestProperty#OAUTH_PARAM_DEST
+ * @see org.codegist.crest.CRestProperty#OAUTH_ACCESS_TOKEN
+ * @see org.codegist.crest.CRestProperty#OAUTH_ACCESS_TOKEN_SECRET
+ * @see org.codegist.crest.CRestProperty#OAUTH_CONSUMER_KEY
+ * @see org.codegist.crest.CRestProperty#OAUTH_CONSUMER_SECRET
  * @see org.codegist.crest.CRestContext#getProperties()
  * @see org.codegist.crest.DefaultCRest#DefaultCRest(org.codegist.crest.CRestContext)
  * @author Laurent Gilles (laurent.gilles@codegist.org)
@@ -101,21 +101,21 @@ public class OAuthInterceptor extends RequestInterceptorAdapter {
 
     private OAuthToken getAccessToken(RequestContext context) {
         if (accessToken != null) return accessToken;  // No need for more synchronization, can be done twice, better than synchronizing for every requests.
-        if (!context.getProperties().containsKey(INTERCEPTOR_OAUTH_ACCESS_TOKEN)) {
-            throw new IllegalStateException("No default access token key set for interceptor. Please either construct the interceptor with the access token key, or pass it into the context (key=" + INTERCEPTOR_OAUTH_ACCESS_TOKEN + ")");
-        } else if (!context.getProperties().containsKey(INTERCEPTOR_OAUTH_ACCESS_TOKEN_SECRET)) {
-            throw new IllegalStateException("No default access token secret set for interceptor. Please either construct the interceptor with the access token secret, or pass it into the context (key=" + INTERCEPTOR_OAUTH_ACCESS_TOKEN_SECRET + ")");
-        } else if (!context.getProperties().containsKey(INTERCEPTOR_OAUTH_CONSUMER_KEY)) {
-            throw new IllegalStateException("No default consumer key set for interceptor. Please either construct the interceptor with the consumer key, or pass the consumer key into the context (key=" + INTERCEPTOR_OAUTH_CONSUMER_KEY + ")");
-        } else if (!context.getProperties().containsKey(INTERCEPTOR_OAUTH_CONSUMER_SECRET)) {
-            throw new IllegalStateException("No default consumer secret set for intecteptor. Please either construct the interceptor passing consumer and access secrect/token, or pass customer properties in the context (key=" + INTERCEPTOR_OAUTH_CONSUMER_SECRET + ")");
+        if (!context.getProperties().containsKey(OAUTH_ACCESS_TOKEN)) {
+            throw new IllegalStateException("No default access token key set for interceptor. Please either construct the interceptor with the access token key, or pass it into the context (key=" + OAUTH_ACCESS_TOKEN + ")");
+        } else if (!context.getProperties().containsKey(OAUTH_ACCESS_TOKEN_SECRET)) {
+            throw new IllegalStateException("No default access token secret set for interceptor. Please either construct the interceptor with the access token secret, or pass it into the context (key=" + OAUTH_ACCESS_TOKEN_SECRET + ")");
+        } else if (!context.getProperties().containsKey(OAUTH_CONSUMER_KEY)) {
+            throw new IllegalStateException("No default consumer key set for interceptor. Please either construct the interceptor with the consumer key, or pass the consumer key into the context (key=" + OAUTH_CONSUMER_KEY + ")");
+        } else if (!context.getProperties().containsKey(OAUTH_CONSUMER_SECRET)) {
+            throw new IllegalStateException("No default consumer secret set for intecteptor. Please either construct the interceptor passing consumer and access secrect/token, or pass customer properties in the context (key=" + OAUTH_CONSUMER_SECRET + ")");
         }
-        String dest = context.getProperty(INTERCEPTOR_OAUTH_PARAM_DEST);
+        String dest = context.getProperty(OAUTH_PARAM_DEST);
         return accessToken = new OAuthToken(
-                (String) context.getProperties().get(INTERCEPTOR_OAUTH_ACCESS_TOKEN),
-                (String) context.getProperties().get(INTERCEPTOR_OAUTH_ACCESS_TOKEN_SECRET),
-                (String) context.getProperties().get(INTERCEPTOR_OAUTH_CONSUMER_KEY),
-                (String) context.getProperties().get(INTERCEPTOR_OAUTH_CONSUMER_SECRET),
+                (String) context.getProperties().get(OAUTH_ACCESS_TOKEN),
+                (String) context.getProperties().get(OAUTH_ACCESS_TOKEN_SECRET),
+                (String) context.getProperties().get(OAUTH_CONSUMER_KEY),
+                (String) context.getProperties().get(OAUTH_CONSUMER_SECRET),
                 SIGN_METH_4_J,
                 dest != null ? OAuthParamDest.valueOf(dest) : OAuthParamDest.HEADERS
         );
@@ -248,7 +248,7 @@ public class OAuthInterceptor extends RequestInterceptorAdapter {
         } catch (NoSuchAlgorithmException ignore) {
             // should never happen
         }
-        return Base64.encodeToString(byteHMAC, false);
+        return Base64.encodeToString(byteHMAC);
     }
 
 
@@ -284,7 +284,7 @@ public class OAuthInterceptor extends RequestInterceptorAdapter {
             this.token = token;
             this.tokenSecret = tokenSecret;
             this.consumerKey = consumerKey;
-            this.consumerSecret = consumerSecret;
+            this.consumerSecret = consumerSecret;                
             this.dest = dest;
             String oauthSignature = encode(consumerSecret, "utf-8") + "&" + encode(tokenSecret, "utf-8");
             secretKeySpec = new SecretKeySpec(oauthSignature.getBytes(), signatureMethod);

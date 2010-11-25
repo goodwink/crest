@@ -18,29 +18,18 @@
  * More information at http://www.codegist.org.
  */
 
-package org.codegist.crest;
+package org.codegist.crest.annotate.exploded;
 
 import org.codegist.crest.config.InterfaceConfig;
+import org.codegist.crest.config.MethodConfig;
 
-import java.util.Map;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-/**
- * {@link InterfaceContext}'s context, passed to any component used during request building, parameter serialization and response deserialization process.
- * @author Laurent Gilles (laurent.gilles@codegist.org)
- */
-public interface InterfaceContext {
-
-    InterfaceConfig getConfig();
-
-    /**
-     * User's custom properties.
-     * <p>Can be used to override defaults values for config objects or any other user's specifics data to be passed to custom interceptors,injectors,serializers.
-     *
-     * @return user custom properties map.
-     * @see org.codegist.crest.CRestProperty
-     */
-    Map<String, Object> getProperties();
-
-    <T> T getProperty(String name);
-
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE})
+public @interface Encoding {
+    String value();
 }
