@@ -35,19 +35,19 @@ public class InterfaceConfigTestHelper {
 
 
     public static void assertExpected(InterfaceConfig expected, InterfaceConfig test, Class<?> clazz) {
-        assertEquals(clazz.toString(), expected.getPath(), test.getPath());
-        assertEquals(clazz.toString(), expected.getServer(), test.getServer());
+        assertEquals(clazz.toString(), expected.getContextPath(), test.getContextPath());
+        assertEquals(clazz.toString(), expected.getEndPoint(), test.getEndPoint());
         assertEquals(clazz.toString(), expected.getEncoding(), test.getEncoding());
 
-        if (expected.getRequestInterceptor() instanceof CompositeRequestInterceptor) {
-            int max = ((CompositeRequestInterceptor) expected.getRequestInterceptor()).getInterceptors().length;
+        if (expected.getGlobalInterceptor() instanceof CompositeRequestInterceptor) {
+            int max = ((CompositeRequestInterceptor) expected.getGlobalInterceptor()).getInterceptors().length;
             for (int i = 0; i < max; i++) {
-                RequestInterceptor expectedRI = ((CompositeRequestInterceptor) expected.getRequestInterceptor()).getInterceptors()[i];
-                RequestInterceptor testRI = ((CompositeRequestInterceptor) test.getRequestInterceptor()).getInterceptors()[i];
+                RequestInterceptor expectedRI = ((CompositeRequestInterceptor) expected.getGlobalInterceptor()).getInterceptors()[i];
+                RequestInterceptor testRI = ((CompositeRequestInterceptor) test.getGlobalInterceptor()).getInterceptors()[i];
                 assertEquals(clazz.toString(), TestUtils.getClass(expectedRI), TestUtils.getClass(testRI));
             }
         } else {
-            assertEquals(clazz.toString(), TestUtils.getClass(expected.getRequestInterceptor()), TestUtils.getClass(test.getRequestInterceptor()));
+            assertEquals(clazz.toString(), TestUtils.getClass(expected.getGlobalInterceptor()), TestUtils.getClass(test.getGlobalInterceptor()));
         }
 
         int m = 0;

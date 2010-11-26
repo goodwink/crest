@@ -76,7 +76,7 @@ public abstract class AbstractInterfaceConfigFactoryTest {
     static {
         try {
             MINIMAL_EXPECTED_CONFIG = new ConfigBuilders.InterfaceConfigBuilder(Interface.class, "http://localhost:8080")
-                    .setPath("/my-path")
+                    .setContextPath("/my-path")
                     .startMethodConfig(Interface.METH_m1).setPath("/m1").endMethodConfig()
                     .startMethodConfig(Interface.METH_m1S).endMethodConfig()
                     .startMethodConfig(Interface.METH_m1SI)
@@ -98,7 +98,7 @@ public abstract class AbstractInterfaceConfigFactoryTest {
     static {
         try {
             PARTIAL_EXPECTED_CONFIG = new ConfigBuilders.InterfaceConfigBuilder(Interface.class, "http://localhost:8080")
-                    .setPath("/my-path")
+                    .setContextPath("/my-path")
                     .setParamsSerializer(new Stubs.Serializer1())
                     .setParamsInjector(new Stubs.RequestParameterInjector1())
                     .startMethodConfig(Interface.METH_m1).setPath("/m1").setResponseHandler(new Stubs.ResponseHandler1()).endMethodConfig()
@@ -135,11 +135,11 @@ public abstract class AbstractInterfaceConfigFactoryTest {
     static {
         try {
             FULLY_EXPECTED_CONFIG = new ConfigBuilders.InterfaceConfigBuilder(Interface.class, "http://localhost:8080")
-                    .setPath("/my-path")
+                    .setContextPath("/my-path")
                     .setMethodsSocketTimeout(1l)
                     .setMethodsConnectionTimeout(2l)
                     .setEncoding("utf-8")
-                    .setRequestInterceptor(new Stubs.RequestInterceptor1())
+                    .setGlobalInterceptor(new Stubs.RequestInterceptor1())
                     .setParamsSerializer(new Stubs.Serializer1())
                     .setParamsName("name")
                     .setParamsDestination(BODY)

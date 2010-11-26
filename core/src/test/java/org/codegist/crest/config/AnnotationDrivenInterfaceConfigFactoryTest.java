@@ -21,14 +21,14 @@
 package org.codegist.crest.config;
 
 import org.codegist.crest.CRestContext;
-import org.codegist.crest.HttpMethod;
 import org.codegist.crest.Stubs;
 import org.codegist.crest.TestUtils;
-import org.codegist.crest.annotate.RestApi;
-import org.codegist.crest.annotate.RestInjector;
-import org.codegist.crest.annotate.RestMethod;
-import org.codegist.crest.annotate.RestParam;
-import org.codegist.crest.injector.DefaultRequestInjector;
+import org.codegist.crest.annotate.*;
+import org.codegist.crest.annotate.Destination;
+import org.codegist.crest.injector.DefaultInjector;
+
+import static org.codegist.crest.HttpMethod.*;
+import static org.codegist.crest.config.Destination.*;
 import org.junit.Test;
 
 import java.lang.reflect.Method;
@@ -36,9 +36,6 @@ import java.lang.reflect.Method;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 
-/**
- * @author Laurent Gilles (laurent.gilles@codegist.org)
- */
 public class AnnotationDrivenInterfaceConfigFactoryTest extends AbstractInterfaceConfigFactoryTest {
 
     private final InterfaceConfigFactory configFactory = new AnnotationDrivenInterfaceConfigFactory();
@@ -74,289 +71,258 @@ public class AnnotationDrivenInterfaceConfigFactoryTest extends AbstractInterfac
     @Test
     public void testInterfaceOverridesTypeInjector() throws ConfigFactoryException {
         InterfaceConfig cfg = configFactory.newConfig(RestInjectorOverrideInterface.class, mockContext);
+        assertEquals("interface-overrides", cfg.getMethodConfig(RestInjectorOverrideInterface.M).getParamConfig(0).getName());
+        assertEquals(Stubs.Serializer2.class, cfg.getMethodConfig(RestInjectorOverrideInterface.M).getParamConfig(0).getSerializer().getClass());
         assertEquals(Stubs.RequestParameterInjector2.class, cfg.getMethodConfig(RestInjectorOverrideInterface.M).getParamConfig(0).getInjector().getClass());
+
+        assertEquals("my-specific-name", cfg.getMethodConfig(RestInjectorOverrideInterface.M2).getParamConfig(0).getName());
+        assertEquals(Stubs.Serializer3.class, cfg.getMethodConfig(RestInjectorOverrideInterface.M2).getParamConfig(0).getSerializer().getClass());
+        assertEquals(Stubs.RequestParameterInjector1.class, cfg.getMethodConfig(RestInjectorOverrideInterface.M2).getParamConfig(0).getInjector().getClass());
     }
 
     @Test
     public void testTypeInjectorIsRead() throws ConfigFactoryException {
         InterfaceConfig cfg = configFactory.newConfig(TypeInjectorInterface.class, mockContext);
         assertEquals(Stubs.RequestParameterInjector1.class, cfg.getMethodConfig(TypeInjectorInterface.M).getParamConfig(0).getInjector().getClass());
-        assertEquals(DefaultRequestInjector.class, cfg.getMethodConfig(TypeInjectorInterface.M).getParamConfig(1).getInjector().getClass());
+        assertEquals(DefaultInjector.class, cfg.getMethodConfig(TypeInjectorInterface.M).getParamConfig(1).getInjector().getClass());
     }
 
-    @RestInjector(Stubs.RequestParameterInjector1.class)
+    @Injector(Stubs.RequestParameterInjector1.class)
+    @Name("my-specific-name")
+    @Serializer(Stubs.Serializer3.class)
     static class Model {
 
     }
 
-    @RestApi(endPoint = "http://dd")
+    @EndPoint("http://dd")
     static interface RestInjectorOverrideInterface {
-        void get(@RestParam(injector = Stubs.RequestParameterInjector2.class) Model m);
+        void get(
+                @Injector(Stubs.RequestParameterInjector2.class)
+                @Name("interface-overrides")
+                @Serializer(Stubs.Serializer2.class) Model m);
+
+        void get2(Model m);
 
         Method M = TestUtils.getMethod(RestInjectorOverrideInterface.class, "get", Model.class);
+        Method M2 = TestUtils.getMethod(RestInjectorOverrideInterface.class, "get2", Model.class);
     }
 
-    @RestApi(endPoint = "http://dd")
+    @EndPoint("http://dd")
     static interface TypeInjectorInterface {
         void get(Model m, Model[] ms);
 
         Method M = TestUtils.getMethod(TypeInjectorInterface.class, "get", Model.class, Model[].class);
     }
 
-    @RestApi(endPoint = "http://localhost:8080", path = "/my-path")
+    @EndPoint("http://localhost:8080")
+    @ContextPath("/my-path")
     interface MinimallyAnnotatedInterface extends Interface {
-        @Override
-        @RestMethod(path = "/m1")
+        @Path("/m1")
         Object m1();
 
-        @Override
         Object m1(String a);
 
-        @Override
-        @RestMethod(path = "/m1")
+        @Path("/m1")
         Object m1(String a, int b);
 
-        @Override
-        @RestMethod()
         Object m1(String a, int[] b);
 
-        @Override
-        @RestMethod(path = "/m2/1")
+        @Path("/m2/1")
         void m2();
 
-        @Override
         void m2(float f, String... a);
     }
 
-    @RestApi(
-            endPoint = "http://localhost:8080",
-            path = "/my-path",
-            paramsSerializer = Stubs.Serializer1.class,
-            paramsInjector = Stubs.RequestParameterInjector1.class
-    )
+    @EndPoint("http://localhost:8080")
+    @ContextPath("/my-path")
+    @Serializer(Stubs.Serializer1.class)
+    @Injector(Stubs.RequestParameterInjector1.class)
     interface PartiallyAnnotatedInterface extends Interface {
 
-        @Override
-        @RestMethod(
-                path = "/m1",
-                responseHandler = Stubs.ResponseHandler1.class
-        )
+        @Path("/m1")
+        @ResponseHandler(Stubs.ResponseHandler1.class)
         Object m1();
 
-        @Override
-        @RestMethod(
-                path = "/m1",
-                method = "POST",
-                paramsSerializer = Stubs.Serializer2.class
-        )
-        Object m1(@RestParam(serializer = Stubs.Serializer3.class, injector = Stubs.RequestParameterInjector3.class) String a);
+        @Path("/m1")
+        @HttpMethod(POST)
+        @Serializer(Stubs.Serializer2.class)
+        Object m1(@Serializer(Stubs.Serializer3.class) @Injector(Stubs.RequestParameterInjector3.class) String a);
 
-        @Override
-        @RestMethod(path = "/m1", paramsInjector = Stubs.RequestParameterInjector2.class)
-        Object m1(String a, @RestParam(name = "c") int b);
+        @Path("/m1") @Injector(Stubs.RequestParameterInjector2.class)
+        Object m1(String a, @Name("c") int b);
 
-        @Override
-        @RestMethod(path = "/m1", paramsInjector = Stubs.RequestParameterInjector2.class)
-        Object m1(String a, @RestParam(name = "c") int[] b);
+        @Path("/m1") @Injector(Stubs.RequestParameterInjector2.class)
+        Object m1(String a, @Name("c") int[] b);
 
 
-        @Override
-        @RestMethod(
-                path = "/m2/1",
-                method = "GET",
-                socketTimeout = 11,
-                connectionTimeout = 12)
+        @Path("/m2/1")
+        @HttpMethod(GET)
+        @SocketTimeout(11)
+        @ConnectionTimeout(12)
         void m2();
 
-        @Override
         void m2(float f, String... a);
     }
 
-    @RestApi(
-            endPoint = "http://localhost:8080",
-            path = "/my-path",
-            methodsSocketTimeout = 1,
-            methodsConnectionTimeout = 2,
-            encoding = "utf-8",
-            methodsPath = "/hello",
-            methodsHttpMethod = HttpMethod.DELETE,
-            requestInterceptor = Stubs.RequestInterceptor1.class,
-            methodsRequestInterceptor = Stubs.RequestInterceptor1.class,
-            methodsResponseHandler = Stubs.ResponseHandler1.class,
-            paramsSerializer = Stubs.Serializer1.class,
-            paramsName = "name",
-            paramsDestination = Destination.BODY,
-            paramsInjector = Stubs.RequestParameterInjector1.class,
-            methodsErrorHandler = Stubs.ErrorHandler1.class
-    )
+    @EndPoint("http://localhost:8080")
+    @ContextPath("/my-path")
+    @SocketTimeout( 1)
+    @ConnectionTimeout( 2)
+    @Encoding( "utf-8")
+    @Path( "/hello")
+    @HttpMethod( DELETE)
+    @GlobalInterceptor(Stubs.RequestInterceptor1.class)
+    @RequestInterceptor( Stubs.RequestInterceptor1.class)
+    @ResponseHandler( Stubs.ResponseHandler1.class)
+    @Serializer( Stubs.Serializer1.class)
+    @Name( "name")
+    @Destination(BODY)
+    @Injector( Stubs.RequestParameterInjector1.class)
+    @ErrorHandler( Stubs.ErrorHandler1.class)
     interface FullyAnnotatedInterface extends Interface {
 
 
-        @RestMethod(
-                path = "/m1",
-                method = "PUT",
-                socketTimeout = 3,
-                connectionTimeout = 4,
-                paramsName = "name1",
-                paramsDestination = "URL",
-                requestInterceptor = Stubs.RequestInterceptor3.class,
-                responseHandler = Stubs.ResponseHandler1.class,
-                paramsSerializer = Stubs.Serializer3.class,
-                paramsInjector = Stubs.RequestParameterInjector2.class,
-                errorHandler = Stubs.ErrorHandler2.class
-        )
-        @Override
+        @Path("/m1")
+        @HttpMethod(PUT)
+        @SocketTimeout(3)
+        @ConnectionTimeout(4)
+        @Name("name1")
+        @Destination(URL)
+        @RequestInterceptor(Stubs.RequestInterceptor3.class)
+        @ResponseHandler(Stubs.ResponseHandler1.class)
+        @Serializer(Stubs.Serializer3.class)
+        @Injector ( Stubs.RequestParameterInjector2.class)
+        @ErrorHandler ( Stubs.ErrorHandler2.class)
         Object m1();
 
-        @RestMethod(
-                path = "/m1",
-                method = "POST",
-                socketTimeout = 5,
-                connectionTimeout = 6,
-                paramsName = "name1",
-                paramsDestination = "URL",
-                requestInterceptor = Stubs.RequestInterceptor2.class,
-                responseHandler = Stubs.ResponseHandler2.class,
-                paramsSerializer = Stubs.Serializer2.class,
-                paramsInjector = Stubs.RequestParameterInjector2.class
-        )
-        @Override
+        @Path("/m1")
+        @HttpMethod(POST)
+        @SocketTimeout(5)
+        @ConnectionTimeout(6)
+        @Name("name1")
+        @Destination(URL)
+        @RequestInterceptor(Stubs.RequestInterceptor2.class)
+        @ResponseHandler(Stubs.ResponseHandler2.class)
+        @Serializer(Stubs.Serializer2.class)
+        @Injector(Stubs.RequestParameterInjector2.class)
         Object m1(
-                @RestParam(
-                        name = "a",
-                        destination = "URL",
-                        serializer = Stubs.Serializer3.class,
-                        injector = Stubs.RequestParameterInjector3.class
-                ) String a
+                @Name("a")
+                @Destination(URL)
+                @Serializer(Stubs.Serializer3.class)
+                @Injector(Stubs.RequestParameterInjector3.class)
+                String a
         );
 
-        @RestMethod(
-                path = "/m1",
-                method = "DELETE",
-                socketTimeout = 7,
-                connectionTimeout = 8,
-                paramsName = "name2",
-                paramsDestination = "URL",
-                requestInterceptor = Stubs.RequestInterceptor3.class,
-                responseHandler = Stubs.ResponseHandler1.class,
-                paramsSerializer = Stubs.Serializer3.class
-        )
-        @Override
+        @Path("/m1")
+        @HttpMethod(DELETE)
+        @SocketTimeout(7)
+        @ConnectionTimeout(8)
+        @Name("name2")
+        @Destination(URL)
+        @RequestInterceptor(Stubs.RequestInterceptor3.class)
+        @ResponseHandler(Stubs.ResponseHandler1.class)
+        @Serializer(Stubs.Serializer3.class)
         Object m1(
-                @RestParam(
-                        name = "b",
-                        destination = "BODY",
-                        serializer = Stubs.Serializer1.class,
-                        injector = Stubs.RequestParameterInjector3.class
-                ) String a,
-                @RestParam(
-                        name = "c",
-                        destination = "URL",
-                        serializer = Stubs.Serializer2.class
-                ) int b);
+                @Name("b")
+                @Destination(BODY)
+                @Serializer(Stubs.Serializer1.class)
+                @Injector(Stubs.RequestParameterInjector3.class)
+                String a,
+                @Name("c")
+                @Destination(URL)
+                @Serializer(Stubs.Serializer2.class)
+                int b);
 
-        @RestMethod(
-                path = "/m1",
-                method = "HEAD",
-                socketTimeout = 9,
-                connectionTimeout = 10,
-                paramsName = "name2",
-                paramsDestination = "URL",
-                requestInterceptor = Stubs.RequestInterceptor1.class,
-                responseHandler = Stubs.ResponseHandler1.class,
-                paramsSerializer = Stubs.Serializer1.class
-        )
-        @Override
+        @Path("/m1")
+        @HttpMethod(HEAD)
+        @SocketTimeout(9)
+        @ConnectionTimeout(10)
+        @Name("name2")
+        @Destination(URL)
+        @RequestInterceptor(Stubs.RequestInterceptor1.class)
+        @ResponseHandler(Stubs.ResponseHandler1.class)
+        @Serializer(Stubs.Serializer1.class)
         Object m1(
-                @RestParam(
-                        name = "d",
-                        destination = "URL",
-                        serializer = Stubs.Serializer1.class
-                ) String a,
-                @RestParam(
-                        name = "e",
-                        destination = "BODY",
-                        serializer = Stubs.Serializer3.class
-                ) int[] b);
+                @Name("d")
+                @Destination(URL)
+                @Serializer(Stubs.Serializer1.class)
+                String a,
+                @Name("e")
+                @Destination(BODY)
+                @Serializer(Stubs.Serializer3.class)
+                int[] b);
 
 
-        @RestMethod(
-                path = "/m2/1",
-                method = "GET",
-                socketTimeout = 11,
-                connectionTimeout = 12,
-                paramsName = "name2",
-                paramsDestination = "URL",
-                requestInterceptor = Stubs.RequestInterceptor3.class,
-                responseHandler = Stubs.ResponseHandler1.class,
-                paramsSerializer = Stubs.Serializer1.class
-        )
-        @Override
+        @Path("/m2/1")
+        @HttpMethod(GET)
+        @SocketTimeout(11)
+        @ConnectionTimeout(12)
+        @Name("name2")
+        @Destination(URL)
+        @RequestInterceptor(Stubs.RequestInterceptor3.class)
+        @ResponseHandler(Stubs.ResponseHandler1.class)
+        @Serializer(Stubs.Serializer1.class)
         void m2();
 
-        @RestMethod(
-                path = "/m2/2",
-                method = "POST",
-                socketTimeout = 13,
-                connectionTimeout = 14,
-                paramsName = "name2",
-                paramsDestination = "URL",
-                requestInterceptor = Stubs.RequestInterceptor2.class,
-                responseHandler = Stubs.ResponseHandler2.class,
-                paramsSerializer = Stubs.Serializer2.class
-        )
-        @Override
+        @Path("/m2/2")
+        @HttpMethod(POST)
+        @SocketTimeout(13)
+        @ConnectionTimeout(14)
+        @Name("name2")
+        @Destination(URL)
+        @RequestInterceptor(Stubs.RequestInterceptor2.class)
+        @ResponseHandler(Stubs.ResponseHandler2.class)
+        @Serializer(Stubs.Serializer2.class)
         void m2(
-                @RestParam(
-                        name = "f",
-                        destination = "URL",
-                        serializer = Stubs.Serializer3.class
-                ) float f,
-                @RestParam(
-                        name = "g",
-                        destination = "URL",
-                        serializer = Stubs.Serializer1.class
-                ) String... a);
+                @Name("f")
+                @Destination(URL)
+                @Serializer(Stubs.Serializer3.class)
+                float f,
+                @Name("g")
+                @Destination(URL)
+                @Serializer(Stubs.Serializer1.class)
+                String... a);
     }
 
 
-    @RestApi(
-            endPoint = "http://test-server:8080",
-            path = "/path",
-            methodsSocketTimeout = 15,
-            methodsConnectionTimeout = 10,
-            encoding = "utf-8"
-    )
+    @EndPoint("http://test-server:8080")
+    @ContextPath("/path")
+    @SocketTimeout(15)
+    @ConnectionTimeout(10)
+    @Encoding("utf-8")
     public static interface Rest {
 
-        @RestMethod(path = "/aaa?b={1}&a={0}")
+        @Path("/aaa?b={1}&a={0}")
         void aaa(int a, String[] b);
 
         Method AAA = TestUtils.getMethod(Rest.class, "aaa", int.class, String[].class);
 
-        @RestMethod(path = "/bbb/{2}?b={1}&a={0}", connectionTimeout = 55)
-        void bbb(@RestParam(serializer = Stubs.Serializer2.class) int a, String[] b, @RestParam String c);
+        @Path("/bbb/{2}?b={1}&a={0}")
+        @ConnectionTimeout(55)
+        void bbb(@Serializer(Stubs.Serializer2.class) int a, String[] b, String c);
 
         Method BBB = TestUtils.getMethod(Rest.class, "bbb", int.class, String[].class, String.class);
 
-        @RestMethod(path = "/ccc/{0}?aa={1}", method = "POST")
+        @Path("/ccc/{0}?aa={1}")
+        @HttpMethod(POST)
         void ccc(
-                @RestParam(destination = "URL") int a,
-                @RestParam(destination = "URL") int d,
-                @RestParam(destination = "BODY", name = "bb") String[] b);
+                @Destination(URL) int a,
+                @org.codegist.crest.annotate.Destination(URL) int d,
+                @Destination(BODY) @Name("bb") String[] b);
 
         Method CCC = TestUtils.getMethod(Rest.class, "ccc", int.class, int.class, String[].class);
 
-        @RestMethod(path = "/ddd?c={2}", method = "POST")
+        @Path("/ddd?c={2}")
+        @HttpMethod(POST)
         Object ddd(
-                @RestParam(destination = "BODY"/*, requestInterceptor = SimpleAnnotatedBeanAssembler.class*/) Object a,
-                @RestParam(destination = "BODY", name = "bb") String[] b,
+                @Destination(BODY) Object a,
+                @Destination(BODY) @Name("bb") String[] b,
                 String c);
 
         Method DDD = TestUtils.getMethod(Rest.class, "ddd", Object.class, String[].class, String.class);
 
         InterfaceConfig CONFIG = new ConfigBuilders.InterfaceConfigBuilder(Rest.class, "http://test-server:8080")
-                .setPath("/path")
+                .setContextPath("/path")
                 .setMethodsSocketTimeout(15l)
                 .setMethodsConnectionTimeout(10l)
                 .setEncoding("utf-8")
@@ -366,15 +332,15 @@ public class AnnotationDrivenInterfaceConfigFactoryTest extends AbstractInterfac
                 .startParamConfig(0).setSerializer(new Stubs.Serializer2()).endParamConfig()
                 .endMethodConfig()
                 .startMethodConfig(CCC).setPath("/ccc/{0}?aa={1}")
-                .setHttpMethod(HttpMethod.POST)
-                .startParamConfig(0).setDestination("URL").endParamConfig()
-                .startParamConfig(1).setDestination("URL").endParamConfig()
-                .startParamConfig(2).setDestination("BODY").setName("bb").endParamConfig()
+                .setHttpMethod(POST)
+                .startParamConfig(0).setDestination(URL).endParamConfig()
+                .startParamConfig(1).setDestination(URL).endParamConfig()
+                .startParamConfig(2).setDestination(BODY).setName("bb").endParamConfig()
                 .endMethodConfig()
                 .startMethodConfig(DDD).setPath("/ddd?c={2}")
-                .setHttpMethod(HttpMethod.POST)
-                .startParamConfig(0).setDestination("BODY")/*.setAssembler(new SimpleAnnotatedBeanAssembler())*/.endParamConfig()
-                .startParamConfig(1).setDestination("BODY").setName("bb").endParamConfig()
+                .setHttpMethod(POST)
+                .startParamConfig(0).setDestination(BODY)/*.setAssembler(new SimpleAnnotatedBeanAssembler())*/.endParamConfig()
+                .startParamConfig(1).setDestination(BODY).setName("bb").endParamConfig()
                 .endMethodConfig()
                 .build();
     }

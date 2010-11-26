@@ -20,7 +20,6 @@
 
 package org.codegist.crest;
 
-import org.codegist.common.lang.Strings;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpStatus;
 import org.apache.http.HttpVersion;
@@ -48,6 +47,7 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
+import org.codegist.common.lang.Strings;
 
 import java.io.File;
 import java.io.IOException;

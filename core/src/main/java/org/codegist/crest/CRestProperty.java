@@ -127,21 +127,21 @@ public interface CRestProperty {
     String CONFIG_INTERFACE_DEFAULT_ENCODING = "config.interface.default.encoding";
 
     /**
-     * override the default path {@link org.codegist.crest.config.InterfaceConfig#DEFAULT_PATH}.
+     * override the default path {@link org.codegist.crest.config.InterfaceConfig#DEFAULT_CONTEXT_PATH}.
      * <p>Expects a string.
      *
      * @see org.codegist.crest.CRestContext#getProperties()
      */
-    String CONFIG_INTERFACE_DEFAULT_PATH = "config.interface.default.path";
+    String CONFIG_INTERFACE_DEFAULT_CONTEXT_PATH = "config.interface.default.path";
 
     /**
-     * override the default global request interceptor {@link org.codegist.crest.config.InterfaceConfig#DEFAULT_REQUEST_INTERCEPTOR}.
+     * override the default global request interceptor {@link org.codegist.crest.config.InterfaceConfig#DEFAULT_GLOBAL_INTERCEPTOR}.
      * <p>Expects an instance of {@link org.codegist.crest.interceptor.RequestInterceptor}.
      *
      * @see org.codegist.crest.interceptor.RequestInterceptor
      * @see org.codegist.crest.CRestContext#getProperties()
      */
-    String CONFIG_INTERFACE_DEFAULT_REQUEST_INTERCEPTOR = "config.interface.default.request-interceptor";
+    String CONFIG_INTERFACE_DEFAULT_GLOBAL_INTERCEPTOR = "config.interface.default.request-interceptor";
 
 
     /*********************************************************
@@ -224,9 +224,9 @@ public interface CRestProperty {
 
     /**
      * override the default injector {@link org.codegist.crest.config.ParamConfig#DEFAULT_INJECTOR}.
-     * <p>Expects an instance of {@link org.codegist.crest.injector.RequestInjector}.
+     * <p>Expects an instance of {@link org.codegist.crest.injector.Injector}.
      *
-     * @see org.codegist.crest.injector.RequestInjector
+     * @see org.codegist.crest.injector.Injector
      * @see org.codegist.crest.CRestContext#getProperties()
      */
     String CONFIG_PARAM_DEFAULT_INJECTOR = "config.param.default.injector";

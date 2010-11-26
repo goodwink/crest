@@ -20,11 +20,12 @@
 
 package org.codegist.crest.config;
 
-import org.codegist.common.lang.Strings;
 import org.codegist.crest.ErrorHandler;
 import org.codegist.crest.HttpMethod;
 import org.codegist.crest.ResponseHandler;
-import org.codegist.crest.injector.RequestInjector;
+import org.codegist.crest.annotate.Destination;
+import org.codegist.crest.annotate.Name;
+import org.codegist.crest.injector.Injector;
 import org.codegist.crest.interceptor.CompositeRequestInterceptor;
 import org.codegist.crest.interceptor.RequestInterceptor;
 import org.codegist.crest.serializer.Serializer;
@@ -90,14 +91,19 @@ public final class Configs {
     }
 
     @SuppressWarnings("unchecked")
-    static Class<? extends RequestInjector> chooseInjector(Class<? extends RequestInjector> typeInjector, String interfaceInjectorClassName) throws ClassNotFoundException {
-        if (Strings.isBlank(interfaceInjectorClassName)) return typeInjector;
-        return chooseInjector(typeInjector, (Class<? extends RequestInjector>) Class.forName(interfaceInjectorClassName));
-    }
+    static ConfigBuilders.ParamConfigBuilder injectAnnotatedConfig(ConfigBuilders.ParamConfigBuilder config, Class<?> paramType) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+        /* Params type specifics */
+        org.codegist.crest.annotate.Serializer serializer = (org.codegist.crest.annotate.Serializer) paramType.getAnnotation(org.codegist.crest.annotate.Serializer.class);
+        Name name = (Name) paramType.getAnnotation(Name.class);
+        Destination destination = (Destination) paramType.getAnnotation(org.codegist.crest.annotate.Destination.class);
+        org.codegist.crest.annotate.Injector injector = (org.codegist.crest.annotate.Injector) paramType.getAnnotation(org.codegist.crest.annotate.Injector.class);
 
-    static Class<? extends RequestInjector> chooseInjector(Class<? extends RequestInjector> typeInjector, Class<? extends RequestInjector> interfaceInjector) {
-        // interface injector takes priority over type injector
-        return interfaceInjector != null ? interfaceInjector : typeInjector;
+        if(serializer != null) config.setSerializer(serializer.value());
+        if(name != null) config.setName(name.value());
+        if(destination != null) config.setDestination(destination.value());
+        if(injector != null) config.setInjector(injector.value());
+
+        return config;
     }
 
 
@@ -116,7 +122,7 @@ public final class Configs {
         }
 
         @Override
-        public Destination getDestination() {
+        public org.codegist.crest.config.Destination getDestination() {
             return override.getDestination() != null ? override.getDestination() : base.getDestination();
         }
 
@@ -125,7 +131,7 @@ public final class Configs {
             return override.getName() != null ? override.getName() : base.getName();
         }
 
-        public RequestInjector getInjector() {
+        public Injector getInjector() {
             return override.getInjector() != null ? override.getInjector() : base.getInjector();
         }
     }
@@ -220,8 +226,8 @@ public final class Configs {
         }
 
         @Override
-        public String getServer() {
-            return override.getServer() != null ? override.getServer() : base.getServer();
+        public String getEndPoint() {
+            return override.getEndPoint() != null ? override.getEndPoint() : base.getEndPoint();
         }
 
         @Override
@@ -230,18 +236,18 @@ public final class Configs {
         }
 
         @Override
-        public String getPath() {
-            return override.getPath() != null ? override.getPath() : base.getPath();
+        public String getContextPath() {
+            return override.getContextPath() != null ? override.getContextPath() : base.getContextPath();
         }
 
         @Override
-        public RequestInterceptor getRequestInterceptor() {
-            if (override.getRequestInterceptor() == null) {
-                return base.getRequestInterceptor();
-            } else if (base.getRequestInterceptor() == null) {
-                return override.getRequestInterceptor();
+        public RequestInterceptor getGlobalInterceptor() {
+            if (override.getGlobalInterceptor() == null) {
+                return base.getGlobalInterceptor();
+            } else if (base.getGlobalInterceptor() == null) {
+                return override.getGlobalInterceptor();
             } else {
-                return new CompositeRequestInterceptor(override.getRequestInterceptor(), base.getRequestInterceptor());
+                return new CompositeRequestInterceptor(override.getGlobalInterceptor(), base.getGlobalInterceptor());
             }
         }
 

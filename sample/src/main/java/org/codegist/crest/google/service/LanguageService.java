@@ -20,8 +20,10 @@
 
 package org.codegist.crest.google.service;
 
-import org.codegist.crest.annotate.RestApi;
-import org.codegist.crest.annotate.RestMethod;
+import org.codegist.crest.annotate.ContextPath;
+import org.codegist.crest.annotate.EndPoint;
+import org.codegist.crest.annotate.Path;
+import org.codegist.crest.annotate.ResponseHandler;
 import org.codegist.crest.google.domain.LanguageGuess;
 import org.codegist.crest.google.domain.Translation;
 import org.codegist.crest.google.handler.GoogleResponseHandler;
@@ -29,13 +31,15 @@ import org.codegist.crest.google.handler.GoogleResponseHandler;
 /**
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
-@RestApi(endPoint = "http://ajax.googleapis.com", path = "/ajax/services/language", methodsResponseHandler = GoogleResponseHandler.class)
+@EndPoint("http://ajax.googleapis.com")
+@ContextPath("/ajax/services/language")
+@ResponseHandler(GoogleResponseHandler.class)
 public interface LanguageService {
 
-    @RestMethod(path = "/detect?v=1.0&q={0}")
+    @Path("/detect?v=1.0&q={0}")
     LanguageGuess detectLanguage(String text);
 
-    @RestMethod(path = "/translate?v=1.0&q={0}&langpair={1}%7C{2}")
+    @Path("/translate?v=1.0&q={0}&langpair={1}%7C{2}")
     Translation translate(String text, String from, String to);
 
 }

@@ -20,103 +20,122 @@
 
 package org.codegist.crest.config;
 
+import org.codegist.common.reflect.Methods;
 import org.codegist.crest.CRestContext;
-import org.codegist.crest.annotate.RestApi;
-import org.codegist.crest.annotate.RestMethod;
-import org.codegist.crest.annotate.RestParam;
-import org.codegist.crest.injector.RequestInjector;
-import org.codegist.crest.injector.RequestInjectors;
+import org.codegist.crest.annotate.*;
+import org.codegist.crest.annotate.Destination;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.Map;
 
 /**
  * <p>Annotation based config factory of any possible interfaces given to the factory.
- * <p>The factory will lookup the given interface for the following annotation :
- * <p>- {@link org.codegist.crest.annotate.RestApi}
- * <p>- {@link org.codegist.crest.annotate.RestMethod}
- * <p>- {@link org.codegist.crest.annotate.RestParam}
+ * <p>The factory will lookup any annotation in package {@link org.codegist.crest.annotate} on to the given interface.
  * <p/>
  * <p>- Each config fallback from param to method to interface until one config is found, otherwise defaults to any respective default value ({@link org.codegist.crest.config.InterfaceConfig}, {@link MethodConfig}, {@link PropertiesDrivenInterfaceFactory}).
- * <p>NB : the factory looks up all the method argument for the {@link org.codegist.crest.annotate.RestInjector} annotation in order to autoconfigure a param injector if not specified in the properties.
- * <p>- {@link org.codegist.crest.annotate.RestInjector}
- *
  * @see org.codegist.crest.config.InterfaceConfig
- * @see org.codegist.crest.annotate.RestApi
- * @see org.codegist.crest.annotate.RestMethod
- * @see org.codegist.crest.annotate.RestParam
- * @see org.codegist.crest.annotate.RestInjector
+ * @see org.codegist.crest.annotate
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
 public class AnnotationDrivenInterfaceConfigFactory implements InterfaceConfigFactory {
 
-
     public InterfaceConfig newConfig(Class<?> interfaze, CRestContext context) throws ConfigFactoryException {
         try {
-            RestApi restAPI = interfaze.getAnnotation(RestApi.class);
-            if (restAPI == null)
-                throw new IllegalArgumentException("RestAPI annotation (" + RestApi.class + ") not fould in interface (" + interfaze + ").");
+            /* Interface specifics */
+            EndPoint endPoint = interfaze.getAnnotation(EndPoint.class);
+            if(endPoint == null) {
+                throw new IllegalArgumentException(EndPoint.class + " annotation not fould on + " + interfaze);
+            }
+            ContextPath contextPath = interfaze.getAnnotation(ContextPath.class);
+            Encoding encoding = interfaze.getAnnotation(Encoding.class);
+            GlobalInterceptor globalInterceptor = interfaze.getAnnotation(GlobalInterceptor.class);
 
-            ConfigBuilders.InterfaceConfigBuilder config = new ConfigBuilders.InterfaceConfigBuilder(interfaze, restAPI.endPoint(), context.getProperties())
-                    .setPath(restAPI.path())
-                    .setMethodsSocketTimeout(restAPI.methodsSocketTimeout() == Fallbacks.FALLBACK_LONG ? null : restAPI.methodsSocketTimeout())
-                    .setMethodsConnectionTimeout(restAPI.methodsConnectionTimeout() == Fallbacks.FALLBACK_LONG ? null : restAPI.methodsConnectionTimeout())
-                    .setEncoding(restAPI.encoding())
-                    .setRequestInterceptor(restAPI.requestInterceptor())
-                    .setParamsSerializer(restAPI.paramsSerializer())
-                    .setParamsName(restAPI.paramsName())
-                    .setParamsDestination(restAPI.paramsDestination())
-                    .setParamsInjector(restAPI.paramsInjector())
-                    .setMethodsResponseHandler(restAPI.methodsResponseHandler())
-                    .setMethodsErrorHandler(restAPI.methodsErrorHandler())
-                    .setMethodsRequestInterceptor(restAPI.methodsRequestInterceptor())
-                    .setMethodsPath(restAPI.methodsPath())
-                    .setMethodsHttpMethod(restAPI.methodsHttpMethod());
+            /* Methods defaults */
+            Path path = interfaze.getAnnotation(Path.class);
+            SocketTimeout socketTimeout = interfaze.getAnnotation(SocketTimeout.class);
+            ConnectionTimeout connectionTimeout = interfaze.getAnnotation(ConnectionTimeout.class);
+            RequestInterceptor interceptor = interfaze.getAnnotation(RequestInterceptor.class);
+            ResponseHandler responseHandler = interfaze.getAnnotation(ResponseHandler.class);
+            ErrorHandler errorHandler = interfaze.getAnnotation(ErrorHandler.class);
+            HttpMethod httpMethod = interfaze.getAnnotation(HttpMethod.class);
+
+            /* Params defaults */
+            Serializer serializer = interfaze.getAnnotation(Serializer.class);
+            Name name = interfaze.getAnnotation(Name.class);
+            Destination destination = interfaze.getAnnotation(Destination.class);
+            Injector injector = interfaze.getAnnotation(Injector.class);
+
+            ConfigBuilders.InterfaceConfigBuilder config = new ConfigBuilders.InterfaceConfigBuilder(interfaze, endPoint.value(), context.getProperties());
+            if(contextPath != null) config.setContextPath(contextPath.value());
+            if(encoding != null) config.setEncoding(encoding.value());
+            if(globalInterceptor != null) config.setGlobalInterceptor(globalInterceptor.value());
+
+            if(path != null) config.setMethodsPath(path.value());
+            if(socketTimeout != null) config.setMethodsSocketTimeout(socketTimeout.value());
+            if(connectionTimeout != null) config.setMethodsConnectionTimeout(connectionTimeout.value());
+            if(interceptor != null) config.setMethodsRequestInterceptor(interceptor.value());
+            if(responseHandler != null) config.setMethodsResponseHandler(responseHandler.value());
+            if(errorHandler != null) config.setMethodsErrorHandler(errorHandler.value());
+            if(httpMethod != null) config.setMethodsHttpMethod(httpMethod.value());
+
+            if(serializer != null) config.setParamsSerializer(serializer.value());
+            if(name != null) config.setParamsName(name.value());
+            if(destination != null) config.setParamsDestination(destination.value());
+            if(injector != null) config.setParamsInjector(injector.value());
+
 
             for (Method meth : interfaze.getDeclaredMethods()) {
-                RestMethod restAPIMethod = meth.getAnnotation(RestMethod.class);
+                /* Methods specifics */
+                path = meth.getAnnotation(Path.class);
+                socketTimeout = meth.getAnnotation(SocketTimeout.class);
+                connectionTimeout = meth.getAnnotation(ConnectionTimeout.class);
+                interceptor = meth.getAnnotation(RequestInterceptor.class);
+                responseHandler = meth.getAnnotation(ResponseHandler.class);
+                errorHandler = meth.getAnnotation(ErrorHandler.class);
+                httpMethod = meth.getAnnotation(HttpMethod.class);
+
+                /* Params defaults */
+                serializer = meth.getAnnotation(Serializer.class);
+                name = meth.getAnnotation(Name.class);
+                destination = meth.getAnnotation(Destination.class);
+                injector = meth.getAnnotation(Injector.class);
+
                 ConfigBuilders.MethodConfigBuilder methodConfigBuilder = config.startMethodConfig(meth);
 
-                if (restAPIMethod != null) {
-                    methodConfigBuilder.setIgnoreNullOrEmptyValues(true)
-                            .setPath(Fallbacks.FALLBACK_STRING.equals(restAPIMethod.path()) ? null : restAPIMethod.path())
-                            .setHttpMethod(Fallbacks.FALLBACK_STRING.equals(restAPIMethod.method()) ? null : restAPIMethod.method())
-                            .setSocketTimeout(restAPIMethod.socketTimeout() == Fallbacks.FALLBACK_LONG ? null : restAPIMethod.socketTimeout())
-                            .setConnectionTimeout(restAPIMethod.connectionTimeout() == Fallbacks.FALLBACK_LONG ? null : restAPIMethod.connectionTimeout())
-                            .setParamsName(Fallbacks.FALLBACK_STRING.equals(restAPIMethod.paramsName()) ? null : restAPIMethod.paramsName())
-                            .setParamsDestination(Fallbacks.FALLBACK_STRING.equals(restAPIMethod.paramsDestination()) ? null : restAPIMethod.paramsDestination())
-                            .setParamsSerializer(Fallbacks.FallbackSerializer.class.equals(restAPIMethod.paramsSerializer()) ? null : restAPIMethod.paramsSerializer())
-                            .setParamsInjector(Fallbacks.FallbackRequestParameterInjector.class.equals(restAPIMethod.paramsInjector()) ? null : restAPIMethod.paramsInjector())
-                            .setRequestInterceptor(Fallbacks.FallbackMethodInterceptor.class.equals(restAPIMethod.requestInterceptor()) ? null : restAPIMethod.requestInterceptor())
-                            .setResponseHandler(Fallbacks.FallbackResponseHandler.class.equals(restAPIMethod.responseHandler()) ? null : restAPIMethod.responseHandler())
-                            .setErrorHandler(Fallbacks.FallbackErrorHandler.class.equals(restAPIMethod.errorHandler()) ? null : restAPIMethod.errorHandler());
-                }
+                if(path != null) methodConfigBuilder.setPath(path.value());
+                if(socketTimeout != null) methodConfigBuilder.setSocketTimeout(socketTimeout.value());
+                if(connectionTimeout != null) methodConfigBuilder.setConnectionTimeout(connectionTimeout.value());
+                if(interceptor != null) methodConfigBuilder.setRequestInterceptor(interceptor.value());
+                if(responseHandler != null) methodConfigBuilder.setResponseHandler(responseHandler.value());
+                if(errorHandler != null) methodConfigBuilder.setErrorHandler(errorHandler.value());
+                if(httpMethod != null) methodConfigBuilder.setHttpMethod(httpMethod.value());
 
-                Annotation[][] annotations = meth.getParameterAnnotations();
-                int i = 0;
-                for (Annotation[] anns : annotations) {
-                    boolean added = false;
-                    Class<? extends RequestInjector> typeInjector = RequestInjectors.getAnnotatedInjectorFor(meth.getParameterTypes()[i]);
+                if(name != null) methodConfigBuilder.setParamsName(name.value());
+                if(destination != null) methodConfigBuilder.setParamsDestination(destination.value());
+                if(serializer != null) methodConfigBuilder.setParamsSerializer(serializer.value());
+                if(injector != null) methodConfigBuilder.setParamsInjector(injector.value());
+
+                for(int i = 0, max = meth.getParameterTypes().length; i < max ; i++){
+                    Map<Class<? extends Annotation>,Annotation> paramAnnotations = Methods.getParamsAnnotation(meth, i);
+                    //Class<? extends RequestInjector> typeInjector = RequestInjectors.getAnnotatedInjectorFor(meth.getParameterTypes()[i]);
                     ConfigBuilders.ParamConfigBuilder paramConfigBuilder = methodConfigBuilder.startParamConfig(i);
-                    for (Annotation anno : anns) {
-                        if (anno instanceof RestParam) {
-                            RestParam restParam = (RestParam) anno;
-                            Class<? extends RequestInjector> interfaceInjector = Fallbacks.FallbackRequestParameterInjector.class.equals(restParam.injector()) ? null : restParam.injector();
-                            paramConfigBuilder.setIgnoreNullOrEmptyValues(true)
-                                    .setName(Fallbacks.FALLBACK_STRING.equals(restParam.name()) ? null : restParam.name())
-                                    .setDestination(Fallbacks.FALLBACK_STRING.equals(restParam.destination()) ? null : restParam.destination())
-                                    .setInjector(Configs.chooseInjector(typeInjector, interfaceInjector))
-                                    .setSerializer(Fallbacks.FallbackSerializer.class.equals(restParam.serializer()) ? null : restParam.serializer());
 
-                            added = true;
-                            break;
-                        }
-                    }
-                    if (typeInjector != null && !added) {
-                        paramConfigBuilder.setInjector(typeInjector);
-                    }
+                    // Injects user type annotated config.
+                    Configs.injectAnnotatedConfig(paramConfigBuilder, meth.getParameterTypes()[i]);
+
+                    /* Params specifics - Override user annotated config */
+                    serializer = (Serializer) paramAnnotations.get(Serializer.class);
+                    name = (Name) paramAnnotations.get(Name.class);
+                    destination = (org.codegist.crest.annotate.Destination) paramAnnotations.get(Destination.class);
+                    injector = (Injector) paramAnnotations.get(Injector.class);
+
+                    if(serializer != null) paramConfigBuilder.setSerializer(serializer.value());
+                    if(name != null) paramConfigBuilder.setName(name.value());
+                    if(destination != null) paramConfigBuilder.setDestination(destination.value());
+                    if(injector != null) paramConfigBuilder.setInjector(injector.value());
+
                     paramConfigBuilder.endParamConfig();
-                    i++;
                 }
 
                 methodConfigBuilder.endMethodConfig();

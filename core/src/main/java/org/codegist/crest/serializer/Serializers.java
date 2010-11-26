@@ -21,7 +21,6 @@
 package org.codegist.crest.serializer;
 
 import org.codegist.common.collect.Maps;
-import org.codegist.common.lang.Objects;
 import org.codegist.common.lang.Strings;
 import org.codegist.common.reflect.Types;
 import org.codegist.crest.CRestProperty;

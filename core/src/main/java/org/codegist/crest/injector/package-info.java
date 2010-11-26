@@ -18,15 +18,7 @@
  * More information at http://www.codegist.org.
  */
 
-package org.codegist.crest.annotate.exploded;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE})
-public @interface ContextPath {
-    String value();
-}
+/**
+ * Injectors are used to inject any method parameter values in the http request before it gets fired. Can modify the http request as wanted.
+ */
+package org.codegist.crest.injector;

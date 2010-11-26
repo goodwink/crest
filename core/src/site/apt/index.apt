@@ -21,23 +21,27 @@ What is CRest
     Here is a quick example of what a <<CRest>> annotated interface looks like:
 
 +-----
-@RestApi(endPoint = "http://api.twitter.com", path = "/1/statuses")
+@EndPoint("http://api.twitter.com")
+@ContextPath("/1/statuses")
 public interface StatusService {
 
-    @RestMethod(path = "/retweets/{0}.json")
+    @Path("/retweets/{0}.json")
     Status[] getRetweets(long id);
 
-    @RestMethod(path = "/{0}/retweeted_by.json?count={1}&page={2}")
+    @Path("/{0}/retweeted_by.json?count={1}&page={2}")
     User[] getRetweetedBy(long id, long count, long page);
 
-    @RestMethod(path = "/{0}/retweeted_by/ids.json?count={1}&page={2}")
+    @Path("/{0}/retweeted_by/ids.json?count={1}&page={2}")
     long[] getRetweetedByIds(long id, long count, long page);
 
-    @RestMethod(method = "POST", path = "/update.json", paramsDestination = "BODY")
-    Status updateStatus(@RestParam(name = "status") String status);
+    @HttpMethod(POST)
+    @Path("/update.json")
+    @Destination(BODY)
+    Status updateStatus(@Name("status") String status);
 
-    @RestMethod(method = "POST", path = "/update.json?lat={1}&long={2}")
-    Status changeStatus(@RestParam(name = "status", destination = "BODY") String status, float lat, float longitude);
+    @HttpMethod(POST)
+    @Path("/update.json?lat={1}&long={2}")
+    Status changeStatus(@Name("status") @Destination(BODY) String status, float lat, float longitude);
 
 }
 +-----

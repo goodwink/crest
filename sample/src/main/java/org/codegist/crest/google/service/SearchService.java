@@ -20,8 +20,10 @@
 
 package org.codegist.crest.google.service;
 
-import org.codegist.crest.annotate.RestApi;
-import org.codegist.crest.annotate.RestMethod;
+import org.codegist.crest.annotate.ContextPath;
+import org.codegist.crest.annotate.EndPoint;
+import org.codegist.crest.annotate.Path;
+import org.codegist.crest.annotate.ResponseHandler;
 import org.codegist.crest.google.domain.Address;
 import org.codegist.crest.google.domain.SearchResult;
 import org.codegist.crest.google.handler.GoogleResponseHandler;
@@ -29,10 +31,12 @@ import org.codegist.crest.google.handler.GoogleResponseHandler;
 /**
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
-@RestApi(endPoint = "http://ajax.googleapis.com", path = "/ajax/services/search", methodsResponseHandler = GoogleResponseHandler.class)
+@EndPoint("http://ajax.googleapis.com")
+@ContextPath("/ajax/services/search")
+@ResponseHandler(GoogleResponseHandler.class)
 public interface SearchService {
 
-    @RestMethod(path = "/web?v=1.0&q={0}")
+    @Path("/web?v=1.0&q={0}")
     SearchResult<Address> search(String text);
 
 }

@@ -37,7 +37,7 @@ import java.net.URISyntaxException;
  * <p>On top of the behavior described in {@link org.codegist.crest.CRest}, this implementation adds :
  * <p>- {@link org.codegist.crest.interceptor.RequestInterceptor} to intercept any requests before it gets fired.
  * <p>- {@link org.codegist.crest.serializer.Serializer} to customize the serialization process of any types.
- * <p>- {@link org.codegist.crest.injector.RequestInjector} to inject complexe types that can't be reduced to a String via the serializers.
+ * <p>- {@link org.codegist.crest.injector.Injector} to inject complexe types that can't be reduced to a String via the serializers.
  * <p>- {@link org.codegist.crest.ResponseHandler} to customize response handling when interface method's response type is not one of raw types.
  * <p>- {@link org.codegist.crest.ErrorHandler} to customize how the created interface behaves when any error occurs during the method call process.
  * @author Laurent Gilles (laurent.gilles@codegist.org)
@@ -140,13 +140,13 @@ public class DefaultCRest implements CRest {
         }
 
         private HttpRequest buildRequest(RequestContext requestContext) throws URISyntaxException {
-            String fullpath = requestContext.getConfig().getServer() + Strings.defaultIfBlank(requestContext.getConfig().getPath(), "") + requestContext.getMethodConfig().getPath();
+            String fullpath = requestContext.getConfig().getEndPoint() + Strings.defaultIfBlank(requestContext.getConfig().getContextPath(), "") + requestContext.getMethodConfig().getPath();
             HttpRequest.Builder builder = new HttpRequest.Builder(fullpath, interfaceContext.getConfig().getEncoding())
                     .using(requestContext.getMethodConfig().getHttpMethod())
                     .timeoutSocketAfter(requestContext.getMethodConfig().getSocketTimeout())
                     .timeoutConnectionAfter(requestContext.getMethodConfig().getConnectionTimeout());
 
-            if (!requestContext.getConfig().getRequestInterceptor().beforeParamsInjectionHandle(builder, requestContext)) {
+            if (!requestContext.getConfig().getGlobalInterceptor().beforeParamsInjectionHandle(builder, requestContext)) {
                 // Request cancelled by global requestInterceptor, returning
                 return null;
             }
@@ -165,7 +165,7 @@ public class DefaultCRest implements CRest {
                 return null;
             }
 
-            if (!requestContext.getConfig().getRequestInterceptor().afterParamsInjectionHandle(builder, requestContext)) {
+            if (!requestContext.getConfig().getGlobalInterceptor().afterParamsInjectionHandle(builder, requestContext)) {
                 // Request cancelled by global requestInterceptor, returning
                 return null;
             }

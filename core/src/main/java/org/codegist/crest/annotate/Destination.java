@@ -18,13 +18,33 @@
  * More information at http://www.codegist.org.
  */
 
-package org.codegist.crest.annotate.exploded;
+package org.codegist.crest.annotate;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * <p>Optional method argument level annotation, sets the parameter destination in the request. If not specified, defaults to the parameter config default value.
+ * <p>Can be set at method level to default all method argument values if not specified at argument level.
+ * <p>Can be set at interface level to default all method argument values if not specified at method level.
+ * <p>Additionally, this annotation (with other parameter-specific annotation) can be used for any user class used as a method argument of a rest-binded interface, eg :
+ * <code>
+ * <pre>
+ * &#64;EndPoint("http://my-server")
+ * interface FooInterface {
+ *    MyModel getModel(long id, MyBean arg);
+ * }
+ * &#64;Destination(BODY)
+ * class MyBean {}
+ * </pre>
+ * </code>
+ * <p>For any call to FooInterface.getModel(long,MyBean), MyBean object will added in the request BODY.
+ * @see org.codegist.crest.config.ParamConfig#DEFAULT_DESTINATION
+ * @see org.codegist.crest.config.ParamConfig#getDestination()
+ * @author Laurent Gilles (laurent.gilles@codegist.org)
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE,ElementType.METHOD,ElementType.PARAMETER})
 public @interface Destination {

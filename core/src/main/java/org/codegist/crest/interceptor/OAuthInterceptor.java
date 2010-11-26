@@ -24,7 +24,6 @@ import org.codegist.common.codec.Base64;
 import org.codegist.crest.HttpRequest;
 import org.codegist.crest.Params;
 import org.codegist.crest.RequestContext;
-import static org.codegist.crest.CRestProperty.*;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -34,6 +33,8 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.*;
+
+import static org.codegist.crest.CRestProperty.*;
 
 /**
  * Simple OAuth interceptor, required a valid pregenerated access token. Only support HMAC-SHA1 signature method.
@@ -63,7 +64,6 @@ public class OAuthInterceptor extends RequestInterceptorAdapter {
     public static enum OAuthParamDest {
         URL, HEADERS
     }
-
 
     private volatile OAuthToken accessToken;
 

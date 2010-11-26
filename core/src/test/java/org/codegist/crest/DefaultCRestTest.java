@@ -27,8 +27,7 @@ import org.codegist.common.reflect.ProxyFactory;
 import org.codegist.crest.config.ConfigBuilders;
 import org.codegist.crest.config.InterfaceConfig;
 import org.codegist.crest.config.PreconfiguredInterfaceConfigFactory;
-import org.codegist.crest.injector.RequestInjector;
-import org.codegist.crest.serializer.DateSerializer;
+import org.codegist.crest.injector.Injector;
 import org.codegist.crest.serializer.Serializer;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -253,7 +252,7 @@ public class DefaultCRestTest {
         Method DDD = getMethod(Rest.class, "ddd", Model.class, String[].class, String.class);
 
         InterfaceConfig CONFIG = new ConfigBuilders.InterfaceConfigBuilder(Rest.class, "http://test-server:8080")
-                .setPath("/path")
+                .setContextPath("/path")
                 .setMethodsSocketTimeout(15l)
                 .setMethodsConnectionTimeout(10l)
                 .setEncoding("utf-8")
@@ -337,7 +336,7 @@ public class DefaultCRestTest {
      * Time: 12:58:49
      * To change this template use File | Settings | File Templates.
      */
-    static class AnnotatedBeanParamInjector implements RequestInjector {
+    static class AnnotatedBeanParamInjector implements Injector {
 
         @Override
         public void inject(HttpRequest.Builder builder, ParamContext context) {

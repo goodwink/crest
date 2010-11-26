@@ -50,17 +50,17 @@ public interface InterfaceConfig {
     /**
      * Default service url fragment applied when non specified.
      *
-     * @see org.codegist.crest.config.InterfaceConfig#getPath()
+     * @see org.codegist.crest.config.InterfaceConfig#getContextPath()
      */
-    String DEFAULT_PATH = "";
+    String DEFAULT_CONTEXT_PATH = "";
 
 
     /**
      * Default request interceptor applied when non specified.
      *
-     * @see org.codegist.crest.config.InterfaceConfig#getRequestInterceptor()
+     * @see org.codegist.crest.config.InterfaceConfig#getGlobalInterceptor()
      */
-    RequestInterceptor DEFAULT_REQUEST_INTERCEPTOR = new EmptyRequestInterceptor();
+    RequestInterceptor DEFAULT_GLOBAL_INTERCEPTOR = new EmptyRequestInterceptor();
 
     /*##############################################################################*/
 
@@ -76,14 +76,14 @@ public interface InterfaceConfig {
      *
      * @return server's path
      */
-    String getServer();
+    String getEndPoint();
 
     /**
-     * Service base path (eg: /base/service/path)
+     * Service base path (eg: /base/service/path). Full service path is then {@link InterfaceConfig#getEndPoint()} concatenated to this value.
      *
      * @return server's path
      */
-    String getPath();
+    String getContextPath();
 
     /**
      * Global service request interceptor.
@@ -95,7 +95,7 @@ public interface InterfaceConfig {
      *
      * @return global service request interceptor.
      */
-    RequestInterceptor getRequestInterceptor();
+    RequestInterceptor getGlobalInterceptor();
 
     /**
      * @return The interface being configured by the current object.

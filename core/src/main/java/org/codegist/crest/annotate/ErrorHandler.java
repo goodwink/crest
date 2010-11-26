@@ -18,23 +18,22 @@
  * More information at http://www.codegist.org.
  */
 
-package org.codegist.crest.config;
+package org.codegist.crest.annotate;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * Param destination.
+ * <p>Optional method level annotation, sets the method error handler. If not specified, defaults to the method config default value.
+ * <p>Can be set at interface level to default all interface method values if not specified at method level.
+ * @see org.codegist.crest.config.MethodConfig#DEFAULT_ERROR_HANDLER
+ * @see org.codegist.crest.config.MethodConfig#getErrorHandler()
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
-public enum Destination {
-    /**
-     * Use it to configure a parameter to be part of the http request queryString
-     */
-    URL,
-    /**
-     * Use it to configure a parameter to be part of the http request Body
-     */
-    BODY,
-    /**
-     * Use it to configure a parameter to be part of the http request Header
-     */
-    HEADER
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE,ElementType.METHOD})
+public @interface ErrorHandler {
+    Class<? extends org.codegist.crest.ErrorHandler> value();
 }

@@ -18,15 +18,23 @@
  * More information at http://www.codegist.org.
  */
 
-package org.codegist.crest.annotate.exploded;
+package org.codegist.crest.annotate;
+
+import org.codegist.crest.interceptor.RequestInterceptor;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * <p>Optional interface level annotation, sets the global interface interceptor. If not specified, defaults to the interface config default value.
+ * @see org.codegist.crest.config.InterfaceConfig#DEFAULT_GLOBAL_INTERCEPTOR
+ * @see org.codegist.crest.config.InterfaceConfig#getGlobalInterceptor()
+ * @author Laurent Gilles (laurent.gilles@codegist.org)
+ */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE,ElementType.METHOD})
-public @interface ErrorHandler {
-    Class<? extends org.codegist.crest.ErrorHandler> value();
+@Target({ElementType.TYPE})
+public @interface GlobalInterceptor {
+    Class<? extends RequestInterceptor> value();
 }

@@ -20,10 +20,10 @@
 
 package org.codegist.crest.flickr.service;
 
-import org.codegist.crest.HttpMethod;
-import org.codegist.crest.annotate.RestApi;
-import org.codegist.crest.annotate.RestMethod;
-import org.codegist.crest.annotate.RestParam;
+import static org.codegist.crest.HttpMethod.*;
+import static org.codegist.crest.config.Destination.*;
+
+import org.codegist.crest.annotate.*;
 import org.codegist.crest.flickr.handler.FlickrResponseHandler;
 import org.codegist.crest.flickr.interceptor.FlickrAuthInterceptor;
 import org.codegist.crest.flickr.model.Comment;
@@ -37,72 +37,72 @@ import java.util.Date;
  * see http://www.flickr.com/services/api/
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
-@RestApi(
-        endPoint = "http://flickr.com", path = "/services",
-        requestInterceptor = FlickrAuthInterceptor.class,
-        methodsResponseHandler = FlickrResponseHandler.class,
-        methodsHttpMethod = HttpMethod.POST
-)
+@EndPoint("http://flickr.com")
+@ContextPath("/services")
+@GlobalInterceptor(FlickrAuthInterceptor.class)
+@ResponseHandler(FlickrResponseHandler.class)
+@HttpMethod(POST)
 public interface Flickr {
 
-    @RestMethod(method = "GET", path = "/rest?method=flickr.blogs.getList")
+    @HttpMethod(GET)
+    @Path("/rest?method=flickr.blogs.getList")
     String getList();
 
-    @RestMethod(path = "/rest?method=flickr.galleries.create")
+    @Path("/rest?method=flickr.galleries.create")
     Gallery newGallery(
-            @RestParam(name = "title") String title,
-            @RestParam(name = "description") String description);
+            @Name("title") String title,
+            @Name("description") String description);
 
-    @RestMethod(path = "/rest?method=flickr.galleries.create")
+    @Path("/rest?method=flickr.galleries.create")
     Gallery newGallery(
-            @RestParam(name = "title") String title,
-            @RestParam(name = "description") String description,
-            @RestParam(name = "primary_photo_id") long primaryPhotoId);
+            @Name("title") String title,
+            @Name("description") String description,
+            @Name("primary_photo_id") long primaryPhotoId);
 
-    @RestMethod(path = "/rest?method=flickr.galleries.addPhoto&gallery_id={0}&photo_id={1}&comment={2}")
+    @Path("/rest?method=flickr.galleries.addPhoto&gallery_id={0}&photo_id={1}&comment={2}")
     void addPhotoToGallery(String galleryId, long photoId, String comment);
 
-    @RestMethod(path = "/rest?method=flickr.photos.comments.addComment&photo_id={0}&comment_text={1}")
+    @Path("/rest?method=flickr.photos.comments.addComment&photo_id={0}&comment_text={1}")
     String comment(long photoId, String comment);
 
-    @RestMethod(path = "/rest?method=flickr.photos.comments.editComment&comment_id={0}&comment_text={1}")
+    @Path("/rest?method=flickr.photos.comments.editComment&comment_id={0}&comment_text={1}")
     void editComment(String commentId, String comment);
 
-    @RestMethod(path = "/rest?method=flickr.photos.comments.getList&photo_id={0}")
+    @Path("/rest?method=flickr.photos.comments.getList&photo_id={0}")
     Comment[] getComments(long photoId);
 
-    @RestMethod(path = "/rest?method=flickr.photos.comments.getList&photo_id={0}&min_comment_date={1}&max_comment_date={2}")
+    @Path("/rest?method=flickr.photos.comments.getList&photo_id={0}&min_comment_date={1}&max_comment_date={2}")
     Comment[] getComments(long photoId, Date from, Date to);
 
-    @RestMethod(path = "/rest?method=flickr.photos.comments.deleteComment&comment_id={0}")
+    @Path("/rest?method=flickr.photos.comments.deleteComment&comment_id={0}")
     void deleteComment(String commentId);
 
 
-    @RestMethod(path = "/upload", paramsDestination = "BODY")
-    long uploadPhoto(@RestParam(name = "photo") File photo);
+    @Path("/upload") @Destination(BODY)
+    long uploadPhoto(@Name("photo") File photo);
 
-    @RestMethod(path = "/upload", paramsDestination = "BODY")
-    long uploadPhoto(@RestParam(name = "photo") InputStream photo);
+    @Path("/upload") @Destination(BODY)
+    long uploadPhoto(@Name("photo") InputStream photo);
 
-    @RestMethod(path = "/upload", paramsDestination = "BODY")
+    @Path("/upload") @Destination(BODY)
     long uploadPhoto(
-            @RestParam(name = "photo") InputStream photo,
-            @RestParam(name = "title") String title,
-            @RestParam(name = "description") String description,
-            @RestParam(name = "tags") String[] tags,
-            @RestParam(name = "is_public") boolean isPublic,
-            @RestParam(name = "is_friend") boolean isFriend,
-            @RestParam(name = "is_family") boolean isFamily,
-            @RestParam(name = "safety_level") SafetyLevel safetyLevel,
-            @RestParam(name = "content_type") ContentType contentLype,
-            @RestParam(name = "hidden") Visibility searchVisibility
+            @Name("photo") InputStream photo,
+            @Name("title") String title,
+            @Name("description") String description,
+            @Name("tags") String[] tags,
+            @Name("is_public") boolean isPublic,
+            @Name("is_friend") boolean isFriend,
+            @Name("is_family") boolean isFamily,
+            @Name("safety_level") SafetyLevel safetyLevel,
+            @Name("content_type") ContentType contentLype,
+            @Name("hidden") Visibility searchVisibility
     );
 
 
-    @RestMethod(path = "/replace", paramsDestination = "BODY")
+    @Path("/replace") @Destination(BODY)
     long replacePhoto(
-            @RestParam(name = "photo") InputStream photo,
-            @RestParam(name = "photo_id") long photoId
+            @Name("photo") InputStream photo,
+            @Name("photo_id") long photoId
     );
 
 

@@ -18,18 +18,20 @@
  * More information at http://www.codegist.org.
  */
 
-package org.codegist.crest.annotate.exploded;
-
-import org.codegist.crest.config.Destination;
-import org.codegist.crest.injector.RequestInjector;
+package org.codegist.crest.annotate;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * <p>Mandatory interface level annotation, sets the service end point.
+ * @see org.codegist.crest.config.InterfaceConfig#getEndPoint()
+ * @author Laurent Gilles (laurent.gilles@codegist.org)
+ */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE,ElementType.METHOD,ElementType.PARAMETER})
-public @interface Injector {
-    Class<? extends RequestInjector> value();
+@Target({ElementType.TYPE})
+public @interface EndPoint {
+    String value();
 }

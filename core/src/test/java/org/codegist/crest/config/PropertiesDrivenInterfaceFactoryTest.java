@@ -23,7 +23,7 @@ package org.codegist.crest.config;
 import org.codegist.crest.CRestContext;
 import org.codegist.crest.Stubs;
 import org.codegist.crest.TestUtils;
-import org.codegist.crest.annotate.RestInjector;
+import org.codegist.crest.annotate.Injector;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -65,7 +65,7 @@ public class PropertiesDrivenInterfaceFactoryTest extends AbstractInterfaceConfi
         assertEquals(Stubs.RequestParameterInjector1.class, cfg.getMethodConfig(InjectorTestInterface.M).getParamConfig(0).getInjector().getClass());
     }
 
-    @RestInjector(Stubs.RequestParameterInjector1.class)
+    @Injector(Stubs.RequestParameterInjector1.class)
     static class Model {
     }
 

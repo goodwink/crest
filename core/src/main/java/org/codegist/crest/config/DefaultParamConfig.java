@@ -21,7 +21,7 @@
 package org.codegist.crest.config;
 
 import org.codegist.common.lang.ToStringBuilder;
-import org.codegist.crest.injector.RequestInjector;
+import org.codegist.crest.injector.Injector;
 import org.codegist.crest.serializer.Serializer;
 
 /**
@@ -33,9 +33,9 @@ class DefaultParamConfig implements ParamConfig {
     private final String name;
     private final Destination dest;
     private final Serializer serializer;
-    private final RequestInjector injector;
+    private final Injector injector;
 
-    DefaultParamConfig(String name, Destination dest, Serializer serializer, RequestInjector injector) {
+    DefaultParamConfig(String name, Destination dest, Serializer serializer, Injector injector) {
         this.name = name;
         this.dest = dest;
         this.serializer = serializer;
@@ -58,7 +58,7 @@ class DefaultParamConfig implements ParamConfig {
     }
 
     @Override
-    public RequestInjector getInjector() {
+    public Injector getInjector() {
         return injector;
     }
 

@@ -34,19 +34,19 @@ import java.util.Map;
 class DefaultInterfaceConfig implements InterfaceConfig {
 
     private final Class<?> interfaze;
-    private final String server;
-    private final String path;
+    private final String endPoint;
+    private final String contextPath;
     private final String encoding;
-    private final RequestInterceptor requestInterceptor;
+    private final RequestInterceptor globalInterceptor;
 
     private final Map<Method, MethodConfig> cache;
 
-    DefaultInterfaceConfig(Class<?> interfaze, String server, String path, String encoding, RequestInterceptor requestInterceptor, Map<Method, MethodConfig> cache) {
+    DefaultInterfaceConfig(Class<?> interfaze, String endPoint, String contextPath, String encoding, RequestInterceptor globalInterceptor, Map<Method, MethodConfig> cache) {
         this.interfaze = interfaze;
-        this.server = server;
-        this.path = path;
+        this.endPoint = endPoint;
+        this.contextPath = contextPath;
         this.encoding = encoding;
-        this.requestInterceptor = requestInterceptor;
+        this.globalInterceptor = globalInterceptor;
         this.cache = Maps.unmodifiable(cache);
     }
 
@@ -56,13 +56,13 @@ class DefaultInterfaceConfig implements InterfaceConfig {
     }
 
     @Override
-    public String getServer() {
-        return server;
+    public String getEndPoint() {
+        return endPoint;
     }
 
     @Override
-    public String getPath() {
-        return path;
+    public String getContextPath() {
+        return contextPath;
     }
 
     @Override
@@ -71,8 +71,8 @@ class DefaultInterfaceConfig implements InterfaceConfig {
     }
 
     @Override
-    public RequestInterceptor getRequestInterceptor() {
-        return requestInterceptor;
+    public RequestInterceptor getGlobalInterceptor() {
+        return globalInterceptor;
     }
 
     @Override
@@ -88,10 +88,10 @@ class DefaultInterfaceConfig implements InterfaceConfig {
     public String toString() {
         return new ToStringBuilder(this)
                 .append("interface", interfaze)
-                .append("server", server)
-                .append("path", path)
+                .append("server", endPoint)
+                .append("contextPath", contextPath)
                 .append("encoding", encoding)
-                .append("requestInterceptor", requestInterceptor)
+                .append("globalInterceptor", globalInterceptor)
                 .append("cache", cache)
                 .toString();
     }

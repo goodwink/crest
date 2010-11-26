@@ -18,15 +18,21 @@
  * More information at http://www.codegist.org.
  */
 
-package org.codegist.crest.annotate.exploded;
+package org.codegist.crest.annotate;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * <p>Optional interface level annotation, sets the service context path. If not specified, defaults to the interface config default value.
+ * @see org.codegist.crest.config.InterfaceConfig#DEFAULT_CONTEXT_PATH
+ * @see org.codegist.crest.config.InterfaceConfig#getContextPath()
+ * @author Laurent Gilles (laurent.gilles@codegist.org)
+ */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE,ElementType.METHOD})
-public @interface RequestInterceptor {
-    Class<? extends org.codegist.crest.interceptor.RequestInterceptor> value();
+@Target({ElementType.TYPE})
+public @interface ContextPath {
+    String value();
 }

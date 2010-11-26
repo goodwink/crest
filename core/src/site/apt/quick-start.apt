@@ -46,32 +46,29 @@ MyInterface interfaze = crest.build(MyInterface.class);
 
     The aim of <<CRest>> is to make the binding of a remote REST service and its relative java interface as simple and readable as possible. The prefered approach for the user to provide the required mapping information then is through annotation put on the interface itself.
 
-    Currently <<CRest>> offer three different annotations:
+    Currently <<CRest>> offer a set of annotations to configure your interfaces, see org.codegist.crest.annotate package documentation for more information.
 
-        * <<RestApi>>: Used to annotate the Interface itself with top meta information such as the server end-point and base path.
-
-        * <<RestMethod>>: Used to annotate the Interface methods with meta information such as the method specific path fragment.
-
-        * <<RestParam>>: Used to annotate the method arguments with meta information such as serialization and/or request injection options.
-
-    Here how a <<CRest>> annotated interface will look like:
+    Here how a <<CRest>> annotated interface might look like:
 
 +-----
-@RestApi(endPoint = "http://ajax.googleapis.com", path = "/ajax/services")
-public interface LanguageService {
+@EndPoint("http://api.twitter.com")
+@ContextPath("/1/statuses")
+public interface StatusService {
 
-    @RestMethod(path = "/language/detect?v=1.0&q={0}", connectionTimeout = 10000)
-    Response<LanguageGuess> detectLanguage(String text);
+    @Path("/retweets/{0}.json")
+    @ConnectionTimeout(10000)
+    Status[] getRetweets(long id);
 
-    @RestMethod(path = "/language/translate?v=1.0&q={0}&langpair={1}%7C{2}")
-    Response<Translation> translate(String text, String from, String to);
+    @HttpMethod(POST)
+    @Path("/update.json?lat={1}&long={2}")
+    Status changeStatus(@Name("status") @Destination(BODY) String status, float lat, float longitude);
 
 }
 +-----
 
     Annotation driven configuration is the prefered one for its conciseness and readability. But annotation information are set in stone, unless defining somekind of placeholders convention.
 
-    In the day to day development process, you may want to be able to switch <<<RestApi.endPoint>>> to point to different server dependending on which environment you are running your application on.
+    In the day to day development process, you may want to be able to switch <<<EndPoint>>> to point to different server dependending on which environment you are running your application on.
 
     In order to do so, you can use the Properties driven configuration in addition to the annotation driven one in order to override some information.
 
@@ -80,19 +77,21 @@ public interface LanguageService {
     The properties driven configuration can be used to make the <<<CRest>>> looks for interface mapping configuration from a Map instead than interface annotations.
     This approach should be used only on top of the annotation driven configuration in order to override some configuration options rather than expects the property driven configuration to handle everything.
 
-    Here what the <<CRest>> configuration properties file would looks like for the previous <<<LanguageService>>> interface:
+    Here what the <<CRest>> configuration properties file would looks like for the previous <<<StatusService>>> interface:
 
 +-----
-service.langservice.class=my.project.LanguageService
-service.langservice.end-point=http://ajax.googleapis.com
-service.langservice.path=/ajax/services
+service.langservice.class=my.project.StatusService
+service.langservice.end-point=http://api.twitter.com
+service.langservice.context-path=/1/statuses
 
-service.langservice.method.m1.pattern=detectLanguage\\(.*\\)
+service.langservice.method.m1.pattern=getRetweets\\(.*\\)
 service.langservice.method.m1.connection-timeout=10000
-service.langservice.method.m1.path=/language/detect?v=1.0&q={0}
+service.langservice.method.m1.path=/retweets/{0}.json
 
-service.langservice.method.m2.pattern=translate\\(.*\\)
-service.langservice.method.m2.path=/language/translate?v=1.0&q={0}&langpair={1}%7C{2}
+service.langservice.method.m2.pattern=changeStatus\\(.*\\)
+service.langservice.method.m2.path=/update.json?lat={1}&long={2}
+service.langservice.method.m2.params.0.name=status
+service.langservice.method.m2.params.0.destination=BODY
 +-----
 
     Be aware that by prefering the properties driven configuration over the annotation one, the <<<CRest>>> will need to have a preconfigured properties set able to configure any possible interface given to it.

@@ -24,8 +24,8 @@ import org.codegist.crest.HttpRequest;
 import org.codegist.crest.RequestContext;
 
 /**
- * A request interceptor is notified before and after the parameters have been added to the request.
- * <p>It can be used to cancel a request from being fired by returning false, or arbitrary modify the request.
+ * Interceptors are notified before and after the parameters have been added to the request.
+ * <p>They can be used to cancel a request from being fired by returning false, or arbitrary modify the request.
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
 public interface RequestInterceptor {

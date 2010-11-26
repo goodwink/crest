@@ -29,16 +29,18 @@ CRest crest = new CRestBuilder()
         Another way to get the same result is by settings the interceptor manually on the interface:
 
 +-----
-@RestApi(
-    endPoint = "http://api.twitter.com",
-    path = "/1/statuses",
-    requestInterceptor = OAuthInterceptor.class
-)
+@EndPoint("http://api.twitter.com")
+@ContextPath("/1/statuses")
+@GlobalInterceptor(OAuthInterceptor.class)
 public interface StatusService {
 
-    @RestMethod(method = "POST", path = "/update.json", paramsDestination = "BODY")
-    Status updateStatus(@RestParam(name = "status") String status);
+    @HttpMethod(POST)
+    @Path("/update.json")
+    @Destination(BODY)
+    Status updateStatus(@Name("status") String status);
 
+    @Path("/show/{0}.json")
+    Status getStatus(long id);
 }
 +-----
 
@@ -56,16 +58,18 @@ CRest crest = new CRestBuilder()
         Alternatively, if you only need to authentify some methods and some not, you can do it as follow:
 
 +-----
-@RestApi(
-    endPoint = "http://api.twitter.com",
-    path = "/1/statuses"
-)
+@EndPoint("http://api.twitter.com")
+@ContextPath("/1/statuses")
 public interface StatusService {
 
-    @RestMethod(method = "POST", path = "/update.json", paramsDestination = "BODY", requestInterceptor = OAuthInterceptor.class)
-    Status updateStatus(@RestParam(name = "status") String status);
 
-    @RestMethod(path = "/show/{0}.json")
-    Status getStatus(long id);
+    @HttpMethod(POST)
+    @Path("/update.json")
+    @Destination(BODY)
+    @RequestInterceptor(OAuthInterceptor.class)
+    Status updateStatus(@Name("status") String status);  /* will use oauth authentification */
+
+    @Path("/show/{0}.json")
+    Status getStatus(long id); /* not authentified method */
 }
 +-----

@@ -20,8 +20,8 @@
 
 package org.codegist.crest.config;
 
-import org.codegist.crest.injector.DefaultRequestInjector;
-import org.codegist.crest.injector.RequestInjector;
+import org.codegist.crest.injector.DefaultInjector;
+import org.codegist.crest.injector.Injector;
 import org.codegist.crest.serializer.Serializer;
 
 /**
@@ -49,7 +49,7 @@ public interface ParamConfig {
      *
      * @see org.codegist.crest.config.ParamConfig#getInjector()
      */
-    RequestInjector DEFAULT_INJECTOR = new DefaultRequestInjector();
+    Injector DEFAULT_INJECTOR = new DefaultInjector();
 
     /**
      * Default serializer applied when non specified.
@@ -67,13 +67,13 @@ public interface ParamConfig {
 
     /**
      * The serializer used to transform this argument value in a string.
-     * <p>This serializer is meant to be used by the {@link org.codegist.crest.injector.RequestInjector} set for this parameter.
-     * <p>{@link org.codegist.crest.injector.DefaultRequestInjector} will merge the serialized value in the URL or Body.
-     * <p>If the object could not be serialized to a String, then a custom {@link org.codegist.crest.injector.RequestInjector} can be specified.
+     * <p>This serializer is meant to be used by the {@link org.codegist.crest.injector.Injector} set for this parameter.
+     * <p>{@link org.codegist.crest.injector.DefaultInjector} will merge the serialized value in the URL or Body.
+     * <p>If the object could not be serialized to a String, then a custom {@link org.codegist.crest.injector.Injector} can be specified.
      *
      * @return The serializer used to transform this argument value in a string
      * @see org.codegist.crest.serializer.Serializer
-     * @see org.codegist.crest.injector.RequestInjector
+     * @see org.codegist.crest.injector.Injector
      */
     Serializer getSerializer();
 
@@ -101,5 +101,5 @@ public interface ParamConfig {
      *
      * @return The parameter request injector.
      */
-    RequestInjector getInjector();
+    Injector getInjector();
 }

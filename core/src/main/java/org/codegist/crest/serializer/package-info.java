@@ -18,17 +18,7 @@
  * More information at http://www.codegist.org.
  */
 
-package org.codegist.crest.annotate.exploded;
-
-import org.codegist.crest.interceptor.RequestInterceptor;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE})
-public @interface GlobalInterceptor {
-    Class<? extends RequestInterceptor> value();
-}
+/**
+ * Serializes are used to serialize a object to a single String. 
+ */
+package org.codegist.crest.serializer;

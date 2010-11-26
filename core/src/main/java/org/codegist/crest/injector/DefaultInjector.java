@@ -29,7 +29,7 @@ import org.codegist.crest.Params;
  * Default request injector used by CRest.
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
-public class DefaultRequestInjector implements RequestInjector {
+public class DefaultInjector implements Injector {
 
 
     /**

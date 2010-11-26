@@ -21,7 +21,7 @@
 package org.codegist.crest.serializer;
 
 /**
- * Parameter serialize can be used to serialize a object to a single String.
+ * Serializes are used to serialize a object to a single String.
  *
  * @param <T> Optional parameter value type
  * @see org.codegist.crest.serializer.Serializers

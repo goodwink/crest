@@ -21,7 +21,7 @@
 package org.codegist.crest.config;
 
 import org.codegist.crest.*;
-import org.codegist.crest.injector.RequestInjector;
+import org.codegist.crest.injector.Injector;
 import org.codegist.crest.interceptor.RequestInterceptor;
 import org.codegist.crest.serializer.*;
 import org.junit.Test;
@@ -44,9 +44,9 @@ public class ConfigBuildersTest {
     @Test
     public void testDefaultOverrides() throws InstantiationException, IllegalAccessException {
         final Map<String, Object> defaultOverrides = new HashMap<String, Object>();
-        defaultOverrides.put(CONFIG_INTERFACE_DEFAULT_PATH, "/path");
+        defaultOverrides.put(CONFIG_INTERFACE_DEFAULT_CONTEXT_PATH, "/path");
         defaultOverrides.put(CONFIG_INTERFACE_DEFAULT_ENCODING, "ISO-8859-1");
-        defaultOverrides.put(CONFIG_INTERFACE_DEFAULT_REQUEST_INTERCEPTOR, new Stubs.RequestInterceptor1());
+        defaultOverrides.put(CONFIG_INTERFACE_DEFAULT_GLOBAL_INTERCEPTOR, new Stubs.RequestInterceptor1());
         defaultOverrides.put(CONFIG_METHOD_DEFAULT_PATH, "/meth-path");
         defaultOverrides.put(CONFIG_METHOD_DEFAULT_REQUEST_INTERCEPTOR, new Stubs.RequestInterceptor2());
         defaultOverrides.put(CONFIG_METHOD_DEFAULT_SO_TIMEOUT, 120l);
@@ -61,9 +61,9 @@ public class ConfigBuildersTest {
         InterfaceConfig expected = new DefaultInterfaceConfig(
                 Interface.class,
                 "http://server:8080",
-                (String) defaultOverrides.get(CONFIG_INTERFACE_DEFAULT_PATH),
+                (String) defaultOverrides.get(CONFIG_INTERFACE_DEFAULT_CONTEXT_PATH),
                 (String) defaultOverrides.get(CONFIG_INTERFACE_DEFAULT_ENCODING),
-                (RequestInterceptor) defaultOverrides.get(CONFIG_INTERFACE_DEFAULT_REQUEST_INTERCEPTOR),
+                (RequestInterceptor) defaultOverrides.get(CONFIG_INTERFACE_DEFAULT_GLOBAL_INTERCEPTOR),
                 new HashMap<Method, MethodConfig>() {{
                     put(Interface.A, new DefaultMethodConfig(
                             Interface.A,
@@ -79,7 +79,7 @@ public class ConfigBuildersTest {
                                             (String) defaultOverrides.get(CONFIG_PARAM_DEFAULT_NAME),
                                             (Destination) defaultOverrides.get(CONFIG_PARAM_DEFAULT_DESTINATION),
                                             (Serializer) defaultOverrides.get(CONFIG_PARAM_DEFAULT_SERIALIZER),
-                                            (RequestInjector) defaultOverrides.get(CONFIG_PARAM_DEFAULT_INJECTOR)
+                                            (Injector) defaultOverrides.get(CONFIG_PARAM_DEFAULT_INJECTOR)
                                     )
                             }
                     ));
@@ -97,19 +97,19 @@ public class ConfigBuildersTest {
                                             (String) defaultOverrides.get(CONFIG_PARAM_DEFAULT_NAME),
                                             (Destination) defaultOverrides.get(CONFIG_PARAM_DEFAULT_DESTINATION),
                                             (Serializer) defaultOverrides.get(CONFIG_PARAM_DEFAULT_SERIALIZER),
-                                            (RequestInjector) defaultOverrides.get(CONFIG_PARAM_DEFAULT_INJECTOR)
+                                            (Injector) defaultOverrides.get(CONFIG_PARAM_DEFAULT_INJECTOR)
                                     ),
                                     new DefaultParamConfig(
                                             (String) defaultOverrides.get(CONFIG_PARAM_DEFAULT_NAME),
                                             (Destination) defaultOverrides.get(CONFIG_PARAM_DEFAULT_DESTINATION),
                                             (Serializer) defaultOverrides.get(CONFIG_PARAM_DEFAULT_SERIALIZER),
-                                            (RequestInjector) defaultOverrides.get(CONFIG_PARAM_DEFAULT_INJECTOR)
+                                            (Injector) defaultOverrides.get(CONFIG_PARAM_DEFAULT_INJECTOR)
                                     ),
                                     new DefaultParamConfig(
                                             (String) defaultOverrides.get(CONFIG_PARAM_DEFAULT_NAME),
                                             (Destination) defaultOverrides.get(CONFIG_PARAM_DEFAULT_DESTINATION),
                                             (Serializer) defaultOverrides.get(CONFIG_PARAM_DEFAULT_SERIALIZER),
-                                            (RequestInjector) defaultOverrides.get(CONFIG_PARAM_DEFAULT_INJECTOR)
+                                            (Injector) defaultOverrides.get(CONFIG_PARAM_DEFAULT_INJECTOR)
                                     )
                             }
                     ));
@@ -124,7 +124,7 @@ public class ConfigBuildersTest {
         InterfaceConfig expected = new DefaultInterfaceConfig(
                 Interface.class,
                 "http://server:8080",
-                InterfaceConfig.DEFAULT_PATH,
+                InterfaceConfig.DEFAULT_CONTEXT_PATH,
                 DEFAULT_ENCODING,
                 DEFAULT_REQUEST_INTERCEPTOR,
                 new HashMap<Method, MethodConfig>() {{
@@ -187,7 +187,7 @@ public class ConfigBuildersTest {
         InterfaceConfig expected = new DefaultInterfaceConfig(
                 Interface.class,
                 "http://server:8080",
-                InterfaceConfig.DEFAULT_PATH,
+                InterfaceConfig.DEFAULT_CONTEXT_PATH,
                 DEFAULT_ENCODING,
                 DEFAULT_REQUEST_INTERCEPTOR,
                 new HashMap<Method, MethodConfig>() {{
@@ -262,7 +262,7 @@ public class ConfigBuildersTest {
         InterfaceConfig expected = new DefaultInterfaceConfig(
                 Interface.class,
                 "http://server:8080",
-                InterfaceConfig.DEFAULT_PATH,
+                InterfaceConfig.DEFAULT_CONTEXT_PATH,
                 DEFAULT_ENCODING,
                 DEFAULT_REQUEST_INTERCEPTOR,
                 new HashMap<Method, MethodConfig>() {{
@@ -350,7 +350,7 @@ public class ConfigBuildersTest {
         InterfaceConfig expected = new DefaultInterfaceConfig(
                 Interface.class,
                 "http://server:8080",
-                InterfaceConfig.DEFAULT_PATH,
+                InterfaceConfig.DEFAULT_CONTEXT_PATH,
                 DEFAULT_ENCODING,
                 DEFAULT_REQUEST_INTERCEPTOR,
                 new HashMap<Method, MethodConfig>() {{

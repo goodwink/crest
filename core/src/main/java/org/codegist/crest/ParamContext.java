@@ -26,7 +26,7 @@ import org.codegist.crest.config.ParamConfig;
  * Context object passed during the parameter injection process
  *
  * @param <V> Parameter type argument
- * @see org.codegist.crest.injector.RequestInjector
+ * @see org.codegist.crest.injector.Injector
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
 public interface ParamContext<V> extends RequestContext {

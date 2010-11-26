@@ -21,7 +21,7 @@
 package org.codegist.crest.config;
 
 import org.codegist.crest.*;
-import org.codegist.crest.injector.RequestInjector;
+import org.codegist.crest.injector.Injector;
 import org.codegist.crest.interceptor.EmptyRequestInterceptor;
 import org.codegist.crest.serializer.Serializer;
 import org.codegist.crest.interceptor.CompositeRequestInterceptor;
@@ -50,9 +50,9 @@ public class ConfigsTest {
     }
 
     static final DefaultInterfaceConfig FULL_CONFIG = new ConfigBuilders.InterfaceConfigBuilder(TestInterface.class, "server")
-            .setPath("path")
+            .setContextPath("path")
             .setEncoding("iso")
-            .setRequestInterceptor(new Stubs.RequestInterceptor1())
+            .setGlobalInterceptor(new Stubs.RequestInterceptor1())
             .setMethodsSocketTimeout(1l)
             .setMethodsConnectionTimeout(2l)
             .setParamsSerializer(new Stubs.Serializer1())
@@ -106,7 +106,7 @@ public class ConfigsTest {
         DefaultInterfaceConfig config = new ConfigBuilders.InterfaceConfigBuilder(TestInterface.class, "server").build();
         DefaultInterfaceConfig override = new ConfigBuilders.InterfaceConfigBuilder(TestInterface.class, "server").build();
         DefaultInterfaceConfig expected = new ConfigBuilders.InterfaceConfigBuilder(TestInterface.class, "server")
-                .setRequestInterceptor(new CompositeRequestInterceptor())
+                .setGlobalInterceptor(new CompositeRequestInterceptor())
                 .setMethodsRequestInterceptor(new CompositeRequestInterceptor())
                 .build();
         InterfaceConfig result = Configs.override(config, override);
@@ -118,14 +118,14 @@ public class ConfigsTest {
         DefaultInterfaceConfig base = new ConfigBuilders.InterfaceConfigBuilder(TestInterface.class, "server").build();
         InterfaceConfig result = Configs.override(base, FULL_CONFIG);
         DefaultInterfaceConfig expected = new ConfigBuilders.InterfaceConfigBuilder(TestInterface.class, "server")
-                .setPath("path")
+                .setContextPath("path")
                 .setMethodsSocketTimeout(1l)
                 .setMethodsConnectionTimeout(2l)
                 .setEncoding("iso")
                 .setParamsSerializer(new Stubs.Serializer1())
                 .setParamsName("name")
                 .setParamsDestination(Destination.BODY)
-                .setRequestInterceptor(new CompositeRequestInterceptor(new Stubs.RequestInterceptor1(), new EmptyRequestInterceptor()))
+                .setGlobalInterceptor(new CompositeRequestInterceptor(new Stubs.RequestInterceptor1(), new EmptyRequestInterceptor()))
                 .setMethodsRequestInterceptor(new CompositeRequestInterceptor(new Stubs.RequestInterceptor1(), new EmptyRequestInterceptor()))
                 .setMethodsResponseHandler(new Stubs.ResponseHandler1())
                 .startMethodConfig(TestInterface.T1)
@@ -185,9 +185,9 @@ public class ConfigsTest {
                 .endMethodConfig()
                 .build(false);
         InterfaceConfig expected = new ConfigBuilders.InterfaceConfigBuilder(TestInterface.class, "server2")
-                .setPath("path")
+                .setContextPath("path")
                 .setEncoding("iso")
-                .setRequestInterceptor(new Stubs.RequestInterceptor1())
+                .setGlobalInterceptor(new Stubs.RequestInterceptor1())
                 .setMethodsSocketTimeout(1l)
                 .setMethodsConnectionTimeout(2l)
                 .setMethodsRequestInterceptor(new Stubs.RequestInterceptor1())
@@ -276,9 +276,9 @@ public class ConfigsTest {
         InterfaceConfigTestHelper.assertExpected(mutableBase, result, TestInterface.class);
 
 
-        assertEquals("/path", result.getPath());
+        assertEquals("/path", result.getContextPath());
         mutableOverride.setPath("hello");
-        assertEquals("hello", result.getPath());
+        assertEquals("hello", result.getContextPath());
 
         MutableMethodConfig m = ((MutableMethodConfig) mutableBase.getMethodConfig(TestInterface.T1));
         assertEquals(HttpMethod.POST, result.getMethodConfig(TestInterface.T1).getHttpMethod());
@@ -313,7 +313,7 @@ public class ConfigsTest {
         }
 
         @Override
-        public String getServer() {
+        public String getEndPoint() {
             return server;
         }
 
@@ -322,7 +322,7 @@ public class ConfigsTest {
         }
 
         @Override
-        public String getPath() {
+        public String getContextPath() {
             return path;
         }
 
@@ -340,7 +340,7 @@ public class ConfigsTest {
         }
 
         @Override
-        public RequestInterceptor getRequestInterceptor() {
+        public RequestInterceptor getGlobalInterceptor() {
             return requestInterceptor;
         }
 
@@ -474,7 +474,7 @@ public class ConfigsTest {
         private String name;
         private Destination dest;
         private Serializer serializer;
-        private RequestInjector injector;
+        private Injector injector;
 
 
         @Override
@@ -505,11 +505,11 @@ public class ConfigsTest {
         }
 
         @Override
-        public RequestInjector getInjector() {
+        public Injector getInjector() {
             return injector;
         }
 
-        public void setInjector(RequestInjector injector) {
+        public void setInjector(Injector injector) {
             this.injector = injector;
         }
     }

@@ -20,7 +20,6 @@
 
 package org.codegist.crest.interceptor;
 
-import org.codegist.crest.CRestProperty;
 import org.codegist.crest.HttpRequest;
 import org.codegist.crest.RequestContext;
 

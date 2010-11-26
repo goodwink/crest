@@ -20,7 +20,7 @@
 
 package org.codegist.crest;
 
-import org.codegist.crest.injector.RequestInjector;
+import org.codegist.crest.injector.Injector;
 import org.codegist.crest.interceptor.RequestInterceptorAdapter;
 
 /**
@@ -37,21 +37,21 @@ public class Stubs {
     public static class RequestInterceptor3 extends RequestInterceptorAdapter {
     }
 
-    public static class RequestParameterInjector1 implements RequestInjector {
+    public static class RequestParameterInjector1 implements Injector {
         @Override
         public void inject(HttpRequest.Builder builder, ParamContext context) {
 
         }
     }
 
-    public static class RequestParameterInjector2 implements RequestInjector {
+    public static class RequestParameterInjector2 implements Injector {
         @Override
         public void inject(HttpRequest.Builder builder, ParamContext context) {
 
         }
     }
 
-    public static class RequestParameterInjector3 implements RequestInjector {
+    public static class RequestParameterInjector3 implements Injector {
         @Override
         public void inject(HttpRequest.Builder builder, ParamContext context) {
 

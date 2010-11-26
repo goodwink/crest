@@ -18,23 +18,9 @@
  * More information at http://www.codegist.org.
  */
 
-package org.codegist.crest.config;
-
 /**
- * Param destination.
- * @author Laurent Gilles (laurent.gilles@codegist.org)
+ * Contains {@link org.codegist.crest.DefaultCRest} configuration interfaces and configuration factories.
+ * @see org.codegist.crest.DefaultCRest
+ * @see org.codegist.crest.CRestContext 
  */
-public enum Destination {
-    /**
-     * Use it to configure a parameter to be part of the http request queryString
-     */
-    URL,
-    /**
-     * Use it to configure a parameter to be part of the http request Body
-     */
-    BODY,
-    /**
-     * Use it to configure a parameter to be part of the http request Header
-     */
-    HEADER
-}
+package org.codegist.crest.config;

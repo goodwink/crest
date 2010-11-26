@@ -27,9 +27,8 @@ import org.codegist.crest.CRestProperty;
 import org.codegist.crest.ErrorHandler;
 import org.codegist.crest.HttpMethod;
 import org.codegist.crest.ResponseHandler;
-import org.codegist.crest.injector.RequestInjector;
+import org.codegist.crest.injector.Injector;
 import org.codegist.crest.interceptor.RequestInterceptor;
-import org.codegist.crest.serializer.ArraySerializer;
 import org.codegist.crest.serializer.Serializer;
 import org.codegist.crest.serializer.Serializers;
 
@@ -69,11 +68,11 @@ public abstract class ConfigBuilders {
     @SuppressWarnings("unchecked")
     public static class InterfaceConfigBuilder extends ConfigBuilders {
         private final Class interfaze;
-        private final String server;
+        private final String endPoint;
         private final Map<Method, MethodConfigBuilder> builderCache;
-        private String path;
+        private String contextPath;
         private String encoding;
-        private RequestInterceptor requestInterceptor;
+        private RequestInterceptor globalInterceptor;
 
         /**
          * <p>This will create an unbound builder, eg to attached to any interface, thus it cannot contains any method configuration.
@@ -91,20 +90,20 @@ public abstract class ConfigBuilders {
             this(null, null, customProperties);
         }
 
-        public InterfaceConfigBuilder(Class interfaze, String server) {
-            this(interfaze, server, null);
+        public InterfaceConfigBuilder(Class interfaze, String endPoint) {
+            this(interfaze, endPoint, null);
         }
 
         /**
          * Given properties map can contains user-defined default values, that override interface predefined defauts.
          * @param interfaze interface to bind the config to
-         * @param server endpoint
+         * @param endPoint endpoint
          * @param customProperties default values holder
          */
-        public InterfaceConfigBuilder(Class interfaze, String server, Map<String, Object> customProperties) {
+        public InterfaceConfigBuilder(Class interfaze, String endPoint, Map<String, Object> customProperties) {
             super(customProperties);
             this.interfaze = interfaze;
-            this.server = server;
+            this.endPoint = endPoint;
             this.builderCache = new HashMap<Method, MethodConfigBuilder>();
             if (interfaze != null)
                 for (Method m : interfaze.getDeclaredMethods()) {
@@ -131,16 +130,16 @@ public abstract class ConfigBuilders {
                 mConfig.put(entry.getKey(), entry.getValue().build(useDefaults));
             }
             if (useDefaults) {
-                path = defaultIfUndefined(path, CRestProperty.CONFIG_INTERFACE_DEFAULT_PATH, InterfaceConfig.DEFAULT_PATH);
+                contextPath = defaultIfUndefined(contextPath, CRestProperty.CONFIG_INTERFACE_DEFAULT_CONTEXT_PATH, InterfaceConfig.DEFAULT_CONTEXT_PATH);
                 encoding = defaultIfUndefined(encoding, CRestProperty.CONFIG_INTERFACE_DEFAULT_ENCODING, InterfaceConfig.DEFAULT_ENCODING);
-                requestInterceptor = defaultIfUndefined(requestInterceptor, CRestProperty.CONFIG_INTERFACE_DEFAULT_REQUEST_INTERCEPTOR, InterfaceConfig.DEFAULT_REQUEST_INTERCEPTOR);
+                globalInterceptor = defaultIfUndefined(globalInterceptor, CRestProperty.CONFIG_INTERFACE_DEFAULT_GLOBAL_INTERCEPTOR, InterfaceConfig.DEFAULT_GLOBAL_INTERCEPTOR);
             }
             return new DefaultInterfaceConfig(
                     interfaze,
-                    server,
-                    path,
+                    endPoint,
+                    contextPath,
                     encoding,
-                    requestInterceptor,
+                    globalInterceptor,
                     mConfig
             );
         }
@@ -150,9 +149,9 @@ public abstract class ConfigBuilders {
             return this.builderCache.get(meth);
         }
 
-        public InterfaceConfigBuilder setPath(String path) {
-            if (ignore(path)) return this;
-            this.path = path;
+        public InterfaceConfigBuilder setContextPath(String contextPath) {
+            if (ignore(contextPath)) return this;
+            this.contextPath = contextPath;
             return this;
         }
 
@@ -162,20 +161,20 @@ public abstract class ConfigBuilders {
             return this;
         }
 
-        public InterfaceConfigBuilder setRequestInterceptor(RequestInterceptor requestInterceptor) {
+        public InterfaceConfigBuilder setGlobalInterceptor(RequestInterceptor requestInterceptor) {
             if (ignore(requestInterceptor)) return this;
-            this.requestInterceptor = requestInterceptor;
+            this.globalInterceptor = requestInterceptor;
             return this;
         }
 
-        public InterfaceConfigBuilder setRequestInterceptor(String interceptorClassName) throws IllegalAccessException, InstantiationException, ClassNotFoundException {
+        public InterfaceConfigBuilder setGlobalInterceptor(String interceptorClassName) throws IllegalAccessException, InstantiationException, ClassNotFoundException {
             if (ignore(interceptorClassName)) return this;
-            return setRequestInterceptor((Class<? extends RequestInterceptor>) Class.forName(interceptorClassName));
+            return setGlobalInterceptor((Class<? extends RequestInterceptor>) Class.forName(interceptorClassName));
         }
 
-        public InterfaceConfigBuilder setRequestInterceptor(Class<? extends RequestInterceptor> interceptorCls) throws IllegalAccessException, InstantiationException {
+        public InterfaceConfigBuilder setGlobalInterceptor(Class<? extends RequestInterceptor> interceptorCls) throws IllegalAccessException, InstantiationException {
             if (ignore(interceptorCls)) return this;
-            return setRequestInterceptor(interceptorCls.newInstance());
+            return setGlobalInterceptor(interceptorCls.newInstance());
         }
 
         public InterfaceConfigBuilder setMethodsSocketTimeout(Long socketTimeout) {
@@ -234,7 +233,7 @@ public abstract class ConfigBuilders {
             return this;
         }
 
-        public InterfaceConfigBuilder setParamsInjector(RequestInjector injector) {
+        public InterfaceConfigBuilder setParamsInjector(Injector injector) {
             if (ignore(injector)) return this;
             for (MethodConfigBuilder b : builderCache.values()) {
                 b.setParamsInjector(injector);
@@ -250,7 +249,7 @@ public abstract class ConfigBuilders {
             return this;
         }
 
-        public InterfaceConfigBuilder setParamsInjector(Class<? extends RequestInjector> injectorCls) throws IllegalAccessException, InstantiationException {
+        public InterfaceConfigBuilder setParamsInjector(Class<? extends Injector> injectorCls) throws IllegalAccessException, InstantiationException {
             if (ignore(injectorCls)) return this;
             for (MethodConfigBuilder b : builderCache.values()) {
                 b.setParamsInjector(injectorCls);
@@ -582,7 +581,7 @@ public abstract class ConfigBuilders {
             return this;
         }
 
-        public MethodConfigBuilder setParamsInjector(RequestInjector injector) {
+        public MethodConfigBuilder setParamsInjector(Injector injector) {
             if (ignore(injector)) return this;
             for (ParamConfigBuilder b : paramConfigBuilders) {
                 b.setInjector(injector);
@@ -598,7 +597,7 @@ public abstract class ConfigBuilders {
             return this;
         }
 
-        public MethodConfigBuilder setParamsInjector(Class<? extends RequestInjector> injectorCls) throws IllegalAccessException, InstantiationException {
+        public MethodConfigBuilder setParamsInjector(Class<? extends Injector> injectorCls) throws IllegalAccessException, InstantiationException {
             if (ignore(injectorCls)) return this;
             for (ParamConfigBuilder b : paramConfigBuilders) {
                 b.setInjector(injectorCls);
@@ -639,7 +638,7 @@ public abstract class ConfigBuilders {
         private String name;
         private Destination dest;
         private Serializer serializer;
-        private RequestInjector injector;
+        private Injector injector;
 
 
         /**
@@ -742,11 +741,10 @@ public abstract class ConfigBuilders {
          */
         public ParamConfigBuilder setSerializer(Class<? extends Serializer> serializer) throws IllegalAccessException, InstantiationException {
             if (ignore(serializer)) return this;
-            if(serializer.equals(Fallbacks.FallbackSerializer.class)) return this;
             return setSerializer(serializer.newInstance());
         }
 
-        public ParamConfigBuilder setInjector(RequestInjector injector) {
+        public ParamConfigBuilder setInjector(Injector injector) {
             if (ignore(injector)) return this;
             this.injector = injector;
             return this;
@@ -754,10 +752,10 @@ public abstract class ConfigBuilders {
 
         public ParamConfigBuilder setInjector(String injectorClassName) throws IllegalAccessException, InstantiationException, ClassNotFoundException {
             if (ignore(injectorClassName)) return this;
-            return setInjector((Class<? extends RequestInjector>) Class.forName(injectorClassName));
+            return setInjector((Class<? extends Injector>) Class.forName(injectorClassName));
         }
 
-        public ParamConfigBuilder setInjector(Class<? extends RequestInjector> injector) throws IllegalAccessException, InstantiationException {
+        public ParamConfigBuilder setInjector(Class<? extends Injector> injector) throws IllegalAccessException, InstantiationException {
             if (ignore(injector)) return this;
             return setInjector(injector.newInstance());
         }

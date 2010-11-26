@@ -18,15 +18,22 @@
  * More information at http://www.codegist.org.
  */
 
-package org.codegist.crest.annotate.exploded;
+package org.codegist.crest.annotate;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * <p>Optional method level annotation, sets the method http method. If not specified, defaults to the method config default value.
+ * <p>Can be set at interface level to default all interface method values if not specified at method level.
+ * @see org.codegist.crest.config.MethodConfig#DEFAULT_HTTP_METHOD
+ * @see org.codegist.crest.config.MethodConfig#getHttpMethod()
+ * @author Laurent Gilles (laurent.gilles@codegist.org)
+ */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE,ElementType.METHOD,ElementType.PARAMETER})
-public @interface Serializer {
-    Class<? extends org.codegist.crest.serializer.Serializer> value();
+@Target({ElementType.TYPE,ElementType.METHOD})
+public @interface HttpMethod {
+    org.codegist.crest.HttpMethod value();
 }

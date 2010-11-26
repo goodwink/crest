@@ -18,23 +18,22 @@
  * More information at http://www.codegist.org.
  */
 
-package org.codegist.crest.injector;
+package org.codegist.crest.annotate;
 
-import org.codegist.crest.HttpRequest;
-import org.codegist.crest.ParamContext;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * A request injector is used to inject any method parameter values in the http request before it gets fired. Can modify the http request as wanted.
+ * <p>Optional method level annotation, sets the method response handler. If not specified, defaults to the method config default value.
+ * <p>Can be set at interface level to default all interface method values if not specified at method level.
+ * @see org.codegist.crest.config.MethodConfig#DEFAULT_RESPONSE_HANDLER
+ * @see org.codegist.crest.config.MethodConfig#getResponseHandler()
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
-public interface RequestInjector {
-
-    /**
-     * Injects the current param into the request.
-     *
-     * @param builder Current http request being build.
-     * @param context The current param context holding the value of the current method argument and all other context objects.
-     */
-    void inject(HttpRequest.Builder builder, ParamContext context);
-
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE,ElementType.METHOD})
+public @interface ResponseHandler {
+    Class<? extends org.codegist.crest.ResponseHandler> value();
 }

@@ -17,10 +17,12 @@ Google Samples
     Below the mapped interface.
 
 +-----
-@RestApi(endPoint = "http://ajax.googleapis.com", path = "/ajax/services/search", methodsResponseHandler = GoogleResponseHandler.class)
+@EndPoint("http://ajax.googleapis.com")
+@ContextPath("/ajax/services/search")
+@ResponseHandler(GoogleResponseHandler.class)
 public interface SearchService {
 
-    @RestMethod(path = "/web?v=1.0&q={0}")
+    @Path("/web?v=1.0&q={0}")
     SearchResult<Address> search(String text);
 
 }
@@ -46,13 +48,15 @@ SearchResult<Address> results = service.search("codegist crest");
     Below the mapped interface.
 
 +-----
-@RestApi(endPoint = "http://ajax.googleapis.com", path = "/ajax/services/language", methodsResponseHandler = GoogleResponseHandler.class)
+@EndPoint("http://ajax.googleapis.com")
+@ContextPath("/ajax/services/language")
+@ResponseHandler(GoogleResponseHandler.class)
 public interface LanguageService {
 
-    @RestMethod(path = "/detect?v=1.0&q={0}")
+    @Path("/detect?v=1.0&q={0}")
     LanguageGuess detectLanguage(String text);
 
-    @RestMethod(path = "/translate?v=1.0&q={0}&langpair={1}%7C{2}")
+    @Path("/translate?v=1.0&q={0}&langpair={1}%7C{2}")
     Translation translate(String text, String from, String to);
 
 }

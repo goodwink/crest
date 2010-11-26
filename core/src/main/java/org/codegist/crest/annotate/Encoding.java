@@ -18,15 +18,21 @@
  * More information at http://www.codegist.org.
  */
 
-package org.codegist.crest.annotate.exploded;
+package org.codegist.crest.annotate;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * <p>Optional interface level annotation, sets the service encoding. If not specified, defaults to the interface config default value.
+ * @see org.codegist.crest.config.InterfaceConfig#DEFAULT_ENCODING
+ * @see org.codegist.crest.config.InterfaceConfig#getEncoding()
+ * @author Laurent Gilles (laurent.gilles@codegist.org)
+ */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE,ElementType.METHOD,ElementType.PARAMETER})
-public @interface Name {
+@Target({ElementType.TYPE})
+public @interface Encoding {
     String value();
 }

@@ -200,7 +200,7 @@ public class CRestBuilder {
         if (globalInterceptor != null) {
             try {
                 configFactory = new OverridingInterfaceConfigFactory(configFactory, new ConfigBuilders.InterfaceConfigBuilder()
-                        .setRequestInterceptor(globalInterceptor)
+                        .setGlobalInterceptor(globalInterceptor)
                         .buildOverrideTemplate());
             } catch (Exception e) {
                 throw new CRestException(e);

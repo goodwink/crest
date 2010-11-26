@@ -18,15 +18,20 @@
  * More information at http://www.codegist.org.
  */
 
-package org.codegist.crest.annotate.exploded;
-
-import org.codegist.crest.config.MethodConfig;
+package org.codegist.crest.annotate;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * <p>Optional method level annotation, sets the method connection timeout. If not specified, defaults to the method config default value.
+ * <p>Can be set at interface level to default all interface method values if not specified at method level.
+ * @see org.codegist.crest.config.MethodConfig#DEFAULT_CO_TIMEOUT
+ * @see org.codegist.crest.config.MethodConfig#getConnectionTimeout()
+ * @author Laurent Gilles (laurent.gilles@codegist.org)
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE,ElementType.METHOD})
 public @interface ConnectionTimeout {

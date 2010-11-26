@@ -18,15 +18,7 @@
  * More information at http://www.codegist.org.
  */
 
-package org.codegist.crest.annotate.exploded;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE,ElementType.METHOD})
-public @interface HttpMethod {
-    org.codegist.crest.HttpMethod value();
-}
+/**
+ * Interceptors are notified before and after the parameters have been added to the request. 
+ */
+package org.codegist.crest.interceptor;
