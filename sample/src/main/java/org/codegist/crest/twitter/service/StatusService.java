@@ -21,13 +21,12 @@
 package org.codegist.crest.twitter.service;
 
 import org.codegist.crest.annotate.*;
-
-import static org.codegist.crest.HttpMethod.*;
-import static org.codegist.crest.config.Destination.*;
-
 import org.codegist.crest.twitter.model.Cursor;
 import org.codegist.crest.twitter.model.Status;
 import org.codegist.crest.twitter.model.User;
+
+import static org.codegist.crest.HttpMethod.POST;
+import static org.codegist.crest.config.Destination.BODY;
 
 /**
  * @author Laurent Gilles (laurent.gilles@codegist.org)

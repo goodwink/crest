@@ -57,7 +57,7 @@ public class TwitterSample {
         DirectMessageService directMessageService = crest.build(DirectMessageService.class);
 
         /* Use them! */
-        Status status = statusService.updateStatus("My status update at " + new Date());
+        Status status = statusService.updateStatus("My status update at " + new Date().getTime());
         User[] users = userService.search("username");
         Message[] messages = directMessageService.getReceived(10, 1);
 

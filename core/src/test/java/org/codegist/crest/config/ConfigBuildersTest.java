@@ -20,10 +20,18 @@
 
 package org.codegist.crest.config;
 
-import org.codegist.crest.*;
+import org.codegist.crest.HttpMethod;
+import org.codegist.crest.Stubs;
+import org.codegist.crest.TestUtils;
+import org.codegist.crest.handler.ErrorHandler;
+import org.codegist.crest.handler.ResponseHandler;
+import org.codegist.crest.handler.RetryHandler;
 import org.codegist.crest.injector.Injector;
 import org.codegist.crest.interceptor.RequestInterceptor;
-import org.codegist.crest.serializer.*;
+import org.codegist.crest.serializer.ArraySerializer;
+import org.codegist.crest.serializer.DateSerializer;
+import org.codegist.crest.serializer.Serializer;
+import org.codegist.crest.serializer.ToStringSerializer;
 import org.junit.Test;
 
 import java.lang.reflect.Method;
@@ -31,10 +39,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.codegist.crest.CRestProperty.*;
 import static org.codegist.crest.config.InterfaceConfig.DEFAULT_ENCODING;
 import static org.codegist.crest.config.MethodConfig.*;
 import static org.codegist.crest.config.ParamConfig.*;
-import static org.codegist.crest.CRestProperty.*;
 
 /**
  * @author Laurent Gilles (laurent.gilles@codegist.org)
@@ -52,6 +60,7 @@ public class ConfigBuildersTest {
         defaultOverrides.put(CONFIG_METHOD_DEFAULT_SO_TIMEOUT, 120l);
         defaultOverrides.put(CONFIG_METHOD_DEFAULT_CO_TIMEOUT, 121l);
         defaultOverrides.put(CONFIG_METHOD_DEFAULT_ERROR_HANDLER, new Stubs.ErrorHandler1());
+        defaultOverrides.put(CONFIG_METHOD_DEFAULT_RETRY_HANDLER, new Stubs.RetryHandler1());
         defaultOverrides.put(CONFIG_METHOD_DEFAULT_HTTP_METHOD, HttpMethod.HEAD);
         defaultOverrides.put(CONFIG_METHOD_DEFAULT_RESPONSE_HANDLER, new Stubs.ResponseHandler1());
         defaultOverrides.put(CONFIG_PARAM_DEFAULT_DESTINATION, Destination.BODY);
@@ -74,6 +83,7 @@ public class ConfigBuildersTest {
                             (RequestInterceptor) defaultOverrides.get(CONFIG_METHOD_DEFAULT_REQUEST_INTERCEPTOR),
                             (ResponseHandler) defaultOverrides.get(CONFIG_METHOD_DEFAULT_RESPONSE_HANDLER),
                             (ErrorHandler) defaultOverrides.get(CONFIG_METHOD_DEFAULT_ERROR_HANDLER),
+                            (RetryHandler) defaultOverrides.get(CONFIG_METHOD_DEFAULT_RETRY_HANDLER),
                             new ParamConfig[]{
                                     new DefaultParamConfig(
                                             (String) defaultOverrides.get(CONFIG_PARAM_DEFAULT_NAME),
@@ -92,6 +102,7 @@ public class ConfigBuildersTest {
                             (RequestInterceptor) defaultOverrides.get(CONFIG_METHOD_DEFAULT_REQUEST_INTERCEPTOR),
                             (ResponseHandler) defaultOverrides.get(CONFIG_METHOD_DEFAULT_RESPONSE_HANDLER),
                             (ErrorHandler) defaultOverrides.get(CONFIG_METHOD_DEFAULT_ERROR_HANDLER),
+                            (RetryHandler) defaultOverrides.get(CONFIG_METHOD_DEFAULT_RETRY_HANDLER),
                             new ParamConfig[]{
                                     new DefaultParamConfig(
                                             (String) defaultOverrides.get(CONFIG_PARAM_DEFAULT_NAME),
@@ -126,7 +137,7 @@ public class ConfigBuildersTest {
                 "http://server:8080",
                 InterfaceConfig.DEFAULT_CONTEXT_PATH,
                 DEFAULT_ENCODING,
-                DEFAULT_REQUEST_INTERCEPTOR,
+                TestUtils.newInstance(DEFAULT_REQUEST_INTERCEPTOR),
                 new HashMap<Method, MethodConfig>() {{
                     put(Interface.A, new DefaultMethodConfig(
                             Interface.A,
@@ -134,15 +145,16 @@ public class ConfigBuildersTest {
                             DEFAULT_HTTP_METHOD,
                             DEFAULT_SO_TIMEOUT,
                             DEFAULT_CO_TIMEOUT,
-                            DEFAULT_REQUEST_INTERCEPTOR,
-                            DEFAULT_RESPONSE_HANDLER,
-                            DEFAULT_ERROR_HANDLER,
+                            TestUtils.newInstance(DEFAULT_REQUEST_INTERCEPTOR),
+                            TestUtils.newInstance(DEFAULT_RESPONSE_HANDLER),
+                            TestUtils.newInstance(DEFAULT_ERROR_HANDLER),
+                            TestUtils.newInstance(DEFAULT_RETRY_HANDLER),
                             new ParamConfig[]{
                                     new DefaultParamConfig(
                                             DEFAULT_NAME,
                                             DEFAULT_DESTINATION,
                                             new ToStringSerializer(),
-                                            DEFAULT_INJECTOR
+                                            TestUtils.newInstance(DEFAULT_INJECTOR)
                                     )
                             }
                     ));
@@ -152,27 +164,28 @@ public class ConfigBuildersTest {
                             DEFAULT_HTTP_METHOD,
                             DEFAULT_SO_TIMEOUT,
                             DEFAULT_CO_TIMEOUT,
-                            DEFAULT_REQUEST_INTERCEPTOR,
-                            DEFAULT_RESPONSE_HANDLER,
-                            DEFAULT_ERROR_HANDLER,
+                            TestUtils.newInstance(DEFAULT_REQUEST_INTERCEPTOR),
+                            TestUtils.newInstance(DEFAULT_RESPONSE_HANDLER),
+                            TestUtils.newInstance(DEFAULT_ERROR_HANDLER),
+                            TestUtils.newInstance(DEFAULT_RETRY_HANDLER),
                             new ParamConfig[]{
                                     new DefaultParamConfig(
                                             DEFAULT_NAME,
                                             DEFAULT_DESTINATION,
                                             new ToStringSerializer(),
-                                            DEFAULT_INJECTOR
+                                            TestUtils.newInstance(DEFAULT_INJECTOR)
                                     ),
                                     new DefaultParamConfig(
                                             DEFAULT_NAME,
                                             DEFAULT_DESTINATION,
                                             new ArraySerializer(),
-                                            DEFAULT_INJECTOR
+                                            TestUtils.newInstance(DEFAULT_INJECTOR)
                                     ),
                                     new DefaultParamConfig(
                                             DEFAULT_NAME,
                                             DEFAULT_DESTINATION,
                                             new DateSerializer(),
-                                            DEFAULT_INJECTOR
+                                            TestUtils.newInstance(DEFAULT_INJECTOR)
                                     )
                             }
                     ));
@@ -189,7 +202,7 @@ public class ConfigBuildersTest {
                 "http://server:8080",
                 InterfaceConfig.DEFAULT_CONTEXT_PATH,
                 DEFAULT_ENCODING,
-                DEFAULT_REQUEST_INTERCEPTOR,
+                TestUtils.newInstance(DEFAULT_REQUEST_INTERCEPTOR),
                 new HashMap<Method, MethodConfig>() {{
                     put(Interface.A, new DefaultMethodConfig(
                             Interface.A,
@@ -200,6 +213,7 @@ public class ConfigBuildersTest {
                             new Stubs.RequestInterceptor2(),
                             new Stubs.ResponseHandler2(),
                             new Stubs.ErrorHandler2(),
+                            new Stubs.RetryHandler2(),
                             new ParamConfig[]{
                                     new DefaultParamConfig(
                                             "name",
@@ -218,6 +232,7 @@ public class ConfigBuildersTest {
                             new Stubs.RequestInterceptor2(),
                             new Stubs.ResponseHandler2(),
                             new Stubs.ErrorHandler2(),
+                            new Stubs.RetryHandler2(),
                             new ParamConfig[]{
                                     new DefaultParamConfig(
                                             "name",
@@ -249,6 +264,7 @@ public class ConfigBuildersTest {
                 .setMethodsRequestInterceptor(new Stubs.RequestInterceptor2())
                 .setMethodsResponseHandler(new Stubs.ResponseHandler2())
                 .setMethodsErrorHandler(new Stubs.ErrorHandler2())
+                .setMethodsRetryHandler(new Stubs.RetryHandler2())
                 .setParamsName("name")
                 .setParamsDestination("BODY")
                 .setParamsSerializer(new Stubs.Serializer2())
@@ -264,7 +280,7 @@ public class ConfigBuildersTest {
                 "http://server:8080",
                 InterfaceConfig.DEFAULT_CONTEXT_PATH,
                 DEFAULT_ENCODING,
-                DEFAULT_REQUEST_INTERCEPTOR,
+                TestUtils.newInstance(DEFAULT_REQUEST_INTERCEPTOR),
                 new HashMap<Method, MethodConfig>() {{
                     put(Interface.A, new DefaultMethodConfig(
                             Interface.A,
@@ -275,6 +291,7 @@ public class ConfigBuildersTest {
                             new Stubs.RequestInterceptor2(),
                             new Stubs.ResponseHandler2(),
                             new Stubs.ErrorHandler2(),
+                            new Stubs.RetryHandler1(),
                             new ParamConfig[]{
                                     new DefaultParamConfig(
                                             "name",
@@ -293,6 +310,7 @@ public class ConfigBuildersTest {
                             new Stubs.RequestInterceptor3(),
                             new Stubs.ResponseHandler3(),
                             new Stubs.ErrorHandler3(),
+                            new Stubs.RetryHandler2(),
                             new ParamConfig[]{
                                     new DefaultParamConfig(
                                             "name2",
@@ -324,6 +342,7 @@ public class ConfigBuildersTest {
                 .setMethodsRequestInterceptor(new Stubs.RequestInterceptor2())
                 .setMethodsResponseHandler(new Stubs.ResponseHandler2())
                 .setMethodsErrorHandler(new Stubs.ErrorHandler2())
+                .setMethodsRetryHandler(new Stubs.RetryHandler1())
                 .setParamsName("name")
                 .setParamsDestination("BODY")
                 .setParamsSerializer(new Stubs.Serializer2())
@@ -336,6 +355,7 @@ public class ConfigBuildersTest {
                 .setRequestInterceptor(new Stubs.RequestInterceptor3())
                 .setResponseHandler(new Stubs.ResponseHandler3())
                 .setErrorHandler(new Stubs.ErrorHandler3())
+                .setRetryHandler(new Stubs.RetryHandler2())
                 .setParamsName("name2")
                 .setParamsDestination("URL")
                 .setParamsSerializer(new Stubs.Serializer3())
@@ -352,7 +372,7 @@ public class ConfigBuildersTest {
                 "http://server:8080",
                 InterfaceConfig.DEFAULT_CONTEXT_PATH,
                 DEFAULT_ENCODING,
-                DEFAULT_REQUEST_INTERCEPTOR,
+                TestUtils.newInstance(DEFAULT_REQUEST_INTERCEPTOR),
                 new HashMap<Method, MethodConfig>() {{
                     put(Interface.A, new DefaultMethodConfig(
                             Interface.A,
@@ -363,6 +383,7 @@ public class ConfigBuildersTest {
                             new Stubs.RequestInterceptor2(),
                             new Stubs.ResponseHandler2(),
                             new Stubs.ErrorHandler2(),
+                            new Stubs.RetryHandler2(),
                             new ParamConfig[]{
                                     new DefaultParamConfig(
                                             "name4",
@@ -381,6 +402,7 @@ public class ConfigBuildersTest {
                             new Stubs.RequestInterceptor3(),
                             new Stubs.ResponseHandler3(),
                             new Stubs.ErrorHandler3(),
+                            new Stubs.RetryHandler1(),
                             new ParamConfig[]{
                                     new DefaultParamConfig(
                                             "name3",
@@ -412,6 +434,7 @@ public class ConfigBuildersTest {
                 .setMethodsRequestInterceptor(new Stubs.RequestInterceptor2())
                 .setMethodsResponseHandler(new Stubs.ResponseHandler2())
                 .setMethodsErrorHandler(new Stubs.ErrorHandler2())
+                .setMethodsRetryHandler(new Stubs.RetryHandler2())
                 .setParamsName("name")
                 .setParamsDestination("BODY")
                 .setParamsSerializer(new Stubs.Serializer2())
@@ -432,6 +455,7 @@ public class ConfigBuildersTest {
                 .setRequestInterceptor(new Stubs.RequestInterceptor3())
                 .setResponseHandler(new Stubs.ResponseHandler3())
                 .setErrorHandler(new Stubs.ErrorHandler3())
+                .setRetryHandler(new Stubs.RetryHandler1())
                 .setParamsName("name2")
                 .setParamsDestination("URL")
                 .setParamsSerializer(new Stubs.Serializer3())
@@ -456,14 +480,14 @@ public class ConfigBuildersTest {
                 new HashMap<Method, MethodConfig>() {{
                     put(Interface.A, new DefaultMethodConfig(
                             Interface.A,
-                            null, null, null, null, null, null, null,
+                            null, null, null, null, null, null, null, null,
                             new ParamConfig[]{
                                     new DefaultParamConfig(null, null, null, null)
                             }
                     ));
                     put(Interface.B, new DefaultMethodConfig(
                             Interface.B,
-                            null, null, null, null, null, null, null,
+                            null, null, null, null, null, null, null,null,
                             new ParamConfig[]{
                                     new DefaultParamConfig(null, null, null, null),
                                     new DefaultParamConfig(null, null, null, null),

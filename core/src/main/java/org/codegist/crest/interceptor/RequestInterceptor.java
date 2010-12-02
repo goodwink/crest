@@ -26,6 +26,8 @@ import org.codegist.crest.RequestContext;
 /**
  * Interceptors are notified before and after the parameters have been added to the request.
  * <p>They can be used to cancel a request from being fired by returning false, or arbitrary modify the request.
+ * <p>If implementor declares a constructor with a Map argument, it will be called with the user custom properties.
+ * @see org.codegist.crest.InterfaceContext#getProperties()
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
 public interface RequestInterceptor {

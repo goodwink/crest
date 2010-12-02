@@ -20,12 +20,17 @@
 
 package org.codegist.crest.config;
 
-import org.codegist.crest.*;
+import org.codegist.crest.HttpMethod;
+import org.codegist.crest.Stubs;
+import org.codegist.crest.TestUtils;
+import org.codegist.crest.handler.ErrorHandler;
+import org.codegist.crest.handler.ResponseHandler;
+import org.codegist.crest.handler.RetryHandler;
 import org.codegist.crest.injector.Injector;
-import org.codegist.crest.interceptor.EmptyRequestInterceptor;
-import org.codegist.crest.serializer.Serializer;
 import org.codegist.crest.interceptor.CompositeRequestInterceptor;
+import org.codegist.crest.interceptor.EmptyRequestInterceptor;
 import org.codegist.crest.interceptor.RequestInterceptor;
+import org.codegist.crest.serializer.Serializer;
 import org.junit.Test;
 
 import java.lang.reflect.Method;
@@ -376,6 +381,7 @@ public class ConfigsTest {
         private RequestInterceptor requestInterceptor;
         private ResponseHandler responseHandler;
         private ErrorHandler errorHandler;
+        private RetryHandler retryHandler;
 
         private ParamConfig[] paramConfigs;
 
@@ -459,6 +465,14 @@ public class ConfigsTest {
 
         public void setErrorHandler(ErrorHandler errorHandler) {
             this.errorHandler = errorHandler;
+        }
+
+        public RetryHandler getRetryHandler() {
+            return retryHandler;
+        }
+
+        public void setRetryHandler(RetryHandler retryHandler) {
+            this.retryHandler = retryHandler;
         }
 
         public ParamConfig[] getParamConfigs() {

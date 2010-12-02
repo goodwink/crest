@@ -27,6 +27,8 @@ import org.codegist.common.reflect.ProxyFactory;
 import org.codegist.crest.config.ConfigBuilders;
 import org.codegist.crest.config.InterfaceConfig;
 import org.codegist.crest.config.PreconfiguredInterfaceConfigFactory;
+import org.codegist.crest.handler.MaxAttemptRetryHandler;
+import org.codegist.crest.handler.RetryHandler;
 import org.codegist.crest.injector.Injector;
 import org.codegist.crest.serializer.Serializer;
 import org.junit.BeforeClass;
@@ -78,6 +80,62 @@ public class DefaultCRestTest {
     }
 
     @Test
+    public void testSuccessWithRetry(){
+        int maxRetries = 3;
+        int throwErrorsCount = 3;
+        CRest crest = buildRetryableCrest(maxRetries,throwErrorsCount);
+        RetryTest interfaze = crest.build(RetryTest.class);
+        interfaze.doIt();
+    }
+    
+    @Test(expected = HttpException.class)
+    public void testFailureWithRetry(){
+        int maxRetries = 3;
+        int throwErrorsCount = 4;
+        CRest crest = buildRetryableCrest(maxRetries,throwErrorsCount);
+        RetryTest interfaze = crest.build(RetryTest.class);
+        interfaze.doIt();
+    }
+
+    private CRest buildRetryableCrest(final int maxRetry, final int throwErrorsCount){
+        RetryHandler retryHandler  = mock(RetryHandler.class);
+        when(retryHandler.retry(any(ResponseContext.class), any(Exception.class), anyInt())).thenAnswer(new Answer<Object>() {
+            private RetryHandler delegate = new MaxAttemptRetryHandler(maxRetry);
+            public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
+                return delegate.retry(
+                        (ResponseContext)invocationOnMock.getArguments()[0],
+                        (Exception)invocationOnMock.getArguments()[1],
+                        (Integer)invocationOnMock.getArguments()[2]);
+            }
+        });
+        RestService mockRestService = mock(RestService.class);
+        when(mockRestService.exec(any(HttpRequest.class))).thenAnswer(new Answer<Object>() {
+            private int i = 0;
+            @Override
+            public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
+                if(++i < throwErrorsCount)
+                    throw new HttpException("error!", new HttpResponse((HttpRequest)invocationOnMock.getArguments()[0], 400));
+                else
+                    return new HttpResponse((HttpRequest)invocationOnMock.getArguments()[0], 200, null, new ByteArrayInputStream(new byte[]{10}), "utf-8");
+            }
+        });
+        return new DefaultCRest(
+                new DefaultCRestContext(
+                        mockRestService,
+                        mockProxyFactory,
+                        new PreconfiguredInterfaceConfigFactory(
+                                new ConfigBuilders.InterfaceConfigBuilder(RetryTest.class, "http://test.com")
+                                        .setMethodsRetryHandler(retryHandler)
+                                        .build()
+                        ),
+                        null));
+    }
+
+    private static interface RetryTest {
+        String doIt();
+    }
+
+    @Test
     public void testRawReturnType() throws IOException {
 
         RestService mockRestService = mock(RestService.class);
@@ -85,7 +143,7 @@ public class DefaultCRestTest {
             @Override
             public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
                 try {
-                    return new HttpResponse(new HttpRequest.Builder("http://test", "utf-8").build(), 200, new ByteArrayInputStream(MODEL_RESPONSE_JSON.getBytes()), "text/html");
+                    return new HttpResponse(new HttpRequest.Builder("http://test", "utf-8").build(), 200, null, new ByteArrayInputStream(MODEL_RESPONSE_JSON.getBytes()), "text/html");
                 } catch (URISyntaxException e) {
                     return null;
                 }
@@ -96,23 +154,22 @@ public class DefaultCRestTest {
                         mockRestService,
                         mockProxyFactory,
                         new PreconfiguredInterfaceConfigFactory(RawInterface.CONFIG),
-                        null)); // No marshaller
+                        null));
         RawInterface raw = rawConfiguredFactory.build(RawInterface.class);
-
 
         raw.testVoid();
         assertEquals(MODEL_RESPONSE_JSON, IOs.toString(raw.testInputStream()));
         assertEquals(MODEL_RESPONSE_JSON, IOs.toString(raw.testReader()));
         assertEquals(MODEL_RESPONSE_JSON, raw.testString());
 
-
+        Map<String,Object> customProperties = new HashMap<String, Object>() {{
+            put(Marshaller.class.getName(), mockMarshaller);
+        }};
         DefaultCRest jsonConfiguredFactory = new DefaultCRest(new DefaultCRestContext(
                 mockRestService,
                 mockProxyFactory,
-                new PreconfiguredInterfaceConfigFactory(ModelInterface.CONFIG),
-                new HashMap<String, Object>() {{
-                    put(Marshaller.class.getName(), mockMarshaller);
-                }}
+                new PreconfiguredInterfaceConfigFactory(new ConfigBuilders.InterfaceConfigBuilder(ModelInterface.class, "http://test.com", customProperties).build()),
+                customProperties
         ));
         ModelInterface model = jsonConfiguredFactory.build(ModelInterface.class);
         model.testVoid();
@@ -150,8 +207,6 @@ public class DefaultCRestTest {
         Reader testReader();
 
         Model testModel();
-
-        InterfaceConfig CONFIG = new ConfigBuilders.InterfaceConfigBuilder(ModelInterface.class, "http://test.com").build();
     }
 
 
@@ -208,17 +263,43 @@ public class DefaultCRestTest {
         }))).thenAnswer(new Answer<Object>() {
             @Override
             public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
-                return new HttpResponse(null, 200, new ByteArrayInputStream(MODEL_RESPONSE_JSON.getBytes()), "text/html");
+                return new HttpResponse(null, 200, null, new ByteArrayInputStream(MODEL_RESPONSE_JSON.getBytes()), "text/html");
             }
         });
 
+        Map<String,Object> customProperties = new HashMap<String, Object>() {{
+            put(Marshaller.class.getName(), mockMarshaller);
+        }};
+        InterfaceConfig CONFIG = new ConfigBuilders.InterfaceConfigBuilder(Rest.class, "http://test-server:8080", customProperties)
+                .setContextPath("/path")
+                .setMethodsSocketTimeout(15l)
+                .setMethodsConnectionTimeout(10l)
+                .setEncoding("utf-8")
+                .startMethodConfig(Rest.AAA).setPath("/aaa?b={1}&a={0}").endMethodConfig()
+                .startMethodConfig(Rest.BBB).setPath("/bbb/{2}?b={1}&a={0}")
+                .setConnectionTimeout(55l)
+                .startParamConfig(0).setSerializer(new Ser()).endParamConfig()
+                .endMethodConfig()
+                .startMethodConfig(Rest.CCC).setPath("/ccc/{0}?aa={1}")
+                .setHttpMethod(HttpMethod.POST)
+                .startParamConfig(0).setDestination("URL").endParamConfig()
+                .startParamConfig(1).setDestination("URL").endParamConfig()
+                .startParamConfig(2).setDestination("BODY").setName("bb").endParamConfig()
+                .endMethodConfig()
+                .startMethodConfig(Rest.DDD).setPath("/ddd?c={2}")
+                .setHttpMethod(HttpMethod.POST)
+                .startParamConfig(0)
+                .setDestination("BODY")
+                .setInjector(new AnnotatedBeanParamInjector())
+                .endParamConfig()
+                .startParamConfig(1).setDestination("BODY").setName("bb").endParamConfig()
+                .endMethodConfig()
+                .build();
         CRest factory = new DefaultCRest(new DefaultCRestContext(
                 mockRestService,
                 new JdkProxyFactory(),
-                new PreconfiguredInterfaceConfigFactory(Rest.CONFIG),
-                new HashMap<String, Object>() {{
-                    put(Marshaller.class.getName(), mockMarshaller);
-                }}
+                new PreconfiguredInterfaceConfigFactory(CONFIG),
+                customProperties
         ));
 
         Rest restInterface = factory.build(Rest.class);
@@ -251,31 +332,7 @@ public class DefaultCRestTest {
 
         Method DDD = getMethod(Rest.class, "ddd", Model.class, String[].class, String.class);
 
-        InterfaceConfig CONFIG = new ConfigBuilders.InterfaceConfigBuilder(Rest.class, "http://test-server:8080")
-                .setContextPath("/path")
-                .setMethodsSocketTimeout(15l)
-                .setMethodsConnectionTimeout(10l)
-                .setEncoding("utf-8")
-                .startMethodConfig(AAA).setPath("/aaa?b={1}&a={0}").endMethodConfig()
-                .startMethodConfig(BBB).setPath("/bbb/{2}?b={1}&a={0}")
-                .setConnectionTimeout(55l)
-                .startParamConfig(0).setSerializer(new Ser()).endParamConfig()
-                .endMethodConfig()
-                .startMethodConfig(CCC).setPath("/ccc/{0}?aa={1}")
-                .setHttpMethod(HttpMethod.POST)
-                .startParamConfig(0).setDestination("URL").endParamConfig()
-                .startParamConfig(1).setDestination("URL").endParamConfig()
-                .startParamConfig(2).setDestination("BODY").setName("bb").endParamConfig()
-                .endMethodConfig()
-                .startMethodConfig(DDD).setPath("/ddd?c={2}")
-                .setHttpMethod(HttpMethod.POST)
-                .startParamConfig(0)
-                .setDestination("BODY")
-                .setInjector(new AnnotatedBeanParamInjector())
-                .endParamConfig()
-                .startParamConfig(1).setDestination("BODY").setName("bb").endParamConfig()
-                .endMethodConfig()
-                .build();
+
     }
 
     public static class Ser implements Serializer {

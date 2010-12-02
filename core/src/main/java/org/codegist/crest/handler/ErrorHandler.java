@@ -18,13 +18,17 @@
  * More information at http://www.codegist.org.
  */
 
-package org.codegist.crest;
+package org.codegist.crest.handler;
+
+import org.codegist.crest.ResponseContext;
 
 /**
  * Error handler gets invoked when an exception occurs during each request lifecyle :
  * <p>- Generation : involves RequestInterceptors, RequestInjectors, Serializer.
  * <p>- Firing : Any non 200 response status code while fire an exception.
  * <p>- Response handling : involves ResponseHandlers.
+ * <p>If implementor declares a constructor with a Map argument, it will be called with the user custom properties.
+ * @see org.codegist.crest.InterfaceContext#getProperties()
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
 public interface ErrorHandler {

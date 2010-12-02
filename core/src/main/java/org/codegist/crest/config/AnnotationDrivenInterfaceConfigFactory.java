@@ -58,6 +58,7 @@ public class AnnotationDrivenInterfaceConfigFactory implements InterfaceConfigFa
             RequestInterceptor interceptor = interfaze.getAnnotation(RequestInterceptor.class);
             ResponseHandler responseHandler = interfaze.getAnnotation(ResponseHandler.class);
             ErrorHandler errorHandler = interfaze.getAnnotation(ErrorHandler.class);
+            RetryHandler retryHandler = interfaze.getAnnotation(RetryHandler.class);
             HttpMethod httpMethod = interfaze.getAnnotation(HttpMethod.class);
 
             /* Params defaults */
@@ -77,6 +78,7 @@ public class AnnotationDrivenInterfaceConfigFactory implements InterfaceConfigFa
             if(interceptor != null) config.setMethodsRequestInterceptor(interceptor.value());
             if(responseHandler != null) config.setMethodsResponseHandler(responseHandler.value());
             if(errorHandler != null) config.setMethodsErrorHandler(errorHandler.value());
+            if(retryHandler != null) config.setMethodsRetryHandler(retryHandler.value());
             if(httpMethod != null) config.setMethodsHttpMethod(httpMethod.value());
 
             if(serializer != null) config.setParamsSerializer(serializer.value());
@@ -93,6 +95,7 @@ public class AnnotationDrivenInterfaceConfigFactory implements InterfaceConfigFa
                 interceptor = meth.getAnnotation(RequestInterceptor.class);
                 responseHandler = meth.getAnnotation(ResponseHandler.class);
                 errorHandler = meth.getAnnotation(ErrorHandler.class);
+                retryHandler = meth.getAnnotation(RetryHandler.class);
                 httpMethod = meth.getAnnotation(HttpMethod.class);
 
                 /* Params defaults */
@@ -109,6 +112,7 @@ public class AnnotationDrivenInterfaceConfigFactory implements InterfaceConfigFa
                 if(interceptor != null) methodConfigBuilder.setRequestInterceptor(interceptor.value());
                 if(responseHandler != null) methodConfigBuilder.setResponseHandler(responseHandler.value());
                 if(errorHandler != null) methodConfigBuilder.setErrorHandler(errorHandler.value());
+                if(retryHandler != null) methodConfigBuilder.setRetryHandler(retryHandler.value());
                 if(httpMethod != null) methodConfigBuilder.setHttpMethod(httpMethod.value());
 
                 if(name != null) methodConfigBuilder.setParamsName(name.value());

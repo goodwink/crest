@@ -66,7 +66,7 @@ public class HttpRequest {
     }
 
     public String getUrlString(boolean includeQueryString) throws MalformedURLException, UnsupportedEncodingException {
-        if (!includeQueryString) return uri.toString();
+        if (!includeQueryString || queryParams.isEmpty()) return uri.toString();
         return uri.toString() + "?" + Urls.buildQueryString(queryParams, encoding);
     }
 
@@ -176,8 +176,8 @@ public class HttpRequest {
                     bodyParams != null ? bodyParams : new LinkedHashMap<String, Object>()
             );
         }
-
-
+                        
+    
         private static final Pattern FIX_URL_PATTERN = Pattern.compile("\\{(\\d+)\\}");
 
         /**

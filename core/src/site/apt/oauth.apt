@@ -48,10 +48,10 @@ public interface StatusService {
 
 +-----
 CRest crest = new CRestBuilder()
-                     .addProperty(CRestProperty.OAUTH_ACCESS_TOKEN, accessToken)
-                     .addProperty(CRestProperty.OAUTH_ACCESS_TOKEN_SECRET, accessTokenSecret)
-                     .addProperty(CRestProperty.OAUTH_CONSUMER_KEY, consumerKey)
-                     .addProperty(CRestProperty.OAUTH_CONSUMER_SECRET, consumerSecret)
+                     .setProperty(CRestProperty.OAUTH_ACCESS_TOKEN, accessToken)
+                     .setProperty(CRestProperty.OAUTH_ACCESS_TOKEN_SECRET, accessTokenSecret)
+                     .setProperty(CRestProperty.OAUTH_CONSUMER_KEY, consumerKey)
+                     .setProperty(CRestProperty.OAUTH_CONSUMER_SECRET, consumerSecret)
                      .build();
 +-----
 

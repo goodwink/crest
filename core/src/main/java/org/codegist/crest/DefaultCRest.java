@@ -38,8 +38,8 @@ import java.net.URISyntaxException;
  * <p>- {@link org.codegist.crest.interceptor.RequestInterceptor} to intercept any requests before it gets fired.
  * <p>- {@link org.codegist.crest.serializer.Serializer} to customize the serialization process of any types.
  * <p>- {@link org.codegist.crest.injector.Injector} to inject complexe types that can't be reduced to a String via the serializers.
- * <p>- {@link org.codegist.crest.ResponseHandler} to customize response handling when interface method's response type is not one of raw types.
- * <p>- {@link org.codegist.crest.ErrorHandler} to customize how the created interface behaves when any error occurs during the method call process.
+ * <p>- {@link org.codegist.crest.handler.ResponseHandler} to customize response handling when interface method's response type is not one of raw types.
+ * <p>- {@link org.codegist.crest.handler.ErrorHandler} to customize how the created interface behaves when any error occurs during the method call process.
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
 public class DefaultCRest implements CRest {
@@ -81,27 +81,33 @@ public class DefaultCRest implements CRest {
             return exec(method, args);
         }
 
+        int i = 0 ;
         private Object exec(Method method, Object[] args) throws Exception {
             MethodConfig methodConfig = interfaceContext.getConfig().getMethodConfig(method);
+
             RequestContext requestContext = new DefaultRequestContext(interfaceContext, method, args);
-            HttpResponse response;
             ResponseContext responseContext;
             Exception exception = null;
-            try {
-                HttpRequest request = buildRequest(requestContext);
-                if (request == null) {
-                    // Request cancelled by requestInterceptor, returning
-                    return null;
+            int i = 0;
+            do {
+                exception = null;
+                HttpResponse response;
+                try {
+                    HttpRequest request = buildRequest(requestContext);
+                    if (request == null) {
+                        // Request cancelled by requestInterceptor, returning
+                        return null;
+                    }
+                    response = context.getRestService().exec(request);
+                    responseContext = new DefaultResponseContext(requestContext, response);
+                } catch (HttpException e) {
+                    responseContext = new DefaultResponseContext(requestContext, e.getResponse());
+                    exception = e;
+                } catch (RuntimeException e) {
+                    responseContext = new DefaultResponseContext(requestContext, null);
+                    exception = e;
                 }
-                response = context.getRestService().exec(request);
-                responseContext = new DefaultResponseContext(requestContext, response);
-            } catch (HttpException e) {
-                responseContext = new DefaultResponseContext(requestContext, e.getResponse());
-                exception = e;
-            } catch (RuntimeException e) {
-                responseContext = new DefaultResponseContext(requestContext, null);
-                exception = e;
-            }
+            }while(exception != null && methodConfig.getRetryHandler().retry(responseContext, exception, ++i));
 
             if (exception != null) {
                 return methodConfig.getErrorHandler().handle(responseContext, exception);

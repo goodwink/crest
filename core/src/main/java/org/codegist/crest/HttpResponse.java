@@ -20,12 +20,16 @@
 
 package org.codegist.crest;
 
+import org.codegist.common.collect.Maps;
 import org.codegist.common.io.IOs;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
 /**
@@ -35,18 +39,23 @@ public class HttpResponse {
 
     private final HttpRequest request;
     private final InputStream inputStream;
+    private final Map<String, List<String>> headers;
     private final int statusCode;
     private String responseString = null;
 
 
     public HttpResponse(HttpRequest request, int statusCode) {
-        this(request, statusCode, null, null);
+        this(request, statusCode, null);
 
     }
+    public HttpResponse(HttpRequest request, int statusCode, Map<String, List<String>> headers) {
+        this(request, statusCode, headers, null, null);
+    }
 
-    public HttpResponse(HttpRequest request, int statusCode, InputStream inputStream, String contentEncoding) {
+    public HttpResponse(HttpRequest request, int statusCode, Map<String, List<String>> headers, InputStream inputStream, String contentEncoding) {
         this.request = request;
         this.statusCode = statusCode;
+        this.headers = Maps.unmodifiable(headers);
         if ("gzip".equals(contentEncoding)) {
             try {
                 this.inputStream = new GZIPInputStream(inputStream);
@@ -105,6 +114,11 @@ public class HttpResponse {
             }
         }
         return responseString;
+    }
+
+    public List<String> getHeader(String name) {
+        List<String> header = headers.get(name);
+        return header != null ? Collections.unmodifiableList(header) : Collections.<String>emptyList();
     }
 
     /**

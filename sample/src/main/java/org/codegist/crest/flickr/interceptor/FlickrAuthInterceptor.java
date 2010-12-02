@@ -21,6 +21,7 @@
 package org.codegist.crest.flickr.interceptor;
 
 import org.codegist.common.codec.Hex;
+import org.codegist.common.lang.Validate;
 import org.codegist.crest.*;
 import org.codegist.crest.interceptor.RequestInterceptorAdapter;
 
@@ -38,15 +39,23 @@ public class FlickrAuthInterceptor extends RequestInterceptorAdapter {
     public static final String API_KEY_PROP = FlickrAuthInterceptor.class.getName() + "#api.key";
     public static final String AUTH_TOKEN_PROP = FlickrAuthInterceptor.class.getName() + "#auth.token";
 
-    private boolean isForBody(HttpMethod m) {
-        return HttpMethod.POST.equals(m) || HttpMethod.PUT.equals(m);
+    private final String appSecret;
+    private final String apiKey;
+    private final String authToken;
+
+    public FlickrAuthInterceptor(Map<String,Object> properties) {
+        this.appSecret = (String) properties.get(APP_SECRET_PROP);
+        this.apiKey = (String) properties.get(API_KEY_PROP);
+        this.authToken = (String) properties.get(AUTH_TOKEN_PROP);
+
+        Validate.notEmpty(this.appSecret, "App secret is required, please pass it is the properties (key=" + APP_SECRET_PROP + ")");
+        Validate.notEmpty(this.apiKey, "API key is required, please pass it is the properties (key=" + API_KEY_PROP + ")");
+        Validate.notEmpty(this.authToken, "Authentification token is required, please pass it is the properties (key=" + AUTH_TOKEN_PROP + ")");
     }
 
     @Override
     public boolean afterParamsInjectionHandle(HttpRequest.Builder builder, RequestContext context) {
-        StringBuilder sb = new StringBuilder((String) context.getProperties().get(APP_SECRET_PROP));
-        String apiKey = (String) context.getProperties().get(API_KEY_PROP);
-        String authToken = (String) context.getProperties().get(AUTH_TOKEN_PROP);
+        StringBuilder sb = new StringBuilder(appSecret);
 
         if (isForBody(builder.getMeth())) {
             builder.addBodyParam("api_key", apiKey);
@@ -81,5 +90,7 @@ public class FlickrAuthInterceptor extends RequestInterceptorAdapter {
         }
     }
 
-
+    private boolean isForBody(HttpMethod m) {
+        return HttpMethod.POST.equals(m) || HttpMethod.PUT.equals(m);
+    }
 }

@@ -34,6 +34,13 @@ import static org.mockito.Mockito.withSettings;
  */
 public class TestUtils {
 
+    public static <T> T newInstance(Class<T> clazz){
+        try {
+            return clazz.newInstance();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public static Class<?> getClass(Object o) {
         return o != null ? o.getClass() : null;

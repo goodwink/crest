@@ -26,23 +26,31 @@ package org.codegist.crest;
 public class HttpException extends RuntimeException {
 
     private final HttpResponse response;
+    private final String responseString;
 
     public HttpException(String message, HttpResponse response) {
         super(message);
         this.response = response;
+        this.responseString = response.asString();
     }
 
     public HttpException(Throwable cause, HttpResponse response) {
         super(cause);
         this.response = response;
+        this.responseString = response.asString();
     }
 
     public HttpException(String message, HttpResponse response, Throwable cause) {
         super(message, cause);
         this.response = response;
+        this.responseString = response.asString();
     }
 
     public HttpResponse getResponse() {
         return response;
+    }
+
+    public String getResponseString() {
+        return responseString;
     }
 }

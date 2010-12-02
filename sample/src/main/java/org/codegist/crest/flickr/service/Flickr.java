@@ -20,9 +20,6 @@
 
 package org.codegist.crest.flickr.service;
 
-import static org.codegist.crest.HttpMethod.*;
-import static org.codegist.crest.config.Destination.*;
-
 import org.codegist.crest.annotate.*;
 import org.codegist.crest.flickr.handler.FlickrResponseHandler;
 import org.codegist.crest.flickr.interceptor.FlickrAuthInterceptor;
@@ -32,6 +29,10 @@ import org.codegist.crest.flickr.model.Gallery;
 import java.io.File;
 import java.io.InputStream;
 import java.util.Date;
+
+import static org.codegist.crest.HttpMethod.GET;
+import static org.codegist.crest.HttpMethod.POST;
+import static org.codegist.crest.config.Destination.BODY;
 
 /**
  * see http://www.flickr.com/services/api/

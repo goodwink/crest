@@ -25,8 +25,8 @@ import java.lang.reflect.Type;
 /**
  * Response context, passed to the response handlers and error handlers.
  *
- * @see org.codegist.crest.ResponseHandler
- * @see org.codegist.crest.ErrorHandler
+ * @see org.codegist.crest.handler.ResponseHandler
+ * @see org.codegist.crest.handler.ErrorHandler
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
 public interface ResponseContext {

@@ -18,9 +18,12 @@
  * More information at http://www.codegist.org.
  */
 
-package org.codegist.crest;
+package org.codegist.crest.handler;
 
 import org.codegist.common.marshal.Marshaller;
+import org.codegist.crest.ResponseContext;
+
+import java.util.Map;
 
 /**
  * Default response handler that either marshall the response or return server raw response following the rules below :
@@ -29,30 +32,35 @@ import org.codegist.common.marshal.Marshaller;
  * <p>- Response is just ignored for voids methods.
  *
  * @see org.codegist.common.marshal.Marshaller
- * @see org.codegist.crest.CRestContext#getProperties()
+ * @see org.codegist.crest.InterfaceContext#getProperties()
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
 public class DefaultResponseHandler implements ResponseHandler {
 
-    private volatile Marshaller marshaller;
+    private final Marshaller marshaller;
+
+    public DefaultResponseHandler() {
+        this.marshaller = null;
+    }
+    public DefaultResponseHandler(Map<String,Object> customProperties) {
+        this.marshaller = (Marshaller) customProperties.get(Marshaller.class.getName());
+    }
 
     @Override
     public final Object handle(ResponseContext context) {
         try {
             if (context.getExpectedType().toString().equals("void")) return null;
-            // no need to more synchronization, this is a merely optimisation in order to limit access the the custom properties map, better do it twice than synchronize every time.
-            if (marshaller == null) {
-                marshaller = context.getRequestContext().getProperty(Marshaller.class.getName());
-            }
-            // if not in custom properties, then no marshaller has been set in the configuration, check that return type is String and return the response as string.
-            if (marshaller == null) {
+
+            if (marshaller != null) {
+                return marshaller.marshall(context.getResponse().asStream(), context.getExpectedGenericType());
+            }else{
+                // if no marshaller has been set in the configuration, check that return type is String and return the response as string.
                 if (String.class.equals(context.getExpectedType())) {
                     return context.getResponse().asString();
                 } else {
                     throw new IllegalStateException("Marshaller hasn't been set and a method return type different than accepted raw types has been found.");
                 }
             }
-            return marshaller.marshall(context.getResponse().asStream(), context.getExpectedGenericType());
         } finally {
             context.getResponse().close();
         }

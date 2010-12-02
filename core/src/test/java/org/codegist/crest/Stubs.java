@@ -20,6 +20,9 @@
 
 package org.codegist.crest;
 
+import org.codegist.crest.handler.ErrorHandler;
+import org.codegist.crest.handler.ResponseHandler;
+import org.codegist.crest.handler.RetryHandler;
 import org.codegist.crest.injector.Injector;
 import org.codegist.crest.interceptor.RequestInterceptorAdapter;
 
@@ -78,6 +81,22 @@ public class Stubs {
             return null;
         }
     }
+
+
+    public static class RetryHandler1 implements RetryHandler {
+        @Override
+        public boolean retry(ResponseContext response, Exception exception, int retryNumber) {
+            return false;
+        }
+    }
+
+    public static class RetryHandler2 implements RetryHandler {
+        @Override
+        public boolean retry(ResponseContext response, Exception exception, int retryNumber) {
+            return false;
+        }
+    }
+
 
     public static class ResponseHandler1 implements ResponseHandler {
         @Override

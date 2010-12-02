@@ -26,11 +26,11 @@ import org.codegist.crest.CRestContext;
  * Creates instances of {@link org.codegist.crest.config.InterfaceConfig} for the given interfaces.
  * <p>Implementors must apply to the following contract :
  * <p>- No method of the {@link org.codegist.crest.config.InterfaceConfig} instance and sub-config objects return null values expects the one documented.
- * <p>- Defaults values must either be taken from interface's defaults constant or from {@link org.codegist.crest.CRestContext#getProperties()}'s defaults overrides.
+ * <p>- Defaults values must either be taken from interface's defaults constant or from {@link org.codegist.crest.InterfaceContext#getProperties()}'s defaults overrides.
  * <p>- All methods in the interface must have it's {@link MethodConfig} configured in the {@link org.codegist.crest.config.InterfaceConfig}.
  * <p>- All parameters of all methods in the interface must have it's {@link org.codegist.crest.config.ParamConfig} configured for each {@link MethodConfig}.
  * <p>- If any method's parameter type is annotated with any parameter specifics annotation, the type specific annotation configs are used unless explicitly specified at the interface or factory configuration level.
- *
+ * <p>-
  * @see org.codegist.crest.config.InterfaceConfig
  * @see org.codegist.crest.config.MethodConfig
  * @see org.codegist.crest.config.ParamConfig

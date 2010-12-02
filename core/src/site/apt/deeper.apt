@@ -49,3 +49,7 @@ Going Deeper
         * Firing:  Any non 200 response status code while fire an exception.
 
         * Response handling:  involves ResponseHandlers.
+
+* Retry Handler
+
+    Retry handler gets invoked when an exception occurs during the http firing phase and can be used to retry a failed request.

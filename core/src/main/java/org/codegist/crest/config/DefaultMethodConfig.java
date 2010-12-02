@@ -21,9 +21,10 @@
 package org.codegist.crest.config;
 
 import org.codegist.common.lang.ToStringBuilder;
-import org.codegist.crest.ErrorHandler;
 import org.codegist.crest.HttpMethod;
-import org.codegist.crest.ResponseHandler;
+import org.codegist.crest.handler.ErrorHandler;
+import org.codegist.crest.handler.ResponseHandler;
+import org.codegist.crest.handler.RetryHandler;
 import org.codegist.crest.interceptor.RequestInterceptor;
 
 import java.lang.reflect.Method;
@@ -42,10 +43,11 @@ class DefaultMethodConfig implements MethodConfig {
     private final RequestInterceptor requestInterceptor;
     private final ResponseHandler responseHandler;
     private final ErrorHandler errorHandler;
+    private final RetryHandler retryHandler;
 
     private final ParamConfig[] paramConfigs;
 
-    DefaultMethodConfig(Method method, String path, HttpMethod httpMethod, Long socketTimeout, Long connectionTimeout, RequestInterceptor requestInterceptor, ResponseHandler responseHandler, ErrorHandler errorHandler, ParamConfig[] paramConfigs) {
+    DefaultMethodConfig(Method method, String path, HttpMethod httpMethod, Long socketTimeout, Long connectionTimeout, RequestInterceptor requestInterceptor, ResponseHandler responseHandler, ErrorHandler errorHandler, RetryHandler retryHandler, ParamConfig[] paramConfigs) {
         this.method = method;
         this.path = path;
         this.httpMethod = httpMethod;
@@ -54,6 +56,7 @@ class DefaultMethodConfig implements MethodConfig {
         this.requestInterceptor = requestInterceptor;
         this.responseHandler = responseHandler;
         this.errorHandler = errorHandler;
+        this.retryHandler = retryHandler;
         this.paramConfigs = paramConfigs.clone();
     }
 
@@ -98,6 +101,11 @@ class DefaultMethodConfig implements MethodConfig {
     }
 
     @Override
+    public RetryHandler getRetryHandler() {
+        return retryHandler;
+    }
+
+    @Override
     public ParamConfig getParamConfig(int index) {
         return paramConfigs != null && index < paramConfigs.length ? paramConfigs[index] : null;
     }
@@ -117,6 +125,7 @@ class DefaultMethodConfig implements MethodConfig {
                 .append("requestInterceptor", requestInterceptor)
                 .append("responseHandler", responseHandler)
                 .append("errorHandler", errorHandler)
+                .append("retryHandler", retryHandler)
                 .append("paramConfigs", paramConfigs)
                 .toString();
     }

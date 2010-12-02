@@ -43,11 +43,11 @@ public class FlickrSample {
         CRest crest = new CRestBuilder()
                 .expectsXml(FlickrModelFactory.class)
                 .setSerializer(boolean.class, new FlickrBooleanSerializer())
-                .addProperty(CRestProperty.SERIALIZER_DATE_FORMAT, "Millis")
-                .addProperty(CRestProperty.SERIALIZER_LIST_SEPARATOR, " ")
-                .addProperty(FlickrAuthInterceptor.API_KEY_PROP, apiKey)
-                .addProperty(FlickrAuthInterceptor.APP_SECRET_PROP, appSecret)
-                .addProperty(FlickrAuthInterceptor.AUTH_TOKEN_PROP, authToken)
+                .setProperty(CRestProperty.SERIALIZER_DATE_FORMAT, "Millis")
+                .setProperty(CRestProperty.SERIALIZER_LIST_SEPARATOR, " ")
+                .setProperty(FlickrAuthInterceptor.API_KEY_PROP, apiKey)
+                .setProperty(FlickrAuthInterceptor.APP_SECRET_PROP, appSecret)
+                .setProperty(FlickrAuthInterceptor.AUTH_TOKEN_PROP, authToken)
                 .build();
 
         /* Build service instance */

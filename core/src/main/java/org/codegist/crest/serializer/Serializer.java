@@ -22,9 +22,11 @@ package org.codegist.crest.serializer;
 
 /**
  * Serializes are used to serialize a object to a single String.
+ * <p> If implementor declares a constructor with a Map argument, it will be called with the user custom properties.
  *
  * @param <T> Optional parameter value type
  * @see org.codegist.crest.serializer.Serializers
+ * @see org.codegist.crest.InterfaceContext#getProperties()
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
 public interface Serializer<T> {

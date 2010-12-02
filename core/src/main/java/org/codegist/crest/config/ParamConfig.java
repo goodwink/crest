@@ -28,7 +28,7 @@ import org.codegist.crest.serializer.Serializer;
  * Method's argument configuration holder object.
  * <p>Implementors must respect the following contract :
  * <p>- No method return null except for the ones documented or when used as an override template (see {@link Configs#override(ParamConfig, ParamConfig)})
- * <p>- Defaults values must either be taken from interface's defaults constant or from {@link org.codegist.crest.CRestContext#getProperties()}'s defaults overrides.
+ * <p>- Defaults values must either be taken from interface's defaults constant or from {@link org.codegist.crest.InterfaceContext#getProperties()}'s defaults overrides.
  *
  * @see org.codegist.crest.config.MethodConfig
  * @see org.codegist.crest.config.ParamConfig
@@ -49,14 +49,14 @@ public interface ParamConfig {
      *
      * @see org.codegist.crest.config.ParamConfig#getInjector()
      */
-    Injector DEFAULT_INJECTOR = new DefaultInjector();
+    Class<? extends Injector> DEFAULT_INJECTOR = DefaultInjector.class;
 
     /**
      * Default serializer applied when non specified.
      *
      * @see org.codegist.crest.config.ParamConfig#getSerializer()
      */
-    Serializer DEFAULT_SERIALIZER = null;
+    Class<? extends Serializer> DEFAULT_SERIALIZER = null;
 
     /**
      * Default name applied when non specified.

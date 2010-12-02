@@ -25,9 +25,11 @@ import org.codegist.crest.ParamContext;
 
 /**
  * Injectors are used to inject any method parameter values in the http request before it gets fired. They can modify the http request as wanted.
+ * <p>If implementor declares a constructor with a Map argument, it will be called with the user custom properties.
+ * @see org.codegist.crest.InterfaceContext#getProperties()
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
-public interface Injector {
+public interface Injector<T> {
 
     /**
      * Injects the current param into the request.
@@ -35,6 +37,6 @@ public interface Injector {
      * @param builder Current http request being build.
      * @param context The current param context holding the value of the current method argument and all other context objects.
      */
-    void inject(HttpRequest.Builder builder, ParamContext context);
+    void inject(HttpRequest.Builder builder, ParamContext<T> context);
 
 }

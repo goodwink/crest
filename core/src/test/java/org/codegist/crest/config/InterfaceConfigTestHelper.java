@@ -61,6 +61,8 @@ public class InterfaceConfigTestHelper {
             assertEquals(meth.toGenericString(), expected.getMethodConfig(originalMethods[m]).getHttpMethod(), test.getMethodConfig(meth).getHttpMethod());
             assertEquals(meth.toGenericString(), expected.getMethodConfig(originalMethods[m]).getConnectionTimeout(), test.getMethodConfig(meth).getConnectionTimeout());
             assertEquals(meth.toGenericString(), expected.getMethodConfig(originalMethods[m]).getSocketTimeout(), test.getMethodConfig(meth).getSocketTimeout());
+            assertEquals(meth.toGenericString(), TestUtils.getClass(expected.getMethodConfig(originalMethods[m]).getErrorHandler()), TestUtils.getClass(test.getMethodConfig(meth).getErrorHandler()));
+            assertEquals(meth.toGenericString(), TestUtils.getClass(expected.getMethodConfig(originalMethods[m]).getRetryHandler()), TestUtils.getClass(test.getMethodConfig(meth).getRetryHandler()));
             assertEquals(meth.toGenericString(), TestUtils.getClass(expected.getMethodConfig(originalMethods[m]).getResponseHandler()), TestUtils.getClass(test.getMethodConfig(meth).getResponseHandler()));
             if (expected.getMethodConfig(originalMethods[m]).getRequestInterceptor() instanceof CompositeRequestInterceptor) {
                 int max = ((CompositeRequestInterceptor) expected.getMethodConfig(originalMethods[m]).getRequestInterceptor()).getInterceptors().length;

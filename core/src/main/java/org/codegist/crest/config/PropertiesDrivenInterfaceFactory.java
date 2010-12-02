@@ -61,6 +61,7 @@ import static org.codegist.common.lang.Strings.isBlank;
  * service.test.request-interceptor=my.rest.MyRequestHandler2
  * service.test.response-handler=my.rest.MyResponseHandler
  * service.test.error-handler=my.rest.MyErrorHandler
+ * service.test.retry-handler=my.rest.MyRetryHandler
  * # default method param configs
  * service.test.name=name
  * service.test.destination=BODY
@@ -134,6 +135,7 @@ public class PropertiesDrivenInterfaceFactory implements InterfaceConfigFactory 
                     .setMethodsSocketTimeout(getServiceProp(serviceAlias, "socket-timeout"))
                     .setMethodsResponseHandler(getServiceProp(serviceAlias, "response-handler"))
                     .setMethodsErrorHandler(getServiceProp(serviceAlias, "error-handler"))
+                    .setMethodsRetryHandler(getServiceProp(serviceAlias, "retry-handler"))
                     .setMethodsRequestInterceptor(getServiceProp(serviceAlias, "request-interceptor"))
                     .setMethodsPath(getServiceProp(serviceAlias, "path"))
                     .setMethodsHttpMethod(getServiceProp(serviceAlias, "http-method"))
@@ -159,6 +161,7 @@ public class PropertiesDrivenInterfaceFactory implements InterfaceConfigFactory 
                                 .setRequestInterceptor(getMethodProp(serviceAlias, methAlias, "request-interceptor"))
                                 .setResponseHandler(getMethodProp(serviceAlias, methAlias, "response-handler"))
                                 .setErrorHandler(getMethodProp(serviceAlias, methAlias, "error-handler"))
+                                .setRetryHandler(getMethodProp(serviceAlias, methAlias, "retry-handler"))
                                 .setParamsName(getMethodProp(serviceAlias, methAlias, "name"))
                                 .setParamsDestination(getMethodProp(serviceAlias, methAlias, "destination"))
                                 .setParamsSerializer(getMethodProp(serviceAlias, methAlias, "serializer"))

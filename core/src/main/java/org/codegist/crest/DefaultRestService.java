@@ -43,10 +43,11 @@ public class DefaultRestService implements RestService {
         boolean inError = false;
         try {
             connection = toHttpURLConnection(request);
+
             if (connection.getResponseCode() != 200) {
-                throw new HttpException(connection.getResponseMessage(), new HttpResponse(request, connection.getResponseCode()));
+                throw new HttpException(connection.getResponseMessage(), new HttpResponse(request, connection.getResponseCode(), connection.getHeaderFields()));
             }
-            return new HttpResponse(request, connection.getResponseCode(), connection.getInputStream(), connection.getContentEncoding());
+            return new HttpResponse(request, connection.getResponseCode(), connection.getHeaderFields(), connection.getInputStream(), connection.getContentEncoding());
         } catch (HttpException e) {
             inError = true;
             throw e;
@@ -62,7 +63,7 @@ public class DefaultRestService implements RestService {
 
 
     private final static String MULTIPART = "multipart/form-data; boundary=";
-    private final static String USER_AGENT = "cRest Agent";
+    private final static String USER_AGENT = "CodeGist-CRest Agent";
 
     static HttpURLConnection toHttpURLConnection(HttpRequest request) throws IOException {
         HttpURLConnection con = newConnection(request.getUrl(true));
@@ -147,81 +148,10 @@ public class DefaultRestService implements RestService {
         return con;
     }
 
-    protected static HttpURLConnection newConnection(URL url/*, ProxyConf proxyConf*/) throws IOException {
+    protected static HttpURLConnection newConnection(URL url) throws IOException {
         HttpURLConnection con;
-        /*
-        if (proxyConf != null) {
-            if (proxyConf.hasCredentials()) {
-                Authenticator.setDefault(new ProxyConfAuthenticator(proxyConf));
-            }
-            Proxy proxy = new Proxy(Proxy.Type.HTTP, InetSocketAddress.createUnresolved(proxyConf.getHost(), proxyConf.getPort()));
-            con = (HttpURLConnection) url.openConnection(proxy);
-        } else {
-            con = (HttpURLConnection) url.openConnection();
-        }
-        */
         con = (HttpURLConnection) url.openConnection();
-        con.addRequestProperty("User-Agent", USER_AGENT);
+        con.setRequestProperty("User-Agent", USER_AGENT);
         return con;
     }
-    /*
-    private static class ProxyConfAuthenticator extends Authenticator {
-        private final ProxyConf proxyConf;
-
-        private ProxyConfAuthenticator(ProxyConf proxyConf) {
-            this.proxyConf = proxyConf;
-        }
-
-        @Override
-        protected PasswordAuthentication getPasswordAuthentication() {
-            if (getRequestorType().equals(RequestorType.PROXY)) {
-                return new PasswordAuthentication(proxyConf.getUser(), proxyConf.getPwdAsChars());
-            } else {
-                return null;
-            }
-        }
-    }
-
-    public static class ProxyConf {
-        private final String user;
-        private final String pwd;
-        private final String host;
-        private final int port;
-
-        public ProxyConf(String host, int port) {
-            this(host, port, null, null);
-        }
-
-        public ProxyConf(String host, int port, String user, String pwd) {
-            this.user = user;
-            this.pwd = pwd;
-            this.host = host;
-            this.port = port;
-        }
-
-        public boolean hasCredentials() {
-            return Strings.isNotBlank(user);
-        }
-
-        public String getUser() {
-            return user;
-        }
-
-        public String getPwd() {
-            return pwd;
-        }
-
-        public char[] getPwdAsChars() {
-            return pwd != null ? pwd.toCharArray() : null;
-        }
-
-        public String getHost() {
-            return host;
-        }
-
-        public int getPort() {
-            return port;
-        }
-    }
-    */
 }

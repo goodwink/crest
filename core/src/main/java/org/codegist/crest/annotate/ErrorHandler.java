@@ -35,5 +35,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE,ElementType.METHOD})
 public @interface ErrorHandler {
-    Class<? extends org.codegist.crest.ErrorHandler> value();
+    Class<? extends org.codegist.crest.handler.ErrorHandler> value();
 }

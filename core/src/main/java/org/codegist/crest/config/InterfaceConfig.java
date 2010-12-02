@@ -29,7 +29,7 @@ import java.lang.reflect.Method;
  * Interface configuration holder object.
  * <p>Implementors must respect the following contract :
  * <p>- No method return null except for the ones documented or when used as an override template (see {@link Configs#override(InterfaceConfig, InterfaceConfig)})
- * <p>- Defaults values must either be taken from interface's defaults constant or from {@link org.codegist.crest.CRestContext#getProperties()}'s defaults overrides.
+ * <p>- Defaults values must either be taken from interface's defaults constant or from {@link org.codegist.crest.InterfaceContext#getProperties()}'s defaults overrides.
  * <p>- Every methods in the interface must have it's respective {@link MethodConfig} configured.
  * <p>- Every arguments of every methods in the interface must have it's respective {@link org.codegist.crest.config.ParamConfig} configured in its respective {@link MethodConfig} object.
  *
@@ -60,7 +60,7 @@ public interface InterfaceConfig {
      *
      * @see org.codegist.crest.config.InterfaceConfig#getGlobalInterceptor()
      */
-    RequestInterceptor DEFAULT_GLOBAL_INTERCEPTOR = new EmptyRequestInterceptor();
+    Class<? extends RequestInterceptor> DEFAULT_GLOBAL_INTERCEPTOR = EmptyRequestInterceptor.class;
 
     /*##############################################################################*/
 

@@ -20,10 +20,7 @@
 
 package org.codegist.crest;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpStatus;
-import org.apache.http.HttpVersion;
-import org.apache.http.NameValuePair;
+import org.apache.http.*;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.*;
@@ -41,6 +38,7 @@ import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.entity.mime.content.InputStreamBody;
 import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.ProxySelectorRoutePlanner;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.BasicHttpParams;
@@ -53,9 +51,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.net.ProxySelector;
+import java.util.*;
 
 /**
  * RestService implementation based on ASF {@link org.apache.http.client.HttpClient}.
@@ -84,30 +81,14 @@ public class HttpClientRestService implements RestService {
         http.getConnectionManager().shutdown();
     }
 
-    public static RestService newRestService(int maxConcurrentConnection, int maxConnectionPerRoute) {
-        HttpClient httpClient;
-        if (maxConcurrentConnection > 1 || maxConnectionPerRoute > 1) {
-            HttpParams params = new BasicHttpParams();
-            HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
-            if (maxConnectionPerRoute > 1) {
-                ConnManagerParams.setMaxConnectionsPerRoute(params, new ConnPerRouteBean(maxConnectionPerRoute));
-            }
-            if (maxConcurrentConnection > 1) {
-                ConnManagerParams.setMaxTotalConnections(params, maxConcurrentConnection);
-            } else {
-                ConnManagerParams.setMaxTotalConnections(params, 1);
-            }
 
-            SchemeRegistry schemeRegistry = new SchemeRegistry();
-            schemeRegistry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
-            schemeRegistry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
-
-            ClientConnectionManager cm = new ThreadSafeClientConnManager(params, schemeRegistry);
-            httpClient = new DefaultHttpClient(cm, params);
-        } else {
-            httpClient = new DefaultHttpClient();
+    private static Map<String,List<String>> toHeaders(Header[] headers){
+        if(headers == null) return Collections.emptyMap();
+        Map<String,List<String>> map = new HashMap<String, List<String>>();
+        for(Header h : headers){
+            map.put(h.getName(), Arrays.asList(h.getValue()));/*is that good enough ?????*/
         }
-        return new HttpClientRestService(httpClient);
+        return map;
     }
 
     public HttpResponse exec(HttpRequest httpRequest) throws HttpException {
@@ -125,9 +106,13 @@ public class HttpClientRestService implements RestService {
             if (response == null) {
                 throw new HttpException("No Response!", new HttpResponse(httpRequest, -1));
             }
+
             entity = response.getEntity();
             if (entity != null) {
-                HttpResponse res = new HttpResponse(httpRequest, response.getStatusLine().getStatusCode(),
+                HttpResponse res = new HttpResponse(
+                        httpRequest,
+                        response.getStatusLine().getStatusCode(),
+                        toHeaders(response.getAllHeaders()),
                         entity.getContent(),
                         entity.getContentEncoding() != null ? entity.getContentEncoding().getValue() : null);
                 if (res.getStatusCode() != HttpStatus.SC_OK) {
@@ -136,9 +121,9 @@ public class HttpClientRestService implements RestService {
                     return res;
                 }
             } else if (httpRequest.getMeth().equals(HttpMethod.HEAD)) {
-                return new HttpResponse(httpRequest, response.getStatusLine().getStatusCode());
+                return new HttpResponse(httpRequest, response.getStatusLine().getStatusCode(), toHeaders(response.getAllHeaders()));
             } else {
-                throw new HttpException(response.getStatusLine().getReasonPhrase(), new HttpResponse(httpRequest, response.getStatusLine().getStatusCode()));
+                throw new HttpException(response.getStatusLine().getReasonPhrase(), new HttpResponse(httpRequest, response.getStatusLine().getStatusCode(), toHeaders(response.getAllHeaders())));
             }
         } catch (HttpException e) {
             inError = true;
@@ -238,5 +223,33 @@ public class HttpClientRestService implements RestService {
         }
 
         return uriRequest;
+    }
+
+
+    public static RestService newRestService(int maxConcurrentConnection, int maxConnectionPerRoute) {
+        DefaultHttpClient httpClient;
+        if (maxConcurrentConnection > 1 || maxConnectionPerRoute > 1) {
+            HttpParams params = new BasicHttpParams();
+            HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
+            if (maxConnectionPerRoute > 1) {
+                ConnManagerParams.setMaxConnectionsPerRoute(params, new ConnPerRouteBean(maxConnectionPerRoute));
+            }
+            if (maxConcurrentConnection > 1) {
+                ConnManagerParams.setMaxTotalConnections(params, maxConcurrentConnection);
+            } else {
+                ConnManagerParams.setMaxTotalConnections(params, 1);
+            }
+
+            SchemeRegistry schemeRegistry = new SchemeRegistry();
+            schemeRegistry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
+            schemeRegistry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
+
+            ClientConnectionManager cm = new ThreadSafeClientConnManager(params, schemeRegistry);
+            httpClient = new DefaultHttpClient(cm, params);
+        } else {
+            httpClient = new DefaultHttpClient();
+        }
+        httpClient.setRoutePlanner(new ProxySelectorRoutePlanner(httpClient.getConnectionManager().getSchemeRegistry(), ProxySelector.getDefault()));
+        return new HttpClientRestService(httpClient);
     }
 }

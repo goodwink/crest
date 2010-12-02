@@ -24,9 +24,9 @@ package org.codegist.crest;
  * Properties of this interface are meant to be used as keys in the custom properties map of {@link org.codegist.crest.CRestContext}.
  *
  * @see org.codegist.crest.CRestBuilder#setProperties(java.util.Map)
- * @see org.codegist.crest.CRestBuilder#addProperty(String, Object)
+ * @see org.codegist.crest.CRestBuilder#setProperty(String, Object)
  * @see org.codegist.crest.CRestBuilder#addProperties(java.util.Map)
- * @see org.codegist.crest.CRestContext#getProperties()
+ * @see org.codegist.crest.InterfaceContext#getProperties()
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
 public interface CRestProperty {
@@ -42,7 +42,7 @@ public interface CRestProperty {
      * format the date with the given date format.
      * <p>Expects a String value of the following : Millis, Second, Minutes, Hours or Days to get the date as millisecond during from January 1, 1970, 00:00:00 GMT to this date or any {@link java.text.DateFormat} valid date format.
      * @see org.codegist.crest.serializer.Serializer
-     * @see org.codegist.crest.CRestContext#getProperties()
+     * @see org.codegist.crest.InterfaceContext#getProperties()
      */
     String SERIALIZER_DATE_FORMAT = "serializer.date.format";
 
@@ -51,16 +51,34 @@ public interface CRestProperty {
      * <p>Expects a String.
      *
      * @see org.codegist.crest.serializer.Serializer
-     * @see org.codegist.crest.CRestContext#getProperties()
+     * @see org.codegist.crest.InterfaceContext#getProperties()
      */
     String SERIALIZER_LIST_SEPARATOR = "serializer.array.separator";
+
+    /**
+     * override the default boolean TRUE value ("true").
+     * <p>Expects a String.
+     *
+     * @see org.codegist.crest.serializer.Serializer
+     * @see org.codegist.crest.InterfaceContext#getProperties()
+     */
+    String SERIALIZER_BOOLEAN_TRUE = "serializer.boolean.true";
+
+    /**
+     * override the default boolean FALSE value ("false").
+     * <p>Expects a String.
+     *
+     * @see org.codegist.crest.serializer.Serializer
+     * @see org.codegist.crest.InterfaceContext#getProperties()
+     */
+    String SERIALIZER_BOOLEAN_FALSE = "serializer.boolean.false";
 
     /**
      * specify a type/serializer map to use for selection of serializer to apply for any given type
      * <p>Expects an instance of {@link java.util.Map}&lt;{@link java.lang.reflect.Type},{@link org.codegist.crest.serializer.Serializer}&gt;.
      *
      * @see org.codegist.crest.serializer.Serializer
-     * @see org.codegist.crest.CRestContext#getProperties()
+     * @see org.codegist.crest.InterfaceContext#getProperties()
      */
     String SERIALIZER_CUSTOM_SERIALIZER_MAP = "serializer.serializers-map";
 
@@ -75,7 +93,7 @@ public interface CRestProperty {
      * specify where should the authentification parameter be added in the request, either in the URL or in the headers.
      * <p>Expects a String value, either equals to URL or HEADER.
      *
-     * @see org.codegist.crest.CRestContext#getProperties()
+     * @see org.codegist.crest.InterfaceContext#getProperties()
      */
     String OAUTH_PARAM_DEST = "authentification.oauth.dest";
 
@@ -83,7 +101,7 @@ public interface CRestProperty {
      * specify the preconfigured consumer secret.
      * <p>Expects a string.
      *
-     * @see org.codegist.crest.CRestContext#getProperties()
+     * @see org.codegist.crest.InterfaceContext#getProperties()
      */
     String OAUTH_CONSUMER_SECRET = "authentification.oauth.consumer.secret";
 
@@ -91,7 +109,7 @@ public interface CRestProperty {
      * specify the preconfigured consumer key.
      * <p>Expects a string value.
      *
-     * @see org.codegist.crest.CRestContext#getProperties()
+     * @see org.codegist.crest.InterfaceContext#getProperties()
      */
     String OAUTH_CONSUMER_KEY = "authentification.oauth.consumer.key";
 
@@ -99,7 +117,7 @@ public interface CRestProperty {
      * specify the preconfigured access token key.
      * <p>Expects a string.
      *
-     * @see org.codegist.crest.CRestContext#getProperties()
+     * @see org.codegist.crest.InterfaceContext#getProperties()
      */
     String OAUTH_ACCESS_TOKEN = "authentification.oauth.access.token";
 
@@ -107,10 +125,20 @@ public interface CRestProperty {
      * specify the preconfigured access token secret.
      * <p>Expects a string.
      *
-     * @see org.codegist.crest.CRestContext#getProperties()
+     * @see org.codegist.crest.InterfaceContext#getProperties()
      */
     String OAUTH_ACCESS_TOKEN_SECRET = "authentification.oauth.access.secret";
 
+    /*********************************************************
+     *********************************************************
+     ****** Handlers config
+     *********************************************************
+     *********************************************************/
+
+    /**
+     * override the default max retry count {@link org.codegist.crest.handler.MaxAttemptRetryHandler#DEFAULT_MAX}.
+     */
+    String HANDLER_RETRY_MAX_ATTEMPTS = "handler.retry.attempts.max";
 
     /*********************************************************
      *********************************************************
@@ -122,7 +150,7 @@ public interface CRestProperty {
      * override the default encoding {@link org.codegist.crest.config.InterfaceConfig#DEFAULT_ENCODING}.
      * <p>Expects a string.
      *
-     * @see org.codegist.crest.CRestContext#getProperties()
+     * @see org.codegist.crest.InterfaceContext#getProperties()
      */
     String CONFIG_INTERFACE_DEFAULT_ENCODING = "config.interface.default.encoding";
 
@@ -130,7 +158,7 @@ public interface CRestProperty {
      * override the default path {@link org.codegist.crest.config.InterfaceConfig#DEFAULT_CONTEXT_PATH}.
      * <p>Expects a string.
      *
-     * @see org.codegist.crest.CRestContext#getProperties()
+     * @see org.codegist.crest.InterfaceContext#getProperties()
      */
     String CONFIG_INTERFACE_DEFAULT_CONTEXT_PATH = "config.interface.default.path";
 
@@ -139,7 +167,7 @@ public interface CRestProperty {
      * <p>Expects an instance of {@link org.codegist.crest.interceptor.RequestInterceptor}.
      *
      * @see org.codegist.crest.interceptor.RequestInterceptor
-     * @see org.codegist.crest.CRestContext#getProperties()
+     * @see org.codegist.crest.InterfaceContext#getProperties()
      */
     String CONFIG_INTERFACE_DEFAULT_GLOBAL_INTERCEPTOR = "config.interface.default.request-interceptor";
 
@@ -154,7 +182,7 @@ public interface CRestProperty {
      * override the default socket timeout {@link org.codegist.crest.config.MethodConfig#DEFAULT_SO_TIMEOUT}.
      * <p>Expects milliseconds (long).
      *
-     * @see org.codegist.crest.CRestContext#getProperties()
+     * @see org.codegist.crest.InterfaceContext#getProperties()
      */
     String CONFIG_METHOD_DEFAULT_SO_TIMEOUT = "config.method.default.socket-timeout";
 
@@ -162,7 +190,7 @@ public interface CRestProperty {
      * override the default connection timeout {@link org.codegist.crest.config.MethodConfig#DEFAULT_CO_TIMEOUT}.
      * <p>Expects milliseconds (long).
      *
-     * @see org.codegist.crest.CRestContext#getProperties()
+     * @see org.codegist.crest.InterfaceContext#getProperties()
      */
     String CONFIG_METHOD_DEFAULT_CO_TIMEOUT = "config.method.default.connection-timeout";
 
@@ -170,7 +198,7 @@ public interface CRestProperty {
      * override the default url fragment {@link org.codegist.crest.config.MethodConfig#DEFAULT_PATH}.
      * <p>Expects a string.
      *
-     * @see org.codegist.crest.CRestContext#getProperties()
+     * @see org.codegist.crest.InterfaceContext#getProperties()
      */
     String CONFIG_METHOD_DEFAULT_PATH = "config.method.default.path";
 
@@ -178,23 +206,23 @@ public interface CRestProperty {
      * override the default http method {@link org.codegist.crest.config.MethodConfig#DEFAULT_HTTP_METHOD}.
      * <p>Expects a member of {@link org.codegist.crest.HttpMethod}.
      *
-     * @see org.codegist.crest.CRestContext#getProperties()
+     * @see org.codegist.crest.InterfaceContext#getProperties()
      */
     String CONFIG_METHOD_DEFAULT_HTTP_METHOD = "config.method.default.http-method";
 
     /**
      * override the default response handler {@link org.codegist.crest.config.MethodConfig#DEFAULT_RESPONSE_HANDLER}.
-     * <p>Expects an instance of {@link org.codegist.crest.ResponseHandler}.
+     * <p>Expects an instance of {@link org.codegist.crest.handler.ResponseHandler}.
      *
-     * @see org.codegist.crest.CRestContext#getProperties()
+     * @see org.codegist.crest.InterfaceContext#getProperties()
      */
     String CONFIG_METHOD_DEFAULT_RESPONSE_HANDLER = "config.method.default.response-handler";
 
     /**
      * override the default error handler {@link org.codegist.crest.config.MethodConfig#DEFAULT_ERROR_HANDLER}.
-     * <p>Expects an instance of {@link org.codegist.crest.ErrorHandler}.
+     * <p>Expects an instance of {@link org.codegist.crest.handler.ErrorHandler}.
      *
-     * @see org.codegist.crest.CRestContext#getProperties()
+     * @see org.codegist.crest.InterfaceContext#getProperties()
      */
     String CONFIG_METHOD_DEFAULT_ERROR_HANDLER = "config.method.default.error-handler";
 
@@ -202,9 +230,14 @@ public interface CRestProperty {
      * override the default request interceptor {@link org.codegist.crest.config.MethodConfig#DEFAULT_REQUEST_INTERCEPTOR}.
      * <p>Expects an instance of {@link org.codegist.crest.interceptor.RequestInterceptor}.
      *
-     * @see org.codegist.crest.CRestContext#getProperties()
+     * @see org.codegist.crest.InterfaceContext#getProperties()
      */
     String CONFIG_METHOD_DEFAULT_REQUEST_INTERCEPTOR = "config.method.default.request-interceptor";
+
+    /**
+     * override the default method retry handler {@link org.codegist.crest.config.MethodConfig#DEFAULT_RETRY_HANDLER}.
+     */
+    String CONFIG_METHOD_DEFAULT_RETRY_HANDLER = "config.method.default.retry-handler";
 
 
     /*********************************************************
@@ -218,7 +251,7 @@ public interface CRestProperty {
      * <p>Expects a member of {@link org.codegist.crest.config.Destination}.
      *
      * @see org.codegist.crest.config.Destination
-     * @see org.codegist.crest.CRestContext#getProperties()
+     * @see org.codegist.crest.InterfaceContext#getProperties()
      */
     String CONFIG_PARAM_DEFAULT_DESTINATION = "config.param.default.destination";
 
@@ -227,7 +260,7 @@ public interface CRestProperty {
      * <p>Expects an instance of {@link org.codegist.crest.injector.Injector}.
      *
      * @see org.codegist.crest.injector.Injector
-     * @see org.codegist.crest.CRestContext#getProperties()
+     * @see org.codegist.crest.InterfaceContext#getProperties()
      */
     String CONFIG_PARAM_DEFAULT_INJECTOR = "config.param.default.injector";
 
@@ -236,7 +269,7 @@ public interface CRestProperty {
      * <p>Expects an instance of {@link org.codegist.crest.serializer.Serializer}.
      *
      * @see org.codegist.crest.serializer.Serializer
-     * @see org.codegist.crest.CRestContext#getProperties()
+     * @see org.codegist.crest.InterfaceContext#getProperties()
      */
     String CONFIG_PARAM_DEFAULT_SERIALIZER = "config.param.default.serializer";
 
@@ -244,7 +277,7 @@ public interface CRestProperty {
      * override the default name {@link org.codegist.crest.config.ParamConfig#DEFAULT_NAME}.
      * <p>Expects a string.
      *
-     * @see org.codegist.crest.CRestContext#getProperties()
+     * @see org.codegist.crest.InterfaceContext#getProperties()
      */
     String CONFIG_PARAM_DEFAULT_NAME = "config.param.default.name";
 }

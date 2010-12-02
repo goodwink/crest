@@ -24,8 +24,10 @@ import org.codegist.crest.annotate.ContextPath;
 import org.codegist.crest.annotate.EndPoint;
 import org.codegist.crest.annotate.HttpMethod;
 import org.codegist.crest.annotate.Path;
-import static org.codegist.crest.HttpMethod.*;
 import org.codegist.crest.twitter.model.Message;
+
+import static org.codegist.crest.HttpMethod.DELETE;
+import static org.codegist.crest.HttpMethod.POST;
 
 /**
  * @author Laurent Gilles (laurent.gilles@codegist.org)

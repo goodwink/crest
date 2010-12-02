@@ -18,20 +18,34 @@
  * More information at http://www.codegist.org.
  */
 
-package org.codegist.crest;
+package org.codegist.crest.delicious.model;
 
-import org.codegist.common.reflect.Types;
+import org.apache.commons.lang.builder.ToStringBuilder;
 
-/**
- * Error handler that ignores exception and return default values
- * @author Laurent Gilles (laurent.gilles@codegist.org)
- */
-public class DefaultValuesErrorHandler implements ErrorHandler {
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Date;
 
-    @Override
-    public <T> T handle(ResponseContext context, Exception e) throws Exception {
-        // Should log the exception.
-        return Types.<T>getDefaultValueFor(context.getRequestContext().getMethodConfig().getMethod().getReturnType());
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement(name = "update")
+public class Update {
+    @XmlAttribute
+    private Date time;
+    @XmlAttribute(name="inboxnew")
+    private int inbox;
+
+    public Date getTime() {
+        return time;
     }
 
+    public int getInbox() {
+        return inbox;
+    }
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
+    }
 }

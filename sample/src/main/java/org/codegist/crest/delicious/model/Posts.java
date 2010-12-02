@@ -18,16 +18,36 @@
  * More information at http://www.codegist.org.
  */
 
-package org.codegist.crest;
+package org.codegist.crest.delicious.model;
 
-/**
- * Response handler is invoked for each request's as long as the interface doesn't specifically requested for the raw response (Reader or InputStream method return types.)
- * <p>Response handler role is to check for thridparties specific error formatted content in the response, and returns the expected return type for method calls.
- * <p>NB: if the response code if different from HTTP 200, this handler won't be called, error handler will be directly invoked
- * @author Laurent Gilles (laurent.gilles@codegist.org)
- */
-public interface ResponseHandler {
+import org.apache.commons.lang.builder.ToStringBuilder;
 
-    Object handle(ResponseContext responseContext) throws CRestException;
+import javax.xml.bind.annotation.*;
 
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement(name = "posts")
+public class Posts {
+    @XmlAttribute
+    private String user;
+    @XmlAttribute(name = "tag")
+    private String[] tags;
+    @XmlElement(name = "post")
+    private Post[] posts;
+
+    public String getUser() {
+        return user;
+    }
+
+    public String[] getTags() {
+        return tags;
+    }
+
+    public Post[] getPosts() {
+        return posts;
+    }
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
+    }
 }

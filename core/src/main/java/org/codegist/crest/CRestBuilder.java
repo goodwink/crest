@@ -48,7 +48,7 @@ import java.util.Properties;
  * CRest crest = new CRestBuilder().build();
  * </pre></code>
  * <p>will create {@link org.codegist.crest.CRest} with the following features :
- * <p>- Annotation driven configuration handled by {@link org.codegist.crest.config.AnnotationDrivenInterfaceConfigFactory}, lookup for {@link org.codegist.crest.annotate.RestApi},{@link org.codegist.crest.annotate.RestMethod},{@link org.codegist.crest.annotate.RestParam} annotation on the interfaces passed to the factory.
+ * <p>- Annotation driven configuration handled by {@link org.codegist.crest.config.AnnotationDrivenInterfaceConfigFactory}, lookup for annotation in package {@link org.codegist.crest.annotate}.
  * <p>- Raw response return, meaning the given interface method return type must be either java.io.String, java.io.InputStream or java.io.Reader.
  * <p>- HTTP calls handled by {@link org.codegist.crest.DefaultRestService}
  * <p>- Uses JDK dynamics proxies to instanciates given interfaces
@@ -184,7 +184,7 @@ public class CRestBuilder {
 
         RequestInterceptor oauthInterceptor = null;
         if (Strings.isNotBlank(accessToken) && Strings.isNotBlank(accessTokenSecret) && Strings.isNotBlank(consumerKey) && Strings.isNotBlank(consumerSecret)) {
-            oauthInterceptor = new OAuthInterceptor(authParamsInHeaders ? OAuthInterceptor.OAuthParamDest.HEADERS : OAuthInterceptor.OAuthParamDest.URL, consumerSecret, consumerKey, accessTokenSecret, accessToken);
+            oauthInterceptor = new OAuthInterceptor(authParamsInHeaders, consumerSecret, consumerKey, accessTokenSecret, accessToken);
         }
 
         RequestInterceptor globalInterceptor = null;
@@ -208,8 +208,12 @@ public class CRestBuilder {
         }
 
         customProperties = Maps.defaultsIfNull(customProperties);
+        /* Put then in the properties. These are not part of the API */
         Maps.putIfNotPresent(customProperties, Marshaller.class.getName(), marshaller);
         Maps.putIfNotPresent(customProperties, Unmarshaller.class.getName(), unmarshaller);
+        Maps.putIfNotPresent(customProperties, RestService.class.getName(), restService);
+        Maps.putIfNotPresent(customProperties, ProxyFactory.class.getName(), proxyFactory);
+        Maps.putIfNotPresent(customProperties, InterfaceConfigFactory.class.getName(), configFactory);
         Maps.putIfNotPresent(customProperties, CRestProperty.SERIALIZER_CUSTOM_SERIALIZER_MAP, serializersMap);
 
         CRestContext context = new DefaultCRestContext(restService, proxyFactory, configFactory, customProperties);
@@ -371,9 +375,9 @@ public class CRestBuilder {
      * @param name  property key
      * @param value property value
      * @return current builder
-     * @see CRestContext#getProperties()
+     * @see InterfaceContext#getProperties()
      */
-    public CRestBuilder addProperty(String name, Object value) {
+    public CRestBuilder setProperty(String name, Object value) {
         customProperties.put(name, value);
         return this;
     }
@@ -384,7 +388,7 @@ public class CRestBuilder {
      * @param type Type to seralize
      * @param serializer Serializer
      * @return current builder
-     * @see CRestContext#getProperties()
+     * @see InterfaceContext#getProperties()
      */
     public CRestBuilder setSerializer(Type type, Serializer serializer) {
         serializersMap.put(type, serializer);
@@ -396,7 +400,7 @@ public class CRestBuilder {
      *
      * @param customProperties properties map
      * @return current builder
-     * @see CRestContext#getProperties()
+     * @see InterfaceContext#getProperties()
      */
     public CRestBuilder addProperties(Map<String, Object> customProperties) {
         this.customProperties.putAll(customProperties);
@@ -408,7 +412,7 @@ public class CRestBuilder {
      *
      * @param customProperties properties map
      * @return current builder
-     * @see CRestContext#getProperties()
+     * @see InterfaceContext#getProperties()
      */
     public CRestBuilder setProperties(Map<String, Object> customProperties) {
         this.customProperties = customProperties;

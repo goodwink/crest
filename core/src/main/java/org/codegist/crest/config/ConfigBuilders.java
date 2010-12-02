@@ -23,15 +23,19 @@ package org.codegist.crest.config;
 import org.codegist.common.collect.Maps;
 import org.codegist.common.lang.Objects;
 import org.codegist.common.lang.Strings;
+import org.codegist.crest.CRestException;
 import org.codegist.crest.CRestProperty;
-import org.codegist.crest.ErrorHandler;
 import org.codegist.crest.HttpMethod;
-import org.codegist.crest.ResponseHandler;
+import org.codegist.crest.handler.ErrorHandler;
+import org.codegist.crest.handler.ResponseHandler;
+import org.codegist.crest.handler.RetryHandler;
 import org.codegist.crest.injector.Injector;
 import org.codegist.crest.interceptor.RequestInterceptor;
 import org.codegist.crest.serializer.Serializer;
 import org.codegist.crest.serializer.Serializers;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.HashMap;
@@ -120,7 +124,7 @@ public abstract class ConfigBuilders {
             return build(true);
         }
 
-        public DefaultInterfaceConfig buildOverrideTemplate() {
+        public DefaultInterfaceConfig buildOverrideTemplate()  {
             return build(false);
         }
 
@@ -132,7 +136,7 @@ public abstract class ConfigBuilders {
             if (useDefaults) {
                 contextPath = defaultIfUndefined(contextPath, CRestProperty.CONFIG_INTERFACE_DEFAULT_CONTEXT_PATH, InterfaceConfig.DEFAULT_CONTEXT_PATH);
                 encoding = defaultIfUndefined(encoding, CRestProperty.CONFIG_INTERFACE_DEFAULT_ENCODING, InterfaceConfig.DEFAULT_ENCODING);
-                globalInterceptor = defaultIfUndefined(globalInterceptor, CRestProperty.CONFIG_INTERFACE_DEFAULT_GLOBAL_INTERCEPTOR, InterfaceConfig.DEFAULT_GLOBAL_INTERCEPTOR);
+                globalInterceptor = defaultIfUndefined(globalInterceptor, CRestProperty.CONFIG_INTERFACE_DEFAULT_GLOBAL_INTERCEPTOR, newInstance(InterfaceConfig.DEFAULT_GLOBAL_INTERCEPTOR));
             }
             return new DefaultInterfaceConfig(
                     interfaze,
@@ -174,7 +178,7 @@ public abstract class ConfigBuilders {
 
         public InterfaceConfigBuilder setGlobalInterceptor(Class<? extends RequestInterceptor> interceptorCls) throws IllegalAccessException, InstantiationException {
             if (ignore(interceptorCls)) return this;
-            return setGlobalInterceptor(interceptorCls.newInstance());
+            return setGlobalInterceptor(newInstance(interceptorCls));
         }
 
         public InterfaceConfigBuilder setMethodsSocketTimeout(Long socketTimeout) {
@@ -353,6 +357,30 @@ public abstract class ConfigBuilders {
             return this;
         }
 
+        public InterfaceConfigBuilder setMethodsRetryHandler(RetryHandler retryHandler) {
+            if (ignore(retryHandler)) return this;
+            for (MethodConfigBuilder b : builderCache.values()) {
+                b.setRetryHandler(retryHandler);
+            }
+            return this;
+        }
+
+        public InterfaceConfigBuilder setMethodsRetryHandler(String retryHandler) throws IllegalAccessException, InstantiationException, ClassNotFoundException {
+            if (ignore(retryHandler)) return this;
+            for (MethodConfigBuilder b : builderCache.values()) {
+                b.setRetryHandler(retryHandler);
+            }
+            return this;
+        }
+
+        public InterfaceConfigBuilder setMethodsRetryHandler(Class<? extends RetryHandler> retryHandler) throws IllegalAccessException, InstantiationException {
+            if (ignore(retryHandler)) return this;
+            for (MethodConfigBuilder b : builderCache.values()) {
+                b.setRetryHandler(retryHandler);
+            }
+            return this;
+        }
+
         public InterfaceConfigBuilder setMethodsPath(String path) {
             if (ignore(path)) return this;
             for (MethodConfigBuilder b : builderCache.values()) {
@@ -391,6 +419,7 @@ public abstract class ConfigBuilders {
         private RequestInterceptor requestInterceptor;
         private ResponseHandler responseHandler;
         private ErrorHandler errorHandler;
+        private RetryHandler retryHandler;
 
         public MethodConfigBuilder(Method method) {
             this(method, null);
@@ -438,9 +467,10 @@ public abstract class ConfigBuilders {
                 meth = defaultIfUndefined(meth, CRestProperty.CONFIG_METHOD_DEFAULT_HTTP_METHOD, MethodConfig.DEFAULT_HTTP_METHOD);
                 socketTimeout = defaultIfUndefined(socketTimeout, CRestProperty.CONFIG_METHOD_DEFAULT_SO_TIMEOUT, MethodConfig.DEFAULT_SO_TIMEOUT);
                 connectionTimeout = defaultIfUndefined(connectionTimeout, CRestProperty.CONFIG_METHOD_DEFAULT_CO_TIMEOUT, MethodConfig.DEFAULT_CO_TIMEOUT);
-                requestInterceptor = defaultIfUndefined(requestInterceptor, CRestProperty.CONFIG_METHOD_DEFAULT_REQUEST_INTERCEPTOR, MethodConfig.DEFAULT_REQUEST_INTERCEPTOR);
-                responseHandler = defaultIfUndefined(responseHandler, CRestProperty.CONFIG_METHOD_DEFAULT_RESPONSE_HANDLER, MethodConfig.DEFAULT_RESPONSE_HANDLER);
-                errorHandler = defaultIfUndefined(errorHandler, CRestProperty.CONFIG_METHOD_DEFAULT_ERROR_HANDLER, MethodConfig.DEFAULT_ERROR_HANDLER);
+                requestInterceptor = defaultIfUndefined(requestInterceptor, CRestProperty.CONFIG_METHOD_DEFAULT_REQUEST_INTERCEPTOR, newInstance(MethodConfig.DEFAULT_REQUEST_INTERCEPTOR));
+                responseHandler = defaultIfUndefined(responseHandler, CRestProperty.CONFIG_METHOD_DEFAULT_RESPONSE_HANDLER, newInstance(MethodConfig.DEFAULT_RESPONSE_HANDLER));
+                errorHandler = defaultIfUndefined(errorHandler, CRestProperty.CONFIG_METHOD_DEFAULT_ERROR_HANDLER, newInstance(MethodConfig.DEFAULT_ERROR_HANDLER));
+                retryHandler = defaultIfUndefined(retryHandler, CRestProperty.CONFIG_METHOD_DEFAULT_RETRY_HANDLER, newInstance(MethodConfig.DEFAULT_RETRY_HANDLER));
             }
             return new DefaultMethodConfig(
                     method,
@@ -451,6 +481,7 @@ public abstract class ConfigBuilders {
                     requestInterceptor,
                     responseHandler,
                     errorHandler,
+                    retryHandler,
                     pConfig
             );
         }
@@ -520,7 +551,7 @@ public abstract class ConfigBuilders {
 
         public MethodConfigBuilder setRequestInterceptor(Class<? extends RequestInterceptor> interceptorCls) throws IllegalAccessException, InstantiationException {
             if (ignore(interceptorCls)) return this;
-            return setRequestInterceptor(interceptorCls.newInstance());
+            return setRequestInterceptor(newInstance(interceptorCls));
         }
 
         public MethodConfigBuilder setResponseHandler(ResponseHandler responseHandler) {
@@ -536,7 +567,7 @@ public abstract class ConfigBuilders {
 
         public MethodConfigBuilder setResponseHandler(Class<? extends ResponseHandler> responseHandlerClass) throws IllegalAccessException, InstantiationException {
             if (ignore(responseHandlerClass)) return this;
-            return setResponseHandler(responseHandlerClass.newInstance());
+            return setResponseHandler(newInstance(responseHandlerClass));
         }
 
 
@@ -553,7 +584,24 @@ public abstract class ConfigBuilders {
 
         public MethodConfigBuilder setErrorHandler(Class<? extends ErrorHandler> methodHandlerClass) throws IllegalAccessException, InstantiationException {
             if (ignore(methodHandlerClass)) return this;
-            return setErrorHandler(methodHandlerClass.newInstance());
+            return setErrorHandler(newInstance(methodHandlerClass));
+        }
+
+
+        public MethodConfigBuilder setRetryHandler(RetryHandler retryHandler) {
+            if (ignore(retryHandler)) return this;
+            this.retryHandler = retryHandler;
+            return this;
+        }
+
+        public MethodConfigBuilder setRetryHandler(String retryHandlerClassName) throws IllegalAccessException, InstantiationException, ClassNotFoundException {
+            if (ignore(retryHandlerClassName)) return this;
+            return setRetryHandler((Class<? extends RetryHandler>) Class.forName(retryHandlerClassName));
+        }
+
+        public MethodConfigBuilder setRetryHandler(Class<? extends RetryHandler> retryHandlerClass) throws IllegalAccessException, InstantiationException {
+            if (ignore(retryHandlerClass)) return this;
+            return setRetryHandler(newInstance(retryHandlerClass));
         }
 
 
@@ -671,8 +719,8 @@ public abstract class ConfigBuilders {
             if (useDefaults) {
                 name = defaultIfUndefined(name, CRestProperty.CONFIG_PARAM_DEFAULT_NAME, ParamConfig.DEFAULT_NAME);
                 dest = defaultIfUndefined(dest, CRestProperty.CONFIG_PARAM_DEFAULT_DESTINATION, ParamConfig.DEFAULT_DESTINATION);
-                injector = defaultIfUndefined(injector, CRestProperty.CONFIG_PARAM_DEFAULT_INJECTOR, (ParamConfig.DEFAULT_INJECTOR));
-                serializer = defaultIfUndefined(serializer, CRestProperty.CONFIG_PARAM_DEFAULT_SERIALIZER, ParamConfig.DEFAULT_SERIALIZER);
+                injector = defaultIfUndefined(injector, CRestProperty.CONFIG_PARAM_DEFAULT_INJECTOR, newInstance(ParamConfig.DEFAULT_INJECTOR));
+                serializer = defaultIfUndefined(serializer, CRestProperty.CONFIG_PARAM_DEFAULT_SERIALIZER, newInstance(ParamConfig.DEFAULT_SERIALIZER));
 
                 if(serializer == null) {
                     // if null, then choose which serializer to apply using default rules
@@ -741,7 +789,7 @@ public abstract class ConfigBuilders {
          */
         public ParamConfigBuilder setSerializer(Class<? extends Serializer> serializer) throws IllegalAccessException, InstantiationException {
             if (ignore(serializer)) return this;
-            return setSerializer(serializer.newInstance());
+            return setSerializer(newInstance(serializer));
         }
 
         public ParamConfigBuilder setInjector(Injector injector) {
@@ -757,7 +805,7 @@ public abstract class ConfigBuilders {
 
         public ParamConfigBuilder setInjector(Class<? extends Injector> injector) throws IllegalAccessException, InstantiationException {
             if (ignore(injector)) return this;
-            return setInjector(injector.newInstance());
+            return setInjector(newInstance(injector));
         }
     }
 
@@ -781,6 +829,28 @@ public abstract class ConfigBuilders {
     ConfigBuilders setIgnoreNullOrEmptyValues(boolean ignoreNullOrEmptyValues) {
         this.ignoreNullOrEmptyValues = ignoreNullOrEmptyValues;
         return this;
+    }
+
+    <T> T newInstance(Class<T> clazz) {
+        if(clazz == null) return null;
+        try {
+            return newInstance(clazz.getConstructor(Map.class), customProperties);
+        } catch (CRestException e) {
+            throw e;
+        } catch (Exception e) {
+            try {
+                return newInstance(clazz.getConstructor());
+            } catch (Exception e1) {
+                throw new CRestException(e1);
+            }
+        }
+    }
+    private  <T> T newInstance(Constructor<T> constructor, Object... args) throws Exception {
+        try {
+            return constructor.newInstance(args);
+        } catch (InvocationTargetException e) {
+            throw new CRestException(e.getCause());
+        }
     }
 
     boolean ignore(Object value) {

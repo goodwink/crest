@@ -20,11 +20,12 @@
 
 package org.codegist.crest.config;
 
-import org.codegist.crest.ErrorHandler;
 import org.codegist.crest.HttpMethod;
-import org.codegist.crest.ResponseHandler;
 import org.codegist.crest.annotate.Destination;
 import org.codegist.crest.annotate.Name;
+import org.codegist.crest.handler.ErrorHandler;
+import org.codegist.crest.handler.ResponseHandler;
+import org.codegist.crest.handler.RetryHandler;
 import org.codegist.crest.injector.Injector;
 import org.codegist.crest.interceptor.CompositeRequestInterceptor;
 import org.codegist.crest.interceptor.RequestInterceptor;
@@ -158,6 +159,11 @@ public final class Configs {
         @Override
         public ErrorHandler getErrorHandler() {
             return override.getErrorHandler() != null ? override.getErrorHandler() : base.getErrorHandler();
+        }
+
+        @Override
+        public RetryHandler getRetryHandler() {
+            return override.getRetryHandler() != null ? override.getRetryHandler() : base.getRetryHandler();
         }
 
         @Override

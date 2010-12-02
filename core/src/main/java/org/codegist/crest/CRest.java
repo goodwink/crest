@@ -40,8 +40,8 @@ public interface CRest {
      * @param <T>       Interface class to get the instance from
      * @return An instance of the given interface
      * @throws CRestException if anything goes wrong
-     * @see org.codegist.crest.ResponseHandler
-     * @see org.codegist.crest.DefaultResponseHandler
+     * @see org.codegist.crest.handler.ResponseHandler
+     * @see org.codegist.crest.handler.DefaultResponseHandler
      */
     <T> T build(Class<T> interfaze) throws CRestException;
 

@@ -50,8 +50,6 @@ public class DefaultInjector implements Injector {
             builder.addBodyParam(context.getParamConfig().getName(), context.getRawValue());
         } else {
             String paramValue = context.getSerializedValue();
-            if (Strings.isBlank(paramValue)) return;
-
             if (context.isForUrl()) {
                 if (Strings.isBlank(context.getParamConfig().getName())) {
                     builder.replacePlaceholderInUri(context.getIndex(), paramValue);

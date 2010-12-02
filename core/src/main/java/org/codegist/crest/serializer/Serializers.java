@@ -63,7 +63,6 @@ public final class Serializers {
         customProperties = Maps.defaultsIfNull(customProperties);
         Map<Type,Serializer> serializerMap = Maps.defaultsIfNull((Map<Type,Serializer>) customProperties.get(CRestProperty.SERIALIZER_CUSTOM_SERIALIZER_MAP));
         
-
         Class<?> typeCls = Types.getClass(type);
         if (typeCls == null) throw new IllegalStateException("Generic type information missing! (" + type + ")");
         boolean isCollection = false;
@@ -78,7 +77,7 @@ public final class Serializers {
         Serializer s = serializerMap.get(type);
         s = s != null ? s : chooseDefault(customProperties, type);
         if (isCollection) {
-            String separator = (String) (customProperties.containsKey(CRestProperty.SERIALIZER_LIST_SEPARATOR) ? customProperties.get(CRestProperty.SERIALIZER_LIST_SEPARATOR) : ArraySerializer.DEFAULT_SEPARATOR);
+            String separator = Strings.defaultIfBlank((String) customProperties.get(CRestProperty.SERIALIZER_LIST_SEPARATOR), ArraySerializer.DEFAULT_SEPARATOR);
             return new ArraySerializer(s, separator);
         } else {
             return s;
@@ -88,8 +87,9 @@ public final class Serializers {
     private static Serializer chooseDefault(Map<String,Object> customProperties, Type type){
         Class<?> typeCls = Types.getClass(type);
         if(Date.class.isAssignableFrom(typeCls)) {
-            String dateFormat = Strings.defaultIfBlank((String) customProperties.get(CRestProperty.SERIALIZER_DATE_FORMAT), DateSerializer.DEFAULT_DATEFORMAT);
-            return new DateSerializer(dateFormat);
+            return new DateSerializer(customProperties);
+        }else if(Boolean.class.isAssignableFrom(typeCls) || boolean.class.isAssignableFrom(typeCls)) {
+            return new BooleanSerializer(customProperties);
         }else{
             return TOSTRING_SERIALIZER;
         }

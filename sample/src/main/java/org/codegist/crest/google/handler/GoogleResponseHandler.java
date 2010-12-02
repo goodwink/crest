@@ -20,27 +20,31 @@
 
 package org.codegist.crest.google.handler;
 
+import org.codegist.common.lang.Validate;
 import org.codegist.common.marshal.Marshaller;
 import org.codegist.common.reflect.Types;
 import org.codegist.crest.CRestException;
 import org.codegist.crest.ResponseContext;
-import org.codegist.crest.ResponseHandler;
+import org.codegist.crest.handler.ResponseHandler;
 import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonProperty;
+
+import java.util.Map;
 
 /**
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
 public class GoogleResponseHandler implements ResponseHandler {
 
-    private Marshaller marshaller;
+    private final Marshaller marshaller;
+
+    public GoogleResponseHandler(Map<String,Object> parameters) {
+        this.marshaller = (Marshaller) parameters.get(Marshaller.class.getName());
+        Validate.notNull(this.marshaller, "No marshaller set, please constructor CRest using either JSON or XML expected return type.");
+    }
 
     public final Object handle(ResponseContext context) {
         try {
-            /* Get the marshaller, save the ref to avoid accessing the map each time (since custom properties map could get quite big!) */
-            if (marshaller == null) {
-                marshaller = context.getRequestContext().getProperty(Marshaller.class.getName());
-            }
 
             /* Marshall the response */
             Response<?> res = marshaller.marshall(context.getResponse().asStream(), Types.newType(Response.class, context.getExpectedGenericType()));

@@ -26,13 +26,13 @@ import org.codegist.crest.TestUtils;
 import org.codegist.crest.annotate.*;
 import org.codegist.crest.annotate.Destination;
 import org.codegist.crest.injector.DefaultInjector;
-
-import static org.codegist.crest.HttpMethod.*;
-import static org.codegist.crest.config.Destination.*;
 import org.junit.Test;
 
 import java.lang.reflect.Method;
 
+import static org.codegist.crest.HttpMethod.*;
+import static org.codegist.crest.config.Destination.BODY;
+import static org.codegist.crest.config.Destination.URL;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 
@@ -179,6 +179,7 @@ public class AnnotationDrivenInterfaceConfigFactoryTest extends AbstractInterfac
     @Destination(BODY)
     @Injector( Stubs.RequestParameterInjector1.class)
     @ErrorHandler( Stubs.ErrorHandler1.class)
+    @RetryHandler(Stubs.RetryHandler1.class)
     interface FullyAnnotatedInterface extends Interface {
 
 
@@ -193,6 +194,7 @@ public class AnnotationDrivenInterfaceConfigFactoryTest extends AbstractInterfac
         @Serializer(Stubs.Serializer3.class)
         @Injector ( Stubs.RequestParameterInjector2.class)
         @ErrorHandler ( Stubs.ErrorHandler2.class)
+        @RetryHandler(Stubs.RetryHandler2.class)
         Object m1();
 
         @Path("/m1")

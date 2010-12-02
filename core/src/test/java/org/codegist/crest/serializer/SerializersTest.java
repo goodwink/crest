@@ -21,13 +21,12 @@
 package org.codegist.crest.serializer;
 
 import org.codegist.common.reflect.Types;
-
-import static org.codegist.crest.CRestProperty.*;
 import org.junit.Test;
 
 import java.lang.reflect.Type;
 import java.util.*;
 
+import static org.codegist.crest.CRestProperty.*;
 import static org.junit.Assert.assertEquals;
 
 public class SerializersTest {

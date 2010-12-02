@@ -18,16 +18,18 @@
  * More information at http://www.codegist.org.
  */
 
-package org.codegist.crest;
+package org.codegist.crest.handler;
+
+import org.codegist.crest.ResponseContext;
 
 /**
- * Error handler that always delegate the given exception to the caller.
+ * Retry handlers are used to control whether a method execution that has failed during the HTTP call should be re-executed or not
+ * <p>If implementor declares a constructor with a Map argument, it will be called with the user custom properties.
+ * @see org.codegist.crest.InterfaceContext#getProperties()
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
-public class ErrorDelegatorHandler implements ErrorHandler {
+public interface RetryHandler {
 
-    @Override
-    public <T> T handle(ResponseContext context, Exception e) throws Exception {
-        throw e;
-    }
+    boolean retry(ResponseContext response, Exception exception, int retryNumber);
+
 }

@@ -20,18 +20,18 @@
 
 package org.codegist.crest.config;
 
-import org.codegist.crest.*;
+import org.codegist.crest.HttpMethod;
+import org.codegist.crest.handler.*;
 import org.codegist.crest.interceptor.EmptyRequestInterceptor;
 import org.codegist.crest.interceptor.RequestInterceptor;
 
 import java.lang.reflect.Method;
-import java.util.Set;
 
 /**
  * Method configuration holder object.
  * <p>Implementors must respect the following contract :
  * <p>- No method return null except for the ones documented or when used as an override template (see {@link Configs#override(MethodConfig, MethodConfig)})
- * <p>- Defaults values must either be taken from interface's defaults constant or from {@link org.codegist.crest.CRestContext#getProperties()}'s defaults overrides.
+ * <p>- Defaults values must either be taken from interface's defaults constant or from {@link org.codegist.crest.InterfaceContext#getProperties()}'s defaults overrides.
  * <p>- Every arguments of every methods in the interface must have it's respective {@link org.codegist.crest.config.ParamConfig} configured in its respective {@link MethodConfig} object.
  *
  * @see org.codegist.crest.config.MethodConfig
@@ -74,21 +74,28 @@ public interface MethodConfig {
      *
      * @see MethodConfig#getResponseHandler()
      */
-    ResponseHandler DEFAULT_RESPONSE_HANDLER = new DefaultResponseHandler();
+    Class<? extends ResponseHandler> DEFAULT_RESPONSE_HANDLER = DefaultResponseHandler.class;
 
     /**
      * Default error handler applied when non specified.
      *
      * @see MethodConfig#getErrorHandler()
      */
-    ErrorHandler DEFAULT_ERROR_HANDLER = new ErrorDelegatorHandler();
+    Class<? extends ErrorHandler> DEFAULT_ERROR_HANDLER = ErrorDelegatorHandler.class;
 
     /**
      * Default request interceptor applied when non specified.
      *
      * @see MethodConfig#getRequestInterceptor()
      */
-    RequestInterceptor DEFAULT_REQUEST_INTERCEPTOR = new EmptyRequestInterceptor();
+    Class<? extends RequestInterceptor> DEFAULT_REQUEST_INTERCEPTOR = EmptyRequestInterceptor.class;
+
+    /**
+     * Default retry handler applied when non specified.
+     *
+     * @see org.codegist.crest.config.MethodConfig#getRetryHandler()
+     */
+    Class<? extends RetryHandler> DEFAULT_RETRY_HANDLER = MaxAttemptRetryHandler.class;
 
     /*##############################################################################*/
 
@@ -106,6 +113,8 @@ public interface MethodConfig {
     Long getSocketTimeout();
 
     Long getConnectionTimeout();
+
+    RetryHandler getRetryHandler();
 
     /**
      * URL fragment specific to this methods.

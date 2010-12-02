@@ -20,9 +20,14 @@
 
 package org.codegist.crest.serializer;
 
+import org.codegist.common.collect.Maps;
+import org.codegist.common.lang.Strings;
+import org.codegist.crest.CRestProperty;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
 
 /**
  * @author Laurent Gilles (laurent.gilles@codegist.org)
@@ -36,6 +41,9 @@ public class DateSerializer implements Serializer<Date> {
 
     public DateSerializer() {
         this(DEFAULT_DATEFORMAT);
+    }
+    public DateSerializer(Map<String,Object> customProperties) {
+        this(Strings.defaultIfBlank((String) customProperties.get(CRestProperty.SERIALIZER_DATE_FORMAT), DateSerializer.DEFAULT_DATEFORMAT));
     }
     public DateSerializer(String dateFormat) {
         DateFormat formatter;
