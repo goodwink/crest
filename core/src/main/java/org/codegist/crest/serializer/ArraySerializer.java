@@ -21,13 +21,11 @@
 package org.codegist.crest.serializer;
 
 import org.codegist.common.lang.Strings;
-import org.codegist.crest.CRestProperty;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Simple array serializer that serialize arrays and collections into a String.

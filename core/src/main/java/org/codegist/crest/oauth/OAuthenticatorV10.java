@@ -21,19 +21,21 @@
 package org.codegist.crest.oauth;
 
 import org.codegist.common.codec.Base64;
+import org.codegist.common.collect.Maps;
 import org.codegist.common.lang.Objects;
-import org.codegist.crest.CRestException;
-import static org.codegist.common.net.Urls.*;
-import org.codegist.crest.HttpMethod;
-import org.codegist.crest.HttpRequest;
-import org.codegist.crest.Params;
+import org.codegist.common.lang.Strings;
+import org.codegist.common.lang.Validate;
+import org.codegist.common.net.Urls;
+import org.codegist.crest.*;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
+import java.net.URISyntaxException;
 import java.security.SecureRandom;
 import java.util.*;
+
+import static org.codegist.common.net.Urls.encode;
 
 public class OAuthenticatorV10 implements OAuthenticator {
 
@@ -43,72 +45,187 @@ public class OAuthenticatorV10 implements OAuthenticator {
     private final VariantProvider variant;
 
     private final Token consumerToken;
-    private final Token accessToken;
-    private final boolean writeToHeaders;
-    private final SecretKeySpec secretKeySpec;
+    private final RestService restService;
+    private final String callback;
+    private final boolean toHeaders;
 
+    private final String requestTokenUrl;
+    private final HttpMethod requestTokenMeth;
 
-    public OAuthenticatorV10(boolean writeToHeaders, Token consumerToken, Token accessToken, VariantProvider variant) {
-        this.consumerToken = consumerToken;
-        this.accessToken = accessToken;
-        this.writeToHeaders = writeToHeaders;
+    private final String accessTokenUrl;
+    private final HttpMethod accessTokenMeth;
+
+    private final String refreshAccessTokenUrl;
+    private final HttpMethod refreshAccessTokenMeth;
+
+    public OAuthenticatorV10(RestService restService, Token consumerToken, VariantProvider variant) {
+        this(restService, consumerToken, null, variant);
+    }
+
+    public OAuthenticatorV10(RestService restService, Token consumerToken, Map<String, Object> config, VariantProvider variant) {
         this.variant = variant;
+        this.consumerToken = consumerToken;
+        this.restService = restService;
+        config = Maps.defaultsIfNull(config);
+        this.callback = Strings.defaultIfBlank((String) config.get(CONFIG_OAUTH_CALLBACK), "oob");
+        this.requestTokenUrl = (String) config.get(CONFIG_TOKEN_REQUEST_URL);
+        this.accessTokenUrl = (String) config.get(CONFIG_TOKEN_ACCESS_URL);
+        this.refreshAccessTokenUrl = (String) config.get(CONFIG_TOKEN_ACCESS_REFRESH_URL);
+        this.toHeaders = "url".equals(config.get(CONFIG_OAUTH_PARAM_DEST));
+        if (Strings.isNotBlank((String) config.get(CONFIG_TOKEN_REQUEST_URL_METHOD)))
+            requestTokenMeth = HttpMethod.valueOf((String) config.get(CONFIG_TOKEN_REQUEST_URL_METHOD));
+        else
+            requestTokenMeth = HttpMethod.POST;
+        if (Strings.isNotBlank((String) config.get(CONFIG_TOKEN_ACCESS_URL_METHOD)))
+            accessTokenMeth = HttpMethod.valueOf((String) config.get(CONFIG_TOKEN_ACCESS_URL_METHOD));
+        else
+            accessTokenMeth = HttpMethod.POST;
+        if (Strings.isNotBlank((String) config.get(CONFIG_TOKEN_ACCESS_REFRESH_URL_METHOD)))
+            refreshAccessTokenMeth = HttpMethod.valueOf((String) config.get(CONFIG_TOKEN_ACCESS_REFRESH_URL_METHOD));
+        else
+            refreshAccessTokenMeth = HttpMethod.POST;
+    }
+
+    public OAuthenticatorV10(RestService restService, Token consumerToken, Map<String,Object> config) {
+        this(restService, consumerToken, config, new DefaultVariantProvider());
+    }
+
+    public OAuthenticatorV10(RestService restService, Token consumerToken) {
+        this(restService, consumerToken, (Map<String,Object>) null);
+    }
+
+
+    @Override
+    public Token getRequestToken() {
+        Validate.notEmpty(this.requestTokenUrl, "No request token url as been configured, please pass it in the config map, key=" + CONFIG_TOKEN_REQUEST_URL);
+        HttpResponse refreshTokenResponse = null;
         try {
-            this.secretKeySpec = new SecretKeySpec((consumerToken.getSecret() + "&" + accessToken.getSecret()).getBytes(ENC), SIGN_METH_4_J);
+            HttpRequest.Builder request = new HttpRequest.Builder(this.requestTokenUrl, "utf-8").using(requestTokenMeth);
+
+            Set<Param> oauthParams = newBaseOAuthParams();
+            oauthParams.add(new Param("oauth_callback", callback));
+            String sign = generateSignature(new Token("",""), request, oauthParams);
+            oauthParams.add(new Param("oauth_signature", sign));
+
+            if(HttpMethod.GET.equals(requestTokenMeth)) {
+                request.addQueryParams(toParamMap(oauthParams));
+            }else{
+                request.addBodyParams((Map)toParamMap(oauthParams));
+            }
+            refreshTokenResponse = restService.exec(request.build());
+            Map<String,String> result = Urls.parseQueryString(refreshTokenResponse.asString());
+            return new Token(
+                    result.get("oauth_token"),
+                    result.get("oauth_token_secret"),
+                    Maps.filter(result, "oauth_token", "oauth_token_secret")
+            );
+        } catch (URISyntaxException e) {
+            throw new OAuthException(e);
+        } finally {
+            if (refreshTokenResponse != null) {
+                refreshTokenResponse.close();
+            }
+        }
+    }
+
+    @Override
+    public Token refreshAccessToken(Token requestToken, String... includeExtras) {
+        Validate.notEmpty(this.refreshAccessTokenUrl, "No refresh access token url as been configured, please pass it in the config map, key=" + CONFIG_TOKEN_ACCESS_REFRESH_URL);
+        Set<Param> params = new LinkedHashSet<Param>();
+        for(String extra : includeExtras){
+            if(requestToken.getExtra(extra) == null) continue;
+            params.add(new Param(extra, requestToken.getExtra(extra)));
+        }
+        return getAccessToken(this.refreshAccessTokenUrl, this.refreshAccessTokenMeth, requestToken, params);
+    }
+    
+    @Override
+    public Token getAccessToken(Token requestToken, String verifier) {
+        Validate.notEmpty(this.accessTokenUrl, "No access token url as been configured, please pass it in the config map, key=" + CONFIG_TOKEN_ACCESS_URL);
+        Set<Param> set = new LinkedHashSet<Param>();
+        set.add(new Param("oauth_verifier", verifier));
+        return getAccessToken(this.accessTokenUrl, this.accessTokenMeth, requestToken, set);
+    }
+
+    private Token getAccessToken(String url, HttpMethod meth, Token requestToken, Set<Param> extras) {
+        HttpResponse refreshTokenResponse = null;
+        try {
+            HttpRequest.Builder request = new HttpRequest.Builder(url, "utf-8").using(meth);
+
+            Set<Param> oauthParams = newBaseOAuthParams();
+            oauthParams.add(new Param("oauth_token", requestToken.getToken()));
+            if(extras != null) oauthParams.addAll(extras);
+
+            String sign = generateSignature(requestToken, request, oauthParams);
+            oauthParams.add(new Param("oauth_signature", sign));
+
+            if(HttpMethod.GET.equals(meth)) {
+                request.addQueryParams(toParamMap(oauthParams));
+            }else{
+                request.addBodyParams((Map)toParamMap(oauthParams));
+            }
+            refreshTokenResponse = restService.exec(request.build());
+            Map<String,String> result = Urls.parseQueryString(refreshTokenResponse.asString());
+            return new Token(
+                    result.get("oauth_token"),
+                    result.get("oauth_token_secret"),
+                    Maps.filter(result, "oauth_token", "oauth_token_secret")
+            );
+        } catch (URISyntaxException e) {
+            throw new OAuthException(e);
+        } finally {
+            if (refreshTokenResponse != null) {
+                refreshTokenResponse.close();
+            }
+        }
+    }
+
+    @Override
+    public void sign(Token accessToken, HttpRequest.Builder request, Param... extraHeaders) {
+        Set<Param> extraHeadersList = new LinkedHashSet<Param>(Arrays.asList(Objects.defaultIfNull(extraHeaders, new Param[0]))); 
+        try {
+            sign(accessToken, request, extraHeadersList);
         } catch (UnsupportedEncodingException e) {
             throw new OAuthException(e);
         }
     }
 
-    public OAuthenticatorV10(boolean writeToHeaders, Token consumerToken, Token accessToken) {
-        this(writeToHeaders, consumerToken, accessToken, new DefaultVariantProvider());
-    }
+    private void sign(Token accessToken, HttpRequest.Builder request, Set<Param> extraHeaders) throws UnsupportedEncodingException {
 
-    public OAuthenticator refreshAccessToken(Token accessToken) {
-        return new OAuthenticatorV10(writeToHeaders, consumerToken, accessToken);
-    }
-
-    public void process(HttpRequest.Builder request, Param... extraHeaders) {
-        List<Param> extraHeadersList = Arrays.asList(Objects.defaultIfNull(extraHeaders, new Param[0]));
-        try {
-            process(request, extraHeadersList);
-        } catch (UnsupportedEncodingException e) {
-            throw new OAuthException(e);
-        }
-    }
-
-    private void process(HttpRequest.Builder request, List<Param> extraHeaders) throws UnsupportedEncodingException {
-        List<Param> oauthParams = newBaseOAuthParams(); // generate base oauth params
+        Set<Param> oauthParams = newBaseOAuthParams(); // generate base oauth params
+        oauthParams.add(new Param("oauth_token", accessToken.getToken()));
         oauthParams.addAll(extraHeaders);
 
         // Generate params for signature, these params contains the query string and body params on top of the already existing one.
-        List<Param> signatureParams = new ArrayList<Param>();
+        Set<Param> signatureParams = new LinkedHashSet<Param>();
         signatureParams.addAll(oauthParams);
         signatureParams.addAll(extractOAuthParams(request));
 
-        String signature = generateSignature(request, signatureParams);
+        String signature = generateSignature(accessToken, request, signatureParams);
 
         // Add signature to the base param list
         oauthParams.add(new Param("oauth_signature", signature));
 
-        if (writeToHeaders) {
+        if (toHeaders) {
             request.addHeader("Authorization", generateOAuthHeader(oauthParams));
         } else {
-            for(Param p : oauthParams ){
+            for (Param p : oauthParams) {
                 request.addQueryParam(p.getName(), p.getValue());
             }
         }
     }
 
-    private String generateOAuthHeader(List<Param> oauthParams) throws UnsupportedEncodingException {
+    private String generateOAuthHeader(Set<Param> oauthParams) throws UnsupportedEncodingException {
         return "OAuth " + encodeParams(oauthParams, ",", true);
     }
 
-    private List<Param> newBaseOAuthParams() {
-        List<Param> params = new ArrayList<Param>();
+    private Set<Param> newBaseOAuthParams() {
+        return newBaseOAuthParams(SIGN_METH);
+    }
+    private Set<Param> newBaseOAuthParams(String signatureMethod) {
+        Set<Param> params = new LinkedHashSet<Param>();
         params.add(new Param("oauth_consumer_key", consumerToken.getToken()));
-        params.add(new Param("oauth_token", accessToken.getToken()));
-        params.add(new Param("oauth_signature_method", SIGN_METH));
+        params.add(new Param("oauth_signature_method", signatureMethod));
         params.add(new Param("oauth_timestamp", variant.timestamp()));
         params.add(new Param("oauth_nonce", variant.nonce()));
         params.add(new Param("oauth_version", "1.0"));
@@ -119,7 +236,7 @@ public class OAuthenticatorV10 implements OAuthenticator {
     private static List<Param> extractOAuthParams(HttpRequest.Builder builder) {
         List<Param> params = new ArrayList<Param>();
         if (builder.getQueryString() != null) {
-            params.addAll(toParamList(builder.getQueryString()));
+            params.addAll(toParamSet(builder.getQueryString()));
         }
         if (builder.getBodyParams() != null)
             for (Map.Entry<String, Object> entry : builder.getBodyParams().entrySet()) {
@@ -130,12 +247,20 @@ public class OAuthenticatorV10 implements OAuthenticator {
         return params;
     }
 
-    private static List<Param> toParamList(Map<String, String> params) {
-        List<Param> p = new ArrayList<Param>();
+    private static Set<Param> toParamSet(Map<String, String> params) {
+        Set<Param> p = new LinkedHashSet<Param>();
         for (Map.Entry<String, String> param : params.entrySet()) {
             p.add(new Param(param.getKey(), param.getValue()));
         }
         return p;
+    }
+
+    private static Map<String,String> toParamMap(Set<Param> params) {
+        Map<String,String> map = new LinkedHashMap<String, String>();
+        for(Param p : params){
+            map.put(p.getName(), p.getValue());
+        }
+        return map;
     }
 
 
@@ -174,7 +299,7 @@ public class OAuthenticatorV10 implements OAuthenticator {
         return baseURL + url.substring(slashIndex);
     }
 
-    private static String encodeParams(List<Param> httpParams, String sep, boolean quote) throws UnsupportedEncodingException {
+    private static String encodeParams(Set<Param> httpParams, String sep, boolean quote) throws UnsupportedEncodingException {
         StringBuffer buf = new StringBuffer();
         String format = quote ? "\"%s\"" : "%s";
         for (Param p : httpParams) {
@@ -189,12 +314,10 @@ public class OAuthenticatorV10 implements OAuthenticator {
     }
 
 
-
-    private String generateSignature(HttpRequest.Builder request, List<Param> params) {
+    private String generateSignature(Token accessToken, HttpRequest.Builder request, Set<Param> params) {
         try {
             // first, sort the list without changing the one given
-            List<Param> sorted = new ArrayList<Param>(params);
-            Collections.sort(sorted);
+            Set<Param> sorted = new TreeSet<Param>(params);
 
             String signMeth = String.valueOf(request.getMeth());
             String signUri = constructRequestURL(request.getBaseUri());
@@ -204,27 +327,26 @@ public class OAuthenticatorV10 implements OAuthenticator {
             String data = signMeth + "&" + encode(signUri, ENC) + "&" + encode(signParams, ENC);
 
             Mac mac = Mac.getInstance(SIGN_METH_4_J);
-            mac.init(secretKeySpec);
+            mac.init(new SecretKeySpec((consumerToken.getSecret() + "&" + accessToken.getSecret()).getBytes(ENC), SIGN_METH_4_J));
 
             return new String(Base64.encodeToByte(mac.doFinal(data.getBytes(ENC))), ENC);
         } catch (Exception e) {
-            throw new CRestException(e);
+            throw new OAuthException(e);
         }
     }
 
     static interface VariantProvider {
+
         String timestamp();
 
         String nonce();
+
     }
 
     static class DefaultVariantProvider implements VariantProvider {
-        private final Random RDM = new SecureRandom(){{
-            setSeed(System.currentTimeMillis());
-        }};
+        private final Random RDM = new SecureRandom();
 
         public String timestamp() {
-
             return String.valueOf(System.currentTimeMillis() / 1000l);
         }
 
@@ -233,15 +355,4 @@ public class OAuthenticatorV10 implements OAuthenticator {
         }
     }
 
-    public Token getConsumerToken() {
-        return consumerToken;
-    }
-
-    public Token getAccessToken() {
-        return accessToken;
-    }
-
-    public boolean isWriteToHeaders() {
-        return writeToHeaders;
-    }
 }

@@ -22,35 +22,47 @@ package org.codegist.crest.delicious.model;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
-import javax.xml.bind.annotation.*;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Iterator;
 
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlRootElement(name = "posts")
-public class Posts {
-    @XmlAttribute
-    private String user;
-    @XmlJavaTypeAdapter(ArrayAdapter.class)
-    @XmlAttribute(name = "tag")
-    private String[] tags;
-    @XmlElement(name = "post")
-    private Post[] posts;
+@XmlRootElement(name = "tags")
+public class Tags implements Iterable<Tag> {
 
-    public String getUser() {
-        return user;
-    }
+    @XmlElement(name = "tag")
+    private Tag[] tags;
 
-    public String[] getTags() {
+    public Tag[] getTags() {
         return tags;
     }
 
-    public Post[] getPosts() {
-        return posts;
-    }
 
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
+    }
+    
+    @Override
+    public Iterator<Tag> iterator() {
+        return new Iterator<Tag>(){
+            int i = 0;
+            @Override
+            public boolean hasNext() {
+                return i < tags.length;
+            }
+
+            @Override
+            public Tag next() {
+                return tags[i++];
+            }
+
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException();
+            }
+        };
     }
 }

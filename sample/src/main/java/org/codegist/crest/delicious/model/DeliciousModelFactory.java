@@ -39,16 +39,22 @@ public class DeliciousModelFactory {
     public Date createDate(){
         return new Date();
     }
+    public Result createResult(){
+        return new Result();
+    }
     public Suggest createSuggest(){
         return new Suggest();
     }
-    public Suggest.Network createSuggestNetwork(){
-        return new Suggest.Network();
+    public Tag createTag(){
+        return new Tag();
     }
-    public Suggest.Popular createSuggestPopular(){
-        return new Suggest.Popular();
+    public Tags createTags(){
+        return new Tags();
     }
-    public Suggest.Recommended createSuggestRecommanded(){
-        return new Suggest.Recommended();
+    public Bundle createBundle(){
+        return new Bundle();
+    }
+    public Bundles createBundles(){
+        return new Bundles();
     }
 }

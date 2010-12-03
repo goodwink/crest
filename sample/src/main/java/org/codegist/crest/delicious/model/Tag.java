@@ -22,31 +22,27 @@ package org.codegist.crest.delicious.model;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlRootElement(name = "posts")
-public class Posts {
+@XmlRootElement(name = "tag")
+public class Tag {
     @XmlAttribute
-    private String user;
-    @XmlJavaTypeAdapter(ArrayAdapter.class)
+    private int count;
     @XmlAttribute(name = "tag")
+    @XmlJavaTypeAdapter(ArrayAdapter.class)
     private String[] tags;
-    @XmlElement(name = "post")
-    private Post[] posts;
 
-    public String getUser() {
-        return user;
+    public int getCount() {
+        return count;
     }
 
     public String[] getTags() {
         return tags;
-    }
-
-    public Post[] getPosts() {
-        return posts;
     }
 
     @Override

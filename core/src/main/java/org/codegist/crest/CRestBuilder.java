@@ -31,9 +31,9 @@ import org.codegist.common.reflect.JdkProxyFactory;
 import org.codegist.common.reflect.ProxyFactory;
 import org.codegist.crest.config.*;
 import org.codegist.crest.interceptor.CompositeRequestInterceptor;
-import org.codegist.crest.interceptor.OAuthInterceptor;
 import org.codegist.crest.interceptor.RequestInterceptor;
 import org.codegist.crest.interceptor.RequestParamDefaultsInterceptor;
+import org.codegist.crest.oauth.interceptor.OAuthInterceptor;
 import org.codegist.crest.serializer.Serializer;
 
 import javax.xml.bind.JAXBException;
@@ -184,7 +184,7 @@ public class CRestBuilder {
 
         RequestInterceptor oauthInterceptor = null;
         if (Strings.isNotBlank(accessToken) && Strings.isNotBlank(accessTokenSecret) && Strings.isNotBlank(consumerKey) && Strings.isNotBlank(consumerSecret)) {
-            oauthInterceptor = new OAuthInterceptor(authParamsInHeaders, consumerSecret, consumerKey, accessTokenSecret, accessToken);
+            oauthInterceptor = new OAuthInterceptor(customProperties);
         }
 
         RequestInterceptor globalInterceptor = null;

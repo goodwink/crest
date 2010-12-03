@@ -31,18 +31,38 @@ public class Param implements Comparable<Param> {
         this.value = value;
     }
 
-    @Override
-    public int compareTo(Param o) {
-        int i = name.compareTo(o.name);
-        return i != 0 ? i : value.compareTo(o.value);
-    }
-
     public String getName() {
         return name;
     }
 
     public String getValue() {
         return value;
+    }
+
+    @Override
+    public int compareTo(Param o) {
+        int i = name.compareTo(o.name);
+        return i != 0 ? i : value.compareTo(o.value);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Param param = (Param) o;
+
+        if (name != null ? !name.equals(param.name) : param.name != null) return false;
+        if (value != null ? !value.equals(param.value) : param.value != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = name != null ? name.hashCode() : 0;
+        result = 31 * result + (value != null ? value.hashCode() : 0);
+        return result;
     }
 
     public String toString(){

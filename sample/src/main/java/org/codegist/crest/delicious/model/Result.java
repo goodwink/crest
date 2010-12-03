@@ -20,37 +20,21 @@
 
 package org.codegist.crest.delicious.model;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-
 import javax.xml.bind.annotation.*;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
 
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlRootElement(name = "posts")
-public class Posts {
+@XmlRootElement(name = "result")
+public class Result {
     @XmlAttribute
-    private String user;
-    @XmlJavaTypeAdapter(ArrayAdapter.class)
-    @XmlAttribute(name = "tag")
-    private String[] tags;
-    @XmlElement(name = "post")
-    private Post[] posts;
+    private String code;
+    @XmlValue
+    private String value;
 
-    public String getUser() {
-        return user;
+    public String getCode() {
+        return code;
     }
 
-    public String[] getTags() {
-        return tags;
-    }
-
-    public Post[] getPosts() {
-        return posts;
-    }
-
-    @Override
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this);
+    public String getValue() {
+        return value;
     }
 }

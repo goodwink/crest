@@ -20,7 +20,6 @@
 
 package org.codegist.crest.serializer;
 
-import org.codegist.common.collect.Maps;
 import org.codegist.common.lang.Strings;
 import org.codegist.crest.CRestProperty;
 

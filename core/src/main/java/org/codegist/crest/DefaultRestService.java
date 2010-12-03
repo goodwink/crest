@@ -43,7 +43,7 @@ public class DefaultRestService implements RestService {
         boolean inError = false;
         try {
             connection = toHttpURLConnection(request);
-
+            System.out.println("Connection="+connection.getURL());
             if (connection.getResponseCode() != 200) {
                 throw new HttpException(connection.getResponseMessage(), new HttpResponse(request, connection.getResponseCode(), connection.getHeaderFields()));
             }

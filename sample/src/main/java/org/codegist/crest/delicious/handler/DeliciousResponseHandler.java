@@ -20,13 +20,55 @@
 
 package org.codegist.crest.delicious.handler;
 
+import org.codegist.common.lang.Strings;
+import org.codegist.common.lang.Validate;
+import org.codegist.common.marshal.Marshaller;
 import org.codegist.crest.CRestException;
 import org.codegist.crest.ResponseContext;
+import org.codegist.crest.delicious.model.Result;
 import org.codegist.crest.handler.ResponseHandler;
 
+import java.util.Map;
+
 public class DeliciousResponseHandler implements ResponseHandler {
+
+    private final Marshaller marshaller;
+
+    public DeliciousResponseHandler(Map<String,Object> properties) {
+        this.marshaller = (Marshaller) properties.get(Marshaller.class.getName());
+        Validate.notNull(this.marshaller, "No marshaller set, please construct CRest using either JSON or XML expected return type.");
+    }
+
     @Override
     public Object handle(ResponseContext responseContext) throws CRestException {
-        return null;
+        try {
+            Object response = marshaller.marshall(responseContext.getResponse().asStream(), responseContext.getExpectedGenericType());
+            if(response instanceof Result) {
+                Result result = (Result) response;
+                // Delicious Result response format is not consistent 
+                boolean done =
+                        "done".equalsIgnoreCase(result.getCode()) 
+                        || "done".equalsIgnoreCase(result.getValue())
+                        || "ok".equalsIgnoreCase(result.getValue());
+                // If expected return type is boolean, then return either true/false
+                if(boolean.class.equals(responseContext.getExpectedGenericType()) || Boolean.class.equals(responseContext.getExpectedGenericType())) {
+                    return done;
+                }else if(!done){
+                    // If a response type other than boolean is expected and result is false, then throw an exception.
+                    throw new CRestException(Strings.defaultIfBlank(result.getCode(), result.getValue()));
+                }else{
+                    // Shouldn't reach here. 
+                    // Response type is an instance of Result only if an error happened or if the expected return type is either true/false
+                    throw new IllegalStateException("Should not reach here");
+                }
+            }else{
+                return response;
+            }
+        } finally {
+            responseContext.getResponse().close();
+        }
     }
+
+
+    
 }

@@ -20,6 +20,8 @@
 
 package org.codegist.crest;
 
+import org.codegist.crest.oauth.OAuthenticator;
+
 /**
  * Properties of this interface are meant to be used as keys in the custom properties map of {@link org.codegist.crest.CRestContext}.
  *
@@ -95,7 +97,7 @@ public interface CRestProperty {
      *
      * @see org.codegist.crest.InterfaceContext#getProperties()
      */
-    String OAUTH_PARAM_DEST = "authentification.oauth.dest";
+    String OAUTH_PARAM_DEST = OAuthenticator.CONFIG_OAUTH_PARAM_DEST;
 
     /**
      * specify the preconfigured consumer secret.
@@ -128,6 +130,24 @@ public interface CRestProperty {
      * @see org.codegist.crest.InterfaceContext#getProperties()
      */
     String OAUTH_ACCESS_TOKEN_SECRET = "authentification.oauth.access.secret";
+
+    /**
+     * specify the preconfigured access token extras.
+     * <p>Expects a java.lang.Map&lt;java.lang.String,java.lang.String&gt;.
+     *
+     * @see org.codegist.crest.InterfaceContext#getProperties()
+     */
+    String OAUTH_ACCESS_TOKEN_EXTRAS = "authentification.oauth.access.extras";
+
+
+
+    String OAUTH_REQUEST_TOKEN_REQUEST_URL = OAuthenticator.CONFIG_TOKEN_REQUEST_URL;
+    String OAUTH_REQUEST_TOKEN_REQUEST_URL_METHOD = OAuthenticator.CONFIG_TOKEN_REQUEST_URL_METHOD;
+    String OAUTH_ACCESS_TOKEN_REQUEST_URL = OAuthenticator.CONFIG_TOKEN_ACCESS_URL;
+    String OAUTH_ACCESS_TOKEN_REQUEST_URL_METHOD = OAuthenticator.CONFIG_TOKEN_ACCESS_URL_METHOD;
+    String OAUTH_ACCESS_TOKEN_REFRESH_URL = OAuthenticator.CONFIG_TOKEN_ACCESS_REFRESH_URL;
+    String OAUTH_TOKEN_ACCESS_REFRESH_URL_METHOD = OAuthenticator.CONFIG_TOKEN_ACCESS_REFRESH_URL_METHOD;
+    String OAUTH_CALLBACK = OAuthenticator.CONFIG_OAUTH_CALLBACK;
 
     /*********************************************************
      *********************************************************

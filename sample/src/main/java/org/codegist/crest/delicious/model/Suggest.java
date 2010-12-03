@@ -22,54 +22,31 @@ package org.codegist.crest.delicious.model;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
-import javax.xml.bind.annotation.*;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "suggest")
 public class Suggest {
-    @XmlElement(name="popular")
-    private Popular[] popular;
-    @XmlElement(name="recommended")
-    private Recommended[] recommended;
-    @XmlElement(name="network")
-    private Network[] network;
-
-    static class SimpleValue {
-        @XmlValue
-        private String value;
-        @Override
-        public String toString() {
-            return ToStringBuilder.reflectionToString(this);
-        }
-    }
-    @XmlRootElement(name = "popular")
-    static class Popular extends SimpleValue {}
-    @XmlRootElement(name = "recommended")
-    static class Recommended extends SimpleValue {}
-    @XmlRootElement(name = "network")
-    static class Network extends SimpleValue {}
-
-    private static String[] toArray(SimpleValue[] v){
-        String[] s = new String[v.length];
-        int i = 0;
-        for(SimpleValue sv : v){
-            s[i] = sv.value;
-        }
-        return s;
-    }
-
+    @XmlElement(name = "popular", type = String.class)
+    private String[] popular;
+    @XmlElement(name = "recommended", type = String.class)
+    private String[] recommended;
+    @XmlElement(name = "network", type = String.class)
+    private String[] network;
 
     public String[] getPopular() {
-        return toArray(popular);
+        return (popular);
     }
 
     public String[] getRecommended() {
-        return toArray(recommended);
+        return (recommended);
     }
 
     public String[] getNetwork() {
-        return toArray(network);
+        return (network);
     }
 
     @Override

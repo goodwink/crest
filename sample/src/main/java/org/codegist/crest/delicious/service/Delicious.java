@@ -20,20 +20,18 @@
 
 package org.codegist.crest.delicious.service;
 
-import org.codegist.crest.annotate.EndPoint;
-import org.codegist.crest.annotate.GlobalInterceptor;
-import org.codegist.crest.annotate.Path;
-import org.codegist.crest.annotate.RetryHandler;
-import org.codegist.crest.delicious.handler.YahooExpiredTokenRetryHandler;
-import org.codegist.crest.delicious.interceptor.YahooOAuthInterceptor;
+import org.codegist.crest.annotate.*;
+import org.codegist.crest.delicious.handler.DeliciousResponseHandler;
 import org.codegist.crest.delicious.model.*;
+import org.codegist.crest.oauth.handler.AccessTokenExpiredRetryHandler;
+import org.codegist.crest.oauth.interceptor.OAuthInterceptor;
 
-import java.io.Reader;
 import java.util.Date;
 
 @EndPoint("http://api.del.icio.us/v2")
-@RetryHandler(YahooExpiredTokenRetryHandler.class)
-@GlobalInterceptor(YahooOAuthInterceptor.class)
+@RetryHandler(AccessTokenExpiredRetryHandler.class)
+@GlobalInterceptor(OAuthInterceptor.class)
+@ResponseHandler(DeliciousResponseHandler.class)
 public interface Delicious {
 
     @Path("/posts/recent")
@@ -76,24 +74,24 @@ public interface Delicious {
     Suggest getSuggestedPosts(String url);
 
     @Path("/tags/get")
-    String getTags();
+    Tags getTags();
 
     @Path("/tags/delete?tag={0}")
-    String deleteTag(String tag);
+    boolean deleteTag(String tag);
 
     @Path("/tags/rename?old={0}&new={1}")
-    String renameTag(String oldTag,String newTag);
+    boolean renameTag(String oldTag, String newTag);
 
     @Path("/tags/bundles/all")
-    String getTagBundles();
+    Bundles getTagBundles();
 
     @Path("/tags/bundles/all?bundle={0}")
-    String getTagBundle(String name);
+    Bundles getTagBundle(String name);
 
     @Path("/tags/bundles/set?bundle={0}&tags={1}")
-    String setTagBundle(String name, String... tags);
+    boolean setTagBundle(String name, String... tags);
 
     @Path("/tags/bundles/delete?bundle={0}")
-    String deleteTagBundle(String name);
+    boolean deleteTagBundle(String name);
 
 }

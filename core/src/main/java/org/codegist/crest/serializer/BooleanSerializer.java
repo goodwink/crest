@@ -23,7 +23,6 @@ package org.codegist.crest.serializer;
 import org.codegist.common.lang.Strings;
 import org.codegist.crest.CRestProperty;
 
-import java.util.Date;
 import java.util.Map;
 
 /**

@@ -20,16 +20,24 @@
 
 package org.codegist.crest.oauth;
 
+import org.codegist.common.collect.Maps;
+import org.codegist.common.lang.ToStringBuilder;
+
 import java.util.Map;
 
 public class Token {
 
     private final String token;
     private final String secret;
+    private final Map<String,String> extras;
 
     public Token(String token, String secret) {
+        this(token, secret, null);
+    }
+    public Token(String token, String secret, Map<String,String> extras) {
         this.token = token;
         this.secret = secret;
+        this.extras = Maps.unmodifiable(extras);
     }
 
     public String getToken() {
@@ -40,4 +48,20 @@ public class Token {
         return secret;
     }
 
+    public String getExtra(String name){
+        return extras.get(name);
+    }
+
+    public Map<String,String> getExtras(){
+        return extras;
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this)
+                .append("token", token)
+                .append("secret", secret)
+                .append("extras", extras)
+                .toString();
+    }
 }

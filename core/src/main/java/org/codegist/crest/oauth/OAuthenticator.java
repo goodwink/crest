@@ -23,11 +23,30 @@ package org.codegist.crest.oauth;
 import org.codegist.crest.HttpRequest;
 
 
-public interface OAuthenticator {
+public interface OAuthenticator {       
 
-    void process(HttpRequest.Builder request, Param... extraAuthHeaders);
+    String CONFIG_TOKEN_REQUEST_URL = "oauth.token.request.url";
 
-    OAuthenticator refreshAccessToken(Token accessToken);
+    String CONFIG_TOKEN_REQUEST_URL_METHOD = "oauth.token.request.url.method";
 
-    Token getAccessToken();
+    String CONFIG_TOKEN_ACCESS_URL = "oauth.token.access.url";
+
+    String CONFIG_TOKEN_ACCESS_URL_METHOD = "oauth.token.access.url.method";
+
+    String CONFIG_TOKEN_ACCESS_REFRESH_URL = "oauth.token.access.refresh.url";
+
+    String CONFIG_TOKEN_ACCESS_REFRESH_URL_METHOD = "oauth.token.access.refresh.url.method";
+
+    String CONFIG_OAUTH_PARAM_DEST = "oauth.params.destination";
+
+    String CONFIG_OAUTH_CALLBACK = "oauth.request.token.callback";
+
+    void sign(Token accessToken, HttpRequest.Builder request, Param... extraAuthHeaders);
+
+    Token getRequestToken();
+
+    Token getAccessToken(Token requestToken, String verifier);
+
+    Token refreshAccessToken(Token accessToken, String... includeExtras);
+
 }

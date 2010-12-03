@@ -22,35 +22,46 @@ package org.codegist.crest.delicious.model;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
-import javax.xml.bind.annotation.*;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Iterator;
 
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlRootElement(name = "posts")
-public class Posts {
-    @XmlAttribute
-    private String user;
-    @XmlJavaTypeAdapter(ArrayAdapter.class)
-    @XmlAttribute(name = "tag")
-    private String[] tags;
-    @XmlElement(name = "post")
-    private Post[] posts;
+@XmlRootElement(name = "bundles")
+public class Bundles implements Iterable<Bundle>  {
 
-    public String getUser() {
-        return user;
-    }
+    @XmlElement(name = "bundle")
+    private Bundle[] bundles;
 
-    public String[] getTags() {
-        return tags;
-    }
-
-    public Post[] getPosts() {
-        return posts;
+    public Bundle[] getBundles() {
+        return bundles;
     }
 
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
+    }
+
+    @Override
+    public Iterator<Bundle> iterator() {
+        return new Iterator<Bundle>() {
+            int i = 0;
+            @Override
+            public boolean hasNext() {
+                return i < bundles.length;
+            }
+
+            @Override
+            public Bundle next() {
+                return bundles[i++];
+            }
+
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException();
+            }
+        };
     }
 }
