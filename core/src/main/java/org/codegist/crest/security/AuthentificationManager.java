@@ -36,7 +36,7 @@ public interface AuthentificationManager {
      */
     void sign(HttpRequest.Builder request);
 
-    /**
+    /**                
      * Sign the request
      * @param request request to be signed
      * @param properties signing properties

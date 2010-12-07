@@ -97,7 +97,7 @@ public interface CRestProperty {
      *
      * @see org.codegist.crest.InterfaceContext#getProperties()
      */
-    String OAUTH_PARAM_DEST = OAuthenticator.CONFIG_OAUTH_PARAM_DEST;
+    String OAUTH_PARAM_DEST = "authentification.oauth.parameter.destination";
 
     /**
      * specify the preconfigured consumer secret.
@@ -146,7 +146,7 @@ public interface CRestProperty {
      *
      * @see org.codegist.crest.InterfaceContext#getProperties()
      */
-    String OAUTH_ACCESS_TOKEN_REFRESH_URL = OAuthenticator.CONFIG_TOKEN_ACCESS_REFRESH_URL;
+    String OAUTH_ACCESS_TOKEN_REFRESH_URL = "authentification.oauth.access.refresh-url";
     /**
      * specify the access token refresh url http method.
      * <p>Default to POST
@@ -154,7 +154,7 @@ public interface CRestProperty {
      *
      * @see org.codegist.crest.InterfaceContext#getProperties()
      */
-    String OAUTH_TOKEN_ACCESS_REFRESH_URL_METHOD = OAuthenticator.CONFIG_TOKEN_ACCESS_REFRESH_URL_METHOD;
+    String OAUTH_TOKEN_ACCESS_REFRESH_URL_METHOD = "authentification.oauth.access.refresh-url.method";
 
     /*********************************************************
      *********************************************************

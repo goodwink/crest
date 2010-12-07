@@ -44,6 +44,22 @@ import static org.codegist.common.net.Urls.encode;
  */
 public class OAuthenticatorV10 implements OAuthenticator {
 
+    public static final String CONFIG_TOKEN_ACCESS_REFRESH_URL = CRestProperty.OAUTH_ACCESS_TOKEN_REFRESH_URL;
+
+    public static final String CONFIG_TOKEN_ACCESS_REFRESH_URL_METHOD = CRestProperty.OAUTH_TOKEN_ACCESS_REFRESH_URL_METHOD;
+
+    public static final String CONFIG_OAUTH_PARAM_DEST = CRestProperty.OAUTH_PARAM_DEST;
+
+    public static final String CONFIG_TOKEN_REQUEST_URL = "authentification.oauth.access.request-url";
+
+    public static final String CONFIG_TOKEN_REQUEST_URL_METHOD = "authentification.oauth.access.request-url";
+
+    public static final String CONFIG_TOKEN_ACCESS_URL = "authentification.oauth.access.access-url";
+
+    public static final String CONFIG_TOKEN_ACCESS_URL_METHOD = "authentification.oauth.access.access-url.method";
+
+    public static final String CONFIG_OAUTH_CALLBACK = "authentification.oauth.request.callback";
+
     private final static String ENC = "UTF-8";
     private final static String SIGN_METH = "HMAC-SHA1";
     private final static String SIGN_METH_4_J = "HmacSHA1";
