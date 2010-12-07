@@ -25,6 +25,10 @@ import org.codegist.common.lang.ToStringBuilder;
 
 import java.util.Map;
 
+/**
+ * OAuth Token information holder
+ * @author Laurent Gilles (laurent.gilles@codegist.org)
+ */
 public class Token {
 
     private final String token;
@@ -52,6 +56,9 @@ public class Token {
         return extras.get(name);
     }
 
+    /**
+     * @return Extra non-oauth-specification compliant fields returned by the oauth service.
+     */
     public Map<String,String> getExtras(){
         return extras;
     }

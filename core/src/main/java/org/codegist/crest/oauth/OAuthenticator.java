@@ -23,7 +23,11 @@ package org.codegist.crest.oauth;
 import org.codegist.crest.HttpRequest;
 
 
-public interface OAuthenticator {       
+/**
+ * OAuth authentificator interface
+ * @author Laurent Gilles (laurent.gilles@codegist.org)
+ */
+public interface OAuthenticator {
 
     String CONFIG_TOKEN_REQUEST_URL = "oauth.token.request.url";
 
@@ -41,12 +45,35 @@ public interface OAuthenticator {
 
     String CONFIG_OAUTH_CALLBACK = "oauth.request.token.callback";
 
+    /**
+     * Signs the given request using the given access token and the optional additional oauth headers.
+     * @param accessToken Access token to be used
+     * @param request request to be signed
+     * @param extraAuthHeaders optional header to be added in the oauth authentification headers
+     */
     void sign(Token accessToken, HttpRequest.Builder request, Param... extraAuthHeaders);
 
+    /**
+     * Fires a get request token to the preconfigured url
+     * @return A new request token
+     */
     Token getRequestToken();
 
+    /**
+     * Exchanges the given request token with a new access token using the given verifier
+     * @param requestToken request token to exchange
+     * @param verifier verifier
+     * @return new access token
+     */
     Token getAccessToken(Token requestToken, String verifier);
 
+    /**
+     * Refreshs the given access token if it has expired. Include optional extra oauth header from the extra field of the token.
+     * @param accessToken expired access token
+     * @param includeExtras extras field name from the given token to include in the request
+     * @see org.codegist.crest.oauth.Token#getExtras()
+     * @return a new access token
+     */
     Token refreshAccessToken(Token accessToken, String... includeExtras);
 
 }

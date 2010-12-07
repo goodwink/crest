@@ -26,6 +26,9 @@ import java.util.Date;
 
 import static org.junit.Assert.assertEquals;
 
+/**
+ * @author Laurent Gilles (laurent.gilles@codegist.org)
+ */
 public class DateSerializerTest {
 
     @Test

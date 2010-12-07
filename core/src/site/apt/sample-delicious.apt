@@ -1,0 +1,164 @@
+    -----
+    Delicious Samples
+    -----
+
+Delicious Samples
+
+    This sample contains the implementation of a some {{{http://www.delicious.com/help/api} Delicious Rest APIs}}.
+
+    This example shows how to handle:
+
+        * Non consistent response format.
+
+        * Injecting in the request a user-specific object passed as an argument in a service method.
+
+        * Handle Yahoo! OAuth implementation: Access tokens expire after an hour an need to be refreshed.
+
+    <NB: The following are partial mappings of the available services and their main purpose is to give a quick example of a real world use case scenario of CRest usage, thus the mappings may not reflect all the services offered by the API.>
+
+* Interface
+
+    This sample maps some of the Delicious's {{{http://www.delicious.com/help/api} Rest APIs}}.
+
+    Below the mapped interface. <Note: the mapping below only shows some mapped method, to have a look at all of them, refer to the sample source code.>
+
++-----
+@EndPoint("http://api.del.icio.us/v2")
+@RetryHandler(RefreshAuthentificationRetryHandler.class) /* This retry handler will automatically try to refresh the access token if a 401 exception is caught */
+@ResponseHandler(DeliciousResponseHandler.class)
+public interface Delicious {
+
+    @Path("/posts/recent")
+    Posts getRecentsPosts();
+
+    @Path("/posts/recent?tag={0}&count={1}")
+    Posts getRecentsPosts(String tag, int count);
+
+    @Path("/posts/add?url={0}&description={1}&extended={2}&tags={3}&stamp={4}&replace={5}&shared={6}")
+    boolean addPost(String url, String description, String extended, String[] tags, Date stamp, boolean replace, boolean shared);
+
+    @Path("/posts/all?tag={0}&fromdt={2}&todt={3}&meta={4}")
+    Posts getAllPosts(String tag, Range resultRange, Date from, Date to, Boolean meta);
+
+    @Path("/tags/bundles/set?bundle={0}&tags={1}")
+    boolean setTagBundle(String name, String... tags);
+
+    (...)
+
+}
++-----
+
+    And here's how to get an instance of the <<<Flickr>>>:
+
++-----
+// Get a CRest instance. Should be done once.
+/* Get the factory */
+CRest crest = new CRestBuilder()
+                .expectsXml(DeliciousModelFactory.class)
+                .setListSerializerSeparator(" ")
+                .setBooleanSerializer("yes", "no")
+                .usePreauthentifiedOAuth(consumerKey, consumerSecret, accessToken, accessTokenSecret)
+                /* URL to use to refresh the expired access token */
+                .setProperty(CRestProperty.OAUTH_ACCESS_TOKEN_REFRESH_URL, "https://api.login.yahoo.com/oauth/v2/get_token")
+                /* extras non oauth-standard token entry */
+                .setProperty(CRestProperty.OAUTH_ACCESS_TOKEN_EXTRAS, new HashMap<String, String>() {{
+                    put("oauth_session_handle", sessionHandle);
+                }})
+                .build();
+
+// get a service instance
+Delicious delicious = crest.build(Delicious.class);
+
+// use it !
+Posts posts = delicious.getAllPosts("opensource", new Range(1,15), dateFrom, dateTo, metas);
+boolean done = delicious.renameTag("os", "opensource");
+(...)
++-----
+
+* Response Handler
+
+    Here is the code for the custom response handling. This class is not stricly necessary as we could have always returned the generic Response object for every method whatever happens, but this approach makes the interface looks better and less coupled to the flickr response format.
+
++-----
+public class DeliciousResponseHandler implements ResponseHandler {
+
+    private final Marshaller marshaller;
+
+    public DeliciousResponseHandler(Map<String,Object> properties) {
+        this.marshaller = (Marshaller) properties.get(Marshaller.class.getName());
+        Validate.notNull(this.marshaller, "No marshaller set, please construct CRest using either JSON or XML expected return type.");
+    }
+
+    @Override
+    public Object handle(ResponseContext responseContext) throws CRestException {
+        try {
+            Object response = marshaller.marshall(responseContext.getResponse().asStream(), responseContext.getExpectedGenericType());
+            if(response instanceof Result) {
+                Result result = (Result) response;
+                // Delicious Result response format is not consistent
+                boolean done =
+                        "done".equalsIgnoreCase(result.getCode())
+                        || "done".equalsIgnoreCase(result.getValue())
+                        || "ok".equalsIgnoreCase(result.getValue());
+                // If expected return type is boolean, then return either true/false
+                if(boolean.class.equals(responseContext.getExpectedGenericType()) || Boolean.class.equals(responseContext.getExpectedGenericType())) {
+                    return done;
+                }else if(!done){
+                    // If a response type other than boolean is expected and result is false, then throw an exception.
+                    throw new CRestException(Strings.defaultIfBlank(result.getCode(), result.getValue()));
+                }else{
+                    // Shouldn't reach here.
+                    // Response type is an instance of Result only if an error happened or if the expected return type is either true/false
+                    throw new IllegalStateException("Should not reach here");
+                }
+            }else{
+                return response;
+            }
+        } finally {
+            responseContext.getResponse().close();
+        }
+    }
+}
++-----
+
+* User specific Injector
+
+     Here is the code to tell CRest how to inject the user-specific Range object into the request.
+
++-----
+public class RangeInjector implements Injector<Range> {
+    @Override
+    public void inject(HttpRequest.Builder builder, ParamContext<Range> context) {
+        if(context.getRawValue() == null) return;
+        Range r = context.getRawValue();
+        String start = String.valueOf(r.getStart());
+        String results = String.valueOf(r.getResults());
+        if(context.isForUrl()){
+            builder.addQueryParam("start", start);
+            builder.addQueryParam("results", results);
+        }else{
+            builder.addBodyParam("start", start);
+            builder.addBodyParam("results", results);
+        }
+    }
+}
++-----
+
+And here is the Range object definition :
+
++-----
+@Injector(RangeInjector.class)  /* Parameter specific annotation applied to a type */
+public class Range {
+    private final int start;
+    private final int results;
+    (...)
+}
++-----
+
+* Model & Sources
+
+    The data model used by these samples hasn't been documented in this page as it only limits itself to plain java bean objects. The model have been deduced from the API response format and documentation and isn't guaranteed to reflect the full available model the API offers.
+
+    Do get a look at it, please refer to the sample source code {{{./sample/xref/index.html} HTML-based version}}.
+
+    This code is part of a project containing more sample, go to the {{{./sample/index.html} project home page}} to get more information.

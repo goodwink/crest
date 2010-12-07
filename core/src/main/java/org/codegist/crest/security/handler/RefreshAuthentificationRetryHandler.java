@@ -18,26 +18,33 @@
  * More information at http://www.codegist.org.
  */
 
-package org.codegist.crest.oauth.handler;
+package org.codegist.crest.security.handler;
 
 import org.codegist.common.lang.Numbers;
-import org.codegist.crest.CRestException;
+import org.codegist.common.lang.Validate;
 import org.codegist.crest.CRestProperty;
 import org.codegist.crest.HttpException;
 import org.codegist.crest.ResponseContext;
 import org.codegist.crest.handler.RetryHandler;
-import org.codegist.crest.oauth.interceptor.OAuthInterceptor;
+import org.codegist.crest.security.AuthentificationManager;
 
 import java.util.Map;
 
-public class AccessTokenExpiredRetryHandler implements RetryHandler {
+/**
+ * Authentification retry handler that refresh the authentification if the retry cause is a 401 problem.
+ * <p>Requires an {@link org.codegist.crest.security.AuthentificationManager} instance to be present in the custom properties.
+ */
+public class RefreshAuthentificationRetryHandler implements RetryHandler {
 
-    public static final int DEFAULT_YUI_MAX_ATTEMPTS = 1; /* will retry just once in order to refresh the token */
+    public static final int DEFAULT_MAX_ATTEMPTS = 1; /* will retry just once in order to refresh the token */
 
+    private final AuthentificationManager authentificationManager;
     private final int max;
 
-    public AccessTokenExpiredRetryHandler(Map<String, Object> customProperties) {
-        this.max = Numbers.parse((String) customProperties.get(CRestProperty.HANDLER_RETRY_MAX_ATTEMPTS), DEFAULT_YUI_MAX_ATTEMPTS);
+    public RefreshAuthentificationRetryHandler(Map<String, Object> customProperties) {
+        this.max = Numbers.parse((String) customProperties.get(CRestProperty.HANDLER_RETRY_MAX_ATTEMPTS), DEFAULT_MAX_ATTEMPTS);
+        authentificationManager = (AuthentificationManager) customProperties.get(AuthentificationManager.class.getName());
+        Validate.notNull(this.authentificationManager, "No authentification manager found, please pass it in the properties (key=" + AuthentificationManager.class.getName() + ")");
     }
 
     public boolean retry(ResponseContext response, Exception exception, int retryNumber) {
@@ -45,23 +52,9 @@ public class AccessTokenExpiredRetryHandler implements RetryHandler {
                 || !(exception instanceof HttpException)
                 || ((HttpException) exception).getResponse().getStatusCode() != 401)
             return false;
-        try {
-            // Gets the global authenticator interceptor
 
-            OAuthInterceptor oAuthInterceptor;
-            if(response.getRequestContext().getConfig().getGlobalInterceptor() instanceof OAuthInterceptor) {
-                oAuthInterceptor = (OAuthInterceptor) response.getRequestContext().getConfig().getGlobalInterceptor();
-            }else if(response.getRequestContext().getMethodConfig().getRequestInterceptor() instanceof OAuthInterceptor) {
-                oAuthInterceptor = (OAuthInterceptor) response.getRequestContext().getMethodConfig().getRequestInterceptor();
-            } else{
-                throw new IllegalStateException("No OAuthInterceptor found!");
-            }
-
-            oAuthInterceptor.refreshAccessToken();
-            return true;
-        } catch (Exception e) {
-            throw new CRestException(e);
-        }
+        authentificationManager.refresh();
+        return true;
     }
 
 }

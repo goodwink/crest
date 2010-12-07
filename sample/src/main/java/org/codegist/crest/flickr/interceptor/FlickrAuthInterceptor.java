@@ -48,9 +48,9 @@ public class FlickrAuthInterceptor extends RequestInterceptorAdapter {
         this.apiKey = (String) properties.get(API_KEY_PROP);
         this.authToken = (String) properties.get(AUTH_TOKEN_PROP);
 
-        Validate.notEmpty(this.appSecret, "App secret is required, please pass it is the properties (key=" + APP_SECRET_PROP + ")");
-        Validate.notEmpty(this.apiKey, "API key is required, please pass it is the properties (key=" + API_KEY_PROP + ")");
-        Validate.notEmpty(this.authToken, "Authentification token is required, please pass it is the properties (key=" + AUTH_TOKEN_PROP + ")");
+        Validate.notEmpty(this.appSecret, "App secret is required, please pass it in the properties (key=" + APP_SECRET_PROP + ")");
+        Validate.notEmpty(this.apiKey, "API key is required, please pass it in the properties (key=" + API_KEY_PROP + ")");
+        Validate.notEmpty(this.authToken, "Authentification token is required, please pass it in the properties (key=" + AUTH_TOKEN_PROP + ")");
     }
 
     @Override

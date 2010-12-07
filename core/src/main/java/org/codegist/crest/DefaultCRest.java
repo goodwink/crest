@@ -20,6 +20,8 @@
 
 package org.codegist.crest;
 
+import org.codegist.common.lang.Disposable;
+import org.codegist.common.lang.Disposables;
 import org.codegist.common.lang.Strings;
 import org.codegist.common.reflect.Methods;
 import org.codegist.common.reflect.ProxyFactory;
@@ -42,7 +44,7 @@ import java.net.URISyntaxException;
  * <p>- {@link org.codegist.crest.handler.ErrorHandler} to customize how the created interface behaves when any error occurs during the method call process.
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
-public class DefaultCRest implements CRest {
+public class DefaultCRest implements CRest, Disposable {
 
     private final CRestContext context;
 
@@ -196,4 +198,7 @@ public class DefaultCRest implements CRest {
     }
 
 
+    public void dispose() {
+        Disposables.dispose(context.getRestService());
+    }
 }

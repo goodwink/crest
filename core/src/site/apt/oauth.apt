@@ -1,10 +1,18 @@
     ------
-    OAuth
+    Authentification & OAuth
     ------
         
+Authentification
+
+     <<CRest>> offers a facility to handle authentified request, through <<<org.codegist.crest.security.AuthentificationManager>>>.
+
+     An <<<AuthentificationManager>>> is used to hold authentification information and to sign any request before it gets fired.
+
 OAuth
 
-    <<CRest>> offers a pre-authentified <<<OAuth v1.0>>> request authentification mechanism implemented as an interceptor (<<<org.codegist.crest.interceptor.OAuthInterceptor>>>).
+    <<CRest>> offers an implementation of <<<AuthentificationManager>>> for <<<OAuth>>> (current is based on OAuth v1.0) request authentification mechanism.
+
+    As of now, the authentification is implemented as an interceptor (<<<org.codegist.crest.security.interceptor.AuthentificationInterceptor>>>).
 
     All you need to provide are four information:
 
@@ -24,14 +32,14 @@ CRest crest = new CRestBuilder()
                     .build();
 +-----
 
-        will create a <<<CRest>>> with an instance of <<<OAuthInterceptor>>> set as a global request interceptor. Any interface that will be passed to this crest instance will gets all its http request authentified using OAuth v1.0.
+        will create a <<<CRest>>> with a <<<AuthentificationInterceptor>>> set as a global request interceptor, backed by a <<<OAuthentificationManager>>> instance holding the given authentification data. Any interface that will be passed to this crest instance will gets all its http request authentified using OAuth v1.0.
 
         Another way to get the same result is by settings the interceptor manually on the interface:
 
 +-----
 @EndPoint("http://api.twitter.com")
 @ContextPath("/1/statuses")
-@GlobalInterceptor(OAuthInterceptor.class)
+@GlobalInterceptor(AuthentificationInterceptor.class)
 public interface StatusService {
 
     @HttpMethod(POST)
@@ -44,7 +52,7 @@ public interface StatusService {
 }
 +-----
 
-        and to give the <<<CRest>>> the information required by the <<<OAuthInterceptor>>> to generate the authentification meta datas:
+        and to give the <<<CRest>>> the information required by the <<<AuthentificationInterceptor>>> to generate the authentification meta datas:
 
 +-----
 CRest crest = new CRestBuilder()
@@ -66,10 +74,49 @@ public interface StatusService {
     @HttpMethod(POST)
     @Path("/update.json")
     @Destination(BODY)
-    @RequestInterceptor(OAuthInterceptor.class)
+    @RequestInterceptor(AuthentificationInterceptor.class)
     Status updateStatus(@Name("status") String status);  /* will use oauth authentification */
 
     @Path("/show/{0}.json")
     Status getStatus(long id); /* not authentified method */
 }
++-----
+
+Scalable OAuth
+
+    The current <<<OAuth>>> implementation handle partially the {{{http://wiki.oauth.net/w/page/12238549/ScalableOAuth} Scalable OAuth}} extensions.
+
+    It has been tested with the Yahoo! OAuth implementation and makes easy to refresh an expired token using the <<oauth_session_handle>>.
+
+    In order to do so, the user needs to use the <<<RefreshAuthentificationRetryHandler>>> retry handler, that will try to refresh the access token if a 401 is detected, and then re-execute the request, making a silent background access token refresh.
+
+    Here a sample taken from the Delicious sample implementation :
+
++-----
+@EndPoint("http://api.del.icio.us/v2")
+@RetryHandler(RefreshAuthentificationRetryHandler.class)
+@ResponseHandler(DeliciousResponseHandler.class)
+public interface Delicious {
+
+    @Path("/posts/recent")
+    Posts getRecentsPosts();
+
+    (...)
+}
++-----
+
+    On top of that, <<<CRest>>> needs to know the current non-standard <<<oauth_session_handle>>> to use and what URL to call to refresh the expired access token :
+
++-----
+CRest crest = new CRestBuilder()
+    (...)
+    /* Sets standard oauth token data */
+    .usePreauthentifiedOAuth(consumerKey, consumerSecret, accessToken, accessTokenSecret)
+    /* Indicates what url to call for the token refresh */
+    .setProperty(CRestProperty.OAUTH_ACCESS_TOKEN_REFRESH_URL, "https://api.login.yahoo.com/oauth/v2/get_token")
+    /* Adds non-standard access token data */
+    .setProperty(CRestProperty.OAUTH_ACCESS_TOKEN_EXTRAS, new HashMap<String, String>() {{
+        put("oauth_session_handle", sessionHandle);
+    }})
+    .build();
 +-----

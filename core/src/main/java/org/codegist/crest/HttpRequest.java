@@ -106,6 +106,38 @@ public class HttpRequest {
         return bodyParams;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        HttpRequest that = (HttpRequest) o;
+
+        if (!bodyParams.equals(that.bodyParams)) return false;
+        if (connectionTimeout != null ? !connectionTimeout.equals(that.connectionTimeout) : that.connectionTimeout != null) return false;
+        if (!encoding.equals(that.encoding)) return false;
+        if (!headers.equals(that.headers)) return false;
+        if (meth != that.meth) return false;
+        if (!queryParams.equals(that.queryParams)) return false;
+        if (socketTimeout != null ? !socketTimeout.equals(that.socketTimeout) : that.socketTimeout != null) return false;
+        if (!uri.equals(that.uri)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = meth.hashCode();
+        result = 31 * result + uri.hashCode();
+        result = 31 * result + (socketTimeout != null ? socketTimeout.hashCode() : 0);
+        result = 31 * result + (connectionTimeout != null ? connectionTimeout.hashCode() : 0);
+        result = 31 * result + encoding.hashCode();
+        result = 31 * result + headers.hashCode();
+        result = 31 * result + queryParams.hashCode();
+        result = 31 * result + bodyParams.hashCode();
+        return result;
+    }
+
     public String toString() {
         return new ToStringBuilder(this)
                 .append("meth", meth)

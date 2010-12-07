@@ -18,14 +18,9 @@
  * More information at http://www.codegist.org.
  */
 
-package org.codegist.crest.config;
-
-public interface Param {
-
-    String getValue();
-
-    String getName();
-
-    Destination getDestination();
-    
-}
+/**
+ * OAuth support implementation
+ * @see org.codegist.crest.DefaultCRest
+ * @see org.codegist.crest.CRestContext 
+ */
+package org.codegist.crest.oauth;

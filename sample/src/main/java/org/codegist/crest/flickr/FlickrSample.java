@@ -22,11 +22,9 @@ package org.codegist.crest.flickr;
 
 import org.codegist.crest.CRest;
 import org.codegist.crest.CRestBuilder;
-import org.codegist.crest.CRestProperty;
 import org.codegist.crest.flickr.interceptor.FlickrAuthInterceptor;
 import org.codegist.crest.flickr.model.FlickrModelFactory;
 import org.codegist.crest.flickr.model.Gallery;
-import org.codegist.crest.flickr.serialize.FlickrBooleanSerializer;
 import org.codegist.crest.flickr.service.Flickr;
 
 /**
@@ -42,9 +40,9 @@ public class FlickrSample {
         /* Get the factory */
         CRest crest = new CRestBuilder()
                 .expectsXml(FlickrModelFactory.class)
-                .setSerializer(boolean.class, new FlickrBooleanSerializer())
-                .setProperty(CRestProperty.SERIALIZER_DATE_FORMAT, "Millis")
-                .setProperty(CRestProperty.SERIALIZER_LIST_SEPARATOR, " ")
+                .setDateSerializerFormat("Millis")
+                .setListSerializerSeparator(" ")
+                .setBooleanSerializer("1", "0")
                 .setProperty(FlickrAuthInterceptor.API_KEY_PROP, apiKey)
                 .setProperty(FlickrAuthInterceptor.APP_SECRET_PROP, appSecret)
                 .setProperty(FlickrAuthInterceptor.AUTH_TOKEN_PROP, authToken)

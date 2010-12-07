@@ -37,6 +37,11 @@ import java.util.*;
 
 import static org.codegist.common.net.Urls.encode;
 
+/**
+ * OAuth v1.0 authentificator implementation
+ * TODO : tidy up, explode in different specilized classes: more cohesion and less coupling please!!
+ * @author Laurent Gilles (laurent.gilles@codegist.org)
+ */
 public class OAuthenticatorV10 implements OAuthenticator {
 
     private final static String ENC = "UTF-8";
@@ -68,18 +73,21 @@ public class OAuthenticatorV10 implements OAuthenticator {
         this.restService = restService;
         config = Maps.defaultsIfNull(config);
         this.callback = Strings.defaultIfBlank((String) config.get(CONFIG_OAUTH_CALLBACK), "oob");
+        this.toHeaders = !"url".equals(config.get(CONFIG_OAUTH_PARAM_DEST));
+
         this.requestTokenUrl = (String) config.get(CONFIG_TOKEN_REQUEST_URL);
-        this.accessTokenUrl = (String) config.get(CONFIG_TOKEN_ACCESS_URL);
-        this.refreshAccessTokenUrl = (String) config.get(CONFIG_TOKEN_ACCESS_REFRESH_URL);
-        this.toHeaders = "url".equals(config.get(CONFIG_OAUTH_PARAM_DEST));
         if (Strings.isNotBlank((String) config.get(CONFIG_TOKEN_REQUEST_URL_METHOD)))
             requestTokenMeth = HttpMethod.valueOf((String) config.get(CONFIG_TOKEN_REQUEST_URL_METHOD));
         else
             requestTokenMeth = HttpMethod.POST;
+
+        this.accessTokenUrl = (String) config.get(CONFIG_TOKEN_ACCESS_URL);
         if (Strings.isNotBlank((String) config.get(CONFIG_TOKEN_ACCESS_URL_METHOD)))
             accessTokenMeth = HttpMethod.valueOf((String) config.get(CONFIG_TOKEN_ACCESS_URL_METHOD));
         else
             accessTokenMeth = HttpMethod.POST;
+
+        this.refreshAccessTokenUrl = (String) config.get(CONFIG_TOKEN_ACCESS_REFRESH_URL);
         if (Strings.isNotBlank((String) config.get(CONFIG_TOKEN_ACCESS_REFRESH_URL_METHOD)))
             refreshAccessTokenMeth = HttpMethod.valueOf((String) config.get(CONFIG_TOKEN_ACCESS_REFRESH_URL_METHOD));
         else
@@ -300,7 +308,7 @@ public class OAuthenticatorV10 implements OAuthenticator {
     }
 
     private static String encodeParams(Set<Param> httpParams, String sep, boolean quote) throws UnsupportedEncodingException {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         String format = quote ? "\"%s\"" : "%s";
         for (Param p : httpParams) {
             if (buf.length() != 0) {
@@ -314,7 +322,7 @@ public class OAuthenticatorV10 implements OAuthenticator {
     }
 
 
-    private String generateSignature(Token accessToken, HttpRequest.Builder request, Set<Param> params) {
+    String generateSignature(Token accessToken, HttpRequest.Builder request, Set<Param> params) {
         try {
             // first, sort the list without changing the one given
             Set<Param> sorted = new TreeSet<Param>(params);
@@ -327,12 +335,16 @@ public class OAuthenticatorV10 implements OAuthenticator {
             String data = signMeth + "&" + encode(signUri, ENC) + "&" + encode(signParams, ENC);
 
             Mac mac = Mac.getInstance(SIGN_METH_4_J);
-            mac.init(new SecretKeySpec((consumerToken.getSecret() + "&" + accessToken.getSecret()).getBytes(ENC), SIGN_METH_4_J));
+            String s = generateSignature(accessToken.getSecret());
+            mac.init(new SecretKeySpec(s.getBytes(ENC), SIGN_METH_4_J));
 
             return new String(Base64.encodeToByte(mac.doFinal(data.getBytes(ENC))), ENC);
         } catch (Exception e) {
             throw new OAuthException(e);
         }
+    }
+    String generateSignature(String tokenSecret){
+        return (consumerToken.getSecret() + "&" + tokenSecret);
     }
 
     static interface VariantProvider {

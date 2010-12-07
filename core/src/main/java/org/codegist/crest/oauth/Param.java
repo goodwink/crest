@@ -22,6 +22,9 @@ package org.codegist.crest.oauth;
 
 import org.codegist.common.lang.ToStringBuilder;
 
+/**
+ * @author Laurent Gilles (laurent.gilles@codegist.org)
+ */
 public class Param implements Comparable<Param> {
     private final String name;
     private final String value;

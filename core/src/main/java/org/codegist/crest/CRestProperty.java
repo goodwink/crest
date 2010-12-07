@@ -140,14 +140,21 @@ public interface CRestProperty {
     String OAUTH_ACCESS_TOKEN_EXTRAS = "authentification.oauth.access.extras";
 
 
-
-    String OAUTH_REQUEST_TOKEN_REQUEST_URL = OAuthenticator.CONFIG_TOKEN_REQUEST_URL;
-    String OAUTH_REQUEST_TOKEN_REQUEST_URL_METHOD = OAuthenticator.CONFIG_TOKEN_REQUEST_URL_METHOD;
-    String OAUTH_ACCESS_TOKEN_REQUEST_URL = OAuthenticator.CONFIG_TOKEN_ACCESS_URL;
-    String OAUTH_ACCESS_TOKEN_REQUEST_URL_METHOD = OAuthenticator.CONFIG_TOKEN_ACCESS_URL_METHOD;
+    /**
+     * specify the access token refresh url that gets called when the preconfigure access token is expired.
+     * <p>Expects a String.
+     *
+     * @see org.codegist.crest.InterfaceContext#getProperties()
+     */
     String OAUTH_ACCESS_TOKEN_REFRESH_URL = OAuthenticator.CONFIG_TOKEN_ACCESS_REFRESH_URL;
+    /**
+     * specify the access token refresh url http method.
+     * <p>Default to POST
+     * <p>Expects a String.
+     *
+     * @see org.codegist.crest.InterfaceContext#getProperties()
+     */
     String OAUTH_TOKEN_ACCESS_REFRESH_URL_METHOD = OAuthenticator.CONFIG_TOKEN_ACCESS_REFRESH_URL_METHOD;
-    String OAUTH_CALLBACK = OAuthenticator.CONFIG_OAUTH_CALLBACK;
 
     /*********************************************************
      *********************************************************

@@ -29,6 +29,9 @@ import java.util.*;
 import static org.codegist.crest.CRestProperty.*;
 import static org.junit.Assert.assertEquals;
 
+/**
+ * @author Laurent Gilles (laurent.gilles@codegist.org)
+ */
 public class SerializersTest {
 
     @Test

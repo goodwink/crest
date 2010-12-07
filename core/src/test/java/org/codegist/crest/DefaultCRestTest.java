@@ -20,12 +20,17 @@
 
 package org.codegist.crest;
 
+import org.apache.http.client.HttpClient;
+import org.apache.http.conn.ClientConnectionManager;
+import org.apache.james.mime4j.message.Disposable;
 import org.codegist.common.io.IOs;
+import org.codegist.common.lang.Disposables;
 import org.codegist.common.marshal.Marshaller;
 import org.codegist.common.reflect.JdkProxyFactory;
 import org.codegist.common.reflect.ProxyFactory;
 import org.codegist.crest.config.ConfigBuilders;
 import org.codegist.crest.config.InterfaceConfig;
+import org.codegist.crest.config.InterfaceConfigFactory;
 import org.codegist.crest.config.PreconfiguredInterfaceConfigFactory;
 import org.codegist.crest.handler.MaxAttemptRetryHandler;
 import org.codegist.crest.handler.RetryHandler;
@@ -36,6 +41,7 @@ import org.junit.Test;
 import org.mockito.ArgumentMatcher;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.mockito.verification.VerificationMode;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -47,6 +53,7 @@ import java.lang.reflect.Type;
 import java.net.URISyntaxException;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -76,7 +83,18 @@ public class DefaultCRestTest {
     @BeforeClass
     public static void setup() {   
         when(mockMarshaller.<Object>marshall(any(InputStream.class), any(Type.class))).thenReturn(MODEL_RESPONSE);
+    }
 
+    @Test
+    public void testDispose(){
+        ClientConnectionManager conMan = mock(ClientConnectionManager.class);
+        HttpClient mockClient = mock(HttpClient.class);
+        when(mockClient.getConnectionManager()).thenReturn(conMan);
+        RestService service = new HttpClientRestService(mockClient);
+
+        CRest crest = new DefaultCRest(new DefaultCRestContext(service, mockProxyFactory, mock(InterfaceConfigFactory.class), Collections.<String, Object>emptyMap()));
+        Disposables.dispose(crest);
+        verify(conMan).shutdown();
     }
 
     @Test

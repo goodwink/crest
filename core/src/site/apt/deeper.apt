@@ -52,4 +52,5 @@ Going Deeper
 
 * Retry Handler
 
-    Retry handler gets invoked when an exception occurs during the http firing phase and can be used to retry a failed request.
+    Retry handler gets invoked when an exception occurs during the http firing phase and can be used to retry a failed request or continue the workflow to the error handler.
+

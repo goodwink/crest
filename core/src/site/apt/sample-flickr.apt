@@ -94,9 +94,9 @@ public interface Flickr {
 /* Get the factory */
 CRest crest = new CRestBuilder()
                 .expectsXml(FlickrModelFactory.class)
-                .setSerializer(boolean.class, new FlickrBooleanSerializer())
-                .setProperty(CRestProperty.SERIALIZER_DATE_FORMAT, "Millis")
-                .setProperty(CRestProperty.SERIALIZER_LIST_SEPARATOR, " ")
+                .setDateSerializerFormat("Millis")
+                .setListSerializerSeparator(" ")
+                .setBooleanSerializer("1", "0")
                 .setProperty(FlickrAuthInterceptor.API_KEY_PROP, apiKey)
                 .setProperty(FlickrAuthInterceptor.APP_SECRET_PROP, appSecret)
                 .setProperty(FlickrAuthInterceptor.AUTH_TOKEN_PROP, authToken)
@@ -117,15 +117,15 @@ long photoId = flickr.uploadPhoto(new File("/path/to/my/photo.jpg"));
 +-----
 public class FlickrResponseHandler implements ResponseHandler {
 
-    private Marshaller marshaller;
+    private final Marshaller marshaller;
+
+    public FlickrResponseHandler(Map<String,Object> properties) {
+        this.marshaller = (Marshaller) properties.get(Marshaller.class.getName());
+        Validate.notNull(this.marshaller, "No marshaller set, please construct CRest using either JSON or XML expected return type.");
+    }
 
     public final Object handle(ResponseContext context) {
         try {
-            /* Get the marshaller, save the ref to avoid accessing the map each time (since custom properties map could get quite big!) */
-            if(marshaller == null) {
-                marshaller = context.getRequestContext().getProperty(Marshaller.class.getName());
-            }
-
             /* Marshall the response */
             Response res = marshaller.marshall(context.getResponse().asStream(), Types.newType(Response.class, context.getExpectedGenericType()));
             /* Check for flickr OK status */
@@ -138,11 +138,11 @@ public class FlickrResponseHandler implements ResponseHandler {
                     return payload;
                 }
             } else {
-                if(res.getPayload() instanceof Error) {
+                if (res.getPayload() instanceof Error) {
                     /* Status is not OK, try to get the error cause */
                     Error error = ((Error) res.getPayload());
                     throw new CRestException(error.getMsg() + " (code=" + error.getCode() + ")");
-                }else{
+                } else {
                     /* Response format is not the one expected. */
                     throw new CRestException("Unkown error");
                 }
@@ -151,21 +151,7 @@ public class FlickrResponseHandler implements ResponseHandler {
             context.getResponse().close();
         }
     }
-
 }
-+-----
-
-* Boolean Serializer
-
-    Here is the flickr specific boolean serializer
-
-+-----
-public class FlickrBooleanSerializer implements Serializer<Boolean> {
-    public String serialize(Boolean value) {
-        return Boolean.TRUE.equals(value) ? "1" : "0";
-    }
-}
-+-----
 
 * Authenticator
 

@@ -30,7 +30,14 @@ public class RangeInjector implements Injector<Range> {
     public void inject(HttpRequest.Builder builder, ParamContext<Range> context) {
         if(context.getRawValue() == null) return;
         Range r = context.getRawValue();
-        builder.addQueryParam("start", String.valueOf(r.getStart()));
-        builder.addQueryParam("results", String.valueOf(r.getResults()));
+        String start = String.valueOf(r.getStart());
+        String results = String.valueOf(r.getResults());
+        if(context.isForUrl()){
+            builder.addQueryParam("start", start);
+            builder.addQueryParam("results", results);
+        }else{
+            builder.addBodyParam("start", start);
+            builder.addBodyParam("results", results);
+        }
     }
 }

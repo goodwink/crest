@@ -24,6 +24,7 @@ import org.codegist.crest.CRest;
 import org.codegist.crest.CRestBuilder;
 import org.codegist.crest.CRestProperty;
 import org.codegist.crest.delicious.model.DeliciousModelFactory;
+import org.codegist.crest.delicious.model.Posts;
 import org.codegist.crest.delicious.model.Range;
 import org.codegist.crest.delicious.service.Delicious;
 
@@ -42,42 +43,24 @@ public class DeliciousSample {
         /* Get the factory */
         CRest crest = new CRestBuilder()
                 .expectsXml(DeliciousModelFactory.class)
+                .setListSerializerSeparator(" ")
+                .setBooleanSerializer("yes", "no")
+                .usePreauthentifiedOAuth(consumerKey, consumerSecret, accessToken, accessTokenSecret)
                 .setProperty(CRestProperty.OAUTH_ACCESS_TOKEN_REFRESH_URL, "https://api.login.yahoo.com/oauth/v2/get_token")
-                .setProperty(CRestProperty.OAUTH_CONSUMER_KEY, consumerKey)
-                .setProperty(CRestProperty.OAUTH_CONSUMER_SECRET, consumerSecret)
-                .setProperty(CRestProperty.OAUTH_ACCESS_TOKEN, accessToken)
-                .setProperty(CRestProperty.OAUTH_ACCESS_TOKEN_SECRET, accessTokenSecret)
                 .setProperty(CRestProperty.OAUTH_ACCESS_TOKEN_EXTRAS, new HashMap<String, String>() {{
                     put("oauth_session_handle", sessionHandle);
                 }})
-                .setProperty(CRestProperty.SERIALIZER_LIST_SEPARATOR, " ")
-                .setProperty(CRestProperty.SERIALIZER_BOOLEAN_TRUE, "yes")
-                .setProperty(CRestProperty.SERIALIZER_BOOLEAN_FALSE, "no")
                 .build();
 
+        /* Build service instance */
         Delicious delicious = crest.build(Delicious.class);
-        System.out.println("getRecents=" + delicious.getRecentsPosts());
-        System.out.println("getLastUpdate=" + delicious.getLastUpdatePosts());
-        System.out.println("addPost1=" + delicious.addPost("http://www.codegist.com", "CodeGist site"));
-        System.out.println("addPost2=" + delicious.addPost("http://crest.codegist.com", "CodeGist CRest site", "extended text", new String[]{"opensource", "coding", "java", "codegist"}, new Date(), true, false));
-        System.out.println("addPost2=" + delicious.addPost("http://common.codegist.com", "CodeGist CRest site", "extended text", new String[]{"opensource", "coding", "java", "codegist"}, new Date(), true, false));
-        System.out.println("getPosts=" + delicious.getPosts());
-        System.out.println("getPosts2=" + delicious.getPosts(null, null, new String[]{"opensource", "coding"}, null, false));
-        System.out.println("getRecentsPosts=" + delicious.getRecentsPosts());
-        System.out.println("getRecentsPosts2=" + delicious.getRecentsPosts("coding", 2));
-        System.out.println("getPostsPerDate=" + delicious.getPostsPerDate());
-        System.out.println("getPostsPerDate2=" + delicious.getPostsPerDate("coding"));
-        System.out.println("getAllPosts=" + delicious.getAllPosts());
-        System.out.println("getAllPosts2=" + delicious.getAllPosts("codegist", new Range(5, 6), null, null, null));
-        System.out.println("getAllPostHashes=" + delicious.getAllPostHashes());
-        System.out.println("getSuggestedPosts=" + delicious.getSuggestedPosts("http://www.yahoo.com"));
-        System.out.println("getTags=" + delicious.getTags());
-        System.out.println("deleteTag=" + delicious.deleteTag("java"));
-        System.out.println("renameTag=" + delicious.renameTag("os", "opensource"));
-        System.out.println("getTagBundles=" + delicious.getTagBundles());
-        System.out.println("setTagBundle=" + delicious.setTagBundle("coding", "java", "javascript", "opensource"));
-        System.out.println("getTagBundle=" + delicious.getTagBundle("coding"));
-        System.out.println("deleteTagBundle=" + delicious.deleteTagBundle("coding2"));
+
+        /* Use it! */
+        Posts posts = delicious.getAllPosts("opensource", new Range(1,15), new Date(), new Date(), false);
+        boolean done = delicious.renameTag("os", "opensource");
+
+        System.out.println("Posts=" + posts);
+        System.out.println("Rename done=" + done);
     }
 
 }

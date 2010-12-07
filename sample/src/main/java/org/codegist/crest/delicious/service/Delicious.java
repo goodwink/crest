@@ -20,17 +20,18 @@
 
 package org.codegist.crest.delicious.service;
 
-import org.codegist.crest.annotate.*;
+import org.codegist.crest.annotate.EndPoint;
+import org.codegist.crest.annotate.Path;
+import org.codegist.crest.annotate.ResponseHandler;
+import org.codegist.crest.annotate.RetryHandler;
 import org.codegist.crest.delicious.handler.DeliciousResponseHandler;
 import org.codegist.crest.delicious.model.*;
-import org.codegist.crest.oauth.handler.AccessTokenExpiredRetryHandler;
-import org.codegist.crest.oauth.interceptor.OAuthInterceptor;
+import org.codegist.crest.security.handler.RefreshAuthentificationRetryHandler;
 
 import java.util.Date;
 
 @EndPoint("http://api.del.icio.us/v2")
-@RetryHandler(AccessTokenExpiredRetryHandler.class)
-@GlobalInterceptor(OAuthInterceptor.class)
+@RetryHandler(RefreshAuthentificationRetryHandler.class)
 @ResponseHandler(DeliciousResponseHandler.class)
 public interface Delicious {
 

@@ -62,6 +62,7 @@ public class TwitterSample {
         Message[] messages = directMessageService.getReceived(10, 1);
 
         System.out.println("status=" + status);
+        System.out.println("status=" + status);
         System.out.println("users=" + Arrays.toString(users));
         System.out.println("messages=" + Arrays.toString(messages));
     }

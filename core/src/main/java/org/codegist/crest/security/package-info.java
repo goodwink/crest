@@ -18,15 +18,9 @@
  * More information at http://www.codegist.org.
  */
 
-package org.codegist.crest.flickr.serialize;
-
-import org.codegist.crest.serializer.Serializer;
-
 /**
- * @author Laurent Gilles (laurent.gilles@codegist.org)
+ * Authentification components
+ * @see org.codegist.crest.DefaultCRest
+ * @see org.codegist.crest.CRestContext 
  */
-public class FlickrBooleanSerializer implements Serializer<Boolean> {
-    public String serialize(Boolean value) {
-        return Boolean.TRUE.equals(value) ? "1" : "0";
-    }
-}
+package org.codegist.crest.security;

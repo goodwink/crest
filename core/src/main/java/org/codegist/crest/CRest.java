@@ -44,5 +44,4 @@ public interface CRest {
      * @see org.codegist.crest.handler.DefaultResponseHandler
      */
     <T> T build(Class<T> interfaze) throws CRestException;
-
 }

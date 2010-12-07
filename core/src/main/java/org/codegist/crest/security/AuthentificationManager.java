@@ -18,25 +18,34 @@
  * More information at http://www.codegist.org.
  */
 
-package org.codegist.crest.oauth;
+package org.codegist.crest.security;
+
+import org.codegist.crest.HttpRequest;
+
+import java.util.Map;
 
 /**
+ * AuthentificationManager interface
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
-public class OAuthException extends RuntimeException {
-    public OAuthException() {
-        super();    
-    }
+public interface AuthentificationManager {
 
-    public OAuthException(String message) {
-        super(message);    
-    }
+    /**
+     * Sign the request
+     * @param request request to be signed
+     */
+    void sign(HttpRequest.Builder request);
 
-    public OAuthException(String message, Throwable cause) {
-        super(message, cause);    
-    }
+    /**
+     * Sign the request
+     * @param request request to be signed
+     * @param properties signing properties
+     */
+    void sign(HttpRequest.Builder request, Map<String,Object> properties);
 
-    public OAuthException(Throwable cause) {
-        super(cause);    
-    }
+    /**
+     * Refresh the authentification information
+     */
+    void refresh();
+
 }

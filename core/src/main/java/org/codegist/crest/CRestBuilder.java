@@ -33,7 +33,12 @@ import org.codegist.crest.config.*;
 import org.codegist.crest.interceptor.CompositeRequestInterceptor;
 import org.codegist.crest.interceptor.RequestInterceptor;
 import org.codegist.crest.interceptor.RequestParamDefaultsInterceptor;
-import org.codegist.crest.oauth.interceptor.OAuthInterceptor;
+import org.codegist.crest.oauth.OAuthenticator;
+import org.codegist.crest.oauth.OAuthenticatorV10;
+import org.codegist.crest.oauth.Token;
+import org.codegist.crest.security.AuthentificationManager;
+import org.codegist.crest.security.OAuthentificationManager;
+import org.codegist.crest.security.interceptor.AuthentificationInterceptor;
 import org.codegist.crest.serializer.Serializer;
 
 import javax.xml.bind.JAXBException;
@@ -41,6 +46,8 @@ import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+
+import static org.codegist.crest.CRestProperty.*;
 
 /**
  * <p>The default build :
@@ -56,6 +63,7 @@ import java.util.Properties;
  * <p>This default configuration has the benefit to not require any third party dependencies, but is not the recommanded one.
  * <p>For best performances, it is recommended to use the CGLib proxy factory, {@link org.codegist.common.reflect.CglibProxyFactory} (requires cglib available in the classpath) and the apache http client backed rest service {@link org.codegist.crest.HttpClientRestService}, see {@link CRestBuilder#useHttpClientRestService()}.
  *
+ * @author Laurent Gilles (laurent.gilles@codegist.org)
  * @see org.codegist.crest.config.AnnotationDrivenInterfaceConfigFactory
  * @see org.codegist.crest.config.PropertiesDrivenInterfaceFactory
  * @see org.codegist.crest.DefaultRestService
@@ -63,7 +71,6 @@ import java.util.Properties;
  * @see org.codegist.common.reflect.CglibProxyFactory
  * @see org.codegist.common.reflect.JdkProxyFactory
  * @see DefaultCRest
- * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
 public class CRestBuilder {
 
@@ -94,68 +101,125 @@ public class CRestBuilder {
 
     private RestService restService;
 
-    private String consumerKey;
-    private String consumerSecret;
-    private String accessToken;
-    private String accessTokenSecret;
-    private boolean authParamsInHeaders;
+    private boolean globalAuthentification = false;
     private boolean useHttpClient = false;
     private int maxConnections = 1;
     private int maxConnectionsPerRoute = 1;
 
-    public CRest build() {
 
+    public CRest build() {
+        customProperties = Maps.defaultsIfNull(customProperties);
+
+        RestService restService = buildRestService();
+        Maps.putIfNotPresent(customProperties, RestService.class.getName(), restService);
+
+        ProxyFactory proxyFactory = buildProxyFactory();
+        Maps.putIfNotPresent(customProperties, ProxyFactory.class.getName(), proxyFactory);
+
+        Marshaller marshaller = buildMarshaller();
+        Maps.putIfNotPresent(customProperties, Marshaller.class.getName(), marshaller);
+
+        Unmarshaller unmarshaller = buildUnmarshaller();
+        Maps.putIfNotPresent(customProperties, Unmarshaller.class.getName(), unmarshaller);
+
+        AuthentificationManager authentificationManager = buildAuthentificationManager(restService);
+        Maps.putIfNotPresent(customProperties, AuthentificationManager.class.getName(), authentificationManager);
+
+        RequestInterceptor globalInterceptor = buildRequestInterceptor();
+
+        InterfaceConfigFactory configFactory = buildInterfaceConfigFactory();
+        if (globalInterceptor != null) {
+            try {
+                configFactory = new OverridingInterfaceConfigFactory(configFactory, new ConfigBuilders.InterfaceConfigBuilder()
+                        .setGlobalInterceptor(globalInterceptor)
+                        .buildOverrideTemplate());
+            } catch (Exception e) {
+                throw new CRestException(e);
+            }
+        }
+        Maps.putIfNotPresent(customProperties, InterfaceConfigFactory.class.getName(), configFactory);
+
+
+        /* Put then in the properties. These are not part of the API */
+        Maps.putIfNotPresent(customProperties, CRestProperty.SERIALIZER_CUSTOM_SERIALIZER_MAP, serializersMap);
+
+        return new DefaultCRest(new DefaultCRestContext(restService, proxyFactory, configFactory, customProperties));
+    }
+
+    private RestService buildRestService() {
         if (restService == null) {
             if (useHttpClient) {
-                restService = HttpClientRestService.newRestService(maxConnections, maxConnectionsPerRoute);
+                return HttpClientRestService.newRestService(maxConnections, maxConnectionsPerRoute);
             } else {
-                restService = new DefaultRestService();
+                return new DefaultRestService();
             }
-
+        } else {
+            return restService;
         }
+    }
 
-        ProxyFactory proxyFactory;
+    private ProxyFactory buildProxyFactory() {
         switch (proxyType) {
             default:
             case PROXY_TYPE_JDK:
-                proxyFactory = new JdkProxyFactory();
-                break;
+                return new JdkProxyFactory();
             case PROXY_TYPE_CGLIB:
-                proxyFactory = new CglibProxyFactory();
-                break;
+                return new CglibProxyFactory();
         }
+    }
 
-        Marshaller marshaller = null;
-        Unmarshaller unmarshaller = null;
+    private Unmarshaller buildUnmarshaller() {
+        return (Unmarshaller) buildMarshaller();
+    }
+
+    private Marshaller buildMarshaller() {
         switch (retType) {
-
             case RET_TYPE_JSON:
-                marshaller = new JacksonMarshaller();
-                unmarshaller = new JacksonMarshaller();
-                break;
+                return new JacksonMarshaller();
             default:
             case RET_TYPE_RAW:
-                marshaller = null;
-                unmarshaller = null;
-                break;
+                return null;
             case RET_TYPE_XML:
                 try {
                     if (modelPackageFactory != null) {
-                        marshaller = new JaxbMarshaller(modelPackageFactory);
-                        unmarshaller = new JaxbMarshaller(modelPackageFactory);
+                        return new JaxbMarshaller(modelPackageFactory);
                     } else if (Strings.isNotBlank(modelPackageName)) {
-                        marshaller = new JaxbMarshaller(modelPackageName);
-                        unmarshaller = new JaxbMarshaller(modelPackageName);
+                        return new JaxbMarshaller(modelPackageName);
                     } else {
                         throw new IllegalArgumentException("You must specify the package name or factory class of the target object model when using xml responses.");
                     }
-
                 } catch (JAXBException e) {
                     throw new RuntimeException(e);
                 }
-                break;
+        }
+    }
+
+    private RequestInterceptor buildRequestInterceptor() {
+        RequestInterceptor paramInterceptor = null;
+        if (!Maps.areEmpties(queryString, headers, body)) {
+            paramInterceptor = new RequestParamDefaultsInterceptor(queryString, headers, body);
         }
 
+        RequestInterceptor authentificationInterceptor = null;
+        AuthentificationManager manager = (AuthentificationManager) customProperties.get(AuthentificationManager.class.getName());
+        if (globalAuthentification) {
+            // Global authentification
+            authentificationInterceptor = new AuthentificationInterceptor(manager);
+        }
+
+        RequestInterceptor globalInterceptor = null;
+
+        if (paramInterceptor != null && authentificationInterceptor != null) {
+            globalInterceptor = new CompositeRequestInterceptor(paramInterceptor, authentificationInterceptor);
+        } else if (paramInterceptor != null) {
+            globalInterceptor = paramInterceptor;
+        } else if (authentificationInterceptor != null) {
+            globalInterceptor = authentificationInterceptor;
+        }
+        return globalInterceptor;
+    }
+
+    private InterfaceConfigFactory buildInterfaceConfigFactory() {
         InterfaceConfigFactory configFactory;
         switch (configType) {
             default:
@@ -176,48 +240,33 @@ public class CRestBuilder {
         if (overridesFactory != null) {
             configFactory = new OverridingInterfaceConfigFactory(configFactory, overridesFactory);
         }
+        return configFactory;
+    }
 
-        RequestInterceptor paramInterceptor = null;
-        if (!Maps.areEmpties(queryString, headers, body)) {
-            paramInterceptor = new RequestParamDefaultsInterceptor(queryString, headers, body);
-        }
+    private AuthentificationManager buildAuthentificationManager(RestService restService) {
+        String consumerKey = (String) customProperties.get(OAUTH_CONSUMER_KEY);
+        String consumerSecret = (String) customProperties.get(OAUTH_CONSUMER_SECRET);
+        String accessTok = (String) customProperties.get(OAUTH_ACCESS_TOKEN);
+        String accessTokenSecret = (String) customProperties.get(OAUTH_ACCESS_TOKEN_SECRET);
+        String paramDest = (String) customProperties.get(OAUTH_PARAM_DEST);
+        Map<String, String> accessTokenExtras = (Map<String, String>) customProperties.get(OAUTH_ACCESS_TOKEN_EXTRAS);
 
-        RequestInterceptor oauthInterceptor = null;
-        if (Strings.isNotBlank(accessToken) && Strings.isNotBlank(accessTokenSecret) && Strings.isNotBlank(consumerKey) && Strings.isNotBlank(consumerSecret)) {
-            oauthInterceptor = new OAuthInterceptor(customProperties);
-        }
+        if (Strings.isBlank(consumerKey)
+                || Strings.isBlank(consumerSecret)
+                || Strings.isBlank(accessTok)
+                || Strings.isBlank(accessTokenSecret)) return null;
 
-        RequestInterceptor globalInterceptor = null;
+        customProperties.put(OAUTH_CONSUMER_KEY, consumerKey);
+        customProperties.put(OAUTH_CONSUMER_SECRET, consumerSecret);
+        customProperties.put(OAUTH_ACCESS_TOKEN, accessTok);
+        customProperties.put(OAUTH_ACCESS_TOKEN_SECRET, accessTokenSecret);
+        customProperties.put(OAUTH_PARAM_DEST, paramDest);
 
-        if (paramInterceptor != null && oauthInterceptor != null) {
-            globalInterceptor = new CompositeRequestInterceptor(paramInterceptor, oauthInterceptor);
-        } else if (paramInterceptor != null) {
-            globalInterceptor = paramInterceptor;
-        } else if (oauthInterceptor != null) {
-            globalInterceptor = oauthInterceptor;
-        }
+        Token consumerToken = new Token(consumerKey, consumerSecret);
+        OAuthenticator authenticator = new OAuthenticatorV10(restService, consumerToken, customProperties);
+        Token accessToken = new Token(accessTok, accessTokenSecret, accessTokenExtras);
 
-        if (globalInterceptor != null) {
-            try {
-                configFactory = new OverridingInterfaceConfigFactory(configFactory, new ConfigBuilders.InterfaceConfigBuilder()
-                        .setGlobalInterceptor(globalInterceptor)
-                        .buildOverrideTemplate());
-            } catch (Exception e) {
-                throw new CRestException(e);
-            }
-        }
-
-        customProperties = Maps.defaultsIfNull(customProperties);
-        /* Put then in the properties. These are not part of the API */
-        Maps.putIfNotPresent(customProperties, Marshaller.class.getName(), marshaller);
-        Maps.putIfNotPresent(customProperties, Unmarshaller.class.getName(), unmarshaller);
-        Maps.putIfNotPresent(customProperties, RestService.class.getName(), restService);
-        Maps.putIfNotPresent(customProperties, ProxyFactory.class.getName(), proxyFactory);
-        Maps.putIfNotPresent(customProperties, InterfaceConfigFactory.class.getName(), configFactory);
-        Maps.putIfNotPresent(customProperties, CRestProperty.SERIALIZER_CUSTOM_SERIALIZER_MAP, serializersMap);
-
-        CRestContext context = new DefaultCRestContext(restService, proxyFactory, configFactory, customProperties);
-        return new DefaultCRest(context);
+        return new OAuthentificationManager(authenticator, accessToken);
     }
 
     /**
@@ -385,7 +434,8 @@ public class CRestBuilder {
     /**
      * Sets a custom serializer for the given type the resulting CRest instance will use to serialize method arguments.
      * <p>The given type reflects the given Interface type, polymorphism is not considered.
-     * @param type Type to seralize
+     *
+     * @param type       Type to seralize
      * @param serializer Serializer
      * @return current builder
      * @see InterfaceContext#getProperties()
@@ -570,12 +620,58 @@ public class CRestBuilder {
      * @return current builder
      */
     public CRestBuilder usePreauthentifiedOAuth(String consumerKey, String consumerSecret, String accessToken, String accessTokenSecret, boolean authParamsInHeaders) {
-        this.consumerKey = consumerKey;
-        this.consumerSecret = consumerSecret;
-        this.accessToken = accessToken;
-        this.accessTokenSecret = accessTokenSecret;
-        this.authParamsInHeaders = authParamsInHeaders;
+        this.globalAuthentification = true;
+        this.customProperties = Maps.defaultsIfNull(customProperties);
+        customProperties.put(OAUTH_CONSUMER_KEY, consumerKey);
+        customProperties.put(OAUTH_CONSUMER_SECRET, consumerSecret);
+        customProperties.put(OAUTH_ACCESS_TOKEN, accessToken);
+        customProperties.put(OAUTH_ACCESS_TOKEN_SECRET, accessTokenSecret);
+        customProperties.put(OAUTH_PARAM_DEST, authParamsInHeaders ? "header" : "url");
         return this;
     }
 
-}                                                                                                        
+    /**
+     * Sets date serializer format to the given format.
+     * <p>Shortcut to builder.setProperty(CRestProperty.SERIALIZER_DATE_FORMAT, format)
+     * @param format Date format to use
+     * @see CRestProperty#SERIALIZER_DATE_FORMAT
+     * @return current builder
+     */
+    public CRestBuilder setDateSerializerFormat(String format){
+        this.customProperties = Maps.defaultsIfNull(customProperties);
+        customProperties.put(SERIALIZER_DATE_FORMAT, format);
+        return this;
+    }
+
+    /**
+     * Sets how boolean should be serialized.
+     * <p>Shortcut to:
+     * <p>builder.setProperty(CRestProperty.SERIALIZER_BOOLEAN_TRUE, trueSerialized)
+     * <p>builder.setProperty(CRestProperty.SERIALIZER_BOOLEAN_FALSE, falseSerialized)
+     * @param trueSerialized String representing serialized form of TRUE
+     * @param falseSerialized String representing serialized form of FALSE
+     * @see CRestProperty#SERIALIZER_BOOLEAN_TRUE
+     * @see CRestProperty#SERIALIZER_BOOLEAN_FALSE
+     * @return current builder
+     */
+    public CRestBuilder setBooleanSerializer(String trueSerialized, String falseSerialized){
+        this.customProperties = Maps.defaultsIfNull(customProperties);
+        customProperties.put(SERIALIZER_BOOLEAN_TRUE, trueSerialized);
+        customProperties.put(SERIALIZER_BOOLEAN_FALSE, falseSerialized);
+        return this;
+    }
+
+    /**
+     * Sets the list separator for the list serializer
+     * <p>Shortcut to builder.setProperty(CRestProperty.SERIALIZER_LIST_SEPARATOR, sep)
+     * @param sep Separator string
+     * @see CRestProperty#SERIALIZER_LIST_SEPARATOR
+     * @return current builder
+     */
+    public CRestBuilder setListSerializerSeparator(String sep){
+        this.customProperties = Maps.defaultsIfNull(customProperties);
+        customProperties.put(SERIALIZER_LIST_SEPARATOR, sep);
+        return this;
+    }
+
+}

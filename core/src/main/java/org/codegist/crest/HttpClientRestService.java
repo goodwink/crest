@@ -45,6 +45,7 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
+import org.codegist.common.lang.Disposable;
 import org.codegist.common.lang.Strings;
 
 import java.io.File;
@@ -61,7 +62,7 @@ import java.util.*;
  * @see org.apache.http.client.HttpClient
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
-public class HttpClientRestService implements RestService {
+public class HttpClientRestService implements RestService, Disposable {
 
     private final HttpClient http;
 
@@ -74,13 +75,7 @@ public class HttpClientRestService implements RestService {
 
     public HttpClientRestService(HttpClient http) {
         this.http = http;
-
     }
-
-    public void shutdown() {
-        http.getConnectionManager().shutdown();
-    }
-
 
     private static Map<String,List<String>> toHeaders(Header[] headers){
         if(headers == null) return Collections.emptyMap();
@@ -251,5 +246,19 @@ public class HttpClientRestService implements RestService {
         }
         httpClient.setRoutePlanner(new ProxySelectorRoutePlanner(httpClient.getConnectionManager().getSchemeRegistry(), ProxySelector.getDefault()));
         return new HttpClientRestService(httpClient);
+    }
+
+    public void dispose() {
+        http.getConnectionManager().shutdown();
+    }
+
+    @Override
+    protected void finalize() throws Throwable {
+        try {
+            // should not rely on this though...
+            dispose();
+        } finally {
+            super.finalize();
+        }
     }
 }

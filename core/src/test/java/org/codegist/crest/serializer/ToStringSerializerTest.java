@@ -18,25 +18,33 @@
  * More information at http://www.codegist.org.
  */
 
-package org.codegist.crest.oauth;
+package org.codegist.crest.serializer;
+
+import org.codegist.crest.CRestProperty;
+import org.junit.Test;
+
+import java.util.HashMap;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
-public class OAuthException extends RuntimeException {
-    public OAuthException() {
-        super();    
-    }
+public class ToStringSerializerTest {
 
-    public OAuthException(String message) {
-        super(message);    
-    }
-
-    public OAuthException(String message, Throwable cause) {
-        super(message, cause);    
-    }
-
-    public OAuthException(Throwable cause) {
-        super(cause);    
+    @Test
+    public void test(){
+        Serializer serializer = new ToStringSerializer();
+        assertEquals("", serializer.serialize(null));
+        assertEquals("", serializer.serialize(""));
+        assertEquals(" ", serializer.serialize(" "));
+        assertEquals("1", serializer.serialize(Integer.valueOf(1)));
+        assertEquals("false", serializer.serialize(false));
+        assertEquals("hello", serializer.serialize(new Object(){
+            @Override
+            public String toString() {
+                return "hello";
+            }
+        }));
     }
 }
