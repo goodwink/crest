@@ -25,14 +25,14 @@ import org.codegist.crest.Stubs;
 import org.codegist.crest.TestUtils;
 import org.codegist.crest.annotate.*;
 import org.codegist.crest.annotate.Destination;
+import org.codegist.crest.annotate.Param;
 import org.codegist.crest.injector.DefaultInjector;
 import org.junit.Test;
 
 import java.lang.reflect.Method;
 
 import static org.codegist.crest.HttpMethod.*;
-import static org.codegist.crest.config.Destination.BODY;
-import static org.codegist.crest.config.Destination.URL;
+import static org.codegist.crest.config.Destination.*;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 
@@ -170,6 +170,11 @@ public class AnnotationDrivenInterfaceConfigFactoryTest extends AbstractInterfac
     @ConnectionTimeout( 2)
     @Encoding( "utf-8")
     @Path( "/hello")
+    @Params({
+        @Param(name="body-param",value="gen-value1",dest=BODY),
+        @Param(name="url-param",value="gen-value2",dest=URL),
+        @Param(name="header-param",value="gen-value3",dest=HEADER)
+    })
     @HttpMethod( DELETE)
     @GlobalInterceptor(Stubs.RequestInterceptor1.class)
     @RequestInterceptor( Stubs.RequestInterceptor1.class)
@@ -184,6 +189,10 @@ public class AnnotationDrivenInterfaceConfigFactoryTest extends AbstractInterfac
 
 
         @Path("/m1")
+        @Params({
+            @Param(name="body-param",value="over-value1",dest=BODY),
+            @Param(name="body-param-2",value="new-value",dest=BODY)
+        })
         @HttpMethod(PUT)
         @SocketTimeout(3)
         @ConnectionTimeout(4)
@@ -198,6 +207,7 @@ public class AnnotationDrivenInterfaceConfigFactoryTest extends AbstractInterfac
         Object m1();
 
         @Path("/m1")
+        @Param(name="body-param",value="over-value1",dest=URL)
         @HttpMethod(POST)
         @SocketTimeout(5)
         @ConnectionTimeout(6)

@@ -45,7 +45,6 @@ import javax.xml.bind.JAXBException;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 import static org.codegist.crest.CRestProperty.*;
 
@@ -87,7 +86,7 @@ public class CRestBuilder {
     private int retType = RET_TYPE_RAW;
     private int configType = CFG_TYPE_ANNO;
     private int proxyType = PROXY_TYPE_JDK;
-    private Properties properties = null;
+    private Map<String,String> properties = null;
     private InterfaceConfigFactory overridesFactory = null;
     private String modelPackageName = null;
     private Class<?> modelPackageFactory = null;
@@ -488,7 +487,7 @@ public class CRestBuilder {
      * @param props
      * @return current builder
      */
-    public CRestBuilder withPropertiesConfig(Properties props) {
+    public CRestBuilder withPropertiesConfig(Map<String,String> props) {
         this.configType = CFG_TYPE_PROP;
         this.properties = props;
         return this;
@@ -503,7 +502,7 @@ public class CRestBuilder {
      * @return current builder
      * @see org.codegist.crest.config.PropertiesDrivenInterfaceFactory
      */
-    public CRestBuilder overrideDefaultConfigWith(Properties props) {
+    public CRestBuilder overrideDefaultConfigWith(Map<String,String> props) {
         this.properties = props;
         return this;
     }

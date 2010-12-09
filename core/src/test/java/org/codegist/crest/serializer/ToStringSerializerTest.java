@@ -20,10 +20,7 @@
 
 package org.codegist.crest.serializer;
 
-import org.codegist.crest.CRestProperty;
 import org.junit.Test;
-
-import java.util.HashMap;
 
 import static org.junit.Assert.assertEquals;
 

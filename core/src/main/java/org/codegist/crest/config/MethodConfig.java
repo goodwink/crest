@@ -63,6 +63,13 @@ public interface MethodConfig {
     String DEFAULT_PATH = "";
 
     /**
+     * Default method params.
+     *
+     * @see MethodConfig#getPath()
+     */
+    Param[] DEFAULT_PARAMS = new Param[0];
+
+    /**
      * Default http method applied when non specified.
      *
      * @see MethodConfig#getHttpMethod()
@@ -103,6 +110,8 @@ public interface MethodConfig {
      * @return The method being configured by the current object
      */
     Method getMethod();
+
+    Param[] getDefaultParams();
 
     ResponseHandler getResponseHandler();
 

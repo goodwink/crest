@@ -25,6 +25,7 @@ import org.codegist.crest.CRestBuilder;
 import org.codegist.crest.flickr.interceptor.FlickrAuthInterceptor;
 import org.codegist.crest.flickr.model.FlickrModelFactory;
 import org.codegist.crest.flickr.model.Gallery;
+import org.codegist.crest.flickr.model.Uploader;
 import org.codegist.crest.flickr.service.Flickr;
 
 /**
@@ -32,7 +33,7 @@ import org.codegist.crest.flickr.service.Flickr;
  */
 public class FlickrSample {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         String apiKey = args[0];
         String appSecret = args[1];
         String authToken = args[2];
@@ -53,9 +54,13 @@ public class FlickrSample {
 
         /* Use it! */
         long photoId = flickr.uploadPhoto(FlickrSample.class.getResourceAsStream("photo1.jpg"));
+        String ticketId = flickr.asyncUploadPhoto(FlickrSample.class.getResourceAsStream("photo1.jpg"));
+        Uploader upload = flickr.checkUploads(ticketId);
         Gallery gallery = flickr.newGallery("My Gallery Title", "My Gallery Desc", photoId);
 
         System.out.println("photoId=" + photoId);
+        System.out.println("ticketId=" + ticketId);
+        System.out.println("upload=" + upload);
         System.out.println("gallery=" + gallery);
     }
 

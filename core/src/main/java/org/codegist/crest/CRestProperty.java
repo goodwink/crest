@@ -20,8 +20,6 @@
 
 package org.codegist.crest;
 
-import org.codegist.crest.oauth.OAuthenticator;
-
 /**
  * Properties of this interface are meant to be used as keys in the custom properties map of {@link org.codegist.crest.CRestContext}.
  *
@@ -238,8 +236,16 @@ public interface CRestProperty {
     String CONFIG_METHOD_DEFAULT_HTTP_METHOD = "config.method.default.http-method";
 
     /**
+     * override the default method params {@link org.codegist.crest.config.MethodConfig#DEFAULT_PARAMS}.
+     * <p>Expects a member of {@link org.codegist.crest.HttpMethod}.
+     *
+     * @see org.codegist.crest.InterfaceContext#getProperties()
+     */
+    String CONFIG_METHOD_DEFAULT_PARAMS = "config.method.default.params";
+
+    /**
      * override the default response handler {@link org.codegist.crest.config.MethodConfig#DEFAULT_RESPONSE_HANDLER}.
-     * <p>Expects an instance of {@link org.codegist.crest.handler.ResponseHandler}.
+     * <p>Expects an array of {@link org.codegist.crest.config.Param}
      *
      * @see org.codegist.crest.InterfaceContext#getProperties()
      */

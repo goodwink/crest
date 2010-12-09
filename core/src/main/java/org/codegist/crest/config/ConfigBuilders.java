@@ -39,6 +39,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -209,6 +210,14 @@ public abstract class ConfigBuilders {
             if (ignore(connectionTimeout)) return this;
             for (MethodConfigBuilder b : builderCache.values()) {
                 b.setConnectionTimeout(connectionTimeout);
+            }
+            return this;
+        }     
+
+        public InterfaceConfigBuilder addMethodsDefaultParam(String name, String value, Destination destination){
+            if (ignore(name, value, destination)) return this;
+            for (MethodConfigBuilder b : builderCache.values()) {
+                b.addDefaultParam(name, value, destination);
             }
             return this;
         }
@@ -414,6 +423,7 @@ public abstract class ConfigBuilders {
 
         private String path;
         private HttpMethod meth;
+        private Map<String,Param> params = new LinkedHashMap<String, Param>();
         private Long socketTimeout;
         private Long connectionTimeout;
         private RequestInterceptor requestInterceptor;
@@ -462,9 +472,11 @@ public abstract class ConfigBuilders {
             for (int i = 0; i < paramConfigBuilders.length; i++) {
                 pConfig[i] = this.paramConfigBuilders[i].build(useDefaults);
             }
+            Param[] defaultParams = params != null && params.size() > 0 ? params.values().toArray(new Param[params.size()]) : null;
             if (useDefaults) {
                 path = defaultIfUndefined(path, CRestProperty.CONFIG_METHOD_DEFAULT_PATH, MethodConfig.DEFAULT_PATH);
                 meth = defaultIfUndefined(meth, CRestProperty.CONFIG_METHOD_DEFAULT_HTTP_METHOD, MethodConfig.DEFAULT_HTTP_METHOD);
+                defaultParams = defaultIfUndefined(defaultParams, CRestProperty.CONFIG_METHOD_DEFAULT_PARAMS, MethodConfig.DEFAULT_PARAMS);
                 socketTimeout = defaultIfUndefined(socketTimeout, CRestProperty.CONFIG_METHOD_DEFAULT_SO_TIMEOUT, MethodConfig.DEFAULT_SO_TIMEOUT);
                 connectionTimeout = defaultIfUndefined(connectionTimeout, CRestProperty.CONFIG_METHOD_DEFAULT_CO_TIMEOUT, MethodConfig.DEFAULT_CO_TIMEOUT);
                 requestInterceptor = defaultIfUndefined(requestInterceptor, CRestProperty.CONFIG_METHOD_DEFAULT_REQUEST_INTERCEPTOR, newInstance(MethodConfig.DEFAULT_REQUEST_INTERCEPTOR));
@@ -475,6 +487,7 @@ public abstract class ConfigBuilders {
             return new DefaultMethodConfig(
                     method,
                     path,
+                    defaultParams,
                     meth,
                     socketTimeout,
                     connectionTimeout,
@@ -502,6 +515,12 @@ public abstract class ConfigBuilders {
         public MethodConfigBuilder setPath(String path) {
             if (ignore(path)) return this;
             this.path = path;
+            return this;
+        }
+
+        public MethodConfigBuilder addDefaultParam(String name, String value, Destination destination){
+            if (ignore(name, value, destination)) return this;
+            this.params.put(name, new DefaultParam(name, value, destination));
             return this;
         }
 
@@ -853,6 +872,12 @@ public abstract class ConfigBuilders {
         }
     }
 
+    boolean ignore(Object... values) {
+        for(Object v : values){
+            if(ignore(v)) return true;
+        }
+        return false;
+    }
     boolean ignore(Object value) {
         if (!ignoreNullOrEmptyValues) return false;
         return (value == null || (value instanceof String && ((String) value).trim().isEmpty()));

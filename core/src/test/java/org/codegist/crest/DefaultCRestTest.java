@@ -22,7 +22,6 @@ package org.codegist.crest;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.conn.ClientConnectionManager;
-import org.apache.james.mime4j.message.Disposable;
 import org.codegist.common.io.IOs;
 import org.codegist.common.lang.Disposables;
 import org.codegist.common.marshal.Marshaller;
@@ -41,7 +40,6 @@ import org.junit.Test;
 import org.mockito.ArgumentMatcher;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.mockito.verification.VerificationMode;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

@@ -54,4 +54,12 @@ public class FlickrModelFactory {
     public Comments createComments() {
         return new Comments();
     }
+
+    public Uploader.Ticket createUploaderTicket() {
+        return new Uploader.Ticket();
+    }
+
+    public Uploader createUploader() {
+        return new Uploader();
+    }
 }

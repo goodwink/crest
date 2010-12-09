@@ -31,6 +31,8 @@ import org.codegist.crest.interceptor.RequestInterceptorAdapter;
  */
 public class Stubs {
 
+    
+
     public static class RequestInterceptor1 extends RequestInterceptorAdapter {
     }
 

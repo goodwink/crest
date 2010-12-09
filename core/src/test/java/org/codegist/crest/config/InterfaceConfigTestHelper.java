@@ -26,6 +26,7 @@ import org.codegist.crest.interceptor.RequestInterceptor;
 
 import java.lang.reflect.Method;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -53,40 +54,45 @@ public class InterfaceConfigTestHelper {
         int m = 0;
         Method[] originalMethods = expected.getInterface().getDeclaredMethods();
         for (Method meth : clazz.getDeclaredMethods()) {
+            String testMsg = meth.toGenericString();
+            MethodConfig expMethCfg = expected.getMethodConfig(originalMethods[m]);
+            MethodConfig testMethCfg = test.getMethodConfig(meth);
             if (expected.getMethodConfig(originalMethods[m]) == null) {
-                assertEquals(meth.toGenericString(), null, test.getMethodConfig(meth));
+                assertEquals(testMsg, null, test.getMethodConfig(meth));
                 continue;
             }
-            assertEquals(meth.toGenericString(), expected.getMethodConfig(originalMethods[m]).getPath(), test.getMethodConfig(meth).getPath());
-            assertEquals(meth.toGenericString(), expected.getMethodConfig(originalMethods[m]).getHttpMethod(), test.getMethodConfig(meth).getHttpMethod());
-            assertEquals(meth.toGenericString(), expected.getMethodConfig(originalMethods[m]).getConnectionTimeout(), test.getMethodConfig(meth).getConnectionTimeout());
-            assertEquals(meth.toGenericString(), expected.getMethodConfig(originalMethods[m]).getSocketTimeout(), test.getMethodConfig(meth).getSocketTimeout());
-            assertEquals(meth.toGenericString(), TestUtils.getClass(expected.getMethodConfig(originalMethods[m]).getErrorHandler()), TestUtils.getClass(test.getMethodConfig(meth).getErrorHandler()));
-            assertEquals(meth.toGenericString(), TestUtils.getClass(expected.getMethodConfig(originalMethods[m]).getRetryHandler()), TestUtils.getClass(test.getMethodConfig(meth).getRetryHandler()));
-            assertEquals(meth.toGenericString(), TestUtils.getClass(expected.getMethodConfig(originalMethods[m]).getResponseHandler()), TestUtils.getClass(test.getMethodConfig(meth).getResponseHandler()));
-            if (expected.getMethodConfig(originalMethods[m]).getRequestInterceptor() instanceof CompositeRequestInterceptor) {
-                int max = ((CompositeRequestInterceptor) expected.getMethodConfig(originalMethods[m]).getRequestInterceptor()).getInterceptors().length;
+            assertEquals(testMsg, expMethCfg.getPath(), testMethCfg.getPath());
+            assertEquals(testMsg, expMethCfg.getHttpMethod(), testMethCfg.getHttpMethod());
+            assertEquals(testMsg, expMethCfg.getConnectionTimeout(), testMethCfg.getConnectionTimeout());
+            assertEquals(testMsg, expMethCfg.getSocketTimeout(), testMethCfg.getSocketTimeout());
+            assertEquals(testMsg, TestUtils.getClass(expMethCfg.getErrorHandler()), TestUtils.getClass(testMethCfg.getErrorHandler()));
+            assertEquals(testMsg, TestUtils.getClass(expMethCfg.getRetryHandler()), TestUtils.getClass(testMethCfg.getRetryHandler()));
+            assertEquals(testMsg, TestUtils.getClass(expMethCfg.getResponseHandler()), TestUtils.getClass(testMethCfg.getResponseHandler()));
+            assertArrayEquals(testMsg, expMethCfg.getDefaultParams(), testMethCfg.getDefaultParams());
+            
+            if (expMethCfg.getRequestInterceptor() instanceof CompositeRequestInterceptor) {
+                int max = ((CompositeRequestInterceptor) expMethCfg.getRequestInterceptor()).getInterceptors().length;
                 for (int i = 0; i < max; i++) {
-                    RequestInterceptor expectedRI = ((CompositeRequestInterceptor) expected.getMethodConfig(originalMethods[m]).getRequestInterceptor()).getInterceptors()[i];
-                    RequestInterceptor testRI = ((CompositeRequestInterceptor) test.getMethodConfig(meth).getRequestInterceptor()).getInterceptors()[i];
-                    assertEquals(meth.toGenericString(), TestUtils.getClass(expectedRI), TestUtils.getClass(testRI));
+                    RequestInterceptor expectedRI = ((CompositeRequestInterceptor) expMethCfg.getRequestInterceptor()).getInterceptors()[i];
+                    RequestInterceptor testRI = ((CompositeRequestInterceptor) testMethCfg.getRequestInterceptor()).getInterceptors()[i];
+                    assertEquals(testMsg, TestUtils.getClass(expectedRI), TestUtils.getClass(testRI));
                 }
             } else {
-                assertEquals(meth.toGenericString(), TestUtils.getClass(expected.getMethodConfig(originalMethods[m]).getRequestInterceptor()), TestUtils.getClass(test.getMethodConfig(meth).getRequestInterceptor()));
+                assertEquals(testMsg, TestUtils.getClass(expMethCfg.getRequestInterceptor()), TestUtils.getClass(testMethCfg.getRequestInterceptor()));
             }
 
 
-            assertEquals(expected.getMethodConfig(originalMethods[m]).getParamCount(), test.getMethodConfig(meth).getParamCount());
-            for (int i = 0; i < expected.getMethodConfig(originalMethods[m]).getParamCount(); i++) {
-                String tag = meth.toGenericString() + "(" + i + ")";
-                if (expected.getMethodConfig(originalMethods[m]).getParamConfig(i) == null) {
-                    assertEquals(tag, null, test.getMethodConfig(meth).getParamConfig(i));
+            assertEquals(expMethCfg.getParamCount(), testMethCfg.getParamCount());
+            for (int i = 0; i < expMethCfg.getParamCount(); i++) {
+                String tag = testMsg + "(" + i + ")";
+                if (expMethCfg.getParamConfig(i) == null) {
+                    assertEquals(tag, null, testMethCfg.getParamConfig(i));
                     continue;
                 }
-                assertEquals(tag, expected.getMethodConfig(originalMethods[m]).getParamConfig(i).getDestination(), test.getMethodConfig(meth).getParamConfig(i).getDestination());
-                assertEquals(tag, expected.getMethodConfig(originalMethods[m]).getParamConfig(i).getName(), test.getMethodConfig(meth).getParamConfig(i).getName());
-                assertEquals(tag, TestUtils.getClass(expected.getMethodConfig(originalMethods[m]).getParamConfig(i).getSerializer()), TestUtils.getClass(test.getMethodConfig(meth).getParamConfig(i).getSerializer()));
-                assertEquals(tag, TestUtils.getClass(expected.getMethodConfig(originalMethods[m]).getParamConfig(i).getInjector()), TestUtils.getClass(test.getMethodConfig(meth).getParamConfig(i).getInjector()));
+                assertEquals(tag, expMethCfg.getParamConfig(i).getDestination(), testMethCfg.getParamConfig(i).getDestination());
+                assertEquals(tag, expMethCfg.getParamConfig(i).getName(), testMethCfg.getParamConfig(i).getName());
+                assertEquals(tag, TestUtils.getClass(expMethCfg.getParamConfig(i).getSerializer()), TestUtils.getClass(testMethCfg.getParamConfig(i).getSerializer()));
+                assertEquals(tag, TestUtils.getClass(expMethCfg.getParamConfig(i).getInjector()), TestUtils.getClass(testMethCfg.getParamConfig(i).getInjector()));
             }
             m++;
         }

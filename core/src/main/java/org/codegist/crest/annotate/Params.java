@@ -18,33 +18,23 @@
  * More information at http://www.codegist.org.
  */
 
-package org.codegist.crest;
+package org.codegist.crest.annotate;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
+ * <p>Optional method level annotation, sets a method default parameter list to add for all requests.
+ * <p>Can be set at interface level to default all interface method default parameters list.
+ * @see org.codegist.crest.config.MethodConfig#DEFAULT_PARAMS
+ * @see org.codegist.crest.config.MethodConfig#getDefaultParams()
+ * @see Param
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
-public class CRestException extends RuntimeException {
-    public CRestException() {
-        super();
-    }
-
-    public CRestException(String message) {
-        super(message);
-    }
-
-    public CRestException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public CRestException(Throwable cause) {
-        super(cause);
-    }
-
-    static CRestException wrap(Exception e) {
-        if (e instanceof CRestException) {
-            return (CRestException) e;
-        } else {
-            return new CRestException(e);
-        }
-    }
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE, ElementType.METHOD})
+public @interface Params {
+    Param[] value();
 }

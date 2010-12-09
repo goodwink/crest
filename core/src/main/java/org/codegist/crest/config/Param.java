@@ -18,33 +18,14 @@
  * More information at http://www.codegist.org.
  */
 
-package org.codegist.crest;
+package org.codegist.crest.config;
 
-/**
- * @author Laurent Gilles (laurent.gilles@codegist.org)
- */
-public class CRestException extends RuntimeException {
-    public CRestException() {
-        super();
-    }
+public interface Param {
 
-    public CRestException(String message) {
-        super(message);
-    }
+    String getName();
 
-    public CRestException(String message, Throwable cause) {
-        super(message, cause);
-    }
+    String getValue();
 
-    public CRestException(Throwable cause) {
-        super(cause);
-    }
+    Destination getDestination();
 
-    static CRestException wrap(Exception e) {
-        if (e instanceof CRestException) {
-            return (CRestException) e;
-        } else {
-            return new CRestException(e);
-        }
-    }
 }

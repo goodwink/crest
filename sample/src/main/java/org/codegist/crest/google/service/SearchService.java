@@ -36,6 +36,7 @@ import org.codegist.crest.google.handler.GoogleResponseHandler;
 @ResponseHandler(GoogleResponseHandler.class)
 public interface SearchService {
 
+
     @Path("/web?v=1.0&q={0}")
     SearchResult<Address> search(String text);
 

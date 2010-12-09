@@ -28,6 +28,7 @@ import org.codegist.common.reflect.ProxyFactory;
 import org.codegist.crest.config.ConfigFactoryException;
 import org.codegist.crest.config.InterfaceConfig;
 import org.codegist.crest.config.MethodConfig;
+import org.codegist.crest.config.Param;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -63,7 +64,7 @@ public class DefaultCRest implements CRest, Disposable {
         try {
             return (T) context.getProxyFactory().createProxy(interfaze.getClassLoader(), new RestInterfacer(interfaze), new Class[]{interfaze});
         } catch (Exception e) {
-            throw CRestException.transform(e);
+            throw CRestException.wrap(e);
         }
     }
 
@@ -161,6 +162,21 @@ public class DefaultCRest implements CRest, Disposable {
             if (!requestContext.getMethodConfig().getRequestInterceptor().beforeParamsInjectionHandle(builder, requestContext)) {
                 // Request cancelled by method requestInterceptor, returning
                 return null;
+            }
+
+            // Add default params
+            for(Param param : requestContext.getMethodConfig().getDefaultParams()){
+                switch(param.getDestination()){
+                    case HEADER:
+                        builder.addHeader(param.getName(), param.getValue());
+                        break;
+                    case BODY:
+                        builder.addBodyParam(param.getName(), param.getValue());
+                        break;
+                    default:
+                        builder.addQueryParam(param.getName(), param.getValue());
+                        break;
+                }
             }
 
             int count = requestContext.getMethodConfig().getParamCount();

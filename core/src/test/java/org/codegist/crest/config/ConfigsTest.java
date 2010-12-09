@@ -375,6 +375,7 @@ public class ConfigsTest {
     private static class MutableMethodConfig implements MethodConfig {
         private Method method;
         private String path;
+        private Param[] defaultParams;
         private HttpMethod httpMethod;
         private Long socketTimeout;
         private Long connectionTimeout;
@@ -388,6 +389,15 @@ public class ConfigsTest {
         @Override
         public ParamConfig getParamConfig(int index) {
             return paramConfigs != null && index < paramConfigs.length ? paramConfigs[index] : null;
+        }
+
+        @Override
+        public Param[] getDefaultParams() {
+            return defaultParams;
+        }
+
+        public void setDefaultParams(Param[] defaultParams) {
+            this.defaultParams = defaultParams;
         }
 
         @Override

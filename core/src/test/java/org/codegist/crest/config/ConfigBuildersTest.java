@@ -49,6 +49,8 @@ import static org.codegist.crest.config.ParamConfig.*;
  */
 public class ConfigBuildersTest {
 
+    private static final Param[] PARAMS = new Param[]{new DefaultParam("1","2", Destination.BODY)};
+
     @Test
     public void testDefaultOverrides() throws InstantiationException, IllegalAccessException {
         final Map<String, Object> defaultOverrides = new HashMap<String, Object>();
@@ -63,6 +65,7 @@ public class ConfigBuildersTest {
         defaultOverrides.put(CONFIG_METHOD_DEFAULT_RETRY_HANDLER, new Stubs.RetryHandler1());
         defaultOverrides.put(CONFIG_METHOD_DEFAULT_HTTP_METHOD, HttpMethod.HEAD);
         defaultOverrides.put(CONFIG_METHOD_DEFAULT_RESPONSE_HANDLER, new Stubs.ResponseHandler1());
+        defaultOverrides.put(CONFIG_METHOD_DEFAULT_PARAMS, PARAMS);
         defaultOverrides.put(CONFIG_PARAM_DEFAULT_DESTINATION, Destination.BODY);
         defaultOverrides.put(CONFIG_PARAM_DEFAULT_INJECTOR, new Stubs.RequestParameterInjector1());
         defaultOverrides.put(CONFIG_PARAM_DEFAULT_SERIALIZER, new Stubs.Serializer1());
@@ -77,6 +80,7 @@ public class ConfigBuildersTest {
                     put(Interface.A, new DefaultMethodConfig(
                             Interface.A,
                             (String) defaultOverrides.get(CONFIG_METHOD_DEFAULT_PATH),
+                            (Param[]) defaultOverrides.get(CONFIG_METHOD_DEFAULT_PARAMS),
                             (HttpMethod) defaultOverrides.get(CONFIG_METHOD_DEFAULT_HTTP_METHOD),
                             (Long) defaultOverrides.get(CONFIG_METHOD_DEFAULT_SO_TIMEOUT),
                             (Long) defaultOverrides.get(CONFIG_METHOD_DEFAULT_CO_TIMEOUT),
@@ -96,6 +100,7 @@ public class ConfigBuildersTest {
                     put(Interface.B, new DefaultMethodConfig(
                             Interface.B,
                             (String) defaultOverrides.get(CONFIG_METHOD_DEFAULT_PATH),
+                            (Param[]) defaultOverrides.get(CONFIG_METHOD_DEFAULT_PARAMS),
                             (HttpMethod) defaultOverrides.get(CONFIG_METHOD_DEFAULT_HTTP_METHOD),
                             (Long) defaultOverrides.get(CONFIG_METHOD_DEFAULT_SO_TIMEOUT),
                             (Long) defaultOverrides.get(CONFIG_METHOD_DEFAULT_CO_TIMEOUT),
@@ -142,6 +147,7 @@ public class ConfigBuildersTest {
                     put(Interface.A, new DefaultMethodConfig(
                             Interface.A,
                             DEFAULT_PATH,
+                            DEFAULT_PARAMS,
                             DEFAULT_HTTP_METHOD,
                             DEFAULT_SO_TIMEOUT,
                             DEFAULT_CO_TIMEOUT,
@@ -161,6 +167,7 @@ public class ConfigBuildersTest {
                     put(Interface.B, new DefaultMethodConfig(
                             Interface.B,
                             DEFAULT_PATH,
+                            DEFAULT_PARAMS,
                             DEFAULT_HTTP_METHOD,
                             DEFAULT_SO_TIMEOUT,
                             DEFAULT_CO_TIMEOUT,
@@ -207,6 +214,7 @@ public class ConfigBuildersTest {
                     put(Interface.A, new DefaultMethodConfig(
                             Interface.A,
                             "/test",
+                            PARAMS,
                             HttpMethod.DELETE,
                             10l,
                             11l,
@@ -226,6 +234,7 @@ public class ConfigBuildersTest {
                     put(Interface.B, new DefaultMethodConfig(
                             Interface.B,
                             "/test",
+                            PARAMS,
                             HttpMethod.DELETE,
                             10l,
                             11l,
@@ -258,6 +267,7 @@ public class ConfigBuildersTest {
         );
         InterfaceConfig config = new ConfigBuilders.InterfaceConfigBuilder(Interface.class, "http://server:8080")
                 .setMethodsPath("/test")
+                .addMethodsDefaultParam("1","2",Destination.BODY)
                 .setMethodsHttpMethod(HttpMethod.DELETE)
                 .setMethodsSocketTimeout(10l)
                 .setMethodsConnectionTimeout(11l)
@@ -285,6 +295,7 @@ public class ConfigBuildersTest {
                     put(Interface.A, new DefaultMethodConfig(
                             Interface.A,
                             "/test",
+                            PARAMS,
                             HttpMethod.DELETE,
                             10l,
                             11l,
@@ -304,6 +315,7 @@ public class ConfigBuildersTest {
                     put(Interface.B, new DefaultMethodConfig(
                             Interface.B,
                             "/test2",
+                            PARAMS,
                             HttpMethod.POST,
                             12l,
                             13l,
@@ -336,6 +348,7 @@ public class ConfigBuildersTest {
         );
         InterfaceConfig config = new ConfigBuilders.InterfaceConfigBuilder(Interface.class, "http://server:8080")
                 .setMethodsPath("/test")
+                .addMethodsDefaultParam("1","2",Destination.BODY)
                 .setMethodsHttpMethod(HttpMethod.DELETE)
                 .setMethodsSocketTimeout(10l)
                 .setMethodsConnectionTimeout(11l)
@@ -377,6 +390,7 @@ public class ConfigBuildersTest {
                     put(Interface.A, new DefaultMethodConfig(
                             Interface.A,
                             "/test",
+                            PARAMS,
                             HttpMethod.DELETE,
                             10l,
                             11l,
@@ -396,6 +410,7 @@ public class ConfigBuildersTest {
                     put(Interface.B, new DefaultMethodConfig(
                             Interface.B,
                             "/test2",
+                            PARAMS,
                             HttpMethod.POST,
                             12l,
                             13l,
@@ -428,6 +443,7 @@ public class ConfigBuildersTest {
         );
         InterfaceConfig config = new ConfigBuilders.InterfaceConfigBuilder(Interface.class, "http://server:8080")
                 .setMethodsPath("/test")
+                .addMethodsDefaultParam("1","2",Destination.BODY)
                 .setMethodsHttpMethod(HttpMethod.DELETE)
                 .setMethodsSocketTimeout(10l)
                 .setMethodsConnectionTimeout(11l)
@@ -480,14 +496,14 @@ public class ConfigBuildersTest {
                 new HashMap<Method, MethodConfig>() {{
                     put(Interface.A, new DefaultMethodConfig(
                             Interface.A,
-                            null, null, null, null, null, null, null, null,
+                            null, null, null, null, null, null, null, null, null,
                             new ParamConfig[]{
                                     new DefaultParamConfig(null, null, null, null)
                             }
                     ));
                     put(Interface.B, new DefaultMethodConfig(
                             Interface.B,
-                            null, null, null, null, null, null, null,null,
+                            null, null, null, null, null, null, null, null,null,
                             new ParamConfig[]{
                                     new DefaultParamConfig(null, null, null, null),
                                     new DefaultParamConfig(null, null, null, null),

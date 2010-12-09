@@ -29,6 +29,8 @@ import org.junit.Test;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import static org.junit.Assert.assertEquals;
@@ -43,11 +45,11 @@ public class PropertiesDrivenInterfaceFactoryTest extends AbstractInterfaceConfi
 
     @Test
     public void testInterfaceOverridesTypeInjector() throws ConfigFactoryException {
-        Properties p = new Properties();
-        p.setProperty("service.test.class", "org.codegist.crest.config.PropertiesDrivenInterfaceFactoryTest$InjectorTestInterface");
-        p.setProperty("service.test.end-point", "http://localhost:8080");
-        p.setProperty("service.test.method.m.pattern", "get.*");
-        p.setProperty("service.test.method.m.params.0.injector", "org.codegist.crest.Stubs$RequestParameterInjector3");
+        Map<String,String> p = new HashMap<String, String>();
+        p.put("service.test.class", "org.codegist.crest.config.PropertiesDrivenInterfaceFactoryTest$InjectorTestInterface");
+        p.put("service.test.end-point", "http://localhost:8080");
+        p.put("service.test.method.m.pattern", "get.*");
+        p.put("service.test.method.m.params.0.injector", "org.codegist.crest.Stubs$RequestParameterInjector3");
         PropertiesDrivenInterfaceFactory factory = newFactory(p);
         InterfaceConfig cfg = factory.newConfig(InjectorTestInterface.class, mockContext);
         assertEquals(Stubs.RequestParameterInjector3.class, cfg.getMethodConfig(InjectorTestInterface.M).getParamConfig(0).getInjector().getClass());
@@ -55,11 +57,9 @@ public class PropertiesDrivenInterfaceFactoryTest extends AbstractInterfaceConfi
 
     @Test
     public void testTypeInjectorIsRead() throws ConfigFactoryException {
-        Properties p = new Properties();
-//        p.setProperty("service.end-point", "hello");
-
-        p.setProperty("service.test.class", "org.codegist.crest.config.PropertiesDrivenInterfaceFactoryTest$InjectorTestInterface");
-        p.setProperty("service.test.end-point", "http://localhost:8080");
+        Map<String,String> p = new HashMap<String, String>();
+        p.put("service.test.class", "org.codegist.crest.config.PropertiesDrivenInterfaceFactoryTest$InjectorTestInterface");
+        p.put("service.test.end-point", "http://localhost:8080");
         PropertiesDrivenInterfaceFactory factory = newFactory(p);
         InterfaceConfig cfg = factory.newConfig(InjectorTestInterface.class, mockContext);
         assertEquals(Stubs.RequestParameterInjector1.class, cfg.getMethodConfig(InjectorTestInterface.M).getParamConfig(0).getInjector().getClass());
@@ -77,7 +77,7 @@ public class PropertiesDrivenInterfaceFactoryTest extends AbstractInterfaceConfi
 
     @Test(expected = RuntimeException.class)
     public void testInvalidConfig() throws ConfigFactoryException {
-        PropertiesDrivenInterfaceFactory factory = new PropertiesDrivenInterfaceFactory(new Properties());
+        PropertiesDrivenInterfaceFactory factory = new PropertiesDrivenInterfaceFactory(new HashMap<String, String>());
         factory.newConfig(Interface.class, mockContext);
     }
 
@@ -100,7 +100,7 @@ public class PropertiesDrivenInterfaceFactoryTest extends AbstractInterfaceConfi
     }
 
 
-    public PropertiesDrivenInterfaceFactory newFactory(Properties p) {
+    public PropertiesDrivenInterfaceFactory newFactory(Map<String,String> p) {
         return new PropertiesDrivenInterfaceFactory(p);
     }
 
@@ -112,13 +112,13 @@ public class PropertiesDrivenInterfaceFactoryTest extends AbstractInterfaceConfi
         } finally {
             is.close();
         }
-        return newFactory(prop);
+        return newFactory((Map)prop);
     }
 
     @Test
     public void testServerConfig() throws IOException, InstantiationException, IllegalAccessException, ConfigFactoryException {
-        Properties props = new Properties();
-        props.setProperty("service.end-point", "hello");
+        Map<String,String> props = new HashMap<String, String>();
+        props.put("service.end-point", "hello");
         PropertiesDrivenInterfaceFactory factory = new PropertiesDrivenInterfaceFactory(props);
         InterfaceConfig config = factory.newConfig(Interface.class, mockContext);
         InterfaceConfig expected = new ConfigBuilders.InterfaceConfigBuilder(Interface.class, "hello").build();

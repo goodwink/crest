@@ -59,6 +59,11 @@ public interface Flickr {
     @Path("/upload") @Destination(BODY)
     long uploadPhoto(@Name("photo") File photo);
 
+    @Path("/upload")
+    @Param(name="async", value="1", dest = BODY) /* adds a default parameter async=1 in the body */
+    @Destination(BODY)
+    String asyncUploadPhoto(@Name("photo") File photo);
+
     @Path("/upload") @Destination(BODY)
     long uploadPhoto(@Name("photo") InputStream photo);
 
@@ -76,6 +81,8 @@ public interface Flickr {
             @Name("hidden") Visibility searchVisibility
     );
 
+    @Path("/rest?method=flickr.photos.upload.checkTickets&tickets={0}")
+    Uploader checkUploads(String... tickets);
 
     @Path("/replace") @Destination(BODY)
     long replacePhoto(
@@ -106,7 +113,9 @@ CRest crest = new CRestBuilder()
 Flickr flickr = crest.build(Flickr.class);
 
 // use it !
-long photoId = flickr.uploadPhoto(new File("/path/to/my/photo.jpg"));
+String ticket = flickr.asyncUploadPhoto(new File("/path/to/my/photo.jpg"));
+(...)
+Uploader upload = flickr.checkUploads(ticket);
 (...)
 +-----
 

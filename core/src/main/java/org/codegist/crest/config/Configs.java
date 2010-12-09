@@ -146,6 +146,10 @@ public final class Configs {
             this.override = override;
         }
 
+        public Param[] getDefaultParams() {
+            return override.getDefaultParams() != null ? override.getDefaultParams() : base.getDefaultParams();
+        }
+
         @Override
         public Integer getParamCount() {
             return override.getParamCount() != null ? override.getParamCount() : base.getParamCount();

@@ -246,7 +246,7 @@ public class OAuthenticatorV10Test {
     @Test
     public void testAuthentificationHeaders() throws URISyntaxException, MalformedURLException, UnsupportedEncodingException {
         OAuthenticator oauth = new OAuthenticatorV10(restService, consumer, new HashMap<String, Object>() {{
-            put(OAuthenticator.CONFIG_OAUTH_PARAM_DEST, "header");
+            put(OAuthenticatorV10.CONFIG_OAUTH_PARAM_DEST, "header");
         }}, variantProvider);
         HttpRequest.Builder requestBuilder = new HttpRequest.Builder("http://photos.example.net/photos?file=vacation.jpg&size=original");
 
@@ -267,7 +267,7 @@ public class OAuthenticatorV10Test {
     @Test
     public void testAuthentificationQueryString() throws URISyntaxException, MalformedURLException, UnsupportedEncodingException {
         Map<String, Object> config = new HashMap<String, Object>() {{
-            put(OAuthenticator.CONFIG_OAUTH_PARAM_DEST, "url");
+            put(OAuthenticatorV10.CONFIG_OAUTH_PARAM_DEST, "url");
         }};
         OAuthenticator oauth = new OAuthenticatorV10(restService, consumer, config, variantProvider);
         HttpRequest.Builder requestBuilder = new HttpRequest.Builder("http://photos.example.net/photos?file=vacation.jpg&size=original");

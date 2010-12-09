@@ -52,7 +52,7 @@ public class OAuthenticatorV10 implements OAuthenticator {
 
     public static final String CONFIG_TOKEN_REQUEST_URL = "authentification.oauth.access.request-url";
 
-    public static final String CONFIG_TOKEN_REQUEST_URL_METHOD = "authentification.oauth.access.request-url";
+    public static final String CONFIG_TOKEN_REQUEST_URL_METHOD = "authentification.oauth.access.request-url.method";
 
     public static final String CONFIG_TOKEN_ACCESS_URL = "authentification.oauth.access.access-url";
 

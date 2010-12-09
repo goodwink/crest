@@ -25,6 +25,7 @@ import org.codegist.crest.flickr.handler.FlickrResponseHandler;
 import org.codegist.crest.flickr.interceptor.FlickrAuthInterceptor;
 import org.codegist.crest.flickr.model.Comment;
 import org.codegist.crest.flickr.model.Gallery;
+import org.codegist.crest.flickr.model.Uploader;
 
 import java.io.File;
 import java.io.InputStream;
@@ -36,6 +37,7 @@ import static org.codegist.crest.config.Destination.BODY;
 
 /**
  * see http://www.flickr.com/services/api/
+ *
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
 @EndPoint("http://flickr.com")
@@ -79,13 +81,16 @@ public interface Flickr {
     void deleteComment(String commentId);
 
 
-    @Path("/upload") @Destination(BODY)
+    @Path("/upload")
+    @Destination(BODY)
     long uploadPhoto(@Name("photo") File photo);
 
-    @Path("/upload") @Destination(BODY)
+    @Path("/upload")
+    @Destination(BODY)
     long uploadPhoto(@Name("photo") InputStream photo);
 
-    @Path("/upload") @Destination(BODY)
+    @Path("/upload")
+    @Destination(BODY)
     long uploadPhoto(
             @Name("photo") InputStream photo,
             @Name("title") String title,
@@ -100,7 +105,38 @@ public interface Flickr {
     );
 
 
-    @Path("/replace") @Destination(BODY)
+    @Path("/upload")
+    @Param(name = "async", value = "1", dest = BODY)
+    @Destination(BODY)
+    String asyncUploadPhoto(@Name("photo") File photo);
+
+    @Path("/upload")
+    @Param(name = "async", value = "1", dest = BODY)
+    @Destination(BODY)
+    String asyncUploadPhoto(@Name("photo") InputStream photo);
+
+    @Path("/upload")
+    @Param(name = "async", value = "1", dest = BODY)
+    @Destination(BODY)
+    String asyncUploadPhoto(
+            @Name("photo") InputStream photo,
+            @Name("title") String title,
+            @Name("description") String description,
+            @Name("tags") String[] tags,
+            @Name("is_public") boolean isPublic,
+            @Name("is_friend") boolean isFriend,
+            @Name("is_family") boolean isFamily,
+            @Name("safety_level") SafetyLevel safetyLevel,
+            @Name("content_type") ContentType contentLype,
+            @Name("hidden") Visibility searchVisibility
+    );
+
+    @Path("/rest?method=flickr.photos.upload.checkTickets&tickets={0}")
+    Uploader checkUploads(String... tickets);
+
+
+    @Path("/replace")
+    @Destination(BODY)
     long replacePhoto(
             @Name("photo") InputStream photo,
             @Name("photo_id") long photoId
