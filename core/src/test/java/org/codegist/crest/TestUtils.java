@@ -20,6 +20,7 @@
 
 package org.codegist.crest;
 
+import org.codegist.common.reflect.InvocationHandler;
 import org.codegist.common.reflect.ProxyFactory;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -49,7 +50,7 @@ public class TestUtils {
     public static ProxyFactory mockProxyFactory() {
         return mock(ProxyFactory.class, withSettings().defaultAnswer(new Answer<Object>() {
             public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
-                final ProxyFactory.InvocationHandler handler = (ProxyFactory.InvocationHandler) invocationOnMock.getArguments()[1];
+                final InvocationHandler handler = (InvocationHandler) invocationOnMock.getArguments()[1];
                 Class[] interfaces = (Class[]) invocationOnMock.getArguments()[2];
                 return mock(interfaces[0], withSettings().defaultAnswer(new Answer() {
                     public Object answer(InvocationOnMock invocationOnMock) throws Throwable {

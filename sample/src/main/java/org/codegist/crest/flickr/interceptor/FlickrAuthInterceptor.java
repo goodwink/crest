@@ -54,7 +54,7 @@ public class FlickrAuthInterceptor extends RequestInterceptorAdapter {
     }
 
     @Override
-    public boolean afterParamsInjectionHandle(HttpRequest.Builder builder, RequestContext context) {
+    public void afterParamsInjectionHandle(HttpRequest.Builder builder, RequestContext context) throws Exception {
         StringBuilder sb = new StringBuilder(appSecret);
 
         if (isForBody(builder.getMeth())) {
@@ -75,18 +75,13 @@ public class FlickrAuthInterceptor extends RequestInterceptorAdapter {
 
         for (Map.Entry<String, String> param : map.entrySet()) sb.append(param.getKey()).append(param.getValue());
 
-        try {
-            MessageDigest digest = MessageDigest.getInstance("MD5");
-            digest.update(sb.toString().getBytes());
-            String hash = Hex.encodeHex(digest.digest());
-            if (isForBody(builder.getMeth())) {
-                builder.addBodyParam("api_sig", hash);
-            } else {
-                builder.addQueryParam("api_sig", hash);
-            }
-            return true;
-        } catch (Exception e) {
-            throw new CRestException(e);
+        MessageDigest digest = MessageDigest.getInstance("MD5");
+        digest.update(sb.toString().getBytes());
+        String hash = Hex.encodeHex(digest.digest());
+        if (isForBody(builder.getMeth())) {
+            builder.addBodyParam("api_sig", hash);
+        } else {
+            builder.addQueryParam("api_sig", hash);
         }
     }
 

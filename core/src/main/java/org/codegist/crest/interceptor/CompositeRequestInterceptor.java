@@ -25,7 +25,6 @@ import org.codegist.crest.RequestContext;
 
 /**
  * Simple composite request interceptor that delegate notifications to a predefined list of interceptors.
- * <p>If any of the delegates returns false, the process is stopped and return false as well.
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
 public class CompositeRequestInterceptor implements RequestInterceptor {
@@ -36,21 +35,19 @@ public class CompositeRequestInterceptor implements RequestInterceptor {
     }
 
     @Override
-    public boolean beforeParamsInjectionHandle(HttpRequest.Builder builder, RequestContext context) {
+    public void beforeParamsInjectionHandle(HttpRequest.Builder builder, RequestContext context) throws Exception {
         for (RequestInterceptor interceptor : interceptors) {
             if (interceptor == null) continue;
-            if (!interceptor.beforeParamsInjectionHandle(builder, context)) return false;
+            interceptor.beforeParamsInjectionHandle(builder, context);
         }
-        return true;
     }
 
     @Override
-    public boolean afterParamsInjectionHandle(HttpRequest.Builder builder, RequestContext context) {
+    public void afterParamsInjectionHandle(HttpRequest.Builder builder, RequestContext context) throws Exception {
         for (RequestInterceptor interceptor : interceptors) {
             if (interceptor == null) continue;
-            if (!interceptor.afterParamsInjectionHandle(builder, context)) return false;
+            interceptor.afterParamsInjectionHandle(builder, context);
         }
-        return true;
     }
 
     public RequestInterceptor[] getInterceptors() {

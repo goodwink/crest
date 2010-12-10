@@ -43,11 +43,10 @@ public class RequestParamDefaultsInterceptor extends RequestInterceptorAdapter {
     }
 
     @Override
-    public boolean afterParamsInjectionHandle(HttpRequest.Builder builder, RequestContext context) {
+    public void afterParamsInjectionHandle(HttpRequest.Builder builder, RequestContext context) {
         builder
                 .addHeaders(headers)
                 .addQueryParams(queryString)
                 .addBodyParams(body);
-        return true;
     }
 }

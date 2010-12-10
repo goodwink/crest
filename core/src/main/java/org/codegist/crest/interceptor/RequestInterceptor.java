@@ -37,9 +37,8 @@ public interface RequestInterceptor {
      *
      * @param builder The current http request being build
      * @param context The current request context
-     * @return a flag indicating whether to continue or cancel the current request.
      */
-    boolean beforeParamsInjectionHandle(HttpRequest.Builder builder, RequestContext context);
+    void beforeParamsInjectionHandle(HttpRequest.Builder builder, RequestContext context) throws Exception ;
 
 
     /**
@@ -47,8 +46,7 @@ public interface RequestInterceptor {
      *
      * @param builder The current http request being build
      * @param context The current request context
-     * @return a flag indicating whether to continue or cancel the current request.
      */
-    boolean afterParamsInjectionHandle(HttpRequest.Builder builder, RequestContext context);
+    void afterParamsInjectionHandle(HttpRequest.Builder builder, RequestContext context) throws Exception ;
 
 }

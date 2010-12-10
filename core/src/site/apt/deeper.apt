@@ -42,13 +42,7 @@ Going Deeper
 
 * Error Handler
 
-    Error handler gets invoked when an exception occurs during each request lifecyle:
-
-        * Generation:  involves RequestInterceptors, RequestInjectors, Serializer.
-
-        * Firing:  Any non 200 response status code while fire an exception.
-
-        * Response handling:  involves ResponseHandlers.
+    Error handler gets invoked when an exception occurs during the request firing.
 
 * Retry Handler
 

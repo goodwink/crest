@@ -45,9 +45,8 @@ public class AuthentificationInterceptor extends RequestInterceptorAdapter {
     }
 
     @Override
-    public boolean afterParamsInjectionHandle(HttpRequest.Builder builder, RequestContext context) {
+    public void afterParamsInjectionHandle(HttpRequest.Builder builder, RequestContext context) {
         authentificationManager.sign(builder);
-        return true;
     }
 
 }

@@ -23,8 +23,7 @@ package org.codegist.crest;
 import org.codegist.common.lang.Disposable;
 import org.codegist.common.lang.Disposables;
 import org.codegist.common.lang.Strings;
-import org.codegist.common.reflect.Methods;
-import org.codegist.common.reflect.ProxyFactory;
+import org.codegist.common.reflect.ObjectMethodsAwareInvocationHandler;
 import org.codegist.crest.config.ConfigFactoryException;
 import org.codegist.crest.config.InterfaceConfig;
 import org.codegist.crest.config.MethodConfig;
@@ -68,7 +67,7 @@ public class DefaultCRest implements CRest, Disposable {
         }
     }
 
-    private class RestInterfacer<T> implements ProxyFactory.InvocationHandler {
+    private class RestInterfacer<T> extends ObjectMethodsAwareInvocationHandler {
 
         private final InterfaceContext interfaceContext;
 
@@ -78,30 +77,21 @@ public class DefaultCRest implements CRest, Disposable {
         }
 
         @Override
-        public Object invoke(Object target, Method method, Object[] args) throws Throwable {
-            Object res = execIfObjectClassMethod(target, method, args);
-            if (res != null) return res;
-            return exec(method, args);
-        }
-
-        int i = 0 ;
-        private Object exec(Method method, Object[] args) throws Exception {
+        protected Object exec(Object proxy, Method method, Object[] args) throws Throwable {
             MethodConfig methodConfig = interfaceContext.getConfig().getMethodConfig(method);
-
             RequestContext requestContext = new DefaultRequestContext(interfaceContext, method, args);
+            // build the request, can throw exception but that should not be part of the retry policy
+            HttpRequest request = buildRequest(requestContext);
+
+            int attemptCount = 0;
             ResponseContext responseContext;
-            Exception exception = null;
-            int i = 0;
+            Exception exception;
             do {
                 exception = null;
-                HttpResponse response;
                 try {
-                    HttpRequest request = buildRequest(requestContext);
-                    if (request == null) {
-                        // Request cancelled by requestInterceptor, returning
-                        return null;
-                    }
-                    response = context.getRestService().exec(request);
+                    // exec the request
+                    HttpResponse response = context.getRestService().exec(request);
+                    // wrap the response in response context
                     responseContext = new DefaultResponseContext(requestContext, response);
                 } catch (HttpException e) {
                     responseContext = new DefaultResponseContext(requestContext, e.getResponse());
@@ -110,29 +100,36 @@ public class DefaultCRest implements CRest, Disposable {
                     responseContext = new DefaultResponseContext(requestContext, null);
                     exception = e;
                 }
-            }while(exception != null && methodConfig.getRetryHandler().retry(responseContext, exception, ++i));
+                // loop until an exception has been thrown and the retry handle ask for retry
+            }while(exception != null && methodConfig.getRetryHandler().retry(responseContext, exception, ++attemptCount));
 
             if (exception != null) {
+                // An exception has been thrown during request execution, invoke the error handler and return
                 return methodConfig.getErrorHandler().handle(responseContext, exception);
-            }
-
-            try {
+            }else{
+                // all good, handle the response
                 return handle(responseContext);
-            } catch (Exception e) {
-                return methodConfig.getErrorHandler().handle(responseContext, e);
             }
         }
 
+        /**
+         * Response handling base implementation, returns raw response if InputStream or Reader is the requested return type.
+         * <p>Otherwise delegate response handling to the given response handler.
+         * @param responseContext current response context
+         * @return response
+         */
         private Object handle(ResponseContext responseContext) {
             Class<?> returnTypeClass = responseContext.getRequestContext().getMethodConfig().getMethod().getReturnType();
             boolean closeResponse = false;
             try {
                 if (returnTypeClass.equals(InputStream.class)) {
-                    // If InputStream return type, then alway return raw response
+                    // If InputStream return type, then return raw response
                     return responseContext.getResponse().asStream();
                 } else if (returnTypeClass.equals(Reader.class)) {
+                    // If Reader return type, then return raw response
                     return responseContext.getResponse().asReader();
                 } else {
+                    // otherwise, delegate to response handler
                     return responseContext.getRequestContext().getMethodConfig().getResponseHandler().handle(responseContext);
                 }
             } catch (CRestException e) {
@@ -148,21 +145,24 @@ public class DefaultCRest implements CRest, Disposable {
             }
         }
 
-        private HttpRequest buildRequest(RequestContext requestContext) throws URISyntaxException {
+        /**
+         *
+         * @param requestContext
+         * @return
+         * @throws URISyntaxException
+         */
+        private HttpRequest buildRequest(RequestContext requestContext) throws Exception {
+
+            // Build base request
             String fullpath = requestContext.getConfig().getEndPoint() + Strings.defaultIfBlank(requestContext.getConfig().getContextPath(), "") + requestContext.getMethodConfig().getPath();
             HttpRequest.Builder builder = new HttpRequest.Builder(fullpath, interfaceContext.getConfig().getEncoding())
                     .using(requestContext.getMethodConfig().getHttpMethod())
                     .timeoutSocketAfter(requestContext.getMethodConfig().getSocketTimeout())
                     .timeoutConnectionAfter(requestContext.getMethodConfig().getConnectionTimeout());
 
-            if (!requestContext.getConfig().getGlobalInterceptor().beforeParamsInjectionHandle(builder, requestContext)) {
-                // Request cancelled by global requestInterceptor, returning
-                return null;
-            }
-            if (!requestContext.getMethodConfig().getRequestInterceptor().beforeParamsInjectionHandle(builder, requestContext)) {
-                // Request cancelled by method requestInterceptor, returning
-                return null;
-            }
+            // Notify injectors (Global and method) before param injection
+            requestContext.getConfig().getGlobalInterceptor().beforeParamsInjectionHandle(builder, requestContext);
+            requestContext.getMethodConfig().getRequestInterceptor().beforeParamsInjectionHandle(builder, requestContext);
 
             // Add default params
             for(Param param : requestContext.getMethodConfig().getDefaultParams()){
@@ -181,36 +181,16 @@ public class DefaultCRest implements CRest, Disposable {
 
             int count = requestContext.getMethodConfig().getParamCount();
             for (int i = 0; i < count; i++) {
+                // invoke configured parameter injectors
                 requestContext.getMethodConfig().getParamConfig(i).getInjector().inject(builder, new DefaultParamContext(requestContext, i));
             }
 
-            if (!requestContext.getMethodConfig().getRequestInterceptor().afterParamsInjectionHandle(builder, requestContext)) {
-                // Request cancelled by method requestInterceptor, returning
-                return null;
-            }
-
-            if (!requestContext.getConfig().getGlobalInterceptor().afterParamsInjectionHandle(builder, requestContext)) {
-                // Request cancelled by global requestInterceptor, returning
-                return null;
-            }
+            // Notify injectors (Global and method after param injection
+            requestContext.getMethodConfig().getRequestInterceptor().afterParamsInjectionHandle(builder, requestContext);
+            requestContext.getConfig().getGlobalInterceptor().afterParamsInjectionHandle(builder, requestContext);
 
             return builder.build();
         }
-
-
-        Object execIfObjectClassMethod(Object target, Method method, Object[] args) {
-            if (!method.getDeclaringClass().equals(Object.class)) return null;
-            if (Methods.isToString(method)) {
-                return this.toString();
-            } else if (Methods.isEquals(method)) {
-                return target == args[0];
-            } else if (Methods.isHashCode(method)) {
-                return this.hashCode();
-            } else {
-                return null;
-            }
-        }
-
     }
 
 

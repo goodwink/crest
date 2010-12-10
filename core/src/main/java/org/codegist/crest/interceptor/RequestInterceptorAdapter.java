@@ -32,13 +32,11 @@ import org.codegist.crest.RequestContext;
 public class RequestInterceptorAdapter implements RequestInterceptor {
 
     @Override
-    public boolean beforeParamsInjectionHandle(HttpRequest.Builder builder, RequestContext context) {
-        return true;
+    public void beforeParamsInjectionHandle(HttpRequest.Builder builder, RequestContext context) throws Exception {
     }
 
     @Override
-    public boolean afterParamsInjectionHandle(HttpRequest.Builder builder, RequestContext context) {
-        return true;
+    public void afterParamsInjectionHandle(HttpRequest.Builder builder, RequestContext context) throws Exception {
     }
 
 }
