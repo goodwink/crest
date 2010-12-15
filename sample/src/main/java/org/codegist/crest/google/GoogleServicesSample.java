@@ -35,6 +35,7 @@ import org.codegist.crest.google.service.SearchService;
 public class GoogleServicesSample {
 
     public static void main(String[] args) {
+        System.setProperty("crest.logger.sysout", "true");
         /* Get the factory */
         CRest crest = new CRestBuilder().expectsJson().build();
 

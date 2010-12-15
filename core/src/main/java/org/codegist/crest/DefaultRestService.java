@@ -22,6 +22,8 @@ package org.codegist.crest;
 
 import org.codegist.common.io.IOs;
 import org.codegist.common.lang.Randoms;
+import org.codegist.common.log.Log;
+import org.codegist.common.log.Logger;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -31,11 +33,12 @@ import java.util.Map;
 /**
  * Simple RestService implementation based on JDK's {@link java.net.HttpURLConnection}.
  *
- * @see java.net.HttpURLConnection
  * @author Laurent Gilles (laurent.gilles@codegist.org)
+ * @see java.net.HttpURLConnection
  */
 public class DefaultRestService implements RestService {
 
+    private static final Logger logger = Log.getLogger(DefaultRestService.class);
 
     @Override
     public HttpResponse exec(HttpRequest request) throws HttpException {
@@ -65,7 +68,10 @@ public class DefaultRestService implements RestService {
     private final static String USER_AGENT = "CodeGist-CRest Agent";
 
     static HttpURLConnection toHttpURLConnection(HttpRequest request) throws IOException {
-        HttpURLConnection con = newConnection(request.getUrl(true));
+        URL url = request.getUrl(true);
+        logger.debug("%s %s", request.getMeth(), url);
+        HttpURLConnection con = newConnection(url);
+
         con.setRequestMethod(request.getMeth().toString());
         if (request.getConnectionTimeout() != null && request.getConnectionTimeout() >= 0)
             con.setConnectTimeout(request.getConnectionTimeout().intValue());
