@@ -27,6 +27,9 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
+/**
+ * @author Laurent Gilles (laurent.gilles@codegist.org)
+ */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "date")
 public class Date {

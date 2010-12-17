@@ -32,8 +32,12 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 
+/**
+ * @author Laurent Gilles (laurent.gilles@codegist.org)
+ */
 public class DeliciousSample {
     public static void main(String[] args) throws IOException {
+
         final String consumerKey = args[0];
         final String consumerSecret = args[1];
         final String accessToken = args[2];

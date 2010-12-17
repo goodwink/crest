@@ -22,7 +22,10 @@ package org.codegist.crest.flickr.interceptor;
 
 import org.codegist.common.codec.Hex;
 import org.codegist.common.lang.Validate;
-import org.codegist.crest.*;
+import org.codegist.crest.HttpMethod;
+import org.codegist.crest.HttpRequest;
+import org.codegist.crest.Params;
+import org.codegist.crest.RequestContext;
 import org.codegist.crest.interceptor.RequestInterceptorAdapter;
 
 import java.security.MessageDigest;

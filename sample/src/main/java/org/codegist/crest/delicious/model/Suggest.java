@@ -27,6 +27,9 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+/**
+ * @author Laurent Gilles (laurent.gilles@codegist.org)
+ */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "suggest")
 public class Suggest {

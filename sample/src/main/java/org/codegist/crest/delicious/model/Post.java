@@ -29,6 +29,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.Date;
 
+/**
+ * @author Laurent Gilles (laurent.gilles@codegist.org)
+ */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "post")
 public class Post {

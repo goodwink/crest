@@ -26,6 +26,9 @@ import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 
+/**
+ * @author Laurent Gilles (laurent.gilles@codegist.org)
+ */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "posts")
 public class Posts {

@@ -28,6 +28,9 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Date;
 
+/**
+ * @author Laurent Gilles (laurent.gilles@codegist.org)
+ */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "update")
 public class Update {

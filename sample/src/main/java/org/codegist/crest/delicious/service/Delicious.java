@@ -30,6 +30,9 @@ import org.codegist.crest.security.handler.RefreshAuthentificationRetryHandler;
 
 import java.util.Date;
 
+/**
+ * @author Laurent Gilles (laurent.gilles@codegist.org)
+ */
 @EndPoint("http://api.del.icio.us/v2")
 @RetryHandler(RefreshAuthentificationRetryHandler.class)
 @ResponseHandler(DeliciousResponseHandler.class)

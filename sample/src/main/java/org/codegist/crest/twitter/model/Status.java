@@ -38,8 +38,8 @@ public class Status {
     private long inReplyToStatusId;
     @JsonProperty("in_reply_to_user_id")
     private long inReplyToUserId;
-    @JsonProperty("retweet_count")
-    private long retweetCount;
+//    @JsonProperty("retweet_count")
+//    private long retweetCount;
     @JsonProperty("retweeted")
     private boolean retweeted;
     @JsonProperty("source")
@@ -95,14 +95,6 @@ public class Status {
 
     public void setInReplyToUserId(long inReplyToUserId) {
         this.inReplyToUserId = inReplyToUserId;
-    }
-
-    public long getRetweetCount() {
-        return retweetCount;
-    }
-
-    public void setRetweetCount(long retweetCount) {
-        this.retweetCount = retweetCount;
     }
 
     public boolean isRetweeted() {

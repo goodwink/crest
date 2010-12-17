@@ -20,9 +20,8 @@
 
 package org.codegist.crest.security;
 
+import org.codegist.common.lang.Pair;
 import org.codegist.crest.HttpRequest;
-
-import java.util.Map;
 
 /**
  * AuthentificationManager interface
@@ -33,15 +32,9 @@ public interface AuthentificationManager {
     /**
      * Sign the request
      * @param request request to be signed
+     * @param properties optional signing properties
      */
-    void sign(HttpRequest.Builder request);
-
-    /**                
-     * Sign the request
-     * @param request request to be signed
-     * @param properties signing properties
-     */
-    void sign(HttpRequest.Builder request, Map<String,Object> properties);
+    void sign(HttpRequest.Builder request, Pair<String,String>... properties);
 
     /**
      * Refresh the authentification information

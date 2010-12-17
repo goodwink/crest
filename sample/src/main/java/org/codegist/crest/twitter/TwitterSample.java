@@ -40,7 +40,7 @@ public class TwitterSample {
 
     public static void main(String[] args) throws IOException {
         String consumerKey = args[0];
-        String consumerSecret = args[1];     
+        String consumerSecret = args[1];
         String accessToken = args[2];
         String accessTokenSecret = args[3];
 
@@ -61,7 +61,6 @@ public class TwitterSample {
         User[] users = userService.search("username");
         Message[] messages = directMessageService.getReceived(10, 1);
 
-        System.out.println("status=" + status);
         System.out.println("status=" + status);
         System.out.println("users=" + Arrays.toString(users));
         System.out.println("messages=" + Arrays.toString(messages));

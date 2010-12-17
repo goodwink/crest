@@ -22,7 +22,6 @@ package org.codegist.crest;
 
 import org.codegist.common.io.IOs;
 import org.codegist.common.lang.Randoms;
-import org.codegist.common.log.Log;
 import org.codegist.common.log.Logger;
 
 import java.io.*;
@@ -38,7 +37,7 @@ import java.util.Map;
  */
 public class DefaultRestService implements RestService {
 
-    private static final Logger logger = Log.getLogger(DefaultRestService.class);
+    private static final Logger logger = Logger.getLogger(DefaultRestService.class);
 
     @Override
     public HttpResponse exec(HttpRequest request) throws HttpException {
@@ -69,7 +68,8 @@ public class DefaultRestService implements RestService {
 
     static HttpURLConnection toHttpURLConnection(HttpRequest request) throws IOException {
         URL url = request.getUrl(true);
-        logger.debug("%s %s", request.getMeth(), url);
+        logger.debug("%4s %s", request.getMeth(), url);
+        logger.trace(request);
         HttpURLConnection con = newConnection(url);
 
         con.setRequestMethod(request.getMeth().toString());

@@ -30,6 +30,9 @@ import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @author Laurent Gilles (laurent.gilles@codegist.org)
+ */
 public class OAuthHelper {
 
     public static void main(String[] args) throws IOException {

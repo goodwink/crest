@@ -23,6 +23,9 @@ package org.codegist.crest.delicious.model;
 import org.codegist.crest.annotate.Injector;
 import org.codegist.crest.delicious.injector.RangeInjector;
 
+/**
+ * @author Laurent Gilles (laurent.gilles@codegist.org)
+ */
 @Injector(RangeInjector.class)
 public class Range {
     private final int start;

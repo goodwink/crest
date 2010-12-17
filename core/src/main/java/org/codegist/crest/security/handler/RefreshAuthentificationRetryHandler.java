@@ -22,6 +22,7 @@ package org.codegist.crest.security.handler;
 
 import org.codegist.common.lang.Numbers;
 import org.codegist.common.lang.Validate;
+import org.codegist.common.log.Logger;
 import org.codegist.crest.CRestProperty;
 import org.codegist.crest.HttpException;
 import org.codegist.crest.ResponseContext;
@@ -36,6 +37,7 @@ import java.util.Map;
  */
 public class RefreshAuthentificationRetryHandler implements RetryHandler {
 
+    private final static Logger LOGGER = Logger.getLogger(RefreshAuthentificationRetryHandler.class);
     public static final int DEFAULT_MAX_ATTEMPTS = 1; /* will retry just once in order to refresh the token */
 
     private final AuthentificationManager authentificationManager;
@@ -50,9 +52,11 @@ public class RefreshAuthentificationRetryHandler implements RetryHandler {
     public boolean retry(ResponseContext response, Exception exception, int retryNumber) {
         if (retryNumber > (max + 1) /* +1 so that even if no retry are requested on failure, at least on is done for refreshing the token */
                 || !(exception instanceof HttpException)
-                || ((HttpException) exception).getResponse().getStatusCode() != 401)
+                || ((HttpException) exception).getResponse().getStatusCode() != 401) {
+            LOGGER.debug("Not retrying, maximum failure reached or catched exception is neither a HttpException nor a 401 HTTP error code");
             return false;
-
+        }
+        LOGGER.debug("HTTP code 401 detected, refreshing authentification and retry.");
         authentificationManager.refresh();
         return true;
     }

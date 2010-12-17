@@ -30,6 +30,9 @@ import org.codegist.crest.handler.ResponseHandler;
 
 import java.util.Map;
 
+/**
+ * @author Laurent Gilles (laurent.gilles@codegist.org)
+ */
 public class DeliciousResponseHandler implements ResponseHandler {
 
     private final Marshaller marshaller;

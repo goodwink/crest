@@ -22,6 +22,9 @@ package org.codegist.crest.delicious.model;
 
 import javax.xml.bind.annotation.XmlRegistry;
 
+/**
+ * @author Laurent Gilles (laurent.gilles@codegist.org)
+ */
 @XmlRegistry
 public class DeliciousModelFactory {
     public Posts createPosts(){

@@ -25,6 +25,9 @@ import org.codegist.crest.ParamContext;
 import org.codegist.crest.delicious.model.Range;
 import org.codegist.crest.injector.Injector;
 
+/**
+ * @author Laurent Gilles (laurent.gilles@codegist.org)
+ */
 public class RangeInjector implements Injector<Range> {
     @Override
     public void inject(HttpRequest.Builder builder, ParamContext<Range> context) {

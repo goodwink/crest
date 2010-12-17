@@ -22,6 +22,9 @@ package org.codegist.crest.delicious.model;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
+/**
+ * @author Laurent Gilles (laurent.gilles@codegist.org)
+ */
 class BooleanAdapter extends XmlAdapter<String,Boolean> {
     @Override
     public Boolean unmarshal(String v) throws Exception {

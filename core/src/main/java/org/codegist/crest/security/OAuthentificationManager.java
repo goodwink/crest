@@ -20,14 +20,10 @@
 
 package org.codegist.crest.security;
 
-import org.codegist.common.lang.Objects;
+import org.codegist.common.lang.Pair;
 import org.codegist.crest.HttpRequest;
 import org.codegist.crest.oauth.OAuthenticator;
-import org.codegist.crest.oauth.Param;
 import org.codegist.crest.oauth.Token;
-
-import java.util.Collections;
-import java.util.Map;
 
 /**
  * OAuth authentification manager implementation.
@@ -45,19 +41,8 @@ public class OAuthentificationManager implements AuthentificationManager {
     }
 
     @Override
-    public void sign(HttpRequest.Builder request) {
-        sign(request, Collections.<String, Object>emptyMap());
-    }
-
-    @Override
-    public void sign(HttpRequest.Builder request, Map<String, Object> properties) {
-        Param[] params = new Param[properties.size()];
-        int i = 0;
-        for (Map.Entry<String, Object> entry : properties.entrySet()) {
-            Object val = Objects.defaultIfNull(entry.getValue(), "");
-            params[i++] = new Param(entry.getKey(), val.toString());
-        }
-        oauth.sign(accessToken, request, params);
+    public void sign(HttpRequest.Builder request, Pair<String,String>... properties) {
+        oauth.sign(accessToken, request, properties);
     }
 
     @Override

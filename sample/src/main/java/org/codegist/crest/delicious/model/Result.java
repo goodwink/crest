@@ -22,6 +22,9 @@ package org.codegist.crest.delicious.model;
 
 import javax.xml.bind.annotation.*;
 
+/**
+ * @author Laurent Gilles (laurent.gilles@codegist.org)
+ */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "result")
 public class Result {
