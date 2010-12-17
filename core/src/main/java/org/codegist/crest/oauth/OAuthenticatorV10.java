@@ -340,9 +340,12 @@ public class OAuthenticatorV10 implements OAuthenticator {
             if (buf.length() != 0) {
                 buf.append(sep);
             }
-            buf.append(encode(p.getName(), ENC));
+            String name = Strings.defaultIfBlank(p.getName(),"");
+            String value = Strings.defaultIfBlank(p.getValue(),"");
+
+            buf.append(encode(name, ENC));
             buf.append("=");
-            buf.append(String.format(format, encode(p.getValue(), ENC)));
+            buf.append(String.format(format, encode(value, ENC)));
         }
         return buf.toString();
     }

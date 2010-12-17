@@ -120,7 +120,7 @@ public class PropertiesDrivenInterfaceFactory implements InterfaceConfigFactory 
     }
 
     public PropertiesDrivenInterfaceFactory(Map<String,String> properties, boolean useDefaults) {
-        this.properties = properties;
+        this.properties = Maps.unmodifiable(properties);
         this.useDefaults = useDefaults;
     }
 

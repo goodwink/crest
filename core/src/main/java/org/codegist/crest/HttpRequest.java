@@ -242,7 +242,7 @@ public class HttpRequest {
             URI uri = new URI(uriString);
             String baseUri = uri.getScheme() + "://" + uri.getAuthority() + uri.getPath();
             this.encoding = encoding;
-            this.queryString = Urls.parseQueryString(uri.getRawQuery(), encoding);
+            this.queryString = uri.getRawQuery() != null ? Urls.parseQueryString(uri.getRawQuery(), encoding) : new LinkedHashMap<String, String>();
             this.queryStringParamsReverse = Maps.reverse(queryString);
             this.baseUri = baseUri;
             return this;

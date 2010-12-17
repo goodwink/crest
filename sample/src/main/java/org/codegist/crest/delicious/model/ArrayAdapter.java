@@ -35,6 +35,6 @@ class ArrayAdapter extends XmlAdapter<String,String[]> {
 
     @Override
     public String marshal(String[] v) throws Exception {
-        return Arrays.join(",", v);
+        return v != null ? Arrays.join(",", v) : "";
     }
 }
