@@ -77,7 +77,7 @@ public class DefaultCRest implements CRest, Disposable {
         }
 
         @Override
-        protected Object exec(Object proxy, Method method, Object[] args) throws Throwable {
+        protected Object doInvoke(Object proxy, Method method, Object[] args) throws Throwable {
             MethodConfig methodConfig = interfaceContext.getConfig().getMethodConfig(method);
             RequestContext requestContext = new DefaultRequestContext(interfaceContext, method, args);
 
@@ -89,7 +89,7 @@ public class DefaultCRest implements CRest, Disposable {
                 // build the request, can throw exception but that should not be part of the retry policy
                 HttpRequest request = buildRequest(requestContext);
                 try {
-                    // exec the request
+                    // doInvoke the request
                     HttpResponse response = context.getRestService().exec(request);
                     // wrap the response in response context
                     responseContext = new DefaultResponseContext(requestContext, response);
