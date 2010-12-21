@@ -51,9 +51,7 @@ import java.lang.reflect.Type;
 import java.net.URISyntaxException;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
@@ -80,7 +78,7 @@ public class DefaultCRestTest {
 
     @BeforeClass
     public static void setup() {   
-        when(mockMarshaller.<Object>marshall(any(InputStream.class), any(Type.class))).thenReturn(MODEL_RESPONSE);
+        when(mockMarshaller.<Object>marshall(any(Reader.class), any(Type.class))).thenReturn(MODEL_RESPONSE);
     }
 
     @Test
@@ -132,7 +130,7 @@ public class DefaultCRestTest {
                 if(++i < throwErrorsCount)
                     throw new HttpException("error!", new HttpResponse((HttpRequest)invocationOnMock.getArguments()[0], 400));
                 else
-                    return new HttpResponse((HttpRequest)invocationOnMock.getArguments()[0], 200, null, new ByteArrayInputStream(new byte[]{10}), "utf-8");
+                    return new HttpResponse((HttpRequest)invocationOnMock.getArguments()[0], 200, null, new ByteArrayInputStream(new byte[]{10}));
             }
         });
         return new DefaultCRest(
@@ -158,8 +156,10 @@ public class DefaultCRestTest {
         when(mockRestService.exec(any(HttpRequest.class))).thenAnswer(new Answer<Object>() {
             @Override
             public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
+                Map<String,List<String>> headers = new HashMap<String, List<String>>();
+                headers.put("Content-Type", Arrays.asList("charset=utf-8"));
                 try {
-                    return new HttpResponse(new HttpRequest.Builder("http://test", "utf-8").build(), 200, null, new ByteArrayInputStream(MODEL_RESPONSE_JSON.getBytes()), "text/html");
+                    return new HttpResponse(new HttpRequest.Builder("http://test", "utf-8").build(), 200, headers, new ByteArrayInputStream(MODEL_RESPONSE_JSON.getBytes()));
                 } catch (URISyntaxException e) {
                     return null;
                 }
@@ -279,7 +279,7 @@ public class DefaultCRestTest {
         }))).thenAnswer(new Answer<Object>() {
             @Override
             public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
-                return new HttpResponse(null, 200, null, new ByteArrayInputStream(MODEL_RESPONSE_JSON.getBytes()), "text/html");
+                return new HttpResponse(null, 200, null, new ByteArrayInputStream(MODEL_RESPONSE_JSON.getBytes()));
             }
         });
 

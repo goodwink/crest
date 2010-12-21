@@ -40,7 +40,7 @@ public final class Serializers {
     private static final Serializer TOSTRING_SERIALIZER = new ToStringSerializer();
 
     private Serializers() {
-        
+        throw new IllegalStateException();
     }
 
     /**

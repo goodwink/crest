@@ -32,7 +32,10 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
-import java.util.*;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
@@ -171,7 +174,7 @@ public class HttpRequest {
         private String encoding = ENCODING;
         private Map<String, String> queryString;
         private Map<String, Object> bodyParams;
-        private Map<String, List<String>> queryStringParamsReverse;
+        private Map<String, List<String>> originalQSReversed;
 
         /**
          * Creates a GET request pointing to the given url
@@ -243,7 +246,7 @@ public class HttpRequest {
             String baseUri = uri.getScheme() + "://" + uri.getAuthority() + uri.getPath();
             this.encoding = encoding;
             this.queryString = uri.getRawQuery() != null ? Urls.parseQueryString(uri.getRawQuery(), encoding) : new LinkedHashMap<String, String>();
-            this.queryStringParamsReverse = Maps.reverse(queryString);
+            this.originalQSReversed = Maps.reverse(queryString);
             this.baseUri = baseUri;
             return this;
         }
@@ -256,7 +259,7 @@ public class HttpRequest {
          * @throws UnsupportedEncodingException not supported parameter encoding
          */
         public String getUrlString(boolean includeQueryString) throws UnsupportedEncodingException {
-            if (!includeQueryString) return baseUri;
+            if (!includeQueryString || queryString.isEmpty()) return baseUri;
             return baseUri + "?" + Urls.buildQueryString(queryString, encoding);
         }
 
@@ -281,7 +284,7 @@ public class HttpRequest {
          * @see Builder#replacePlaceholderInUri(int, String)
          */
         public List<String> getQueryParamNameByPlaceholderIndex(int index) {
-            return queryStringParamsReverse.get("(" + index + ")");
+            return originalQSReversed.get("(" + index + ")");
         }
 
         /**
@@ -317,7 +320,7 @@ public class HttpRequest {
             // don't add it to the requestBuilder yet, baseUri string map can still contain placeholders
             Pattern p = Pattern.compile("\\(" + index + "\\)");
             baseUri = p.matcher(baseUri).replaceAll(value);
-            Map<String, String> copy = new HashMap<String, String>();
+            Map<String, String> copy = new LinkedHashMap<String, String>();
             for (Map.Entry<String, String> param : queryString.entrySet()) {
                 String key = p.matcher(param.getKey()).replaceAll(value);
                 String val = p.matcher(param.getValue()).replaceAll(value);
@@ -475,10 +478,6 @@ public class HttpRequest {
             else
                 this.bodyParams.putAll(params);
             return this;
-        }
-
-        public Map<String, List<String>> getQueryStringParamsReverse() {
-            return queryStringParamsReverse;
         }
 
         public Map<String, Object> getBodyParams() {

@@ -45,7 +45,7 @@ public class DeliciousResponseHandler implements ResponseHandler {
     @Override
     public Object handle(ResponseContext responseContext) throws CRestException {
         try {
-            Object response = marshaller.marshall(responseContext.getResponse().asStream(), responseContext.getExpectedGenericType());
+            Object response = marshaller.marshall(responseContext.getResponse().asReader(), responseContext.getExpectedGenericType());
             if(response instanceof Result) {
                 Result result = (Result) response;
                 // Delicious Result response format is not consistent 

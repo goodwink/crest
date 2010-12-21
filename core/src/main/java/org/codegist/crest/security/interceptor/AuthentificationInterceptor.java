@@ -40,8 +40,8 @@ public class AuthentificationInterceptor extends RequestInterceptorAdapter {
         this((AuthentificationManager) customProperties.get(AuthentificationManager.class.getName()));
     }
     public AuthentificationInterceptor(AuthentificationManager authentificationManager) {
+        Validate.notNull(authentificationManager, "No authentification manager found, please pass it in the properties (key=" + AuthentificationManager.class.getName() + ")");
         this.authentificationManager = authentificationManager;
-        Validate.notNull(this.authentificationManager, "No authentification manager found, please pass it in the properties (key=" + AuthentificationManager.class.getName() + ")");
     }
 
     @Override

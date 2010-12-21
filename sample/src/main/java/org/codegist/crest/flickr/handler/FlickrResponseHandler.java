@@ -48,7 +48,7 @@ public class FlickrResponseHandler implements ResponseHandler {
     public final Object handle(ResponseContext context) {
         try {
             /* Marshall the response */
-            Response res = marshaller.marshall(context.getResponse().asStream(), Types.newType(Response.class, context.getExpectedGenericType()));
+            Response res = marshaller.marshall(context.getResponse().asReader(), Types.newType(Response.class, context.getExpectedGenericType()));
             /* Check for flickr OK status */
             if ("ok".equals(res.getStatus())) {
                 /* Get the nested payload and returns it */

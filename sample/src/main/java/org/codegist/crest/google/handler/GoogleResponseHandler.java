@@ -47,7 +47,7 @@ public class GoogleResponseHandler implements ResponseHandler {
         try {
 
             /* Marshall the response */
-            Response<?> res = marshaller.marshall(context.getResponse().asStream(), Types.newType(Response.class, context.getExpectedGenericType()));
+            Response<?> res = marshaller.marshall(context.getResponse().asReader(), Types.newType(Response.class, context.getExpectedGenericType()));
             /* Check for google OK status */
             if (res.status == 200) {
                 return res.data; /* Returns the nested payload */

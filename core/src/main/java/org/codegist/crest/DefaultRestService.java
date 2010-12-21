@@ -45,10 +45,14 @@ public class DefaultRestService implements RestService {
         boolean inError = false;
         try {
             connection = toHttpURLConnection(request);
+            logger.debug("%4s %s", request.getMeth(), connection.getURL());
+            logger.trace(request);
             if (connection.getResponseCode() != 200) {
                 throw new HttpException(connection.getResponseMessage(), new HttpResponse(request, connection.getResponseCode(), connection.getHeaderFields()));
             }
-            return new HttpResponse(request, connection.getResponseCode(), connection.getHeaderFields(), connection.getInputStream(), connection.getContentEncoding());
+            HttpResponse response = new HttpResponse(request, connection.getResponseCode(), connection.getHeaderFields(), connection.getInputStream());
+            logger.trace("HTTP Response %s", response);
+            return response;
         } catch (HttpException e) {
             inError = true;
             throw e;
@@ -68,8 +72,6 @@ public class DefaultRestService implements RestService {
 
     static HttpURLConnection toHttpURLConnection(HttpRequest request) throws IOException {
         URL url = request.getUrl(true);
-        logger.debug("%4s %s", request.getMeth(), url);
-        logger.trace(request);
         HttpURLConnection con = newConnection(url);
 
         con.setRequestMethod(request.getMeth().toString());

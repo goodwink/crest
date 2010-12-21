@@ -50,7 +50,7 @@ public class RefreshAuthentificationRetryHandler implements RetryHandler {
     }
 
     public boolean retry(ResponseContext response, Exception exception, int retryNumber) {
-        if (retryNumber > (max + 1) /* +1 so that even if no retry are requested on failure, at least on is done for refreshing the token */
+        if (retryNumber >= (max + 1) /* +1 so that even if no retry are requested on failure, at least on is done for refreshing the token */
                 || !(exception instanceof HttpException)
                 || ((HttpException) exception).getResponse().getStatusCode() != 401) {
             LOGGER.debug("Not retrying, maximum failure reached or catched exception is neither a HttpException nor a 401 HTTP error code");

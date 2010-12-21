@@ -34,6 +34,7 @@ import java.util.Map;
  */
 public final class Params {
     private Params() {
+        throw new IllegalStateException();
     }
 
     /**

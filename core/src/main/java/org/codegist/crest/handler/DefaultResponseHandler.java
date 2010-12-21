@@ -52,7 +52,7 @@ public class DefaultResponseHandler implements ResponseHandler {
             if (context.getExpectedType().toString().equals("void")) return null;
 
             if (marshaller != null) {
-                return marshaller.marshall(context.getResponse().asStream(), context.getExpectedGenericType());
+                return marshaller.marshall(context.getResponse().asReader(), context.getExpectedGenericType());
             }else{
                 // if no marshaller has been set in the configuration, check that return type is String and return the response as string.
                 if (String.class.equals(context.getExpectedType())) {

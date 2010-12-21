@@ -38,6 +38,7 @@ import java.lang.reflect.Method;
  */
 public final class Configs {
     private Configs() {
+        throw new IllegalStateException();
     }
 
 

@@ -21,6 +21,7 @@
 package org.codegist.crest.security;
 
 import org.codegist.common.lang.Pair;
+import org.codegist.common.lang.Validate;
 import org.codegist.crest.HttpRequest;
 import org.codegist.crest.oauth.OAuthenticator;
 import org.codegist.crest.oauth.Token;
@@ -36,6 +37,8 @@ public class OAuthentificationManager implements AuthentificationManager {
     private Token accessToken;
 
     public OAuthentificationManager(OAuthenticator oauth, Token accessToken) {
+        Validate.notNull(oauth, "OAuthenticator is required");
+        Validate.notNull(accessToken, "accessToken is required");
         this.oauth = oauth;
         this.accessToken = accessToken;
     }

@@ -22,41 +22,64 @@ package org.codegist.crest;
 
 import org.codegist.common.collect.Maps;
 import org.codegist.common.io.IOs;
+import org.codegist.common.lang.Strings;
+import org.codegist.common.lang.ToStringBuilder;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 
 /**
+ * Http response for the a HttpRequest.
+ * <p>Response charset and mime type are retrieved on the Content-Type header.
+ * <p>If no valid charset and mimetype are found, it defaults respectively with ISO-8859-1 and text/html
+ * <p>If the response is GZipped, the Content-Encoding header must be set to gzip.
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
 public class HttpResponse {
-
+    private static final String DEFAULT_MIME_TYPE = "text/html";
+    private static final Charset DEFAULT_CHARSET = Charset.forName("ISO-8859-1");
+    private static final Pattern CONTENT_TYPE_PARSER = Pattern.compile("^(?:([^;=]+)?\\s*;?\\s*charset=(.*+))|(?:([^;=]+)\\s*;?\\s*)$");
     private final HttpRequest request;
     private final InputStream inputStream;
     private final Map<String, List<String>> headers;
     private final int statusCode;
-    private String responseString = null;
+    private final String contentEncoding;
+    private final String mimeType;
+    private final Charset charset;
 
+    private String responseString = null;
 
     public HttpResponse(HttpRequest request, int statusCode) {
         this(request, statusCode, null);
 
     }
+
     public HttpResponse(HttpRequest request, int statusCode, Map<String, List<String>> headers) {
-        this(request, statusCode, headers, null, null);
+        this(request, statusCode, headers, null);
     }
 
-    public HttpResponse(HttpRequest request, int statusCode, Map<String, List<String>> headers, InputStream inputStream, String contentEncoding) {
+    /**
+     *
+     *
+     * @param request     The original request
+     * @param statusCode  the response status code
+     * @param headers     response headers.
+     * @param inputStream
+     */
+    public HttpResponse(HttpRequest request, int statusCode, Map<String, List<String>> headers, InputStream inputStream) {
         this.request = request;
         this.statusCode = statusCode;
         this.headers = Maps.unmodifiable(headers);
-        if ("gzip".equals(contentEncoding)) {
+        this.contentEncoding = getFirstHeaderFor(this.headers, "Content-Encoding");
+        if ("gzip".equalsIgnoreCase(contentEncoding)) {
             try {
                 this.inputStream = new GZIPInputStream(inputStream);
             } catch (IOException e) {
@@ -65,6 +88,32 @@ public class HttpResponse {
         } else {
             this.inputStream = inputStream;
         }
+        String[] contentTypeGroups = Strings.extractGroups(CONTENT_TYPE_PARSER, getFirstHeaderFor(this.headers, "Content-Type"));
+        if (contentTypeGroups.length == 0) {
+            this.mimeType = DEFAULT_MIME_TYPE;
+            this.charset = DEFAULT_CHARSET;
+        } else {
+            this.mimeType = Strings.defaultIfBlank(contentTypeGroups[1], Strings.defaultIfBlank(contentTypeGroups[3], DEFAULT_MIME_TYPE));
+            this.charset = Charset.forName(Strings.defaultIfBlank(contentTypeGroups[2], DEFAULT_CHARSET.name()));
+        }
+    }
+
+    private static String getFirstHeaderFor(Map<String, List<String>> headers, String name) {
+        List<String> contentType = headers.get(name);
+        if (contentType == null || contentType.isEmpty()) return "";
+        return Strings.defaultIfBlank(contentType.get(0), "");
+    }
+
+    public String getMimeType() {
+        return mimeType;
+    }
+
+    public Charset getCharset() {
+        return charset;
+    }
+
+    public String getContentEncoding() {
+        return contentEncoding;
     }
 
     /**
@@ -75,6 +124,8 @@ public class HttpResponse {
     }
 
     /**
+     * Get the response reader using the response charset (extracted from response header.)
+     *
      * @return The response reader.
      * @throws IllegalStateException if {@link org.codegist.crest.HttpResponse#asString()} has already been called
      */
@@ -83,10 +134,12 @@ public class HttpResponse {
         if (responseString != null) {
             throw new IllegalStateException("Stream as already been consumed");
         }
-        return new InputStreamReader(inputStream, request.getEncodingAsCharset());
+        return new InputStreamReader(inputStream, charset);
     }
 
     /**
+     * Get the response input stream. Use {@link HttpResponse#getCharset} to decode it.
+     *
      * @return The response input stream.
      * @throws IllegalStateException if {@link org.codegist.crest.HttpResponse#asString()} has already been called
      */
@@ -108,7 +161,7 @@ public class HttpResponse {
         if (inputStream == null) return null;
         if (responseString == null) {
             try {
-                responseString = IOs.toString(inputStream, request.getEncoding(), true);
+                responseString = IOs.toString(inputStream, charset, true);
             } catch (IOException e) {
                 throw new HttpException(e, this);
             }
@@ -134,4 +187,16 @@ public class HttpResponse {
     public void close() {
         IOs.close(inputStream);
     }
+
+    public String toString() {
+        return new ToStringBuilder(this)
+                .append("statusCode", statusCode)
+                .append("contentEncoding", contentEncoding)
+                .append("mimeType", mimeType)
+                .append("charset", charset)
+                .append("headers", headers)
+                .append("request", request)
+                .toString();
+    }
 }
+

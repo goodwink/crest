@@ -47,6 +47,7 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.codegist.common.lang.Disposable;
 import org.codegist.common.lang.Strings;
+import org.codegist.common.log.Logger;
 
 import java.io.File;
 import java.io.IOException;
@@ -64,6 +65,7 @@ import java.util.*;
  */
 public class HttpClientRestService implements RestService, Disposable {
 
+    private static final Logger logger = Logger.getLogger(HttpClientRestService.class);
     private final HttpClient http;
 
     /**
@@ -97,29 +99,31 @@ public class HttpClientRestService implements RestService, Disposable {
         HttpEntity entity = null;
         boolean inError = false;
         try {
+            logger.debug("%4s %s", httpRequest.getMeth(), request.getURI());
+            logger.trace(request);
             response = http.execute(request);
             if (response == null) {
                 throw new HttpException("No Response!", new HttpResponse(httpRequest, -1));
             }
 
             entity = response.getEntity();
+            HttpResponse res;
             if (entity != null) {
-                HttpResponse res = new HttpResponse(
+                res = new HttpResponse(
                         httpRequest,
                         response.getStatusLine().getStatusCode(),
                         toHeaders(response.getAllHeaders()),
-                        entity.getContent(),
-                        entity.getContentEncoding() != null ? entity.getContentEncoding().getValue() : null);
+                        entity.getContent());
                 if (res.getStatusCode() != HttpStatus.SC_OK) {
                     throw new HttpException(response.getStatusLine().getReasonPhrase(), res);
-                } else {
-                    return res;
                 }
             } else if (httpRequest.getMeth().equals(HttpMethod.HEAD)) {
-                return new HttpResponse(httpRequest, response.getStatusLine().getStatusCode(), toHeaders(response.getAllHeaders()));
+                res = new HttpResponse(httpRequest, response.getStatusLine().getStatusCode(), toHeaders(response.getAllHeaders()));
             } else {
                 throw new HttpException(response.getStatusLine().getReasonPhrase(), new HttpResponse(httpRequest, response.getStatusLine().getStatusCode(), toHeaders(response.getAllHeaders())));
             }
+            logger.trace("HTTP Response %s", response);
+            return res;
         } catch (HttpException e) {
             inError = true;
             throw e;

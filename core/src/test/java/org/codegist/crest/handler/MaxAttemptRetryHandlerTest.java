@@ -28,7 +28,9 @@ import java.util.HashMap;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-
+/**
+ * @author Laurent Gilles (laurent.gilles@codegist.org)
+ */
 public class MaxAttemptRetryHandlerTest {
 
     @Test
