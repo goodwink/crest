@@ -37,6 +37,7 @@ import java.lang.reflect.Method;
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
 public final class Configs {
+
     private Configs() {
         throw new IllegalStateException();
     }
@@ -95,10 +96,10 @@ public final class Configs {
     @SuppressWarnings("unchecked")
     static ConfigBuilders.ParamConfigBuilder injectAnnotatedConfig(ConfigBuilders.ParamConfigBuilder config, Class<?> paramType) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
         /* Params type specifics */
-        org.codegist.crest.annotate.Serializer serializer = (org.codegist.crest.annotate.Serializer) paramType.getAnnotation(org.codegist.crest.annotate.Serializer.class);
-        Name name = (Name) paramType.getAnnotation(Name.class);
-        Destination destination = (Destination) paramType.getAnnotation(org.codegist.crest.annotate.Destination.class);
-        org.codegist.crest.annotate.Injector injector = (org.codegist.crest.annotate.Injector) paramType.getAnnotation(org.codegist.crest.annotate.Injector.class);
+        org.codegist.crest.annotate.Serializer serializer = paramType.getAnnotation(org.codegist.crest.annotate.Serializer.class);
+        Name name = paramType.getAnnotation(Name.class);
+        Destination destination = paramType.getAnnotation(org.codegist.crest.annotate.Destination.class);
+        org.codegist.crest.annotate.Injector injector = paramType.getAnnotation(org.codegist.crest.annotate.Injector.class);
 
         if(serializer != null) config.setSerializer(serializer.value());
         if(name != null) config.setName(name.value());

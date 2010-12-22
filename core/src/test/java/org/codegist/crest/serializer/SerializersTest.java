@@ -35,7 +35,7 @@ import static org.junit.Assert.assertEquals;
 public class SerializersTest {
 
     @Test
-    public void testDateSerialization(){
+    public void testDateerialization(){
         Serializer datesSerializer = Serializers.getFor(null, Date[].class);
         Serializer dateSerializer = Serializers.getFor(null, Date.class);
         assertEquals("2010-11-23T14:28:14GMT", dateSerializer.serialize(new Date(1290522494365l)));

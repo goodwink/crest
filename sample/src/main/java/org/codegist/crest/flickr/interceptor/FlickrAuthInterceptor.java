@@ -80,7 +80,7 @@ public class FlickrAuthInterceptor extends RequestInterceptorAdapter {
 
         MessageDigest digest = MessageDigest.getInstance("MD5");
         digest.update(sb.toString().getBytes());
-        String hash = Hex.encodeHex(digest.digest());
+        String hash = Hex.encodeAsString(digest.digest());
         if (isForBody(builder.getMeth())) {
             builder.addBodyParam("api_sig", hash);
         } else {
