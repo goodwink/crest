@@ -25,18 +25,19 @@ import java.io.InputStream;
 
 /**
  * HttpResource abstraction that provides methods to access resource stream and release network resources.
+ * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
 public interface HttpResource {
 
     /**
      * @return the underlying http resource data stream
-     * @throws IOException
+     * @throws HttpException
      */
     InputStream getContent() throws HttpException;
 
     /**
      * Release the network resources used by the resource
-     * @throws IOException
+     * @throws HttpException
      */
     void release() throws HttpException;
 

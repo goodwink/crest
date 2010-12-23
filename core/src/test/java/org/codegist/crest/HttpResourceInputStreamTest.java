@@ -28,6 +28,9 @@ import java.io.*;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
+/**
+ * @author Laurent Gilles (laurent.gilles@codegist.org)
+ */
 public class HttpResourceInputStreamTest {
     @Test
     public void testReadDelegateAndReleaseWrappedInReader() throws IOException {
