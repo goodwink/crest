@@ -36,7 +36,7 @@ public class GoogleServicesSample {
 
     public static void main(String[] args) {
         /* Get the factory */
-        CRest crest = new CRestBuilder().useHttpClientRestService().expectsJson().build();
+        CRest crest = new CRestBuilder().expectsJson().build();
 
         /* Build services instances */
         SearchService searchService = crest.build(SearchService.class);
