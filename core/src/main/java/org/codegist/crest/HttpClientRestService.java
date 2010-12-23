@@ -45,7 +45,6 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
-import org.codegist.common.io.InputStreamWrapper;
 import org.codegist.common.lang.Disposable;
 import org.codegist.common.lang.Strings;
 import org.codegist.common.log.Logger;
