@@ -37,6 +37,8 @@ import java.util.Map;
  */
 public class DefaultRestService implements RestService {
 
+    private final static String MULTIPART = "multipart/form-data; boundary=";
+    private final static String USER_AGENT = "CodeGist-CRest Agent";
     private static final Logger logger = Logger.getLogger(DefaultRestService.class);
 
     @Override
@@ -50,7 +52,7 @@ public class DefaultRestService implements RestService {
             if (connection.getResponseCode() != 200) {
                 throw new HttpException(connection.getResponseMessage(), new HttpResponse(request, connection.getResponseCode(), connection.getHeaderFields()));
             }
-            HttpResponse response = new HttpResponse(request, connection.getResponseCode(), connection.getHeaderFields(), connection.getInputStream());
+            HttpResponse response = new HttpResponse(request, connection.getResponseCode(), connection.getHeaderFields(), new HttpResourceImpl(connection));
             logger.trace("HTTP Response %s", response);
             return response;
         } catch (HttpException e) {
@@ -65,10 +67,6 @@ public class DefaultRestService implements RestService {
             }
         }
     }
-
-
-    private final static String MULTIPART = "multipart/form-data; boundary=";
-    private final static String USER_AGENT = "CodeGist-CRest Agent";
 
     static HttpURLConnection toHttpURLConnection(HttpRequest request) throws IOException {
         URL url = request.getUrl(true);
@@ -160,5 +158,26 @@ public class DefaultRestService implements RestService {
         con = (HttpURLConnection) url.openConnection();
         con.setRequestProperty("User-Agent", USER_AGENT);
         return con;
+    }
+
+    private class HttpResourceImpl implements HttpResource {
+
+        private final HttpURLConnection connection;
+
+        public HttpResourceImpl(HttpURLConnection connection) {
+            this.connection = connection;
+        }
+
+        public InputStream getContent() throws HttpException{
+            try {
+                return connection.getInputStream();
+            } catch (IOException e) {
+                throw new HttpException(e);
+            }
+        }
+
+        public void release() throws HttpException{
+            connection.disconnect();
+        }
     }
 }

@@ -59,7 +59,6 @@ public class HttpResponse {
 
     public HttpResponse(HttpRequest request, int statusCode) {
         this(request, statusCode, null);
-
     }
 
     public HttpResponse(HttpRequest request, int statusCode, Map<String, List<String>> headers) {
@@ -72,21 +71,22 @@ public class HttpResponse {
      * @param request     The original request
      * @param statusCode  the response status code
      * @param headers     response headers.
-     * @param inputStream
+     * @param resource underlying http resource
      */
-    public HttpResponse(HttpRequest request, int statusCode, Map<String, List<String>> headers, InputStream inputStream) {
+    public HttpResponse(HttpRequest request, int statusCode, Map<String, List<String>> headers, HttpResource resource) {
         this.request = request;
         this.statusCode = statusCode;
         this.headers = Maps.unmodifiable(headers);
         this.contentEncoding = getFirstHeaderFor(this.headers, "Content-Encoding");
-        if ("gzip".equalsIgnoreCase(contentEncoding)) {
+        InputStream stream = resource != null ? new HttpResourceInputStream(resource) : null;
+        if (resource != null && "gzip".equalsIgnoreCase(contentEncoding)) {
             try {
-                this.inputStream = new GZIPInputStream(inputStream);
+                this.inputStream = new GZIPInputStream(stream);
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                throw new HttpException(e);
             }
         } else {
-            this.inputStream = inputStream;
+            this.inputStream = stream;
         }
         String[] contentTypeGroups = Strings.extractGroups(CONTENT_TYPE_PARSER, getFirstHeaderFor(this.headers, "Content-Type"));
         if (contentTypeGroups.length == 0) {

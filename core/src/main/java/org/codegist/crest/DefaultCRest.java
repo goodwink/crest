@@ -123,7 +123,7 @@ public class DefaultCRest implements CRest, Disposable {
             boolean closeResponse = false;
             try {
                 if (returnTypeClass.equals(InputStream.class)) {
-                    // If InputStream return type, then return raw response
+                    // If InputStream return type, then return raw response ()
                     return responseContext.getResponse().asStream();
                 } else if (returnTypeClass.equals(Reader.class)) {
                     // If Reader return type, then return raw response

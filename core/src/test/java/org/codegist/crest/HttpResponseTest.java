@@ -57,7 +57,7 @@ public class HttpResponseTest {
     }
 
     @Test
-    public void testContentType() throws UnsupportedEncodingException {
+    public void testContentType() throws IOException {
         HttpResponse res = buildResponseForStream("charset=utf-8");
         assertEquals(Charset.forName("utf-8"), res.getCharset());
         assertEquals("text/html", res.getMimeType());
@@ -95,20 +95,35 @@ public class HttpResponseTest {
     public void testGZip() throws IOException {
         Map<String, List<String>> headers = new HashMap<String, List<String>>();
         headers.put("Content-Encoding", Arrays.asList("gzip"));
-        String original = "data";
+        final String original = "data";
 
-        ByteArrayOutputStream bout = new ByteArrayOutputStream();
-        GZIPOutputStream out = new GZIPOutputStream(bout);
-        out.write(original.getBytes("ISO-8859-1"));
-        out.close();
+        HttpResponse response = new HttpResponse(mock(HttpRequest.class), 201, headers, new HttpResource() {
+            private final InputStream stream;
+            {
+                ByteArrayOutputStream bout = new ByteArrayOutputStream();
+                GZIPOutputStream out = new GZIPOutputStream(bout);
+                out.write(original.getBytes("ISO-8859-1"));
+                out.close();
+                stream = new ByteArrayInputStream(bout.toByteArray());
+            }
+            public InputStream getContent() throws HttpException {
+                return stream;
+            }
 
-        HttpResponse response = new HttpResponse(mock(HttpRequest.class), 201, headers, new ByteArrayInputStream(bout.toByteArray()));
+            public void release() throws HttpException {
+                try {
+                    stream.close();
+                } catch (IOException e) {
+                    throw new HttpException(e);
+                }
+            }
+        });
         String data = IOs.toString(response.asReader());
         assertEquals(original, data);
     }
 
     @Test
-    public void testMultipleReadsSuccess() throws UnsupportedEncodingException {
+    public void testMultipleReadsSuccess() throws IOException {
         HttpResponse response = buildResponseForStream("data".getBytes("utf-8"), "charset=utf-8");
         assertEquals("data", response.asString());
         assertEquals("data", response.asString());
@@ -289,15 +304,27 @@ public class HttpResponseTest {
     }
 
 
-    private static HttpResponse buildResponseForStream(String contentType) throws UnsupportedEncodingException {
+    private static HttpResponse buildResponseForStream(String contentType) throws IOException {
         return buildResponseForStream(null, contentType);
     }
 
-    private static HttpResponse buildResponseForStream(byte[] data, String contentType) throws UnsupportedEncodingException {
+    private static HttpResponse buildResponseForStream(byte[] data, String contentType) throws IOException {
         HttpRequest request = mock(HttpRequest.class);
         Map<String, List<String>> headers = new HashMap<String, List<String>>();
         headers.put("Content-Type", Arrays.asList(contentType));
-        InputStream stream = data != null ? new ByteArrayInputStream(data) : null;
-        return new HttpResponse(request, 212, headers, stream);
+        final InputStream stream = data != null ? new ByteArrayInputStream(data) : null;
+        return new HttpResponse(request, 212, headers, stream == null ? null : (new HttpResource() {
+            public InputStream getContent() throws HttpException {
+                return stream;
+            }
+
+            public void release() throws HttpException {
+                try {
+                    stream.close();
+                } catch (IOException e) {
+                    throw new HttpException(e);
+                }
+            }
+        }));
     }
 }

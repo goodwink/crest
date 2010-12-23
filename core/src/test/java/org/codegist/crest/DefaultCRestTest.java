@@ -130,7 +130,20 @@ public class DefaultCRestTest {
                 if(++i < throwErrorsCount)
                     throw new HttpException("error!", new HttpResponse((HttpRequest)invocationOnMock.getArguments()[0], 400));
                 else
-                    return new HttpResponse((HttpRequest)invocationOnMock.getArguments()[0], 200, null, new ByteArrayInputStream(new byte[]{10}));
+                    return new HttpResponse((HttpRequest)invocationOnMock.getArguments()[0], 200, null, (new HttpResource() {
+                        final InputStream stream = new ByteArrayInputStream(new byte[]{10});
+                        public InputStream getContent() throws HttpException {
+                            return stream;
+                        }
+
+                        public void release() throws HttpException {
+                            try {
+                                stream.close();
+                            } catch (IOException e) {
+                                throw new HttpException(e);
+                            }
+                        }
+                    }));
             }
         });
         return new DefaultCRest(
@@ -159,7 +172,20 @@ public class DefaultCRestTest {
                 Map<String,List<String>> headers = new HashMap<String, List<String>>();
                 headers.put("Content-Type", Arrays.asList("charset=utf-8"));
                 try {
-                    return new HttpResponse(new HttpRequest.Builder("http://test", "utf-8").build(), 200, headers, new ByteArrayInputStream(MODEL_RESPONSE_JSON.getBytes()));
+                    return new HttpResponse(new HttpRequest.Builder("http://test", "utf-8").build(), 200, headers, (new HttpResource() {
+                        final InputStream stream = new ByteArrayInputStream(MODEL_RESPONSE_JSON.getBytes());
+                        public InputStream getContent() throws HttpException {
+                            return stream;
+                        }
+
+                        public void release() throws HttpException {
+                            try {
+                                stream.close();
+                            } catch (IOException e) {
+                                throw new HttpException(e);
+                            }
+                        }
+                    }));
                 } catch (URISyntaxException e) {
                     return null;
                 }
@@ -279,7 +305,20 @@ public class DefaultCRestTest {
         }))).thenAnswer(new Answer<Object>() {
             @Override
             public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
-                return new HttpResponse(null, 200, null, new ByteArrayInputStream(MODEL_RESPONSE_JSON.getBytes()));
+                return new HttpResponse(null, 200, null, (new HttpResource() {
+                    final InputStream stream = new ByteArrayInputStream(MODEL_RESPONSE_JSON.getBytes());
+                    public InputStream getContent() throws HttpException {
+                        return stream;
+                    }
+
+                    public void release() throws HttpException {
+                        try {
+                            stream.close();
+                        } catch (IOException e) {
+                            throw new HttpException(e);
+                        }
+                    }
+                }));
             }
         });
 

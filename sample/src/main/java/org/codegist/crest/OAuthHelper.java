@@ -54,12 +54,12 @@ public class OAuthHelper {
     }
 
 
-    private static void doAccessTokenRetrievalWorkflow(String consumerTok, String consumerSecret, final String requestUrl, final String accessUrl, String redirect) throws IOException {
+    private static void doAccessTokenRetrievalWorkflow(String consumerTok, String consumerSecret, String requestUrl, String accessUrl, String redirect) throws IOException {
         Token consumerToken = new Token(consumerTok, consumerSecret);
-        Map<String, Object> config = new HashMap<String, Object>() {{
-            put(OAuthenticatorV10.CONFIG_TOKEN_REQUEST_URL, requestUrl);
-            put(OAuthenticatorV10.CONFIG_TOKEN_ACCESS_URL, accessUrl);
-        }};
+        Map<String, Object> config = new HashMap<String, Object>();
+        config.put(OAuthenticatorV10.CONFIG_TOKEN_REQUEST_URL, requestUrl);
+        config.put(OAuthenticatorV10.CONFIG_TOKEN_ACCESS_URL, accessUrl);
+
         OAuthenticator oauth = new OAuthenticatorV10(new DefaultRestService(), consumerToken, config);
 
         Token tok = oauth.getRequestToken();

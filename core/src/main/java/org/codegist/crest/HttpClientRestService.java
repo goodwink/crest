@@ -45,6 +45,7 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
+import org.codegist.common.io.InputStreamWrapper;
 import org.codegist.common.lang.Disposable;
 import org.codegist.common.lang.Strings;
 import org.codegist.common.log.Logger;
@@ -113,7 +114,7 @@ public class HttpClientRestService implements RestService, Disposable {
                         httpRequest,
                         response.getStatusLine().getStatusCode(),
                         toHeaders(response.getAllHeaders()),
-                        entity.getContent());
+                        new HttpResourceImpl(request, entity));
                 if (res.getStatusCode() != HttpStatus.SC_OK) {
                     throw new HttpException(response.getStatusLine().getReasonPhrase(), res);
                 }
@@ -263,6 +264,36 @@ public class HttpClientRestService implements RestService, Disposable {
             dispose();
         } finally {
             super.finalize();
+        }
+    }
+
+    private class HttpResourceImpl implements HttpResource {
+
+        private final Logger logger = Logger.getLogger(HttpResourceImpl.class);
+        private final HttpUriRequest request;
+        private final HttpEntity entity;
+
+        public HttpResourceImpl(HttpUriRequest request, HttpEntity entity) {
+            this.request = request;
+            this.entity = entity;
+        }
+
+        public InputStream getContent() throws HttpException {
+            try {
+                return entity.getContent();
+            } catch (IOException e) {
+                throw new HttpException(e);
+            }
+        }
+
+        public void release() throws HttpException {
+            try {
+                entity.consumeContent();
+            } catch (IOException e) {
+                logger.warn(e, "Failed to consume content for request %s", request);
+            } finally {
+                request.abort();
+            }
         }
     }
 }

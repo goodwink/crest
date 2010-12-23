@@ -28,6 +28,9 @@ public class HttpException extends RuntimeException {
     private final HttpResponse response;
     private final String responseString;
 
+    public HttpException(Throwable cause) {
+        this(null,null,cause);
+    }
     public HttpException(String message, HttpResponse response) {
         super(message);
         this.response = response;
