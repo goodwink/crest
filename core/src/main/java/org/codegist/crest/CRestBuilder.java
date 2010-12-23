@@ -40,6 +40,7 @@ import org.codegist.crest.security.AuthentificationManager;
 import org.codegist.crest.security.OAuthentificationManager;
 import org.codegist.crest.security.interceptor.AuthentificationInterceptor;
 import org.codegist.crest.serializer.Serializer;
+import org.w3c.dom.Document;
 
 import javax.xml.bind.JAXBException;
 import java.lang.reflect.Type;
@@ -64,7 +65,7 @@ import static org.codegist.crest.CRestProperty.*;
  *
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  * @see org.codegist.crest.config.AnnotationDrivenInterfaceConfigFactory
- * @see org.codegist.crest.config.PropertiesDrivenInterfaceFactory
+ * @see org.codegist.crest.config.PropertiesDrivenInterfaceConfigFactory
  * @see org.codegist.crest.DefaultRestService
  * @see org.codegist.crest.HttpClientRestService
  * @see org.codegist.common.reflect.CglibProxyFactory
@@ -79,6 +80,7 @@ public class CRestBuilder {
 
     private final static int CFG_TYPE_ANNO = 0;
     private final static int CFG_TYPE_PROP = 1;
+    private final static int CFG_TYPE_XML = 2;
 
     private final static int PROXY_TYPE_JDK = 0;
     private final static int PROXY_TYPE_CGLIB = 1;
@@ -87,6 +89,7 @@ public class CRestBuilder {
     private int configType = CFG_TYPE_ANNO;
     private int proxyType = PROXY_TYPE_JDK;
     private Map<String,String> properties = null;
+    private Document document = null;
     private InterfaceConfigFactory overridesFactory = null;
     private String modelPackageName = null;
     private Class<?> modelPackageFactory = null;
@@ -226,14 +229,22 @@ public class CRestBuilder {
                 if (properties != null) {
                     configFactory = new OverridingInterfaceConfigFactory(
                             new AnnotationDrivenInterfaceConfigFactory(),
-                            new PropertiesDrivenInterfaceFactory(properties, false)
+                            new PropertiesDrivenInterfaceConfigFactory(properties, false)
                     );
-                } else {
+                } else if (document != null) {
+                    configFactory = new OverridingInterfaceConfigFactory(
+                            new AnnotationDrivenInterfaceConfigFactory(),
+                            new XmlDrivenInterfaceConfigFactory(document, false)
+                    );
+                }else {
                     configFactory = new AnnotationDrivenInterfaceConfigFactory();
                 }
                 break;
             case CFG_TYPE_PROP:
-                configFactory = new PropertiesDrivenInterfaceFactory(properties);
+                configFactory = new PropertiesDrivenInterfaceConfigFactory(properties);
+                break;
+            case CFG_TYPE_XML:
+                configFactory = new XmlDrivenInterfaceConfigFactory(document);
                 break;
         }
         if (overridesFactory != null) {
@@ -481,10 +492,10 @@ public class CRestBuilder {
     }
 
     /**
-     * Resulting CRest instance will handle properties bases configuration.
+     * Resulting CRest instance will handle properties based configuration.
      * <p>Given properties must be able to configure any possible interface given to the resulting CRest instance.
      *
-     * @param props
+     * @param props configuration properties
      * @return current builder
      */
     public CRestBuilder withPropertiesConfig(Map<String,String> props) {
@@ -494,16 +505,43 @@ public class CRestBuilder {
     }
 
     /**
+     * Resulting CRest instance will handle xml based configuration.
+     * <p>Given xml must be able to configure any possible interface given to the resulting CRest instance.
+     *
+     * @param document xml configuration document
+     * @return current builder
+     */
+    public CRestBuilder withXmlConfig(Document document) {
+        this.configType = CFG_TYPE_XML;
+        this.document = document;
+        return this;
+    }
+
+    /**
      * Resulting CRest instance will overrides any configuration resulting from its current {@link org.codegist.crest.config.InterfaceConfigFactory} with the given properties.
-     * <p>Properties must be formatted as documentated in {@link org.codegist.crest.config.PropertiesDrivenInterfaceFactory}
+     * <p>Properties must be formatted as documentated in {@link org.codegist.crest.config.PropertiesDrivenInterfaceConfigFactory}
      * <p>Can be used for instance to override the server end-point for differents devs environment.
      *
      * @param props properties
      * @return current builder
-     * @see org.codegist.crest.config.PropertiesDrivenInterfaceFactory
+     * @see org.codegist.crest.config.PropertiesDrivenInterfaceConfigFactory
      */
     public CRestBuilder overrideDefaultConfigWith(Map<String,String> props) {
         this.properties = props;
+        return this;
+    }
+
+    /**
+     * Resulting CRest instance will overrides any configuration resulting from its current {@link org.codegist.crest.config.InterfaceConfigFactory} with the given xml configuration.
+     * <p>Document must be formatted as documentated in {@link org.codegist.crest.config.XmlDrivenInterfaceConfigFactory}
+     * <p>Can be used for instance to override the server end-point for differents devs environment.
+     *
+     * @param document xml configuration
+     * @return current builder
+     * @see org.codegist.crest.config.XmlDrivenInterfaceConfigFactory
+     */
+    public CRestBuilder overrideDefaultConfigWith(Document document) {
+        this.document = document;
         return this;
     }
 

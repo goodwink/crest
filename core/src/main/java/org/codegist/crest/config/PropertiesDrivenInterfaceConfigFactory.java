@@ -38,7 +38,7 @@ import static org.codegist.common.lang.Strings.isBlank;
  * <p>Usefull when the end-point should be read externally instead, eg for profil (dev,integration,prod)
  * <p>Expected format for a single Interface config is of the following :
  * <p>- Any property not specified as mandatory is optional.
- * <p>- The same logic as the annotation config applies here, config fallbacks from param to method to interface until one config is found, otherwise defaults to any respective default value ({@link org.codegist.crest.config.InterfaceConfig}, {@link MethodConfig}, {@link PropertiesDrivenInterfaceFactory}).
+ * <p>- The same logic as the annotation config applies here, config fallbacks from param to method to interface until one config is found, otherwise defaults to any respective default value ({@link org.codegist.crest.config.InterfaceConfig}, {@link MethodConfig}, {@link ParamConfig}).
  * <code><pre>
  * package my.rest.interface;
  * class Interface {
@@ -109,17 +109,17 @@ import static org.codegist.common.lang.Strings.isBlank;
  * @see org.codegist.crest.config.InterfaceConfig
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
-public class PropertiesDrivenInterfaceFactory implements InterfaceConfigFactory {
+public class PropertiesDrivenInterfaceConfigFactory implements InterfaceConfigFactory {
 
     //TODO this class would need a nice clean up....
     private final Map<String, String> properties;
     private final boolean useDefaults;
 
-    public PropertiesDrivenInterfaceFactory(Map<String,String> properties) {
+    public PropertiesDrivenInterfaceConfigFactory(Map<String, String> properties) {
         this(properties, true);
     }
 
-    public PropertiesDrivenInterfaceFactory(Map<String,String> properties, boolean useDefaults) {
+    public PropertiesDrivenInterfaceConfigFactory(Map<String, String> properties, boolean useDefaults) {
         this.properties = Maps.unmodifiable(properties);
         this.useDefaults = useDefaults;
     }
@@ -131,9 +131,6 @@ public class PropertiesDrivenInterfaceFactory implements InterfaceConfigFactory 
             String serviceAlias = getClassAlias(interfaze);
             String server = defaultIfBlank(getServiceProp(serviceAlias, "end-point"), globalServer);
             if (isBlank(server)) throw new IllegalArgumentException("server not found!");
-
-
-
 
             ConfigBuilders.InterfaceConfigBuilder ricb = new ConfigBuilders.InterfaceConfigBuilder(interfaze, server, context.getProperties()).setIgnoreNullOrEmptyValues(true);
             ricb.setContextPath(getServiceProp(serviceAlias, "context-path"))

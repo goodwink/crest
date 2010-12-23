@@ -33,7 +33,7 @@ import java.util.Map;
  * <p>Annotation based config factory of any possible interfaces given to the factory.
  * <p>The factory will lookup any annotation in package {@link org.codegist.crest.annotate} on to the given interface.
  * <p/>
- * <p>- Each config fallback from param to method to interface until one config is found, otherwise defaults to any respective default value ({@link org.codegist.crest.config.InterfaceConfig}, {@link MethodConfig}, {@link PropertiesDrivenInterfaceFactory}).
+ * <p>- Each config fallback from param to method to interface until one config is found, otherwise defaults to any respective default value ({@link org.codegist.crest.config.InterfaceConfig}, {@link MethodConfig}, {@link PropertiesDrivenInterfaceConfigFactory}).
  * @see org.codegist.crest.config.InterfaceConfig
  * @see org.codegist.crest.annotate
  * @author Laurent Gilles (laurent.gilles@codegist.org)

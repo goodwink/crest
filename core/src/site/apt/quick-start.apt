@@ -72,9 +72,59 @@ public interface StatusService {
 
     In order to do so, you can use the Properties driven configuration in addition to the annotation driven one in order to override some information.
 
+** Xml
+
+    Xml driven configuration can be used to make the <<<CRest>>> looks for interface mapping configuration from a xml document instead than interface annotations.
+    This approach should be used only on top of the annotation driven configuration in order to override some configuration options rather than expects the xml driven configuration to handle everything.
+
+    Here what the <<CRest>> configuration xml file would looks like for the previous <<<StatusService>>> interface:
+
++-----
+<?xml version="1.0" encoding="UTF-8"?>
+<crest-config>
+    <service class="my.project.StatusService">
+        <end-point>http://api.twitter.com</end-point>
+        <context-path>/1/statuses</context-path>
+        <global-interceptor>org.codegist.crest.Stubs$RequestInterceptor1</global-interceptor>
+        <methods>
+            <method match="getRetweets\(.*\)" connection-timeout="10000">
+                <path>/retweets/{0}.json</path>
+            </method>
+            <method match="changeStatus\(.*\)">
+                <path>/update.json?lat={1}&long={2}</path>
+                <params>
+                    <param index="0" name="status" destination="BODY"/>
+                </params>
+            </method>
+        </methods>
+    </service>
+</crest-config>
++-----
+
+    Be aware that by prefering the xml driven configuration over the annotation one, the <<<CRest>>> will need to have a preconfigured properties set able to configure any possible interface given to it.
+
+    In a real world use case scenario, one will use the xml configuration approach on top of the annotated approach, as the following:
+
+    Given a xml document :
+
++-----
+<?xml version="1.0" encoding="UTF-8"?>
+<crest-config end-point="http://127.0.0.1:8080">(...)</crest-config>
++-----
+
++-----
+Document doc = ...;
+
+CRest crest = new CRestBuilder()
+                        .overrideDefaultConfigWith(doc)
+                        .build();
++-----
+
+    Note that the property "end-point" can be set at the crest-config element level will be apply the given end-point to any interface given to the xml driven configurator.
+
 ** Properties
 
-    The properties driven configuration can be used to make the <<<CRest>>> looks for interface mapping configuration from a Map instead than interface annotations.
+    Properties driven configuration can be used to make the <<<CRest>>> looks for interface mapping configuration from a Map instead than interface annotations.
     This approach should be used only on top of the annotation driven configuration in order to override some configuration options rather than expects the property driven configuration to handle everything.
 
     Here what the <<CRest>> configuration properties file would looks like for the previous <<<StatusService>>> interface:
@@ -103,7 +153,6 @@ Properties props = new Properties();
 props.setProperty("service.end-point", "http://127.0.0.1:8080");
 
 CRest crest = new CRestBuilder()
-                        .expectsJson()
                         .overrideDefaultConfigWith(props)
                         .build();
 +-----

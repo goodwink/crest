@@ -20,11 +20,11 @@
 
 package org.codegist.crest;
 
-import java.io.IOException;
 import java.io.InputStream;
 
 /**
  * HttpResource abstraction that provides methods to access resource stream and release network resources.
+ *
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
 public interface HttpResource {
@@ -37,6 +37,7 @@ public interface HttpResource {
 
     /**
      * Release the network resources used by the resource
+     *
      * @throws HttpException
      */
     void release() throws HttpException;

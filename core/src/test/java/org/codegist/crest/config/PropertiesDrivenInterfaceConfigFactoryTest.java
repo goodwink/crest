@@ -39,18 +39,18 @@ import static org.mockito.Mockito.mock;
 /**
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
-public class PropertiesDrivenInterfaceFactoryTest extends AbstractInterfaceConfigFactoryTest {
+public class PropertiesDrivenInterfaceConfigFactoryTest extends AbstractInterfaceConfigFactoryTest {
 
     private final CRestContext mockContext = mock(CRestContext.class);
 
     @Test
     public void testInterfaceOverridesTypeInjector() throws ConfigFactoryException {
         Map<String,String> p = new HashMap<String, String>();
-        p.put("service.test.class", "org.codegist.crest.config.PropertiesDrivenInterfaceFactoryTest$InjectorTestInterface");
+        p.put("service.test.class", "org.codegist.crest.config.PropertiesDrivenInterfaceConfigFactoryTest$InjectorTestInterface");
         p.put("service.test.end-point", "http://localhost:8080");
         p.put("service.test.method.m.pattern", "get.*");
         p.put("service.test.method.m.params.0.injector", "org.codegist.crest.Stubs$RequestParameterInjector3");
-        PropertiesDrivenInterfaceFactory factory = newFactory(p);
+        PropertiesDrivenInterfaceConfigFactory factory = newFactory(p);
         InterfaceConfig cfg = factory.newConfig(InjectorTestInterface.class, mockContext);
         assertEquals(Stubs.RequestParameterInjector3.class, cfg.getMethodConfig(InjectorTestInterface.M).getParamConfig(0).getInjector().getClass());
     }
@@ -58,9 +58,9 @@ public class PropertiesDrivenInterfaceFactoryTest extends AbstractInterfaceConfi
     @Test
     public void testTypeInjectorIsRead() throws ConfigFactoryException {
         Map<String,String> p = new HashMap<String, String>();
-        p.put("service.test.class", "org.codegist.crest.config.PropertiesDrivenInterfaceFactoryTest$InjectorTestInterface");
+        p.put("service.test.class", "org.codegist.crest.config.PropertiesDrivenInterfaceConfigFactoryTest$InjectorTestInterface");
         p.put("service.test.end-point", "http://localhost:8080");
-        PropertiesDrivenInterfaceFactory factory = newFactory(p);
+        PropertiesDrivenInterfaceConfigFactory factory = newFactory(p);
         InterfaceConfig cfg = factory.newConfig(InjectorTestInterface.class, mockContext);
         assertEquals(Stubs.RequestParameterInjector1.class, cfg.getMethodConfig(InjectorTestInterface.M).getParamConfig(0).getInjector().getClass());
     }
@@ -77,34 +77,34 @@ public class PropertiesDrivenInterfaceFactoryTest extends AbstractInterfaceConfi
 
     @Test(expected = RuntimeException.class)
     public void testInvalidConfig() throws ConfigFactoryException {
-        PropertiesDrivenInterfaceFactory factory = new PropertiesDrivenInterfaceFactory(new HashMap<String, String>());
+        PropertiesDrivenInterfaceConfigFactory factory = new PropertiesDrivenInterfaceConfigFactory(new HashMap<String, String>());
         factory.newConfig(Interface.class, mockContext);
     }
 
     @Test
     public void testMinimalConfig() throws IOException, ConfigFactoryException {
-        PropertiesDrivenInterfaceFactory factory = newFactory("minimal-config.properties");
+        PropertiesDrivenInterfaceConfigFactory factory = newFactory("minimal-config.properties");
         assertMinimalExpected(factory.newConfig(Interface.class, mockContext), Interface.class);
     }
 
     @Test
     public void testPartialConfig() throws IOException, ConfigFactoryException {
-        PropertiesDrivenInterfaceFactory factory = newFactory("partial-config.properties");
+        PropertiesDrivenInterfaceConfigFactory factory = newFactory("partial-config.properties");
         assertPartialExpected(factory.newConfig(Interface.class, mockContext), Interface.class);
     }
 
     @Test
     public void testFullConfig() throws IOException, ConfigFactoryException {
-        PropertiesDrivenInterfaceFactory factory = newFactory("full-config.properties");
+        PropertiesDrivenInterfaceConfigFactory factory = newFactory("full-config.properties");
         assertFullExpected(factory.newConfig(Interface.class, mockContext), Interface.class);
     }
 
 
-    public PropertiesDrivenInterfaceFactory newFactory(Map<String,String> p) {
-        return new PropertiesDrivenInterfaceFactory(p);
+    public PropertiesDrivenInterfaceConfigFactory newFactory(Map<String,String> p) {
+        return new PropertiesDrivenInterfaceConfigFactory(p);
     }
 
-    public PropertiesDrivenInterfaceFactory newFactory(String n) throws IOException {
+    public PropertiesDrivenInterfaceConfigFactory newFactory(String n) throws IOException {
         Properties prop = new Properties();
         InputStream is = getClass().getResourceAsStream(n);
         try {
@@ -119,7 +119,7 @@ public class PropertiesDrivenInterfaceFactoryTest extends AbstractInterfaceConfi
     public void testServerConfig() throws IOException, InstantiationException, IllegalAccessException, ConfigFactoryException {
         Map<String,String> props = new HashMap<String, String>();
         props.put("service.end-point", "hello");
-        PropertiesDrivenInterfaceFactory factory = new PropertiesDrivenInterfaceFactory(props);
+        PropertiesDrivenInterfaceConfigFactory factory = new PropertiesDrivenInterfaceConfigFactory(props);
         InterfaceConfig config = factory.newConfig(Interface.class, mockContext);
         InterfaceConfig expected = new ConfigBuilders.InterfaceConfigBuilder(Interface.class, "hello").build();
         InterfaceConfigTestHelper.assertExpected(expected, config, Interface.class);
