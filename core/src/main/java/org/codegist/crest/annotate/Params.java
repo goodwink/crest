@@ -29,7 +29,7 @@ import java.lang.annotation.Target;
  * <p>Optional method level annotation, sets a method default parameter list to add for all requests.
  * <p>Can be set at interface level to default all interface method default parameters list.
  * @see org.codegist.crest.config.MethodConfig#DEFAULT_PARAMS
- * @see org.codegist.crest.config.MethodConfig#getDefaultParams()
+ * @see org.codegist.crest.config.MethodConfig#getStaticParams()
  * @see Param
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */

@@ -214,10 +214,10 @@ public abstract class ConfigBuilders {
             return this;
         }     
 
-        public InterfaceConfigBuilder addMethodsDefaultParam(String name, String value, Destination destination){
+        public InterfaceConfigBuilder addMethodsStaticParam(String name, String value, Destination destination){
             if (ignore(name, value, destination)) return this;
             for (MethodConfigBuilder b : builderCache.values()) {
-                b.addDefaultParam(name, value, destination);
+                b.addStaticParam(name, value, destination);
             }
             return this;
         }
@@ -423,7 +423,7 @@ public abstract class ConfigBuilders {
 
         private String path;
         private HttpMethod meth;
-        private Map<String,Param> params = new LinkedHashMap<String, Param>();
+        private Map<String,StaticParam> params = new LinkedHashMap<String, StaticParam>();
         private Long socketTimeout;
         private Long connectionTimeout;
         private RequestInterceptor requestInterceptor;
@@ -472,7 +472,7 @@ public abstract class ConfigBuilders {
             for (int i = 0; i < paramConfigBuilders.length; i++) {
                 pConfig[i] = this.paramConfigBuilders[i].build(useDefaults);
             }
-            Param[] defaultParams = params != null && params.size() > 0 ? params.values().toArray(new Param[params.size()]) : null;
+            StaticParam[] defaultParams = params != null && params.size() > 0 ? params.values().toArray(new StaticParam[params.size()]) : null;
             if (useDefaults) {
                 path = defaultIfUndefined(path, CRestProperty.CONFIG_METHOD_DEFAULT_PATH, MethodConfig.DEFAULT_PATH);
                 meth = defaultIfUndefined(meth, CRestProperty.CONFIG_METHOD_DEFAULT_HTTP_METHOD, MethodConfig.DEFAULT_HTTP_METHOD);
@@ -518,9 +518,9 @@ public abstract class ConfigBuilders {
             return this;
         }
 
-        public MethodConfigBuilder addDefaultParam(String name, String value, Destination destination){
+        public MethodConfigBuilder addStaticParam(String name, String value, Destination destination){
             if (ignore(name, value, destination)) return this;
-            this.params.put(name, new DefaultParam(name, value, destination));
+            this.params.put(name, new DefaultStaticParam(name, value, destination));
             return this;
         }
 

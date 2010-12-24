@@ -163,7 +163,7 @@ public class XmlDrivenInterfaceConfigFactory implements InterfaceConfigFactory {
                     String name = getString(staticParam, "@name");
                     String destination = getString(staticParam, "@destination");
                     Destination dest = Strings.isBlank(destination) ? Destination.URL : Destination.valueOf(destination);
-                    icb.addMethodsDefaultParam(name, staticParam.getTextContent(), dest);
+                    icb.addMethodsStaticParam(name, staticParam.getTextContent(), dest);
                 }
             }
 
@@ -192,7 +192,7 @@ public class XmlDrivenInterfaceConfigFactory implements InterfaceConfigFactory {
                             String name = getString(methStaticParam, "@name");
                             String destination = getString(methStaticParam, "@destination");
                             Destination dest = Strings.isBlank(destination) ? Destination.URL : Destination.valueOf(destination);
-                            mcb.addDefaultParam(name, methStaticParam.getTextContent(), dest);
+                            mcb.addStaticParam(name, methStaticParam.getTextContent(), dest);
                         }
 
                         mcb.setPath(getString(methodNode, "path"))

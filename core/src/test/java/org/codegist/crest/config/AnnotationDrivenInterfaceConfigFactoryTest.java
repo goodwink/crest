@@ -25,7 +25,6 @@ import org.codegist.crest.Stubs;
 import org.codegist.crest.TestUtils;
 import org.codegist.crest.annotate.*;
 import org.codegist.crest.annotate.Destination;
-import org.codegist.crest.annotate.Param;
 import org.codegist.crest.injector.DefaultInjector;
 import org.junit.Test;
 

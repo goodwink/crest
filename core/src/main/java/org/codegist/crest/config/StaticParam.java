@@ -20,7 +20,7 @@
 
 package org.codegist.crest.config;
 
-public interface Param {
+public interface StaticParam {
 
     String getName();
 

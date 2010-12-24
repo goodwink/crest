@@ -67,7 +67,7 @@ public interface MethodConfig {
      *
      * @see MethodConfig#getPath()
      */
-    Param[] DEFAULT_PARAMS = new Param[0];
+    StaticParam[] DEFAULT_PARAMS = new StaticParam[0];
 
     /**
      * Default http method applied when non specified.
@@ -111,7 +111,7 @@ public interface MethodConfig {
      */
     Method getMethod();
 
-    Param[] getDefaultParams();
+    StaticParam[] getStaticParams();
 
     ResponseHandler getResponseHandler();
 

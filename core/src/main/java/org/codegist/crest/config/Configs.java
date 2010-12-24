@@ -148,8 +148,8 @@ public final class Configs {
             this.override = override;
         }
 
-        public Param[] getDefaultParams() {
-            return override.getDefaultParams() != null ? override.getDefaultParams() : base.getDefaultParams();
+        public StaticParam[] getStaticParams() {
+            return override.getStaticParams() != null ? override.getStaticParams() : base.getStaticParams();
         }
 
         @Override

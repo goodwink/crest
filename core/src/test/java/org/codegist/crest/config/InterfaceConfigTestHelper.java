@@ -25,9 +25,10 @@ import org.codegist.crest.interceptor.CompositeRequestInterceptor;
 import org.codegist.crest.interceptor.RequestInterceptor;
 
 import java.lang.reflect.Method;
+import java.util.HashSet;
 
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Laurent Gilles (laurent.gilles@codegist.org)
@@ -68,8 +69,11 @@ public class InterfaceConfigTestHelper {
             assertEquals(testMsg, TestUtils.getClass(expMethCfg.getErrorHandler()), TestUtils.getClass(testMethCfg.getErrorHandler()));
             assertEquals(testMsg, TestUtils.getClass(expMethCfg.getRetryHandler()), TestUtils.getClass(testMethCfg.getRetryHandler()));
             assertEquals(testMsg, TestUtils.getClass(expMethCfg.getResponseHandler()), TestUtils.getClass(testMethCfg.getResponseHandler()));
-            assertArrayEquals(testMsg, expMethCfg.getDefaultParams(), testMethCfg.getDefaultParams());
-            
+            assertTrue((expMethCfg.getStaticParams() == null && testMethCfg.getStaticParams() == null) || (expMethCfg.getStaticParams() != null && testMethCfg.getStaticParams() != null));
+            if(expMethCfg.getStaticParams() != null && testMethCfg.getStaticParams() != null) {
+                assertEquals(testMsg, new HashSet<StaticParam>(java.util.Arrays.asList(expMethCfg.getStaticParams())), new HashSet<StaticParam>(java.util.Arrays.asList(testMethCfg.getStaticParams())));
+            }
+
             if (expMethCfg.getRequestInterceptor() instanceof CompositeRequestInterceptor) {
                 int max = ((CompositeRequestInterceptor) expMethCfg.getRequestInterceptor()).getInterceptors().length;
                 for (int i = 0; i < max; i++) {

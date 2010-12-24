@@ -24,13 +24,13 @@ import org.codegist.common.lang.EqualsBuilder;
 import org.codegist.common.lang.HashCodeBuilder;
 import org.codegist.common.lang.ToStringBuilder;
 
-class DefaultParam implements Param {
+class DefaultStaticParam implements StaticParam {
 
     private final String name;
     private final String value;
     private final Destination destination;
 
-    DefaultParam(String name, String value, Destination destination) {
+    DefaultStaticParam(String name, String value, Destination destination) {
         this.name = name;
         this.value = value;
         this.destination = destination;
@@ -55,7 +55,7 @@ class DefaultParam implements Param {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        DefaultParam that = (DefaultParam) o;
+        DefaultStaticParam that = (DefaultStaticParam) o;
 
         return new EqualsBuilder()
                 .append(destination, that.destination)

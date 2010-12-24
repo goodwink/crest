@@ -53,8 +53,8 @@ public class AnnotationDrivenInterfaceConfigFactory implements InterfaceConfigFa
 
             /* Methods defaults */
             Path path = interfaze.getAnnotation(Path.class);
-            org.codegist.crest.annotate.Param defaultParam = interfaze.getAnnotation(org.codegist.crest.annotate.Param.class);
-            org.codegist.crest.annotate.Params defaultParams = interfaze.getAnnotation(org.codegist.crest.annotate.Params.class);
+            org.codegist.crest.annotate.Param param = interfaze.getAnnotation(org.codegist.crest.annotate.Param.class);
+            org.codegist.crest.annotate.Params params = interfaze.getAnnotation(org.codegist.crest.annotate.Params.class);
             SocketTimeout socketTimeout = interfaze.getAnnotation(SocketTimeout.class);
             ConnectionTimeout connectionTimeout = interfaze.getAnnotation(ConnectionTimeout.class);
             RequestInterceptor interceptor = interfaze.getAnnotation(RequestInterceptor.class);
@@ -74,12 +74,12 @@ public class AnnotationDrivenInterfaceConfigFactory implements InterfaceConfigFa
             if(encoding != null) config.setEncoding(encoding.value());
             if(globalInterceptor != null) config.setGlobalInterceptor(globalInterceptor.value());
 
-            if(defaultParam != null) {
-                config.addMethodsDefaultParam(defaultParam.name(), defaultParam.value(), defaultParam.dest());
+            if(param != null) {
+                config.addMethodsStaticParam(param.name(), param.value(), param.dest());
             }
-            if(defaultParams != null) {
-                for(org.codegist.crest.annotate.Param p : defaultParams.value()){
-                    config.addMethodsDefaultParam(p.name(), p.value(), p.dest());
+            if(params != null) {
+                for(org.codegist.crest.annotate.Param p : params.value()){
+                    config.addMethodsStaticParam(p.name(), p.value(), p.dest());
                 }
             }
             
@@ -101,8 +101,8 @@ public class AnnotationDrivenInterfaceConfigFactory implements InterfaceConfigFa
             for (Method meth : interfaze.getDeclaredMethods()) {
                 /* Methods specifics */
                 path = meth.getAnnotation(Path.class);
-                defaultParam = meth.getAnnotation(org.codegist.crest.annotate.Param.class);
-                defaultParams = meth.getAnnotation(org.codegist.crest.annotate.Params.class);
+                param = meth.getAnnotation(org.codegist.crest.annotate.Param.class);
+                params = meth.getAnnotation(org.codegist.crest.annotate.Params.class);
                 socketTimeout = meth.getAnnotation(SocketTimeout.class);
                 connectionTimeout = meth.getAnnotation(ConnectionTimeout.class);
                 interceptor = meth.getAnnotation(RequestInterceptor.class);
@@ -119,12 +119,12 @@ public class AnnotationDrivenInterfaceConfigFactory implements InterfaceConfigFa
 
                 ConfigBuilders.MethodConfigBuilder methodConfigBuilder = config.startMethodConfig(meth);
 
-                if(defaultParam != null) {
-                    methodConfigBuilder.addDefaultParam(defaultParam.name(), defaultParam.value(), defaultParam.dest());
+                if(param != null) {
+                    methodConfigBuilder.addStaticParam(param.name(), param.value(), param.dest());
                 }
-                if(defaultParams != null) {
-                    for(org.codegist.crest.annotate.Param p : defaultParams.value()){
-                        methodConfigBuilder.addDefaultParam(p.name(), p.value(), p.dest());
+                if(params != null) {
+                    for(org.codegist.crest.annotate.Param p : params.value()){
+                        methodConfigBuilder.addStaticParam(p.name(), p.value(), p.dest());
                     }
                 }
 

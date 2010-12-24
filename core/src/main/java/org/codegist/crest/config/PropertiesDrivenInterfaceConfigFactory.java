@@ -55,8 +55,8 @@ import static org.codegist.common.lang.Strings.isBlank;
  * service.test.global-interceptor=my.rest.interceptor.MyRequestInterceptor
  * # default interface method configs
  * service.test.path=/hello
- * service.test.default-param.my-param-name.value=value1
- * service.test.default-param.my-param-name.destination=BODY
+ * service.test.static-param.my-param-name.value=value1
+ * service.test.static-param.my-param-name.destination=BODY
  * service.test.http-method=DELETE
  * service.test.socket-timeout=1
  * service.test.connection-timeout=2
@@ -73,8 +73,8 @@ import static org.codegist.common.lang.Strings.isBlank;
  * service.test.method.m1.pattern=get\\(.*\\)  #Pattern matching one or more methods. Config will apply to all matched method. Applies to "String get()" amd "String get(String)"
  * # method specifics configs
  * service.test.method.m1.path=/get
- * service.test.method.m1.default-param.my-param-name-2.value=value
- * service.test.method.m1.default-param.my-param-name-2.destination=HEADER
+ * service.test.method.m1.static-param.my-param-name-2.value=value
+ * service.test.method.m1.static-param.my-param-name-2.destination=HEADER
  * service.test.method.m1.http-method=PUT
  * service.test.method.m1.socket-timeout=3
  * service.test.method.m1.connection-timeout=4
@@ -149,13 +149,13 @@ public class PropertiesDrivenInterfaceConfigFactory implements InterfaceConfigFa
                     .setParamsSerializer(getServiceProp(serviceAlias, "serializer"))
                     .setParamsInjector(getServiceProp(serviceAlias, "injector"));
 
-            String[] paramPrefixes = getDefaultParamsPrefix(serviceAlias);
+            String[] paramPrefixes = getStaticParamsPrefix(serviceAlias);
             for(String prefix : paramPrefixes){
                 String name = prefix.substring(prefix.lastIndexOf(".") + 1);
                 String destination = getProp(prefix, "destination");
                 String value = getProp(prefix, "value");
                 Destination dest = Strings.isBlank(destination) ? Destination.URL : Destination.valueOf(destination);
-                ricb.addMethodsDefaultParam(name, value, dest);
+                ricb.addMethodsStaticParam(name, value, dest);
             }
 
             String[][] metPatterns = getMethodPatterns(serviceAlias);
@@ -169,13 +169,13 @@ public class PropertiesDrivenInterfaceConfigFactory implements InterfaceConfigFa
                     Method[] methods = Methods.getDeclaredMethodsThatMatches(interfaze, methPattern, true);
                     if (Arrays.asList(methods).contains(method)) {
 
-                        String[] mparamPrefixes = getDefaultParamsPrefix(serviceAlias, methAlias);
+                        String[] mparamPrefixes = getStaticParamsPrefix(serviceAlias, methAlias);
                         for(String prefix : mparamPrefixes){
                             String name = prefix.substring(prefix.lastIndexOf(".") + 1);
                             String destination = getProp(prefix, "destination");
                             String value = getProp(prefix, "value");
                             Destination dest = Strings.isBlank(destination) ? Destination.URL : Destination.valueOf(destination);
-                            mcb.addDefaultParam(name, value, dest);
+                            mcb.addStaticParam(name, value, dest);
                         }
 
                         mcb.setPath(getMethodProp(serviceAlias, methAlias, "path"))
@@ -272,8 +272,8 @@ public class PropertiesDrivenInterfaceConfigFactory implements InterfaceConfigFa
         }
         return patterns.toArray(new String[patterns.size()][2]);
     }
-    private String[] getDefaultParamsPrefix(String serviceAlias) {
-        String prefix = getServiceDefParamPrefix(serviceAlias);
+    private String[] getStaticParamsPrefix(String serviceAlias) {
+        String prefix = getServiceStaticParamPrefix(serviceAlias);
         Map<String,String> ps = Maps.extractByPattern(properties, Pattern.quote(prefix) + "\\..*");
         Set<String> names = new LinkedHashSet<String>();
         for (Map.Entry<String, String> entry : ps.entrySet()) {
@@ -283,8 +283,8 @@ public class PropertiesDrivenInterfaceConfigFactory implements InterfaceConfigFa
 
         return names.toArray(new String[names.size()]);
     }
-    private String[] getDefaultParamsPrefix(String serviceAlias, String methodPrefix) {
-        String prefix = getMethodDefParamPrefix(serviceAlias, methodPrefix);
+    private String[] getStaticParamsPrefix(String serviceAlias, String methodPrefix) {
+        String prefix = getMethodStaticParamPrefix(serviceAlias, methodPrefix);
         Map<String,String> ps = Maps.extractByPattern(properties, Pattern.quote(prefix) + "\\..*");
         Set<String> names = new LinkedHashSet<String>();
         for (Map.Entry<String, String> entry : ps.entrySet()) {
@@ -295,11 +295,11 @@ public class PropertiesDrivenInterfaceConfigFactory implements InterfaceConfigFa
         return names.toArray(new String[names.size()]);
     }
 
-    private static String getMethodDefParamPrefix(String serviceAlias, String methodAlias) {
-        return getMethodPrefix(serviceAlias, methodAlias) + ".default-param";
+    private static String getMethodStaticParamPrefix(String serviceAlias, String methodAlias) {
+        return getMethodPrefix(serviceAlias, methodAlias) + ".static-param";
     }
-    private static String getServiceDefParamPrefix(String serviceAlias) {
-        return getServicePrefix(serviceAlias) + ".default-param";
+    private static String getServiceStaticParamPrefix(String serviceAlias) {
+        return getServicePrefix(serviceAlias) + ".static-param";
     }
 
     private static String getMethodPrefix(String serviceAlias, String methodAlias) {

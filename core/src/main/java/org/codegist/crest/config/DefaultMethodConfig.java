@@ -37,7 +37,7 @@ class DefaultMethodConfig implements MethodConfig {
 
     private final Method method;
     private final String path;
-    private final Param[] param;
+    private final StaticParam[] param;
     private final HttpMethod httpMethod;
     private final Long socketTimeout;
     private final Long connectionTimeout;
@@ -48,7 +48,7 @@ class DefaultMethodConfig implements MethodConfig {
 
     private final ParamConfig[] paramConfigs;
 
-    DefaultMethodConfig(Method method, String path, Param[] param, HttpMethod httpMethod, Long socketTimeout, Long connectionTimeout, RequestInterceptor requestInterceptor, ResponseHandler responseHandler, ErrorHandler errorHandler, RetryHandler retryHandler, ParamConfig[] paramConfigs) {
+    DefaultMethodConfig(Method method, String path, StaticParam[] param, HttpMethod httpMethod, Long socketTimeout, Long connectionTimeout, RequestInterceptor requestInterceptor, ResponseHandler responseHandler, ErrorHandler errorHandler, RetryHandler retryHandler, ParamConfig[] paramConfigs) {
         this.method = method;
         this.path = path;
         this.param = param != null ? param.clone() : null;
@@ -63,7 +63,7 @@ class DefaultMethodConfig implements MethodConfig {
     }
 
     @Override
-    public Param[] getDefaultParams() {
+    public StaticParam[] getStaticParams() {
         return param != null ? param.clone() : null;
     }
 
