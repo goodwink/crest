@@ -90,11 +90,15 @@ public abstract class RestServiceContractTest {
             }
             for (Map.Entry<String, Object> file : UploadFileServlet.EXPECTED_FILES.entrySet()) {
                 assertNotNull(req.getAttribute(file.getKey()));
-                assertTrue(Arrays.equals(Files.toByteArray((File) file.getValue()), Files.toByteArray((File) req.getAttribute(file.getKey()))));
+                File upload = (File) req.getAttribute(file.getKey());
+                upload.deleteOnExit();
+                assertTrue(Arrays.equals(Files.toByteArray((File) file.getValue()), Files.toByteArray(upload)));
             }
             for (Map.Entry<String, Object> file : UploadInputStreamServlet.EXPECTED_INPUTSTREAM.entrySet()) {
                 assertNotNull(req.getAttribute(file.getKey()));
-                assertTrue(Arrays.equals(IOs.toByteArray(RestServiceContractTest.class.getResourceAsStream((String) file.getValue()), true), Files.toByteArray((File) req.getAttribute(file.getKey()))));
+                File upload = (File) req.getAttribute(file.getKey());
+                upload.deleteOnExit();
+                assertTrue(Arrays.equals(IOs.toByteArray(RestServiceContractTest.class.getResourceAsStream((String) file.getValue()), true), Files.toByteArray(upload)));
             }
 
             for (Map.Entry<String, String> entry : SimpleMethodsServlet.EXPECTED_SIMPLE_QUERY.entrySet()) {
@@ -117,10 +121,13 @@ public abstract class RestServiceContractTest {
         }
     }
 
+
+
     public static class UploadFileServlet extends HttpServlet {
 
         private static File copyToFS(String name, InputStream is) throws IOException {
             File f = File.createTempFile(name, null);
+            f.deleteOnExit();
             FileOutputStream out = new FileOutputStream(f);
             IOs.copy(is, out);
             out.close();
@@ -145,9 +152,11 @@ public abstract class RestServiceContractTest {
 
         protected void doPostOrPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
             assertTrue(req.getContentType().startsWith("multipart/form-data;"));
-            for (Map.Entry<String, Object> file : EXPECTED_FILES.entrySet()) {
-                assertNotNull(req.getAttribute(file.getKey()));
-                assertTrue(Arrays.equals(Files.toByteArray((File) file.getValue()), Files.toByteArray((File) req.getAttribute(file.getKey()))));
+            for (Map.Entry<String, Object> fileEntry : EXPECTED_FILES.entrySet()) {
+                assertNotNull(req.getAttribute(fileEntry.getKey()));
+                File upload = (File) req.getAttribute(fileEntry.getKey());
+                upload.deleteOnExit();
+                assertTrue(Arrays.equals(Files.toByteArray((File) fileEntry.getValue()), Files.toByteArray(upload)));
             }
             RestServiceContractTest.write(req, resp, "OK", 200);
         }
@@ -176,9 +185,11 @@ public abstract class RestServiceContractTest {
 
         protected void doPostOrPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
             assertTrue(req.getContentType().startsWith("multipart/form-data;"));
-            for (Map.Entry<String, Object> file : EXPECTED_INPUTSTREAM.entrySet()) {
-                assertNotNull(req.getAttribute(file.getKey()));
-                assertTrue(Arrays.equals(IOs.toByteArray(RestServiceContractTest.class.getResourceAsStream((String) file.getValue()), true), Files.toByteArray((File) req.getAttribute(file.getKey()))));
+            for (Map.Entry<String, Object> fileEntry : EXPECTED_INPUTSTREAM.entrySet()) {
+                assertNotNull(req.getAttribute(fileEntry.getKey()));
+                File upload = (File) req.getAttribute(fileEntry.getKey());
+                upload.deleteOnExit();
+                assertTrue(Arrays.equals(IOs.toByteArray(RestServiceContractTest.class.getResourceAsStream((String) fileEntry.getValue()), true), Files.toByteArray(upload)));
             }
             RestServiceContractTest.write(req, resp, "OK", 200);
         }
