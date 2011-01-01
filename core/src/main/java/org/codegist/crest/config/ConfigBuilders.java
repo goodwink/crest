@@ -20,6 +20,7 @@
 
 package org.codegist.crest.config;
 
+import org.codegist.common.collect.Arrays;
 import org.codegist.common.collect.Maps;
 import org.codegist.common.lang.Objects;
 import org.codegist.common.lang.Strings;
@@ -476,7 +477,8 @@ public abstract class ConfigBuilders {
             if (useDefaults) {
                 path = defaultIfUndefined(path, CRestProperty.CONFIG_METHOD_DEFAULT_PATH, MethodConfig.DEFAULT_PATH);
                 meth = defaultIfUndefined(meth, CRestProperty.CONFIG_METHOD_DEFAULT_HTTP_METHOD, MethodConfig.DEFAULT_HTTP_METHOD);
-                defaultParams = defaultIfUndefined(defaultParams, CRestProperty.CONFIG_METHOD_DEFAULT_PARAMS, MethodConfig.DEFAULT_PARAMS);
+                StaticParam[] defs = defaultIfUndefined(null, CRestProperty.CONFIG_METHOD_DEFAULT_PARAMS, MethodConfig.DEFAULT_PARAMS);
+                defaultParams = Arrays.merge(StaticParam.class, defaultParams, defs);
                 socketTimeout = defaultIfUndefined(socketTimeout, CRestProperty.CONFIG_METHOD_DEFAULT_SO_TIMEOUT, MethodConfig.DEFAULT_SO_TIMEOUT);
                 connectionTimeout = defaultIfUndefined(connectionTimeout, CRestProperty.CONFIG_METHOD_DEFAULT_CO_TIMEOUT, MethodConfig.DEFAULT_CO_TIMEOUT);
                 requestInterceptor = defaultIfUndefined(requestInterceptor, CRestProperty.CONFIG_METHOD_DEFAULT_REQUEST_INTERCEPTOR, newInstance(MethodConfig.DEFAULT_REQUEST_INTERCEPTOR));

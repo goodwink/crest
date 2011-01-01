@@ -237,7 +237,7 @@ public interface CRestProperty {
 
     /**
      * override the default method params {@link org.codegist.crest.config.MethodConfig#DEFAULT_PARAMS}.
-     * <p>Expects a member of {@link org.codegist.crest.HttpMethod}.
+     * <p>Expects an array of {@link org.codegist.crest.config.StaticParam}
      *
      * @see org.codegist.crest.InterfaceContext#getProperties()
      */
@@ -245,7 +245,7 @@ public interface CRestProperty {
 
     /**
      * override the default response handler {@link org.codegist.crest.config.MethodConfig#DEFAULT_RESPONSE_HANDLER}.
-     * <p>Expects an array of {@link org.codegist.crest.config.StaticParam}
+     * <p>Expects an instance of {@link org.codegist.crest.handler.ResponseHandler}.
      *
      * @see org.codegist.crest.InterfaceContext#getProperties()
      */

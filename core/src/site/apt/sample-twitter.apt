@@ -17,6 +17,7 @@ Twitter Samples
 +-----
 @EndPoint("http://api.twitter.com")
 @ContextPath("/1/statuses")
+@Param(name = "Accept-Encoding", value = "gzip", dest = HEADER)
 public interface StatusService {
 
     @HttpMethod(POST)
@@ -60,7 +61,6 @@ public interface StatusService {
 // Get a CRest instance. Should be done once.
 CRest crest = new CRestBuilder()
                         .expectsJson()
-                        .addGlobalRequestHeader("Accept-Encoding", "gzip") /* Not required */
                         .usePreauthentifiedOAuth(consumerKey, consumerSecret, accessToken, accessTokenSecret)
                         .build();
 
@@ -81,6 +81,7 @@ Status status = service.updateStatus("Status updated!");
 +-----
 @EndPoint("http://api.twitter.com")
 @ContextPath("/1/direct_messages")
+@Param(name = "Accept-Encoding", value = "gzip", dest = HEADER)
 public interface DirectMessageService {
 
     @Path(".json?since_id={0}&max_id={1}&count={2}&page={3}")
@@ -116,7 +117,6 @@ public interface DirectMessageService {
 // Get a CRest instance. Should be done once.
 CRest crest = new CRestBuilder()
                             .expectsJson()
-                            .addGlobalRequestHeader("Accept-Encoding", "gzip") /* Not required */
                             .usePreauthentifiedOAuth(consumerKey, consumerSecret, accessToken, accessTokenSecret)
                             .build();
 
@@ -137,6 +137,7 @@ Message msg = service.send(userId, "Hi mate, what's up!");
 +-----
 @EndPoint("http://api.twitter.com")
 @ContextPath("/1/users")
+@Param(name = "Accept-Encoding", value = "gzip", dest = HEADER)
 public interface UserService {
 
     @Path("/search.json?q={0}")
@@ -165,7 +166,6 @@ public interface UserService {
 // Get a CRest instance. Should be done once.
 CRest crest = new CRestBuilder()
                             .expectsJson()
-                            .addGlobalRequestHeader("Accept-Encoding", "gzip") /* Not required */
                             .usePreauthentifiedOAuth(consumerKey, consumerSecret, accessToken, accessTokenSecret)
                             .build();
 

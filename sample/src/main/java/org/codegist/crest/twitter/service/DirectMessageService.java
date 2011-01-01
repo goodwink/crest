@@ -20,20 +20,19 @@
 
 package org.codegist.crest.twitter.service;
 
-import org.codegist.crest.annotate.ContextPath;
-import org.codegist.crest.annotate.EndPoint;
-import org.codegist.crest.annotate.HttpMethod;
-import org.codegist.crest.annotate.Path;
+import org.codegist.crest.annotate.*;
 import org.codegist.crest.twitter.model.Message;
 
 import static org.codegist.crest.HttpMethod.DELETE;
 import static org.codegist.crest.HttpMethod.POST;
+import static org.codegist.crest.config.Destination.HEADER;
 
 /**
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
 @EndPoint("http://api.twitter.com")
 @ContextPath("/1/direct_messages")
+@Param(name = "Accept-Encoding", value = "gzip", dest = HEADER)
 public interface DirectMessageService {
 
     @Path(".json?since_id={0}&max_id={1}&count={2}&page={3}")

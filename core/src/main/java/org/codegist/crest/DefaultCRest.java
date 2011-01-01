@@ -67,7 +67,7 @@ public class DefaultCRest implements CRest, Disposable {
         }
     }
 
-    private class RestInterfacer<T> extends ObjectMethodsAwareInvocationHandler {
+    class RestInterfacer<T> extends ObjectMethodsAwareInvocationHandler {
 
         private final InterfaceContext interfaceContext;
 

@@ -32,7 +32,6 @@ import org.codegist.common.reflect.ProxyFactory;
 import org.codegist.crest.config.*;
 import org.codegist.crest.interceptor.CompositeRequestInterceptor;
 import org.codegist.crest.interceptor.RequestInterceptor;
-import org.codegist.crest.interceptor.RequestParamDefaultsInterceptor;
 import org.codegist.crest.oauth.OAuthenticator;
 import org.codegist.crest.oauth.OAuthenticatorV10;
 import org.codegist.crest.oauth.Token;
@@ -97,10 +96,6 @@ public class CRestBuilder {
     private Map<String, Object> customProperties = new HashMap<String, Object>();
     private Map<Type, Serializer> serializersMap = new HashMap<Type, Serializer>();
 
-    private Map<String, Object> body = new HashMap<String, Object>();
-    private Map<String, String> queryString = new HashMap<String, String>();
-    private Map<String, String> headers = new HashMap<String, String>();
-
     private RestService restService;
 
     private boolean globalAuthentification = false;
@@ -110,6 +105,11 @@ public class CRestBuilder {
 
 
     public CRest build() {
+        CRestContext context = buildContext();
+        return new DefaultCRest(context);
+    }
+    
+    CRestContext buildContext() {
         customProperties = Maps.defaultsIfNull(customProperties);
 
         RestService restService = buildRestService();
@@ -144,8 +144,7 @@ public class CRestBuilder {
 
         /* Put then in the properties. These are not part of the API */
         Maps.putIfNotPresent(customProperties, CRestProperty.SERIALIZER_CUSTOM_SERIALIZER_MAP, serializersMap);
-
-        return new DefaultCRest(new DefaultCRestContext(restService, proxyFactory, configFactory, customProperties));
+        return new DefaultCRestContext(restService, proxyFactory, configFactory, customProperties);
     }
 
     private RestService buildRestService() {
@@ -198,10 +197,6 @@ public class CRestBuilder {
 
     private RequestInterceptor buildRequestInterceptor() {
         RequestInterceptor paramInterceptor = null;
-        if (!Maps.areEmpties(queryString, headers, body)) {
-            paramInterceptor = new RequestParamDefaultsInterceptor(queryString, headers, body);
-        }
-
         RequestInterceptor authentificationInterceptor = null;
         AuthentificationManager manager = (AuthentificationManager) customProperties.get(AuthentificationManager.class.getName());
         if (globalAuthentification) {
@@ -211,12 +206,8 @@ public class CRestBuilder {
 
         RequestInterceptor globalInterceptor = null;
 
-        if (paramInterceptor != null && authentificationInterceptor != null) {
+        if (authentificationInterceptor != null) {
             globalInterceptor = new CompositeRequestInterceptor(paramInterceptor, authentificationInterceptor);
-        } else if (paramInterceptor != null) {
-            globalInterceptor = paramInterceptor;
-        } else if (authentificationInterceptor != null) {
-            globalInterceptor = authentificationInterceptor;
         }
         return globalInterceptor;
     }
@@ -277,108 +268,6 @@ public class CRestBuilder {
         Token accessToken = new Token(accessTok, accessTokenSecret, accessTokenExtras);
 
         return new OAuthentificationManager(authenticator, accessToken);
-    }
-
-    /**
-     * Sets a default request query string parameter for requests fired from every services build with the resulting CRest instance.
-     *
-     * @param name  query string parameter name
-     * @param value query string parameter value
-     * @return current builder
-     */
-    public CRestBuilder addGlobalRequestParam(String name, String value) {
-        this.queryString.put(name, value);
-        return this;
-    }
-
-    /**
-     * Adds all default request query string parameters for requests fired from every services build with the resulting CRest instance.
-     *
-     * @param param query string parameters map
-     * @return current builder
-     */
-    public CRestBuilder addGlobalRequestParams(Map<String, String> param) {
-        this.queryString.putAll(param);
-        return this;
-    }
-
-    /**
-     * Sets all default request query string parameters for requests fired from every services build with the resulting CRest instance.
-     *
-     * @param param query string parameters map
-     * @return current builder
-     */
-    public CRestBuilder setGlobalRequestParams(Map<String, String> param) {
-        this.queryString = param;
-        return this;
-    }
-
-    /**
-     * Sets a default request header for requests fired from every services build with the resulting CRest instance.
-     *
-     * @param name  header key
-     * @param value header value
-     * @return current builder
-     */
-    public CRestBuilder addGlobalRequestHeader(String name, String value) {
-        this.headers.put(name, value);
-        return this;
-    }
-
-    /**
-     * Adds all default request headers for requests fired from every services build with the resulting CRest instance.
-     *
-     * @param headers headers map
-     * @return current builder
-     */
-    public CRestBuilder addGlobalRequestHeaders(Map<String, String> headers) {
-        this.headers.putAll(headers);
-        return this;
-    }
-
-    /**
-     * Sets default headers for requests fired from every services build with the resulting CRest instance.
-     *
-     * @param headers headers map
-     * @return current builder
-     */
-    public CRestBuilder setGlobalRequestHeaders(Map<String, String> headers) {
-        this.headers = headers;
-        return this;
-    }
-
-    /**
-     * Sets a default request body parameters for requests fired from every services build with the resulting CRest instance.
-     *
-     * @param name  body parameter key
-     * @param value body parameter value
-     * @return current builder
-     */
-    public CRestBuilder addGlobalRequestBody(String name, Object value) {
-        this.body.put(name, value);
-        return this;
-    }
-
-    /**
-     * Adds all default body parameters for requests fired from every services build with the resulting CRest instance.
-     *
-     * @param body body parameters map
-     * @return current builder
-     */
-    public CRestBuilder addGlobalRequestBodies(Map<String, Object> body) {
-        this.body.putAll(body);
-        return this;
-    }
-
-    /**
-     * Adds all default body parameters for requests fired from every services build with the resulting CRest instance.
-     *
-     * @param body body parameters map
-     * @return current builder
-     */
-    public CRestBuilder setGlobalRequestBodies(Map<String, Object> body) {
-        this.body = body;
-        return this;
     }
 
     /**

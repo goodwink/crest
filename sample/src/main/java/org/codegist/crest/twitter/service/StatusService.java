@@ -27,12 +27,14 @@ import org.codegist.crest.twitter.model.User;
 
 import static org.codegist.crest.HttpMethod.POST;
 import static org.codegist.crest.config.Destination.BODY;
+import static org.codegist.crest.config.Destination.HEADER;
 
 /**
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
 @EndPoint("http://api.twitter.com")
 @ContextPath("/1/statuses")
+@Param(name = "Accept-Encoding", value = "gzip", dest = HEADER)
 public interface StatusService {
 
     @HttpMethod(POST) 

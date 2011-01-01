@@ -33,6 +33,13 @@ public class Stubs {
 
     
 
+    public static class RestService1 implements RestService {
+        public static final RestService1 INSTANCE = new RestService1();
+        public HttpResponse exec(HttpRequest request) throws HttpException {
+            return null;
+        }
+    }
+
     public static class RequestInterceptor1 extends RequestInterceptorAdapter {
     }
 
@@ -64,6 +71,7 @@ public class Stubs {
     }
 
     public static class Serializer1 implements org.codegist.crest.serializer.Serializer {
+        public static final Serializer1 INSTANCE = new Serializer1();
         @Override
         public String serialize(Object value) {
             return null;
@@ -71,6 +79,7 @@ public class Stubs {
     }
 
     public static class Serializer2 implements org.codegist.crest.serializer.Serializer {
+        public static final Serializer2 INSTANCE = new Serializer2();
         @Override
         public String serialize(Object value) {
             return null;
@@ -78,6 +87,7 @@ public class Stubs {
     }
 
     public static class Serializer3 implements org.codegist.crest.serializer.Serializer {
+        public static final Serializer3 INSTANCE = new Serializer3();
         @Override
         public String serialize(Object value) {
             return null;

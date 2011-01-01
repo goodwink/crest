@@ -266,6 +266,10 @@ public class HttpClientRestService implements RestService, Disposable {
         }
     }
 
+    HttpClient getHttpClient(){
+        return http;
+    }
+
     private class HttpResourceImpl implements HttpResource {
 
         private final Logger logger = Logger.getLogger(HttpResourceImpl.class);

@@ -47,7 +47,6 @@ public class TwitterSample {
         /* Get the factory */
         CRest crest = new CRestBuilder()
                 .expectsJson()
-                .addGlobalRequestHeader("Accept-Encoding", "gzip")
                 .usePreauthentifiedOAuth(consumerKey, consumerSecret, accessToken, accessTokenSecret)
                 .build();
 
