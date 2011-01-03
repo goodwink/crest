@@ -23,6 +23,7 @@ What is CRest
 +-----
 @EndPoint("http://api.twitter.com")
 @ContextPath("/1/statuses")
+@Param(name = "Accept-Encoding", value = "gzip", dest = HEADER)
 public interface StatusService {
 
     @Path("/retweets/{0}.json")

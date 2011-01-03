@@ -1,0 +1,23 @@
+    ------
+    Usage
+    ------
+
+Usage
+
+    CRest is a mavenized project that lives in the Maven Central repository. Given that your project is also mavenized, all you have to do is to declare a new dependency in your POM, as follow:
+
++-----
+    <project ...>
+        ...
+        <dependencies>
+            ...
+            <dependency>
+                <groupId>org.codegist.crest</groupId>
+                <artifactId>codegist-crest</artifactId>
+                <version>1.0.0</version>
+            </dependency>
+            ...
+        </dependencies>
+        ...
+    </project>
++-----
