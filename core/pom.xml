@@ -24,11 +24,11 @@
     <parent>
         <groupId>org.codegist.crest</groupId>
         <artifactId>crest-parent</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.1-SNAPSHOT</version>
         <relativePath>..</relativePath>
     </parent>
     <artifactId>codegist-crest</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1-SNAPSHOT</version>
     <name>CRest Core</name>
     <packaging>jar</packaging>
     <url>http://crest.codegist.org/</url>
