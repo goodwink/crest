@@ -24,20 +24,16 @@
     <parent>
         <groupId>org.codegist.crest</groupId>
         <artifactId>crest-parent</artifactId>
-        <version>1.0.1-SNAPSHOT</version>
+        <version>1.0.0-SNAPSHOT</version>
         <relativePath>..</relativePath>
     </parent>
     <artifactId>codegist-crest-sample</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <name>CRest Samples</name>
     <packaging>jar</packaging>
     <url>http://crest.codegist.org/sample/</url>
 
     <description>CRest Samples offers a small set of java implementation samples of some well known public rest services using CRest.</description>
-
-    <properties>
-        <crest.core.version>1.0.1-SNAPSHOT</crest.core.version>
-    </properties>
 
     <scm>
         <url>git://github.com/codegist/crest.git</url>
@@ -59,7 +55,7 @@
         <dependency>
             <groupId>org.codegist.crest</groupId>
             <artifactId>codegist-crest</artifactId>
-            <version>${crest.core.version}</version>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>log4j</groupId>
