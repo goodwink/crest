@@ -36,7 +36,7 @@
     <description>CRest - Client Representational State Transfer - is a lightweight framework aiming to simplify the integration of external REST services into java applications by simply declaring a annotated interface and an optional data model.</description>
     
     <scm>
-        <url>git://github.com/codegist/crest.git</url>
+        <url>https://github.com/codegist/crest</url>
         <connection>scm:git:git://github.com/codegist/crest.git</connection>
         <developerConnection>scm:git:git://github.com/codegist/crest.git</developerConnection>
     </scm>

@@ -38,7 +38,7 @@
     <description>CRest - Client Representational State Transfer</description>
 
     <scm>
-        <url>scm:git:git@github.com:codegist/crest.git</url>
+        <url>https://github.com/codegist/crest</url>
         <connection>scm:git:git@github.com:codegist/crest.git</connection>
         <developerConnection>scm:git:git@github.com:codegist/crest.git</developerConnection>
     </scm>

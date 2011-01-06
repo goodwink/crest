@@ -36,7 +36,7 @@
     <description>CRest Samples offers a small set of java implementation samples of some well known public rest services using CRest.</description>
 
     <scm>
-        <url>git://github.com/codegist/crest.git</url>
+        <url>https://github.com/codegist/crest</url>
         <connection>scm:git:git://github.com/codegist/crest.git</connection>
         <developerConnection>scm:git:git://github.com/codegist/crest.git</developerConnection>
     </scm>
