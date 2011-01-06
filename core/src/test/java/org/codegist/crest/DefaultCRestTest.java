@@ -24,6 +24,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.conn.ClientConnectionManager;
 import org.codegist.common.io.IOs;
 import org.codegist.common.lang.Disposables;
+import org.codegist.common.lang.Strings;
 import org.codegist.common.marshal.Marshaller;
 import org.codegist.common.reflect.JdkProxyFactory;
 import org.codegist.common.reflect.ProxyFactory;
@@ -125,7 +126,7 @@ public class DefaultCRestTest {
         RestService mockRestService = mock(RestService.class);
         when(mockRestService.exec(any(HttpRequest.class))).thenAnswer(new Answer<Object>() {
             private int i = 0;
-            @Override
+
             public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
                 if(++i < throwErrorsCount)
                     throw new HttpException("error!", new HttpResponse((HttpRequest)invocationOnMock.getArguments()[0], 400));
@@ -167,7 +168,7 @@ public class DefaultCRestTest {
 
         RestService mockRestService = mock(RestService.class);
         when(mockRestService.exec(any(HttpRequest.class))).thenAnswer(new Answer<Object>() {
-            @Override
+
             public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
                 Map<String,List<String>> headers = new HashMap<String, List<String>>();
                 headers.put("Content-Type", Arrays.asList("charset=utf-8"));
@@ -256,7 +257,7 @@ public class DefaultCRestTest {
     public void testFactory() {
         RestService mockRestService = mock(RestService.class);
         when(mockRestService.exec(argThat(new ArgumentMatcher<HttpRequest>() {
-            @Override
+
             public boolean matches(Object o) {
                 HttpRequest r = (HttpRequest) o;
                 assertNotNull(r);
@@ -303,7 +304,7 @@ public class DefaultCRestTest {
             }
 
         }))).thenAnswer(new Answer<Object>() {
-            @Override
+
             public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
                 return new HttpResponse(null, 200, null, (new HttpResource() {
                     final InputStream stream = new ByteArrayInputStream(MODEL_RESPONSE_JSON.getBytes());
@@ -391,7 +392,7 @@ public class DefaultCRestTest {
     }
 
     public static class Ser implements Serializer {
-        @Override
+
         public String serialize(Object value) {
             return "oooo";
         }
@@ -450,7 +451,7 @@ public class DefaultCRestTest {
      */
     static class AnnotatedBeanParamInjector implements Injector {
 
-        @Override
+
         public void inject(HttpRequest.Builder builder, ParamContext context) {
             if (context.getRawValue() == null) return;
 
@@ -462,7 +463,7 @@ public class DefaultCRestTest {
                 RestSerialize annot = f.getAnnotation(RestSerialize.class);
                 if (annot != null && annot.exclude()) continue;
 
-                String name = annot == null || annot.name() == null || annot.name().isEmpty() ? f.getName() : annot.name();
+                String name = annot == null || Strings.isBlank(annot.name()) ? f.getName() : annot.name();
 
                 Object val = null;
                 try {
@@ -490,7 +491,7 @@ public class DefaultCRestTest {
                 this.field = field;
             }
 
-            @Override
+
             public Object run() {
                 field.setAccessible(true);
                 return null;

@@ -57,7 +57,6 @@ public class ArraySerializer<T> implements Serializer<T> {
         this.itemSerializer = itemSerializer;
     }
 
-    @Override
     public String serialize(T value) {
         if (value == null) {
             return "";

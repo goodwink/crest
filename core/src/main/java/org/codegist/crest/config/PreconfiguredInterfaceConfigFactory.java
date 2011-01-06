@@ -41,7 +41,6 @@ public class PreconfiguredInterfaceConfigFactory implements InterfaceConfigFacto
         this.config = configMap;
     }
 
-    @Override
     public InterfaceConfig newConfig(Class<?> interfaze, CRestContext context) {
         return config.get(interfaze);
     }

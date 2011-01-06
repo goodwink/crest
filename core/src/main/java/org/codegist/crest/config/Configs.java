@@ -119,17 +119,14 @@ public final class Configs {
             this.override = override;
         }
 
-        @Override
         public Serializer getSerializer() {
             return override.getSerializer() != null ? override.getSerializer() : base.getSerializer();
         }
 
-        @Override
         public org.codegist.crest.config.Destination getDestination() {
             return override.getDestination() != null ? override.getDestination() : base.getDestination();
         }
 
-        @Override
         public String getName() {
             return override.getName() != null ? override.getName() : base.getName();
         }
@@ -152,27 +149,22 @@ public final class Configs {
             return override.getStaticParams() != null ? override.getStaticParams() : base.getStaticParams();
         }
 
-        @Override
         public Integer getParamCount() {
             return override.getParamCount() != null ? override.getParamCount() : base.getParamCount();
         }
 
-        @Override
         public ResponseHandler getResponseHandler() {
             return override.getResponseHandler() != null ? override.getResponseHandler() : base.getResponseHandler();
         }
 
-        @Override
         public ErrorHandler getErrorHandler() {
             return override.getErrorHandler() != null ? override.getErrorHandler() : base.getErrorHandler();
         }
 
-        @Override
         public RetryHandler getRetryHandler() {
             return override.getRetryHandler() != null ? override.getRetryHandler() : base.getRetryHandler();
         }
 
-        @Override
         public RequestInterceptor getRequestInterceptor() {
             if (override.getRequestInterceptor() == null) {
                 return base.getRequestInterceptor();
@@ -183,32 +175,26 @@ public final class Configs {
             }
         }
 
-        @Override
         public Long getSocketTimeout() {
             return override.getSocketTimeout() != null ? override.getSocketTimeout() : base.getSocketTimeout();
         }
 
-        @Override
         public Long getConnectionTimeout() {
             return override.getConnectionTimeout() != null ? override.getConnectionTimeout() : base.getConnectionTimeout();
         }
 
-        @Override
         public String getPath() {
             return override.getPath() != null ? override.getPath() : base.getPath();
         }
 
-        @Override
         public Method getMethod() {
             return override.getMethod() != null ? override.getMethod() : base.getMethod();
         }
 
-        @Override
         public HttpMethod getHttpMethod() {
             return override.getHttpMethod() != null ? override.getHttpMethod() : base.getHttpMethod();
         }
 
-        @Override
         public ParamConfig getParamConfig(int index) {
             ParamConfig baseConfig = base.getParamConfig(index);
             ParamConfig overrideConfig = override.getParamConfig(index);
@@ -227,32 +213,26 @@ public final class Configs {
             this.override = override;
         }
 
-        @Override
         public String getEncoding() {
             return override.getEncoding() != null ? override.getEncoding() : base.getEncoding();
         }
 
-        @Override
         public Method[] getMethods() {
             return override.getMethods() != null ? override.getMethods() : base.getMethods();
         }
 
-        @Override
         public String getEndPoint() {
             return override.getEndPoint() != null ? override.getEndPoint() : base.getEndPoint();
         }
 
-        @Override
         public Class<?> getInterface() {
             return override.getInterface() != null ? override.getInterface() : base.getInterface();
         }
 
-        @Override
         public String getContextPath() {
             return override.getContextPath() != null ? override.getContextPath() : base.getContextPath();
         }
 
-        @Override
         public RequestInterceptor getGlobalInterceptor() {
             if (override.getGlobalInterceptor() == null) {
                 return base.getGlobalInterceptor();

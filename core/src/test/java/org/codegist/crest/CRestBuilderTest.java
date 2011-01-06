@@ -260,12 +260,8 @@ public class CRestBuilderTest {
             @Override
             public Map<String, Object> getProperties() {
                 return new HashMap<String, Object>() {{
-                    try {
-                        put(Marshaller.class.getName(), new JaxbMarshaller(Object.class));
-                        put(Unmarshaller.class.getName(), new JaxbMarshaller(Object.class));
-                    } catch (JAXBException e) {
-                        e.printStackTrace();
-                    }
+                    put(Marshaller.class.getName(), new JaxbMarshaller(Object.class));
+                    put(Unmarshaller.class.getName(), new JaxbMarshaller(Object.class));
                 }};
             }
         }, context);
@@ -280,12 +276,8 @@ public class CRestBuilderTest {
             @Override
             public Map<String, Object> getProperties() {
                 return new HashMap<String, Object>() {{
-                    try {
-                        put(Marshaller.class.getName(), new JaxbMarshaller(Object.class));
-                        put(Unmarshaller.class.getName(), new JaxbMarshaller(Object.class));
-                    } catch (JAXBException e) {
-                        e.printStackTrace();
-                    }
+                    put(Marshaller.class.getName(), new JaxbMarshaller(Object.class));
+                    put(Unmarshaller.class.getName(), new JaxbMarshaller(Object.class));
                 }};
             }
         }, context);

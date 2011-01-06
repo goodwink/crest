@@ -50,37 +50,30 @@ class DefaultInterfaceConfig implements InterfaceConfig {
         this.cache = Maps.unmodifiable(cache);
     }
 
-    @Override
     public Class<?> getInterface() {
         return interfaze;
     }
 
-    @Override
     public String getEndPoint() {
         return endPoint;
     }
 
-    @Override
     public String getContextPath() {
         return contextPath;
     }
 
-    @Override
     public String getEncoding() {
         return encoding;
     }
 
-    @Override
     public RequestInterceptor getGlobalInterceptor() {
         return globalInterceptor;
     }
 
-    @Override
     public Method[] getMethods() {
         return interfaze != null ? interfaze.getDeclaredMethods() : null;
     }
 
-    @Override
     public MethodConfig getMethodConfig(Method meth) {
         return cache != null ? cache.get(meth) : null;
     }

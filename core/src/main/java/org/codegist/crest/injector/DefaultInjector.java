@@ -43,7 +43,6 @@ public class DefaultInjector implements Injector {
      * @param context The current method parameter being injected.
      * @see org.codegist.crest.config.ParamConfig#DEFAULT_SERIALIZER
      */
-    @Override
     public void inject(HttpRequest.Builder builder, ParamContext context) {
         if (Params.isForUpload(context.getRawValue())) {
             // add it raw

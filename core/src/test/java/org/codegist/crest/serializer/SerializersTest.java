@@ -277,13 +277,11 @@ public class SerializersTest {
     }
 
     private static class IntSerializer implements Serializer<Integer> {
-        @Override
         public String serialize(Integer value) {
             return String.valueOf(value * 2);
         }
     }
     private static class BooleanSerializer implements Serializer<Boolean> {
-        @Override
         public String serialize(Boolean value) {
             return value ? "1" : "0";
         }

@@ -62,62 +62,50 @@ class DefaultMethodConfig implements MethodConfig {
         this.paramConfigs = paramConfigs != null ? paramConfigs.clone() : null;
     }
 
-    @Override
     public StaticParam[] getStaticParams() {
         return param != null ? param.clone() : null;
     }
 
-    @Override
     public String getPath() {
         return path;
     }
 
-    @Override
     public ResponseHandler getResponseHandler() {
         return responseHandler;
     }
 
-    @Override
     public Method getMethod() {
         return method;
     }
 
-    @Override
     public HttpMethod getHttpMethod() {
         return httpMethod;
     }
 
-    @Override
     public Long getSocketTimeout() {
         return socketTimeout;
     }
 
-    @Override
     public Long getConnectionTimeout() {
         return connectionTimeout;
     }
 
-    @Override
     public RequestInterceptor getRequestInterceptor() {
         return requestInterceptor;
     }
 
-    @Override
     public ErrorHandler getErrorHandler() {
         return errorHandler;
     }
 
-    @Override
     public RetryHandler getRetryHandler() {
         return retryHandler;
     }
 
-    @Override
     public ParamConfig getParamConfig(int index) {
         return paramConfigs != null && index < paramConfigs.length ? paramConfigs[index] : null;
     }
 
-    @Override
     public Integer getParamCount() {
         return paramConfigs != null ? paramConfigs.length : null;
     }

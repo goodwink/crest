@@ -49,7 +49,7 @@ public class BooleanSerializer implements Serializer<Boolean> {
         this.falseString = falseString;
     }
 
-    @Override
+
     public String serialize(Boolean value) {
         if(value == null) return "";
         return Boolean.TRUE.equals(value) ? trueString : falseString;

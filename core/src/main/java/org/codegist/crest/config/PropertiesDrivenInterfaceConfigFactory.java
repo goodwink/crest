@@ -124,7 +124,6 @@ public class PropertiesDrivenInterfaceConfigFactory implements InterfaceConfigFa
         this.useDefaults = useDefaults;
     }
 
-    @Override
     public InterfaceConfig newConfig(Class<?> interfaze, CRestContext context) throws ConfigFactoryException {
         try {
             String globalServer = getServiceGlobalProp("end-point");

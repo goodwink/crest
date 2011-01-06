@@ -36,17 +36,14 @@ class DefaultStaticParam implements StaticParam {
         this.destination = destination;
     }
 
-    @Override
     public String getName() {
         return name;
     }
 
-    @Override
     public String getValue() {
         return value;
     }
 
-    @Override
     public Destination getDestination() {
         return destination;
     }

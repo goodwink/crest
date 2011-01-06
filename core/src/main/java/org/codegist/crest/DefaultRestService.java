@@ -41,7 +41,6 @@ public class DefaultRestService implements RestService {
     private final static String USER_AGENT = "CodeGist-CRest Agent";
     private static final Logger logger = Logger.getLogger(DefaultRestService.class);
 
-    @Override
     public HttpResponse exec(HttpRequest request) throws HttpException {
         HttpURLConnection connection = null;
         boolean inError = false;

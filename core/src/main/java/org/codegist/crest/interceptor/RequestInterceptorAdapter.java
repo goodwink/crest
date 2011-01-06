@@ -31,11 +31,9 @@ import org.codegist.crest.RequestContext;
  */
 public class RequestInterceptorAdapter implements RequestInterceptor {
 
-    @Override
     public void beforeParamsInjectionHandle(HttpRequest.Builder builder, RequestContext context) throws Exception {
     }
 
-    @Override
     public void afterParamsInjectionHandle(HttpRequest.Builder builder, RequestContext context) throws Exception {
     }
 

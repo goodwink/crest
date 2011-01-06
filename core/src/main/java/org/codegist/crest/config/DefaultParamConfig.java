@@ -42,26 +42,21 @@ class DefaultParamConfig implements ParamConfig {
         this.injector = injector;
     }
 
-    @Override
     public String getName() {
         return name;
     }
 
-    @Override
     public Destination getDestination() {
         return dest;
     }
 
-    @Override
     public Serializer getSerializer() {
         return serializer;
     }
 
-    @Override
     public Injector getInjector() {
         return injector;
     }
-
 
     public String toString() {
         return new ToStringBuilder(this)

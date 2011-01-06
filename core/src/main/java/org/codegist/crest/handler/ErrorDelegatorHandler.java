@@ -28,7 +28,6 @@ import org.codegist.crest.ResponseContext;
  */
 public class ErrorDelegatorHandler implements ErrorHandler {
 
-    @Override
     public <T> T handle(ResponseContext context, Exception e) throws Exception {
         throw e;
     }

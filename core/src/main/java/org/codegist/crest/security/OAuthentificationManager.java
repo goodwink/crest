@@ -43,12 +43,10 @@ public class OAuthentificationManager implements AuthentificationManager {
         this.accessToken = accessToken;
     }
 
-    @Override
     public void sign(HttpRequest.Builder request, Pair<String,String>... properties) {
         oauth.sign(accessToken, request, properties);
     }
 
-    @Override
     public void refresh() {
         accessToken = oauth.refreshAccessToken(accessToken, "oauth_session_handle");
     }

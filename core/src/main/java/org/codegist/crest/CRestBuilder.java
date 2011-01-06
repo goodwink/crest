@@ -41,7 +41,6 @@ import org.codegist.crest.security.interceptor.AuthentificationInterceptor;
 import org.codegist.crest.serializer.Serializer;
 import org.w3c.dom.Document;
 
-import javax.xml.bind.JAXBException;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
@@ -189,7 +188,9 @@ public class CRestBuilder {
                     } else {
                         throw new IllegalArgumentException("You must specify the package name or factory class of the target object model when using xml responses.");
                     }
-                } catch (JAXBException e) {
+                } catch (RuntimeException e) {
+                    throw e;
+                } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
         }

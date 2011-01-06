@@ -123,7 +123,6 @@ public class OAuthenticatorV10 implements OAuthenticator {
     }
 
 
-    @Override
     public Token getRequestToken() {
         Validate.notEmpty(this.requestTokenUrl, "No request token url as been configured, please pass it in the config map, key=" + CONFIG_TOKEN_REQUEST_URL);
         HttpResponse refreshTokenResponse = null;
@@ -158,7 +157,6 @@ public class OAuthenticatorV10 implements OAuthenticator {
         }
     }
 
-    @Override
     public Token refreshAccessToken(Token requestToken, String... includeExtras) {
         Validate.notEmpty(this.refreshAccessTokenUrl, "No refresh access token url as been configured, please pass it in the config map, key=" + CONFIG_TOKEN_ACCESS_REFRESH_URL);
         Set<Pair<String,String>> params = new LinkedHashSet<Pair<String,String>>();
@@ -171,7 +169,6 @@ public class OAuthenticatorV10 implements OAuthenticator {
         return token;
     }
     
-    @Override
     public Token getAccessToken(Token requestToken, String verifier) {
         Validate.notEmpty(this.accessTokenUrl, "No access token url as been configured, please pass it in the config map, key=" + CONFIG_TOKEN_ACCESS_URL);
         Set<Pair<String,String>> set = new LinkedHashSet<Pair<String,String>>();
@@ -214,7 +211,6 @@ public class OAuthenticatorV10 implements OAuthenticator {
         }
     }
 
-    @Override
     public void sign(Token accessToken, HttpRequest.Builder request, Pair<String,String>... extraHeaders) {
         Set<Pair<String,String>> extraHeadersList = new LinkedHashSet<Pair<String,String>>(Arrays.<Pair<String,String>>asList(Objects.defaultIfNull(extraHeaders, new Pair[0])));
         try {

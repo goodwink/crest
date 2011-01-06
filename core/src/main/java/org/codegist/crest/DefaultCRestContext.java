@@ -51,17 +51,14 @@ class DefaultCRestContext implements CRestContext {
         return restService;
     }
 
-    @Override
     public ProxyFactory getProxyFactory() {
         return proxyFactory;
     }
 
-    @Override
     public Map<String, Object> getProperties() {
         return customProperties;
     }
 
-    @Override
     public InterfaceConfigFactory getConfigFactory() {
         return configFactory;
     }

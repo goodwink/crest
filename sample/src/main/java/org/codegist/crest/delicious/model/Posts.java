@@ -22,7 +22,6 @@ package org.codegist.crest.delicious.model;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
-import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 

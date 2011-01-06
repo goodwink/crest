@@ -46,7 +46,6 @@ public class DefaultResponseHandler implements ResponseHandler {
         this.marshaller = (Marshaller) customProperties.get(Marshaller.class.getName());
     }
 
-    @Override
     public final Object handle(ResponseContext context) {
         try {
             if (context.getExpectedType().toString().equals("void")) return null;

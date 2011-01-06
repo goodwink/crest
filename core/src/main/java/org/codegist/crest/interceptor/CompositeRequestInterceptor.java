@@ -34,7 +34,6 @@ public class CompositeRequestInterceptor implements RequestInterceptor {
         this.interceptors = interceptors;
     }
 
-    @Override
     public void beforeParamsInjectionHandle(HttpRequest.Builder builder, RequestContext context) throws Exception {
         for (RequestInterceptor interceptor : interceptors) {
             if (interceptor == null) continue;
@@ -42,7 +41,6 @@ public class CompositeRequestInterceptor implements RequestInterceptor {
         }
     }
 
-    @Override
     public void afterParamsInjectionHandle(HttpRequest.Builder builder, RequestContext context) throws Exception {
         for (RequestInterceptor interceptor : interceptors) {
             if (interceptor == null) continue;

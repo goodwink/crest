@@ -43,17 +43,14 @@ class DefaultInterfaceContext implements InterfaceContext {
         this.customProperties = Maps.unmodifiable(customProperties);
     }
 
-    @Override
     public InterfaceConfig getConfig() {
         return config;
     }
 
-    @Override
     public Map<String, Object> getProperties() {
         return customProperties;
     }
 
-    @Override
     public <T> T getProperty(String name) {
         return (T) customProperties.get(name);
     }

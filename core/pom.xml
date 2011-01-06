@@ -88,13 +88,19 @@
         <dependency>
             <groupId>org.codegist</groupId>
             <artifactId>codegist-common</artifactId>
-            <version>1.0.0</version>
+            <version>1.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
             <version>4.0.3</version>
             <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-impl</artifactId>
+            <version>2.1</version>
+            <scope>compile</scope><!-- not required at runtime if no xml is used but needed for compilation -->
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>

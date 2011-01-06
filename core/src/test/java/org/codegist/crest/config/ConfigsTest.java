@@ -308,7 +308,7 @@ public class ConfigsTest {
         private Map<Method, MethodConfig> cache;
 
 
-        @Override
+        
         public Class<?> getInterface() {
             return interfaze;
         }
@@ -317,7 +317,7 @@ public class ConfigsTest {
             this.interfaze = interfaze;
         }
 
-        @Override
+        
         public String getEndPoint() {
             return server;
         }
@@ -326,7 +326,7 @@ public class ConfigsTest {
             this.server = server;
         }
 
-        @Override
+        
         public String getContextPath() {
             return path;
         }
@@ -335,7 +335,7 @@ public class ConfigsTest {
             this.path = path;
         }
 
-        @Override
+        
         public String getEncoding() {
             return encoding;
         }
@@ -344,7 +344,7 @@ public class ConfigsTest {
             this.encoding = encoding;
         }
 
-        @Override
+        
         public RequestInterceptor getGlobalInterceptor() {
             return requestInterceptor;
         }
@@ -361,12 +361,12 @@ public class ConfigsTest {
             this.cache = cache;
         }
 
-        @Override
+        
         public Method[] getMethods() {
             return interfaze.getDeclaredMethods();
         }
 
-        @Override
+        
         public MethodConfig getMethodConfig(Method meth) {
             return cache != null ? cache.get(meth) : null;
         }
@@ -386,12 +386,12 @@ public class ConfigsTest {
 
         private ParamConfig[] paramConfigs;
 
-        @Override
+        
         public ParamConfig getParamConfig(int index) {
             return paramConfigs != null && index < paramConfigs.length ? paramConfigs[index] : null;
         }
 
-        @Override
+        
         public StaticParam[] getStaticParams() {
             return defaultParams;
         }
@@ -400,12 +400,12 @@ public class ConfigsTest {
             this.defaultParams = defaultParams;
         }
 
-        @Override
+        
         public Integer getParamCount() {
             return paramConfigs.length;
         }
 
-        @Override
+        
         public Method getMethod() {
             return method;
         }
@@ -414,7 +414,7 @@ public class ConfigsTest {
             this.method = method;
         }
 
-        @Override
+        
         public String getPath() {
             return path;
         }
@@ -423,7 +423,7 @@ public class ConfigsTest {
             this.path = path;
         }
 
-        @Override
+        
         public HttpMethod getHttpMethod() {
             return httpMethod;
         }
@@ -432,7 +432,7 @@ public class ConfigsTest {
             this.httpMethod = httpMethod;
         }
 
-        @Override
+        
         public Long getSocketTimeout() {
             return socketTimeout;
         }
@@ -441,7 +441,7 @@ public class ConfigsTest {
             this.socketTimeout = socketTimeout;
         }
 
-        @Override
+        
         public Long getConnectionTimeout() {
             return connectionTimeout;
         }
@@ -450,7 +450,7 @@ public class ConfigsTest {
             this.connectionTimeout = connectionTimeout;
         }
 
-        @Override
+        
         public RequestInterceptor getRequestInterceptor() {
             return requestInterceptor;
         }
@@ -459,7 +459,7 @@ public class ConfigsTest {
             this.requestInterceptor = requestInterceptor;
         }
 
-        @Override
+        
         public ResponseHandler getResponseHandler() {
             return responseHandler;
         }
@@ -468,7 +468,7 @@ public class ConfigsTest {
             this.responseHandler = responseHandler;
         }
 
-        @Override
+        
         public ErrorHandler getErrorHandler() {
             return errorHandler;
         }
@@ -501,7 +501,7 @@ public class ConfigsTest {
         private Injector injector;
 
 
-        @Override
+        
         public String getName() {
             return name;
         }
@@ -510,7 +510,7 @@ public class ConfigsTest {
             this.name = name;
         }
 
-        @Override
+        
         public Destination getDestination() {
             return dest;
         }
@@ -519,7 +519,7 @@ public class ConfigsTest {
             this.dest = dest;
         }
 
-        @Override
+        
         public Serializer getSerializer() {
             return serializer;
         }
@@ -528,7 +528,7 @@ public class ConfigsTest {
             this.serializer = serializer;
         }
 
-        @Override
+        
         public Injector getInjector() {
             return injector;
         }

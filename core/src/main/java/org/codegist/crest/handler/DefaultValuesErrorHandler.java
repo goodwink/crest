@@ -29,7 +29,6 @@ import org.codegist.crest.ResponseContext;
  */
 public class DefaultValuesErrorHandler implements ErrorHandler {
 
-    @Override
     public <T> T handle(ResponseContext context, Exception e) throws Exception {
         // Should log the exception.
         return Types.<T>getDefaultValueFor(context.getExpectedGenericType());

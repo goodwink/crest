@@ -24,7 +24,6 @@ package org.codegist.crest;
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
 public class DefaultRestServiceTest extends RestServiceContractTest {
-    @Override
     public RestService getRestService() {
         return new DefaultRestService();
     }

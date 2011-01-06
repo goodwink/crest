@@ -34,7 +34,6 @@ public class ToStringSerializer<T> implements Serializer<T> {
      * @return serialized value of param
      */
 
-    @Override
     public String serialize(T value) {
         return value != null ? value.toString() : "";
     }

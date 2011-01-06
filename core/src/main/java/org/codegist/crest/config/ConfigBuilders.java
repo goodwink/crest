@@ -882,7 +882,7 @@ public abstract class ConfigBuilders {
     }
     boolean ignore(Object value) {
         if (!ignoreNullOrEmptyValues) return false;
-        return (value == null || (value instanceof String && ((String) value).trim().isEmpty()));
+        return (value == null || (value instanceof String && Strings.isBlank((String)value)));
     }
 
 }
