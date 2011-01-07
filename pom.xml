@@ -30,7 +30,7 @@
 
     <groupId>org.codegist.crest</groupId>
     <artifactId>crest-parent</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>CRest</name>
     <url>http://crest.codegist.org/</url>
