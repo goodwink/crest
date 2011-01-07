@@ -27,14 +27,14 @@ Direct Download
 *------+------+--------------+------+
 | Name | Type | Release Date | Size |
 *------+------+--------------+------+
-| {{{http://repo1.maven.org/maven2/org/codegist/crest/codegist-crest/1.0.1/codegist-crest-1.0.1.jar} codegist-crest-1.0.1.jar}} | Binaries | 2011-01-07 | ~131kb |
-| <(requires {{{http://repo1.maven.org/maven2/org/codegist/codegist-common/1.0.1/codegist-common-1.0.1.jar} codegist-common-1.0.1.jar}})> | | | | |
+| {{{https://github.com/downloads/codegist/crest/codegist-crest-1.0.1.jar} codegist-crest-1.0.1.jar}} | Binaries | 2011-01-07 | ~131kb |
+| <(requires {{{https://github.com/downloads/codegist/common/codegist-common-1.0.1.jar} codegist-common-1.0.1.jar}})> | | | | |
 *------+------+--------------+------+
-| {{{http://repo1.maven.org/maven2/org/codegist/crest/codegist-crest/1.0.1/codegist-crest-1.0.1-all.jar} codegist-crest-1.0.1-all.jar}} | Binaries with required dependencies |2011-01-07 | ~193kb |
+| {{{https://github.com/downloads/codegist/crest/codegist-crest-1.0.1-all.jar} codegist-crest-1.0.1-all.jar}} | Binaries with required dependencies |2011-01-07 | ~193kb |
 *------+------+--------------+------+
-| {{{http://repo1.maven.org/maven2/org/codegist/crest/codegist-crest/1.0.1/codegist-crest-1.0.1-sources.jar} codegist-crest-1.0.1-sources.jar}} | Sources | 2011-01-07 | ~127kb |
+| {{{https://github.com/downloads/codegist/crest/codegist-crest-1.0.1-sources.jar} codegist-crest-1.0.1-sources.jar}} | Sources | 2011-01-07 | ~127kb |
 *------+------+--------------+------+
-| {{{http://repo1.maven.org/maven2/org/codegist/crest/codegist-crest/1.0.1/codegist-crest-1.0.1-javadoc.jar} codegist-crest-1.0.1-javadoc.jar}} | JavaDoc | 2011-01-07 | ~485kb |
+| {{{https://github.com/downloads/codegist/crest/codegist-crest-1.0.1-javadoc.jar} codegist-crest-1.0.1-javadoc.jar}} | JavaDoc | 2011-01-07 | ~485kb |
 *------+------+--------------+------+
 
     More infos about <<CodeGist Common>> required dependency can be found {{{http://common.codegist.org/} here}}.
