@@ -1,0 +1,20 @@
+    ----
+    Android
+    ----
+
+Android
+
+    <<CRest>> with defaults parameters works out-of-the-box on Android.
+
+    Android SDK comes with Apache Http Client 4.x, so you can safely configure <<CRest>> to use its support for it.
+
+    However you'll need to choose one of the strategies below if you wish to use a XML response format REST service, since the automarshalling feature offered by <<CRest>> relies today on JAXB which, as of today, is not included in the Android SDK.
+
+    In order to deal with this situation, you can either
+
+        * work with the raw response returned as an InputStream or Reader.
+
+        * write a custom response handler to do the response marshalling on your side using the XML tools available on Android.
+
+        * bundle a distribution of JAXB with your app to enable it.
+

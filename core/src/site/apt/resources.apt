@@ -14,7 +14,7 @@ Maven
             <dependency>
                 <groupId>org.codegist.crest</groupId>
                 <artifactId>codegist-crest</artifactId>
-                <version>1.0.0</version>
+                <version>1.0.1</version>
             </dependency>
             ...
         </dependencies>
@@ -27,14 +27,14 @@ Direct Download
 *------+------+--------------+------+
 | Name | Type | Release Date | Size |
 *------+------+--------------+------+
-| {{{http://repo1.maven.org/maven2/org/codegist/crest/codegist-crest/1.0.0/codegist-crest-1.0.0.jar} codegist-crest-1.0.0.jar}} | Binaries | 2011-01-05 | ~131kb |
-| <(requires {{{http://repo1.maven.org/maven2/org/codegist/codegist-common/1.0.0/codegist-common-1.0.0.jar} codegist-common-1.0.0.jar}})> | | | | | 
+| {{{http://repo1.maven.org/maven2/org/codegist/crest/codegist-crest/1.0.1/codegist-crest-1.0.1.jar} codegist-crest-1.0.1.jar}} | Binaries | 2011-01-07 | ~131kb |
+| <(requires {{{http://repo1.maven.org/maven2/org/codegist/codegist-common/1.0.1/codegist-common-1.0.1.jar} codegist-common-1.0.1.jar}})> | | | | |
 *------+------+--------------+------+
-| {{{http://repo1.maven.org/maven2/org/codegist/crest/codegist-crest/1.0.0/codegist-crest-1.0.0-all.jar} codegist-crest-1.0.0-all.jar}} | Binaries with required dependencies |2011-01-05 | ~190kb |
+| {{{http://repo1.maven.org/maven2/org/codegist/crest/codegist-crest/1.0.1/codegist-crest-1.0.1-all.jar} codegist-crest-1.0.1-all.jar}} | Binaries with required dependencies |2011-01-07 | ~193kb |
 *------+------+--------------+------+
-| {{{http://repo1.maven.org/maven2/org/codegist/crest/codegist-crest/1.0.0/codegist-crest-1.0.0-sources.jar} codegist-crest-1.0.0-sources.jar}} | Sources | 2011-01-05 | ~127kb |
+| {{{http://repo1.maven.org/maven2/org/codegist/crest/codegist-crest/1.0.1/codegist-crest-1.0.1-sources.jar} codegist-crest-1.0.1-sources.jar}} | Sources | 2011-01-07 | ~127kb |
 *------+------+--------------+------+
-| {{{http://repo1.maven.org/maven2/org/codegist/crest/codegist-crest/1.0.0/codegist-crest-1.0.0-javadoc.jar} codegist-crest-1.0.0-javadoc.jar}} | JavaDoc | 2011-01-05 | ~495kb |
+| {{{http://repo1.maven.org/maven2/org/codegist/crest/codegist-crest/1.0.1/codegist-crest-1.0.1-javadoc.jar} codegist-crest-1.0.1-javadoc.jar}} | JavaDoc | 2011-01-07 | ~485kb |
 *------+------+--------------+------+
 
     More infos about <<CodeGist Common>> required dependency can be found {{{http://common.codegist.org/} here}}.

@@ -47,21 +47,15 @@ public class Bundles implements Iterable<Bundle>  {
         return ToStringBuilder.reflectionToString(this);
     }
 
-    @Override
     public Iterator<Bundle> iterator() {
         return new Iterator<Bundle>() {
             int i = 0;
-            @Override
             public boolean hasNext() {
                 return i < bundles.length;
             }
-
-            @Override
             public Bundle next() {
                 return bundles[i++];
             }
-
-            @Override
             public void remove() {
                 throw new UnsupportedOperationException();
             }

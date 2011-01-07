@@ -48,21 +48,15 @@ public class Tags implements Iterable<Tag> {
         return ToStringBuilder.reflectionToString(this);
     }
     
-    @Override
     public Iterator<Tag> iterator() {
         return new Iterator<Tag>(){
             int i = 0;
-            @Override
             public boolean hasNext() {
                 return i < tags.length;
             }
-
-            @Override
             public Tag next() {
                 return tags[i++];
             }
-
-            @Override
             public void remove() {
                 throw new UnsupportedOperationException();
             }

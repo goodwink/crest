@@ -42,7 +42,6 @@ public class DeliciousResponseHandler implements ResponseHandler {
         Validate.notNull(this.marshaller, "No marshaller set, please construct CRest using either JSON or XML expected return type.");
     }
 
-    @Override
     public Object handle(ResponseContext responseContext) throws CRestException {
         try {
             Object response = marshaller.marshall(responseContext.getResponse().asReader(), responseContext.getExpectedGenericType());

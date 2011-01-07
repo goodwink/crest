@@ -22,6 +22,8 @@ package org.codegist.crest.flickr.model;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
+import javax.xml.bind.annotation.*;
+
 /**
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */

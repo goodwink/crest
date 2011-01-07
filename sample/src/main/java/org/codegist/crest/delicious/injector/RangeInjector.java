@@ -29,7 +29,6 @@ import org.codegist.crest.injector.Injector;
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
 public class RangeInjector implements Injector<Range> {
-    @Override
     public void inject(HttpRequest.Builder builder, ParamContext<Range> context) {
         if(context.getRawValue() == null) return;
         Range r = context.getRawValue();

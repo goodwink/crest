@@ -43,6 +43,7 @@
         </menu>
 
         <menu name="Support" href="support.html">
+            <item name="Android" href="android.html"/>
             <item name="CGLib" href="cglib.html"/>
             <item name="OAuth" href="oauth.html"/>
             <item name="ASF HttpClient" href="httpclient.html"/>
