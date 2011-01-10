@@ -40,19 +40,20 @@
             <item name="Quick Start" href="quick-start.html"/>
             <item name="Going Deeper" href="deeper.html"/>
             <item name="Resources" href="resources.html"/>
+            <item name="Contact" href="contact.html"/>
         </menu>
 
         <menu name="Support" href="support.html">
             <item name="Android" href="android.html"/>
-            <item name="CGLib" href="cglib.html"/>
             <item name="OAuth" href="oauth.html"/>
             <item name="ASF HttpClient" href="httpclient.html"/>
             <item name="Jackson Processor" href="jackson.html"/>
+            <item name="CGLib" href="cglib.html"/>
         </menu>
 
         <menu name="Examples">
-            <item name="Twitter" href="sample-twitter.html"/>
             <item name="Google" href="sample-google.html"/>
+            <item name="Twitter" href="sample-twitter.html"/>
             <item name="Flickr" href="sample-flickr.html"/>
             <item name="Delicious" href="sample-delicious.html"/>
             <item name="More" href="sample/index.html"/>

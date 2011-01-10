@@ -2,6 +2,10 @@
     Resources
     ------
 
+Sources
+
+    <<CRest>> project is hosted on {{{https://github.com/}GitHub}}. Please refer to the {{{./source-repository.html}Source Repository}} section for more details.
+
 Maven
 
     CRest is a mavenized project that lives in the Maven Central repository. Given that your project is also mavenized, all you have to do is to declare a new dependency in your POM, as follow:
@@ -39,4 +43,4 @@ Direct Download
 
     More infos about <<CodeGist Common>> required dependency can be found {{{http://common.codegist.org/} here}}.
 
-
+ 
