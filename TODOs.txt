@@ -1,1 +1,2 @@
 Add caching layer
+Autogenerate sitemap.xml
