@@ -19,5 +19,15 @@
   -->
 
 <project name="${project.name}">
+    <bannerLeft>
+        <name>Home</name>
+        <src>./images/logo.png</src>
+        <href>/index.html</href>
+    </bannerLeft>
+
+    <custom>
+        <analytics>${site.analytics.account}</analytics>
+    </custom>
+
     <body/>
 </project>

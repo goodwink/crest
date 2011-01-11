@@ -65,8 +65,8 @@ import java.util.Map;
  * </pre></code>
  *
  * @see org.codegist.crest.config.DefaultInterfaceConfig
- * @see DefaultMethodConfig
- * @see DefaultParamConfig
+ * @see org.codegist.crest.config.DefaultMethodConfig
+ * @see org.codegist.crest.config.DefaultParamConfig
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
 public abstract class ConfigBuilders {

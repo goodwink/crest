@@ -37,6 +37,10 @@
 
     <description>CRest - Client Representational State Transfer</description>
 
+    <properties>
+        <site.analytics.account>UA-19826844-2</site.analytics.account>
+    </properties>
+
     <scm>
         <url>https://github.com/codegist/crest</url>
         <connection>scm:git:git@github.com:codegist/crest.git</connection>
