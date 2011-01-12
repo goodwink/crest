@@ -28,13 +28,8 @@
         <relativePath>..</relativePath>
     </parent>
     <artifactId>codegist-crest</artifactId>
-<<<<<<< HEAD
     <version>1.0.2-SNAPSHOT</version>
-    <name>CRest Core</name>
-=======
-    <version>1.0.1</version>
     <name>CRest</name>
->>>>>>> 66c7ec0... introduced share this, some more logos, and open graph protocol meta datas
     <packaging>jar</packaging>
     <url>http://crest.codegist.org/</url>
 
