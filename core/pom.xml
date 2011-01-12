@@ -29,11 +29,11 @@
     </parent>
     <artifactId>codegist-crest</artifactId>
     <version>1.0.1</version>
-    <name>CRest Core</name>
+    <name>CRest</name>
     <packaging>jar</packaging>
     <url>http://crest.codegist.org/</url>
 
-    <description>CRest - Client Representational State Transfer - is a lightweight framework aiming to simplify the integration of external REST services into java applications by simply declaring a annotated interface and an optional data model.</description>
+    <description>CRest - Client Representational State Transfer - is a lightweight annotation-driven java library that simplifies the integration of third party RESTful services allowing the developer to focus on the essential aspects of the integration.</description>
     
     <scm>
         <url>https://github.com/codegist/crest</url>

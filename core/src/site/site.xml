@@ -22,10 +22,6 @@
 <project name="${project.name}">
     <body>
 
-        <head>
-            <meta name="description" content="${project.description}"/>
-        </head>
-        
         <links>
             <item name="CodeGist Commons" href="http://common.codegist.org"/>
         </links>
