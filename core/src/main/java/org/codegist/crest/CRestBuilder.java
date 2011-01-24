@@ -53,10 +53,11 @@ import static org.codegist.crest.CRestProperty.*;
  * CRest crest = new CRestBuilder().build();
  * </pre></code>
  * <p>will create {@link org.codegist.crest.CRest} with the following features :
- * <p>- Annotation driven configuration handled by {@link org.codegist.crest.config.AnnotationDrivenInterfaceConfigFactory}, lookup for annotation in package {@link org.codegist.crest.annotate}.
+ * <p>- Annotation driven configuration handled by {@link org.codegist.crest.config.CRestAnnotationDrivenInterfaceConfigFactory}, lookup for annotation in package {@link org.codegist.crest.annotate}.
  * <p>- Raw response return, meaning the given interface method return type must be either java.io.String, java.io.InputStream or java.io.Reader.
  * <p>- HTTP calls handled by {@link org.codegist.crest.DefaultRestService}
  * <p>- Uses JDK dynamics proxies to instanciates given interfaces
+ * <p>- CRest annotation have priority over Jax-RS equivalent annotations
  * <p/>
  * <p>This default configuration has the benefit to not require any third party dependencies, but is not the recommanded one.
  * <p>For best performances, it is recommended to use the CGLib proxy factory, {@link org.codegist.common.reflect.CglibProxyFactory} (requires cglib available in the classpath) and the apache http client backed rest service {@link org.codegist.crest.HttpClientRestService}, see {@link CRestBuilder#useHttpClientRestService()}.
@@ -89,6 +90,8 @@ public class CRestBuilder {
     private Map<String,String> properties = null;
     private Document document = null;
     private InterfaceConfigFactory overridesFactory = null;
+    private boolean dynamicOverride= true;
+    private boolean crestPriority= true;
     private String modelPackageName = null;
     private Class<?> modelPackageFactory = null;
 
@@ -220,16 +223,18 @@ public class CRestBuilder {
             case CFG_TYPE_ANNO:
                 if (properties != null) {
                     configFactory = new OverridingInterfaceConfigFactory(
-                            new AnnotationDrivenInterfaceConfigFactory(),
-                            new PropertiesDrivenInterfaceConfigFactory(properties, false)
+                            new AnnotationDrivenInterfaceConfigFactory(crestPriority),
+                            new PropertiesDrivenInterfaceConfigFactory(properties, false),
+                            false
                     );
                 } else if (document != null) {
                     configFactory = new OverridingInterfaceConfigFactory(
-                            new AnnotationDrivenInterfaceConfigFactory(),
-                            new XmlDrivenInterfaceConfigFactory(document, false)
+                            new AnnotationDrivenInterfaceConfigFactory(crestPriority),
+                            new XmlDrivenInterfaceConfigFactory(document, false),
+                            false
                     );
                 }else {
-                    configFactory = new AnnotationDrivenInterfaceConfigFactory();
+                    configFactory = new AnnotationDrivenInterfaceConfigFactory(crestPriority);
                 }
                 break;
             case CFG_TYPE_PROP:
@@ -240,7 +245,7 @@ public class CRestBuilder {
                 break;
         }
         if (overridesFactory != null) {
-            configFactory = new OverridingInterfaceConfigFactory(configFactory, overridesFactory);
+            configFactory = new OverridingInterfaceConfigFactory(configFactory, overridesFactory, dynamicOverride);
         }
         return configFactory;
     }
@@ -373,7 +378,7 @@ public class CRestBuilder {
      * Resulting CRest instance will handle annotated configurated interfaces.
      *
      * @return current builder
-     * @see org.codegist.crest.config.AnnotationDrivenInterfaceConfigFactory
+     * @see org.codegist.crest.config.CRestAnnotationDrivenInterfaceConfigFactory
      */
     public CRestBuilder withAnnotatedConfig() {
         this.configType = CFG_TYPE_ANNO;
@@ -436,14 +441,27 @@ public class CRestBuilder {
     }
 
     /**
-     * Resulting CRest instance will overrides any configuration resulting from its internal {@link org.codegist.crest.config.InterfaceConfigFactory} with the configuration issued by the given overridesFactory.
-     * <p>This factory is meant to returns template configs, thus can return configuration with null values that will be interpreted as fallbacking to the current  {@link org.codegist.crest.config.InterfaceConfigFactory}.
+     * Use dynamic overrides
      *
+     * @see org.codegist.crest.CRestBuilder#overrideDefaultConfigWith(org.codegist.crest.config.InterfaceConfigFactory, boolean)
      * @param overridesFactory config overrider factory
      * @return current builder
      */
     public CRestBuilder overrideDefaultConfigWith(InterfaceConfigFactory overridesFactory) {
+        return overrideDefaultConfigWith(overridesFactory, true);
+    }
+
+    /**
+     * Resulting CRest instance will overrides any configuration resulting from its internal {@link org.codegist.crest.config.InterfaceConfigFactory} with the configuration issued by the given overridesFactory.
+     * <p>This factory is meant to returns template configs, thus can return configuration with null values that will be interpreted as fallbacking to the current  {@link org.codegist.crest.config.InterfaceConfigFactory}.
+     *
+     * @param overridesFactory config overrider factory
+     * @param dynamicOverride If InterfaceConfig instances build by overridesFactory can change their values over time, set it to true, otherwise to false
+     * @return current builder
+     */
+    public CRestBuilder overrideDefaultConfigWith(InterfaceConfigFactory overridesFactory, boolean dynamicOverride) {
         this.overridesFactory = overridesFactory;
+        this.dynamicOverride = dynamicOverride;
         return this;
     }
 
@@ -601,4 +619,13 @@ public class CRestBuilder {
         return this;
     }
 
+
+    /**
+     * JaxRS annotation will take priority over CRest's equivalent annotations
+     * @return current builder
+     */
+    public CRestBuilder prioritiseJaxRSAnnotations(){
+        this.crestPriority = false;
+        return this;
+    }
 }

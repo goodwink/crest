@@ -1,51 +1,43 @@
 /*
  * Copyright 2010 CodeGist.org
  *
- *     Licensed under the Apache License, Version 2.0 (the "License");
- *     you may not use this file except in compliance with the License.
- *     You may obtain a copy of the License at
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0
+ *        http://www.apache.org/licenses/LICENSE-2.0
  *
- *     Unless required by applicable law or agreed to in writing, software
- *     distributed under the License is distributed on an "AS IS" BASIS,
- *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *     See the License for the specific language governing permissions and
- *     limitations under the License.
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
  *
- *  ==================================================================
+ * ===================================================================
  *
- *  More information at http://www.codegist.org.
+ * More information at http://www.codegist.org.
  */
 
 package org.codegist.crest.config;
 
 import org.codegist.crest.CRestContext;
-import org.codegist.crest.CRestProperty;
 import org.codegist.crest.Stubs;
 import org.codegist.crest.TestUtils;
 import org.codegist.crest.annotate.*;
 import org.codegist.crest.annotate.Destination;
-import org.codegist.crest.annotate.HttpMethod;
-import org.codegist.crest.annotate.POST;
-import org.codegist.crest.annotate.Path;
 import org.codegist.crest.injector.DefaultInjector;
 import org.junit.Test;
 
-import javax.ws.rs.*;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.codegist.crest.HttpMethod.*;
 import static org.codegist.crest.config.Destination.*;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-public class AnnotationDrivenInterfaceConfigFactoryTest extends AbstractInterfaceConfigFactoryTest {
+public class CRestAnnotationDrivenInterfaceConfigFactoryTest extends AbstractInterfaceConfigFactoryTest {
 
-    private final InterfaceConfigFactory configFactory = new AnnotationDrivenInterfaceConfigFactory();
+    private final InterfaceConfigFactory configFactory = new CRestAnnotationDrivenInterfaceConfigFactory();
     private final CRestContext mockContext = mock(CRestContext.class);
 
     @Test(expected = IllegalArgumentException.class)
@@ -121,50 +113,49 @@ public class AnnotationDrivenInterfaceConfigFactoryTest extends AbstractInterfac
         Method M = TestUtils.getMethod(TypeInjectorInterface.class, "get", Model.class, Model[].class);
     }
 
-
     @EndPoint("http://localhost:8080")
-    @javax.ws.rs.Path("/my-path")
+    @ContextPath("/my-path")
     interface MinimallyAnnotatedInterface extends Interface {
-        @javax.ws.rs.Path("/m1")
+        @Path("/m1")
         Object m1();
 
         Object m1(String a);
 
-        @javax.ws.rs.Path("/m1")
+        @Path("/m1")
         Object m1(String a, int b);
 
         Object m1(String a, int[] b);
 
-        @javax.ws.rs.Path("/m2/1")
+        @Path("/m2/1")
         void m2();
 
         void m2(float f, String... a);
     }
 
     @EndPoint("http://localhost:8080")
+    @ContextPath("/my-path")
     @Serializer(Stubs.Serializer1.class)
     @Injector(Stubs.RequestParameterInjector1.class)
-    @javax.ws.rs.Path("/my-path")
     interface PartiallyAnnotatedInterface extends Interface {
 
-        @javax.ws.rs.Path("/m1")
+        @Path("/m1")
         @ResponseHandler(Stubs.ResponseHandler1.class)
         Object m1();
 
-        @javax.ws.rs.Path("/m1")
-        @javax.ws.rs.POST
+        @Path("/m1")
+        @POST
         @Serializer(Stubs.Serializer2.class)
         Object m1(@Serializer(Stubs.Serializer3.class) @Injector(Stubs.RequestParameterInjector3.class) String a);
 
-        @javax.ws.rs.Path("/m1") @Injector(Stubs.RequestParameterInjector2.class)
-        Object m1(String a, @javax.ws.rs.PathParam("c") int b);
+        @Path("/m1") @Injector(Stubs.RequestParameterInjector2.class)
+        Object m1(String a, @Name("c") int b);
 
-        @javax.ws.rs.Path("/m1") @Injector(Stubs.RequestParameterInjector2.class)
-        Object m1(String a, @javax.ws.rs.QueryParam("c") int[] b);
+        @Path("/m1") @Injector(Stubs.RequestParameterInjector2.class)
+        Object m1(String a, @Name("c") int[] b);
 
 
-        @javax.ws.rs.Path("/m2/1")
-        @javax.ws.rs.GET
+        @Path("/m2/1")
+        @GET
         @SocketTimeout(11)
         @ConnectionTimeout(12)
         void m2();
@@ -172,35 +163,40 @@ public class AnnotationDrivenInterfaceConfigFactoryTest extends AbstractInterfac
         void m2(float f, String... a);
     }
 
-    @javax.ws.rs.Path("/my-path")
     @EndPoint("http://localhost:8080")
+    @ContextPath("/my-path")
     @SocketTimeout( 1)
     @ConnectionTimeout( 2)
     @Encoding( "utf-8")
+    @Path( "/hello")
     @Params({
         @Param(name="body-param",value="gen-value1",dest=BODY),
         @Param(name="url-param",value="gen-value2",dest=URL),
         @Param(name="header-param",value="gen-value3",dest=HEADER)
     })
+    @DELETE
     @GlobalInterceptor(Stubs.RequestInterceptor1.class)
     @RequestInterceptor( Stubs.RequestInterceptor1.class)
     @ResponseHandler( Stubs.ResponseHandler1.class)
     @Serializer( Stubs.Serializer1.class)
+    @Name( "name")
+    @Destination(BODY)
     @Injector( Stubs.RequestParameterInjector1.class)
     @ErrorHandler( Stubs.ErrorHandler1.class)
     @RetryHandler(Stubs.RetryHandler1.class)
     interface FullyAnnotatedInterface extends Interface {
 
 
-        @javax.ws.rs.Path("/m1")
-        @javax.ws.rs.PUT
-
+        @Path("/m1")
         @Params({
             @Param(name="body-param",value="over-value1",dest=BODY),
             @Param(name="body-param-2",value="new-value",dest=BODY)
         })
+        @PUT
         @SocketTimeout(3)
         @ConnectionTimeout(4)
+        @Name("name1")
+        @Destination(URL)
         @RequestInterceptor(Stubs.RequestInterceptor3.class)
         @ResponseHandler(Stubs.ResponseHandler1.class)
         @Serializer(Stubs.Serializer3.class)
@@ -209,112 +205,129 @@ public class AnnotationDrivenInterfaceConfigFactoryTest extends AbstractInterfac
         @RetryHandler(Stubs.RetryHandler2.class)
         Object m1();
 
-        @javax.ws.rs.Path("/m1")
-        @javax.ws.rs.POST
+        @Path("/m1")
         @Param(name="body-param",value="over-value1",dest=URL)
+        @POST
         @SocketTimeout(5)
         @ConnectionTimeout(6)
+        @Name("name1")
+        @Destination(URL)
         @RequestInterceptor(Stubs.RequestInterceptor2.class)
         @ResponseHandler(Stubs.ResponseHandler2.class)
         @Serializer(Stubs.Serializer2.class)
         @Injector(Stubs.RequestParameterInjector2.class)
         Object m1(
-                @javax.ws.rs.QueryParam("a")
+                @Name("a")
+                @Destination(URL)
                 @Serializer(Stubs.Serializer3.class)
                 @Injector(Stubs.RequestParameterInjector3.class)
                 String a
         );
 
-        @javax.ws.rs.Path("/m1")
-        @javax.ws.rs.DELETE
+        @Path("/m1")
+        @DELETE
         @SocketTimeout(7)
         @ConnectionTimeout(8)
+        @Name("name2")
+        @Destination(URL)
         @RequestInterceptor(Stubs.RequestInterceptor3.class)
         @ResponseHandler(Stubs.ResponseHandler1.class)
         @Serializer(Stubs.Serializer3.class)
         Object m1(
-                @javax.ws.rs.FormParam("b")
+                @Name("b")
+                @Destination(BODY)
                 @Serializer(Stubs.Serializer1.class)
                 @Injector(Stubs.RequestParameterInjector3.class)
                 String a,
-                @javax.ws.rs.PathParam("c")
+                @Name("c")
+                @Destination(URL)
                 @Serializer(Stubs.Serializer2.class)
                 int b);
 
-        @javax.ws.rs.Path("/m1")
-        @javax.ws.rs.HEAD
+        @Path("/m1")
+        @HEAD
         @SocketTimeout(9)
         @ConnectionTimeout(10)
+        @Name("name2")
+        @Destination(URL)
         @RequestInterceptor(Stubs.RequestInterceptor1.class)
         @ResponseHandler(Stubs.ResponseHandler1.class)
         @Serializer(Stubs.Serializer1.class)
         Object m1(
-                @javax.ws.rs.QueryParam("d")
+                @Name("d")
+                @Destination(URL)
                 @Serializer(Stubs.Serializer1.class)
                 String a,
-                @javax.ws.rs.FormParam("e")
+                @Name("e")
+                @Destination(BODY)
                 @Serializer(Stubs.Serializer3.class)
                 int[] b);
 
 
-        @javax.ws.rs.Path("/m2/1")
-        @javax.ws.rs.GET
+        @Path("/m2/1")
+        @GET
         @SocketTimeout(11)
         @ConnectionTimeout(12)
+        @Name("name2")
+        @Destination(URL)
         @RequestInterceptor(Stubs.RequestInterceptor3.class)
         @ResponseHandler(Stubs.ResponseHandler1.class)
         @Serializer(Stubs.Serializer1.class)
         void m2();
 
-        @javax.ws.rs.Path("/m2/2")
-        @javax.ws.rs.POST
+        @Path("/m2/2")
+        @POST
         @SocketTimeout(13)
         @ConnectionTimeout(14)
+        @Name("name2")
+        @Destination(URL)
         @RequestInterceptor(Stubs.RequestInterceptor2.class)
         @ResponseHandler(Stubs.ResponseHandler2.class)
         @Serializer(Stubs.Serializer2.class)
         void m2(
-                @javax.ws.rs.QueryParam("f")
+                @Name("f")
+                @Destination(URL)
                 @Serializer(Stubs.Serializer3.class)
                 float f,
-                @javax.ws.rs.PathParam("g")
+                @Name("g")
+                @Destination(URL)
                 @Serializer(Stubs.Serializer1.class)
                 String... a);
     }
 
 
     @EndPoint("http://test-server:8080")
-    @javax.ws.rs.Path("/path")
+    @ContextPath("/path")
     @SocketTimeout(15)
     @ConnectionTimeout(10)
     @Encoding("utf-8")
     public static interface Rest {
 
-        @javax.ws.rs.Path("/aaa?b={1}&a={0}")
+        @Path("/aaa?b={1}&a={0}")
         void aaa(int a, String[] b);
 
         Method AAA = TestUtils.getMethod(Rest.class, "aaa", int.class, String[].class);
 
-        @javax.ws.rs.Path("/bbb/{2}?b={1}&a={0}")
+        @Path("/bbb/{2}?b={1}&a={0}")
         @ConnectionTimeout(55)
         void bbb(@Serializer(Stubs.Serializer2.class) int a, String[] b, String c);
 
         Method BBB = TestUtils.getMethod(Rest.class, "bbb", int.class, String[].class, String.class);
 
-        @javax.ws.rs.Path("/ccc/{0}?aa={1}")
-        @javax.ws.rs.POST
+        @Path("/ccc/{0}?aa={1}")
+        @POST
         void ccc(
                 @Destination(URL) int a,
-                @Destination(URL) int d,
-                @javax.ws.rs.FormParam("bb") String[] b);
+                @org.codegist.crest.annotate.Destination(URL) int d,
+                @Destination(BODY) @Name("bb") String[] b);
 
         Method CCC = TestUtils.getMethod(Rest.class, "ccc", int.class, int.class, String[].class);
 
-        @javax.ws.rs.Path("/ddd?c={2}")
-        @javax.ws.rs.POST
+        @Path("/ddd?c={2}")
+        @POST
         Object ddd(
                 @Destination(BODY) Object a,
-                @javax.ws.rs.FormParam("bb") String[] b,
+                @Destination(BODY) @Name("bb") String[] b,
                 String c);
 
         Method DDD = TestUtils.getMethod(Rest.class, "ddd", Object.class, String[].class, String.class);

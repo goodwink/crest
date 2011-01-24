@@ -74,8 +74,8 @@ public abstract class ConfigBuilders {
     @SuppressWarnings("unchecked")
     public static class InterfaceConfigBuilder extends ConfigBuilders {
         private final Class interfaze;
-        private final String endPoint;
         private final Map<Method, MethodConfigBuilder> builderCache;
+        private String endPoint;
         private String contextPath;
         private String encoding;
         private RequestInterceptor globalInterceptor;
@@ -84,7 +84,7 @@ public abstract class ConfigBuilders {
          * <p>This will create an unbound builder, eg to attached to any interface, thus it cannot contains any method configuration.
          */
         public InterfaceConfigBuilder() {
-            this(null, null);
+            this(null, (Map<String, Object>) null);
         }
 
         /**
@@ -93,9 +93,14 @@ public abstract class ConfigBuilders {
          * @param customProperties default values holder
          */
         public InterfaceConfigBuilder(Map<String, Object> customProperties) {
-            this(null, null, customProperties);
+            this(null, customProperties);
         }
 
+        public InterfaceConfigBuilder(Class interfaze) {
+            this(interfaze, (Map<String, Object>) null);
+        }
+
+        @Deprecated
         public InterfaceConfigBuilder(Class interfaze, String endPoint) {
             this(interfaze, endPoint, null);
         }
@@ -106,10 +111,20 @@ public abstract class ConfigBuilders {
          * @param endPoint endpoint
          * @param customProperties default values holder
          */
+        @Deprecated
         public InterfaceConfigBuilder(Class interfaze, String endPoint, Map<String, Object> customProperties) {
+            this(interfaze, customProperties);
+            this.endPoint = endPoint;
+        }
+
+        /**
+         * Given properties map can contains user-defined default values, that override interface predefined defauts.
+         * @param interfaze interface to bind the config to
+         * @param customProperties default values holder
+         */
+        public InterfaceConfigBuilder(Class interfaze, Map<String, Object> customProperties) {
             super(customProperties);
             this.interfaze = interfaze;
-            this.endPoint = endPoint;
             this.builderCache = new HashMap<Method, MethodConfigBuilder>();
             if (interfaze != null)
                 for (Method m : interfaze.getDeclaredMethods()) {
@@ -138,6 +153,7 @@ public abstract class ConfigBuilders {
             if (useDefaults) {
                 contextPath = defaultIfUndefined(contextPath, CRestProperty.CONFIG_INTERFACE_DEFAULT_CONTEXT_PATH, InterfaceConfig.DEFAULT_CONTEXT_PATH);
                 encoding = defaultIfUndefined(encoding, CRestProperty.CONFIG_INTERFACE_DEFAULT_ENCODING, InterfaceConfig.DEFAULT_ENCODING);
+                endPoint = defaultIfUndefined(endPoint, CRestProperty.CONFIG_INTERFACE_DEFAULT_ENDPOINT, InterfaceConfig.DEFAULT_ENDPOINT);
                 globalInterceptor = defaultIfUndefined(globalInterceptor, CRestProperty.CONFIG_INTERFACE_DEFAULT_GLOBAL_INTERCEPTOR, newInstance(InterfaceConfig.DEFAULT_GLOBAL_INTERCEPTOR));
             }
             return new DefaultInterfaceConfig(
@@ -153,6 +169,12 @@ public abstract class ConfigBuilders {
 
         public MethodConfigBuilder startMethodConfig(Method meth) {
             return this.builderCache.get(meth);
+        }
+
+        public InterfaceConfigBuilder setEndPoint(String endPoint) {
+            if (ignore(endPoint)) return this;
+            this.endPoint = endPoint;
+            return this;
         }
 
         public InterfaceConfigBuilder setContextPath(String contextPath) {

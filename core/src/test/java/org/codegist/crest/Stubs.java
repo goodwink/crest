@@ -50,7 +50,7 @@ public class Stubs {
     }
 
     public static class RequestParameterInjector1 implements Injector {
-       
+        public static final RequestParameterInjector1 INSTANCE = new RequestParameterInjector1();
         public void inject(HttpRequest.Builder builder, ParamContext context) {
 
         }

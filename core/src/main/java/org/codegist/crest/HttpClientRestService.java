@@ -176,6 +176,9 @@ public class HttpClientRestService implements RestService, Disposable {
             case HEAD:
                 uriRequest = new HttpHead(uri);
                 break;
+            case OPTIONS:
+                uriRequest = new HttpOptions(uri);
+                break;
         }
         if (uriRequest instanceof HttpEntityEnclosingRequestBase) {
             HttpEntityEnclosingRequestBase enclosingRequestBase = ((HttpEntityEnclosingRequestBase) uriRequest);

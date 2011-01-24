@@ -25,5 +25,5 @@ package org.codegist.crest;
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
 public enum HttpMethod {
-    GET, POST, DELETE, PUT, HEAD
+    GET, POST, DELETE, PUT, HEAD, OPTIONS
 }

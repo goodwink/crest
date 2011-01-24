@@ -180,6 +180,14 @@ public interface CRestProperty {
     String CONFIG_INTERFACE_DEFAULT_ENCODING = "config.interface.default.encoding";
 
     /**
+     * override the default end point {@link org.codegist.crest.config.InterfaceConfig#DEFAULT_ENDPOINT}.
+     * <p>Expects a string.
+     *
+     * @see org.codegist.crest.InterfaceContext#getProperties()
+     */
+    String CONFIG_INTERFACE_DEFAULT_ENDPOINT = "config.interface.default.end-point";
+
+    /**
      * override the default path {@link org.codegist.crest.config.InterfaceConfig#DEFAULT_CONTEXT_PATH}.
      * <p>Expects a string.
      *

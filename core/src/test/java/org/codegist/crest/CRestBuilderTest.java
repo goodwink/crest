@@ -42,7 +42,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
-import javax.xml.bind.JAXBException;
 import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.HashMap;
@@ -361,7 +360,7 @@ public class CRestBuilderTest {
         if (expected != null && expected.getConfigFactory() != null) {
             assertEquals(expected.getConfigFactory().getClass(), context.getConfigFactory().getClass());
         } else {
-            assertEquals(AnnotationDrivenInterfaceConfigFactory.class, context.getConfigFactory().getClass());
+            assertEquals(CRestAnnotationDrivenInterfaceConfigFactory.class, context.getConfigFactory().getClass());
         }
         if (expected != null && expected.getProxyFactory() != null) {
             assertEquals(expected.getProxyFactory().getClass(), context.getProxyFactory().getClass());

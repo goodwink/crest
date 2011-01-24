@@ -37,20 +37,20 @@ import static org.codegist.crest.config.Destination.HEADER;
 @Param(name = "Accept-Encoding", value = "gzip", dest = HEADER)
 public interface StatusService {
 
-    @HttpMethod(POST) 
+    @POST
     @Path("/update.json") 
     @Destination(BODY)
     Status updateStatus(@Name("status") String status);
 
-    @HttpMethod(POST) @Path("/update.json?lat={1}&long={2}")
+    @POST @Path("/update.json?lat={1}&long={2}")
     Status changeStatus(
             @Name("status") @Destination(BODY) String status,
             float lat, float longitude);
 
-    @HttpMethod(POST) @Path("/destroy/{0}.json")
+    @POST @Path("/destroy/{0}.json")
     Status removeStatus(long id);
 
-    @HttpMethod(POST) @Path("/retweet/{0}.json")
+    @POST @Path("/retweet/{0}.json")
     Status retweetStatus(long id);
 
     @Path("/show/{0}.json")

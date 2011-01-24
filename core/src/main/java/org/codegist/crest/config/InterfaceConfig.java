@@ -41,6 +41,13 @@ import java.lang.reflect.Method;
 public interface InterfaceConfig {
 
     /**
+     * Default endpoint applied when non specified.
+     *
+     * @see InterfaceConfig#getEndPoint()
+     */
+    String DEFAULT_ENDPOINT = "";
+
+    /**
      * Default encoding applied when non specified.
      *
      * @see InterfaceConfig#getEncoding()

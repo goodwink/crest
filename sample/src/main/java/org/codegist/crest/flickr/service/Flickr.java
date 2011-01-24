@@ -44,10 +44,10 @@ import static org.codegist.crest.config.Destination.BODY;
 @ContextPath("/services")
 @GlobalInterceptor(FlickrAuthInterceptor.class)
 @ResponseHandler(FlickrResponseHandler.class)
-@HttpMethod(POST)
+@POST
 public interface Flickr {
 
-    @HttpMethod(GET)
+    @GET
     @Path("/rest?method=flickr.blogs.getList")
     String getList();
 

@@ -211,7 +211,7 @@ public class DefaultCRestTest {
         DefaultCRest jsonConfiguredFactory = new DefaultCRest(new DefaultCRestContext(
                 mockRestService,
                 mockProxyFactory,
-                new PreconfiguredInterfaceConfigFactory(new ConfigBuilders.InterfaceConfigBuilder(ModelInterface.class, "http://test.com", customProperties).build()),
+                new PreconfiguredInterfaceConfigFactory(new ConfigBuilders.InterfaceConfigBuilder(ModelInterface.class, customProperties).setEndPoint("http://test.com").build()),
                 customProperties
         ));
         ModelInterface model = jsonConfiguredFactory.build(ModelInterface.class);
@@ -326,7 +326,8 @@ public class DefaultCRestTest {
         Map<String,Object> customProperties = new HashMap<String, Object>() {{
             put(Marshaller.class.getName(), mockMarshaller);
         }};
-        InterfaceConfig CONFIG = new ConfigBuilders.InterfaceConfigBuilder(Rest.class, "http://test-server:8080", customProperties)
+        InterfaceConfig CONFIG = new ConfigBuilders.InterfaceConfigBuilder(Rest.class, customProperties)
+                .setEndPoint("http://test-server:8080")
                 .setContextPath("/path")
                 .setMethodsSocketTimeout(15l)
                 .setMethodsConnectionTimeout(10l)

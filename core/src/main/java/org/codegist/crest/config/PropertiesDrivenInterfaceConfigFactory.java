@@ -128,11 +128,12 @@ public class PropertiesDrivenInterfaceConfigFactory implements InterfaceConfigFa
         try {
             String globalServer = getServiceGlobalProp("end-point");
             String serviceAlias = getClassAlias(interfaze);
-            String server = defaultIfBlank(getServiceProp(serviceAlias, "end-point"), globalServer);
-            if (isBlank(server)) throw new IllegalArgumentException("server not found!");
+            String endPoint = defaultIfBlank(getServiceProp(serviceAlias, "end-point"), globalServer);
+            if (isBlank(endPoint)) throw new IllegalArgumentException("end-point not found!");
 
-            ConfigBuilders.InterfaceConfigBuilder ricb = new ConfigBuilders.InterfaceConfigBuilder(interfaze, server, context.getProperties()).setIgnoreNullOrEmptyValues(true);
-            ricb.setContextPath(getServiceProp(serviceAlias, "context-path"))
+            ConfigBuilders.InterfaceConfigBuilder ricb = new ConfigBuilders.InterfaceConfigBuilder(interfaze, context.getProperties()).setIgnoreNullOrEmptyValues(true);
+            ricb    .setEndPoint(endPoint)
+                    .setContextPath(getServiceProp(serviceAlias, "context-path"))
                     .setEncoding(getServiceProp(serviceAlias, "encoding"))
                     .setGlobalInterceptor(getServiceProp(serviceAlias, "global-interceptor"))
                     .setMethodsConnectionTimeout(getServiceProp(serviceAlias, "connection-timeout"))

@@ -42,7 +42,7 @@
  *
  * @see org.codegist.crest.CRest
  * @see org.codegist.crest.CRestBuilder
- * @see org.codegist.crest.config.AnnotationDrivenInterfaceConfigFactory
+ * @see org.codegist.crest.config.CRestAnnotationDrivenInterfaceConfigFactory
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
 package org.codegist.crest.annotate;

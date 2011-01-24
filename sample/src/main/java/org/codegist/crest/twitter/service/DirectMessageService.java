@@ -47,15 +47,15 @@ public interface DirectMessageService {
     @Path("/sent.json?count={0}&page={1}")
     Message[] getSent(long count, long page);
 
-    @HttpMethod(POST)
+    @POST
     @Path("/new.json?user_id={0}&text={1}")
     Message send(long userId, String msg);
 
-    @HttpMethod(POST)
+    @POST
     @Path("/new.json?user_id={0}&screen_name={1}&text={2}")
     Message send(long userId, String screenName, String msg);
 
-    @HttpMethod(DELETE)
+    @DELETE
     @Path("/destroy/{0}.json")
     Message destroy(long msgId);
 

@@ -131,7 +131,7 @@ public class ConfigBuildersTest {
                     ));
                 }}
         );
-        InterfaceConfig config = new ConfigBuilders.InterfaceConfigBuilder(Interface.class, "http://server:8080", defaultOverrides).build();
+        InterfaceConfig config = new ConfigBuilders.InterfaceConfigBuilder(Interface.class, defaultOverrides).setEndPoint("http://server:8080").build();
         InterfaceConfigTestHelper.assertExpected(expected, config, Interface.class);
     }
 

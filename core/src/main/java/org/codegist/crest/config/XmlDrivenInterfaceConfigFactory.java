@@ -136,7 +136,8 @@ public class XmlDrivenInterfaceConfigFactory implements InterfaceConfigFactory {
             if (isBlank(endPoint)) throw new IllegalArgumentException("end-point not found!");
 
             Node interfaceConfig = getNode(config, "/crest-config/service[@class=\"%s\"]", interfaze.getName());
-            ConfigBuilders.InterfaceConfigBuilder icb = new ConfigBuilders.InterfaceConfigBuilder(interfaze, endPoint, context.getProperties()).setIgnoreNullOrEmptyValues(true)
+            ConfigBuilders.InterfaceConfigBuilder icb = new ConfigBuilders.InterfaceConfigBuilder(interfaze, context.getProperties()).setIgnoreNullOrEmptyValues(true)
+                    .setEndPoint(endPoint)
                     .setContextPath(getString(interfaceConfig, "context-path"))
                     .setGlobalInterceptor(getString(interfaceConfig, "global-interceptor"))
                     .setEncoding(getString(interfaceConfig, "@encoding"))

@@ -273,6 +273,11 @@ public abstract class RestServiceContractTest {
         protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
             writeSimpleReceived(req, resp, "delete");
         }
+
+        @Override
+        protected void doOptions(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+            writeSimpleReceived(req, resp, "options");
+        }
     }
 
 
