@@ -57,13 +57,12 @@ import static org.codegist.crest.CRestProperty.*;
  * <p>- Raw response return, meaning the given interface method return type must be either java.io.String, java.io.InputStream or java.io.Reader.
  * <p>- HTTP calls handled by {@link org.codegist.crest.DefaultRestService}
  * <p>- Uses JDK dynamics proxies to instanciates given interfaces
- * <p>- CRest annotation have priority over Jax-RS equivalent annotations
  * <p/>
  * <p>This default configuration has the benefit to not require any third party dependencies, but is not the recommanded one.
  * <p>For best performances, it is recommended to use the CGLib proxy factory, {@link org.codegist.common.reflect.CglibProxyFactory} (requires cglib available in the classpath) and the apache http client backed rest service {@link org.codegist.crest.HttpClientRestService}, see {@link CRestBuilder#useHttpClientRestService()}.
  *
  * @author Laurent Gilles (laurent.gilles@codegist.org)
- * @see org.codegist.crest.config.AnnotationDrivenInterfaceConfigFactory
+ * @see org.codegist.crest.config.CRestAnnotationDrivenInterfaceConfigFactory
  * @see org.codegist.crest.config.PropertiesDrivenInterfaceConfigFactory
  * @see org.codegist.crest.DefaultRestService
  * @see org.codegist.crest.HttpClientRestService
@@ -90,8 +89,9 @@ public class CRestBuilder {
     private Map<String,String> properties = null;
     private Document document = null;
     private InterfaceConfigFactory overridesFactory = null;
-    private boolean dynamicOverride= true;
-    private boolean crestPriority= true;
+    private boolean dynamicOverride = true;
+    private boolean crestPriority = true;
+    private boolean enableJaxRSSupport = false;
     private String modelPackageName = null;
     private Class<?> modelPackageFactory = null;
 
@@ -221,20 +221,22 @@ public class CRestBuilder {
         switch (configType) {
             default:
             case CFG_TYPE_ANNO:
+                InterfaceConfigFactory baseConfigFactory = enableJaxRSSupport ? new AnnotationDrivenInterfaceConfigFactory(crestPriority) : new CRestAnnotationDrivenInterfaceConfigFactory();
+
                 if (properties != null) {
                     configFactory = new OverridingInterfaceConfigFactory(
-                            new AnnotationDrivenInterfaceConfigFactory(crestPriority),
+                            baseConfigFactory,
                             new PropertiesDrivenInterfaceConfigFactory(properties, false),
                             false
                     );
                 } else if (document != null) {
                     configFactory = new OverridingInterfaceConfigFactory(
-                            new AnnotationDrivenInterfaceConfigFactory(crestPriority),
+                            baseConfigFactory,
                             new XmlDrivenInterfaceConfigFactory(document, false),
                             false
                     );
                 }else {
-                    configFactory = new AnnotationDrivenInterfaceConfigFactory(crestPriority);
+                    configFactory = baseConfigFactory;
                 }
                 break;
             case CFG_TYPE_PROP:
@@ -621,11 +623,33 @@ public class CRestBuilder {
 
 
     /**
-     * JaxRS annotation will take priority over CRest's equivalent annotations
+     * JAX-RS annotation will take priority over CRest's equivalent annotations
      * @return current builder
      */
     public CRestBuilder prioritiseJaxRSAnnotations(){
         this.crestPriority = false;
+        return this;
+    }
+
+
+    /**
+     * Enable JAX-RS client annotations support with CRest annotations taking priority over JAX-RS's equivalent annotations
+     * @return current builder
+     */
+    public CRestBuilder enableJaxRSAnnotationsSupport(){
+        return enableJaxRSAnnotationsSupport(false);
+    }
+
+    /**
+     * Enable JAX-RS client annotations support
+     * @param prioritiseJaxRSAnnotations if true, JaxRS annotation will take priority over CRest's equivalent annotations
+     * @return current builder
+     */
+    public CRestBuilder enableJaxRSAnnotationsSupport(boolean prioritiseJaxRSAnnotations){
+        if(prioritiseJaxRSAnnotations) {
+            prioritiseJaxRSAnnotations();
+        }
+        this.enableJaxRSSupport = true;
         return this;
     }
 }
