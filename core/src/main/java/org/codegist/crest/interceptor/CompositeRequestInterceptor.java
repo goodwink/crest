@@ -43,7 +43,6 @@ public class CompositeRequestInterceptor implements RequestInterceptor {
 
     public void afterParamsInjectionHandle(HttpRequest.Builder builder, RequestContext context) throws Exception {
         for (RequestInterceptor interceptor : interceptors) {
-            if (interceptor == null) continue;
             interceptor.afterParamsInjectionHandle(builder, context);
         }
     }

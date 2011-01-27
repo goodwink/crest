@@ -129,13 +129,13 @@ public class CRestBuilder {
         AuthentificationManager authentificationManager = buildAuthentificationManager(restService);
         Maps.putIfNotPresent(customProperties, AuthentificationManager.class.getName(), authentificationManager);
 
-        RequestInterceptor globalInterceptor = buildRequestInterceptor();
-
         InterfaceConfigFactory configFactory = buildInterfaceConfigFactory();
-        if (globalInterceptor != null) {
+
+        if(authentificationManager != null) {
+            RequestInterceptor authentificationInterceptor = new AuthentificationInterceptor(authentificationManager);
             try {
                 configFactory = new OverridingInterfaceConfigFactory(configFactory, new ConfigBuilders.InterfaceConfigBuilder()
-                        .setGlobalInterceptor(globalInterceptor)
+                        .setGlobalInterceptor(authentificationInterceptor)
                         .buildOverrideTemplate());
             } catch (Exception e) {
                 throw new CRestException(e);
@@ -143,9 +143,9 @@ public class CRestBuilder {
         }
         Maps.putIfNotPresent(customProperties, InterfaceConfigFactory.class.getName(), configFactory);
 
-
         /* Put then in the properties. These are not part of the API */
         Maps.putIfNotPresent(customProperties, CRestProperty.SERIALIZER_CUSTOM_SERIALIZER_MAP, serializersMap);
+        
         return new DefaultCRestContext(restService, proxyFactory, configFactory, customProperties);
     }
 
@@ -197,23 +197,6 @@ public class CRestBuilder {
                     throw new RuntimeException(e);
                 }
         }
-    }
-
-    private RequestInterceptor buildRequestInterceptor() {
-        RequestInterceptor paramInterceptor = null;
-        RequestInterceptor authentificationInterceptor = null;
-        AuthentificationManager manager = (AuthentificationManager) customProperties.get(AuthentificationManager.class.getName());
-        if (globalAuthentification) {
-            // Global authentification
-            authentificationInterceptor = new AuthentificationInterceptor(manager);
-        }
-
-        RequestInterceptor globalInterceptor = null;
-
-        if (authentificationInterceptor != null) {
-            globalInterceptor = new CompositeRequestInterceptor(paramInterceptor, authentificationInterceptor);
-        }
-        return globalInterceptor;
     }
 
     private InterfaceConfigFactory buildInterfaceConfigFactory() {
