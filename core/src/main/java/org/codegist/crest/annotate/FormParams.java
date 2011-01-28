@@ -28,8 +28,14 @@ import java.lang.annotation.Target;
 /**
  * @author laurent.gilles@codegist.org
  */
+
+/**
+ * @author laurent.gilles@codegist.org
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE,ElementType.METHOD})
-@HttpMethod(HttpMethod.OPTIONS)
-public @interface OPTIONS {
+public @interface FormParams {
+
+    FormParam[] value();
+
 }

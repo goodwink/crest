@@ -35,14 +35,7 @@ import org.codegist.crest.serializer.Serializer;
  * @see org.codegist.crest.config.InterfaceConfigFactory
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
-public interface ParamConfig {
-
-    /**
-     * Default destination applied when non specified.
-     *
-     * @see ParamConfig#getDestination()
-     */
-    Destination DEFAULT_DESTINATION = Destination.URL;
+public interface ParamConfig extends BasicParamConfig {
 
     /**
      * Default injector applied when non specified.
@@ -59,13 +52,6 @@ public interface ParamConfig {
     Class<? extends Serializer> DEFAULT_SERIALIZER = null;
 
     /**
-     * Default name applied when non specified.
-     *
-     * @see org.codegist.crest.config.ParamConfig#getName()
-     */
-    String DEFAULT_NAME = "";
-
-    /**
      * The serializer used to transform this argument value in a string.
      * <p>This serializer is meant to be used by the {@link org.codegist.crest.injector.Injector} set for this parameter.
      * <p>{@link org.codegist.crest.injector.DefaultInjector} will merge the serialized value in the URL or Body.
@@ -76,25 +62,6 @@ public interface ParamConfig {
      * @see org.codegist.crest.injector.Injector
      */
     Serializer getSerializer();
-
-    /**
-     * <p>Defines where the parameter value should used, either in the query string or in the request body.
-     *
-     * @return Destination of the argument value.
-     */
-    Destination getDestination();
-
-    /**
-     * <p>For parameters with {@link org.codegist.crest.config.Destination#URL} destination :
-     * <p>- if not blank, is used to add a new queryString parameter not specified in the {@link MethodConfig#getPath()}.
-     * <p>- otherwise ignored and the parameter will be merged in the relative {@link MethodConfig#getPath()} placeholders.
-     * <br/><br/>
-     * <p>For parameters with {@link org.codegist.crest.config.Destination#BODY} destination :
-     * <p>- as a body key, if empty the body will just contains the parameter value.
-     *
-     * @return Parameter name to be used.
-     */
-    String getName();
 
     /**
      * <p>Should be used when the user wish to inject a parameter that is not serializable to a single String or when user specific rules applies (eg: parameter must be exploded in multiple values accross the request queryString and/or body content).

@@ -152,8 +152,8 @@ public class XmlDrivenInterfaceConfigFactory implements InterfaceConfigFactory {
                     .setMethodsPath(getString(interfaceConfig, "methods/default/path"))
 
 
-                    .setParamsName(getString(interfaceConfig, "methods/default/params/default/@name"))
-                    .setParamsDestination(getString(interfaceConfig, "methods/default/params/default/@destination"))
+//                    .setParamsName(getString(interfaceConfig, "methods/default/params/default/@name"))
+//                    .setParamsDestination(getString(interfaceConfig, "methods/default/params/default/@destination"))
                     .setParamsSerializer(getString(interfaceConfig, "methods/default/params/default/serializer"))
                     .setParamsInjector(getString(interfaceConfig, "methods/default/params/default/injector"));
 
@@ -164,7 +164,7 @@ public class XmlDrivenInterfaceConfigFactory implements InterfaceConfigFactory {
                     String name = getString(staticParam, "@name");
                     String destination = getString(staticParam, "@destination");
                     Destination dest = Strings.isBlank(destination) ? Destination.URL : Destination.valueOf(destination);
-                    icb.addMethodsStaticParam(name, staticParam.getTextContent(), dest);
+                    icb.addMethodsExtraParam(name, staticParam.getTextContent(), dest);
                 }
             }
 
@@ -193,7 +193,7 @@ public class XmlDrivenInterfaceConfigFactory implements InterfaceConfigFactory {
                             String name = getString(methStaticParam, "@name");
                             String destination = getString(methStaticParam, "@destination");
                             Destination dest = Strings.isBlank(destination) ? Destination.URL : Destination.valueOf(destination);
-                            mcb.addStaticParam(name, methStaticParam.getTextContent(), dest);
+                            mcb.addExtraParam(name, methStaticParam.getTextContent(), dest);
                         }
 
                         mcb.setPath(getString(methodNode, "path"))
@@ -205,8 +205,8 @@ public class XmlDrivenInterfaceConfigFactory implements InterfaceConfigFactory {
                                 .setErrorHandler(getString(methodNode, "error-handler"))
                                 .setRetryHandler(getString(methodNode, "retry-handler"))
 
-                                .setParamsName(getString(methodNode, "params/default/@name"))
-                                .setParamsDestination(getString(methodNode, "params/default/@destination"))
+//                                .setParamsName(getString(methodNode, "params/default/@name"))
+//                                .setParamsDestination(getString(methodNode, "params/default/@destination"))
                                 .setParamsSerializer(getString(methodNode, "params/default/serializer"))
                                 .setParamsInjector(getString(methodNode, "params/default/injector"));
                         break;

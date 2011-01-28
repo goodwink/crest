@@ -21,7 +21,6 @@
 package org.codegist.crest.config;
 
 import org.codegist.common.lang.ToStringBuilder;
-import org.codegist.crest.HttpMethod;
 import org.codegist.crest.handler.ErrorHandler;
 import org.codegist.crest.handler.ResponseHandler;
 import org.codegist.crest.handler.RetryHandler;
@@ -37,8 +36,7 @@ class DefaultMethodConfig implements MethodConfig {
 
     private final Method method;
     private final String path;
-    private final StaticParam[] param;
-    private final HttpMethod httpMethod;
+    private final String httpMethod;
     private final Long socketTimeout;
     private final Long connectionTimeout;
     private final RequestInterceptor requestInterceptor;
@@ -46,12 +44,12 @@ class DefaultMethodConfig implements MethodConfig {
     private final ErrorHandler errorHandler;
     private final RetryHandler retryHandler;
 
+    private final BasicParamConfig[] extraParams;
     private final ParamConfig[] paramConfigs;
 
-    DefaultMethodConfig(Method method, String path, StaticParam[] param, HttpMethod httpMethod, Long socketTimeout, Long connectionTimeout, RequestInterceptor requestInterceptor, ResponseHandler responseHandler, ErrorHandler errorHandler, RetryHandler retryHandler, ParamConfig[] paramConfigs) {
+    DefaultMethodConfig(Method method, String path, String httpMethod, Long socketTimeout, Long connectionTimeout, RequestInterceptor requestInterceptor, ResponseHandler responseHandler, ErrorHandler errorHandler, RetryHandler retryHandler, ParamConfig[] paramConfigs, BasicParamConfig[] extraParams) {
         this.method = method;
         this.path = path;
-        this.param = param != null ? param.clone() : null;
         this.httpMethod = httpMethod;
         this.socketTimeout = socketTimeout;
         this.connectionTimeout = connectionTimeout;
@@ -60,12 +58,8 @@ class DefaultMethodConfig implements MethodConfig {
         this.errorHandler = errorHandler;
         this.retryHandler = retryHandler;
         this.paramConfigs = paramConfigs != null ? paramConfigs.clone() : null;
+        this.extraParams = extraParams != null ? extraParams.clone() : null;
     }
-
-    public StaticParam[] getStaticParams() {
-        return param != null ? param.clone() : null;
-    }
-
     public String getPath() {
         return path;
     }
@@ -78,7 +72,7 @@ class DefaultMethodConfig implements MethodConfig {
         return method;
     }
 
-    public HttpMethod getHttpMethod() {
+    public String getHttpMethod() {
         return httpMethod;
     }
 
@@ -108,6 +102,10 @@ class DefaultMethodConfig implements MethodConfig {
 
     public Integer getParamCount() {
         return paramConfigs != null ? paramConfigs.length : null;
+    }
+
+    public BasicParamConfig[] getExtraParams() {
+        return extraParams != null ? extraParams.clone() : null;
     }
 
     public String toString() {

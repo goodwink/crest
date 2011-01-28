@@ -281,6 +281,7 @@ public abstract class RestServiceContractTest {
     }
 
 
+    static final String[] METHODS = {"GET","POST","PUT","DELETE","HEAD","OPTIONS"};
     /**
      * Test that the given rest interface correctly passes all queryString/body/headers
      *
@@ -288,7 +289,8 @@ public abstract class RestServiceContractTest {
      */
     @Test
     public void testSimpleRequests() throws Exception {
-        for (HttpMethod meth : HttpMethod.values()) {
+
+        for (String meth : METHODS) {
             String tag = "HttpMethod failed : " + meth;
             HttpResponse res = getRestService().exec(new HttpRequest.Builder(baseUrl + "/test/simple")
                     .using(meth)
@@ -298,7 +300,7 @@ public abstract class RestServiceContractTest {
                     .build());
             assertNotNull(tag, res);
             assertEquals(tag, 200, res.getStatusCode());
-            if (!HttpMethod.HEAD.equals(meth)) {
+            if (!"HEAD".equals(meth)) {
                 assertEquals(tag, meth.toString().toLowerCase() + ".simple.received", res.asString());
             }
         }
@@ -306,8 +308,8 @@ public abstract class RestServiceContractTest {
 
     @Test
     public void testUploadRequest_File() throws Exception {
-        HttpMethod[] meths = new HttpMethod[]{HttpMethod.PUT, HttpMethod.POST};
-        for (HttpMethod m : meths) {
+        String[] meths = {"PUT", "POST"};
+        for (String m : meths) {
             HttpResponse res = getRestService().exec(new HttpRequest.Builder(baseUrl + "/test/upload/file")
                     .using(m)
                     .addBodyParams(UploadFileServlet.EXPECTED_FILES)
@@ -319,8 +321,8 @@ public abstract class RestServiceContractTest {
 
     @Test
     public void testUploadRequest_InputStream() throws Exception {
-        HttpMethod[] meths = new HttpMethod[]{HttpMethod.PUT, HttpMethod.POST};
-        for (HttpMethod m : meths) {
+        String[] meths = {"PUT", "POST"};
+        for (String m : meths) {
             HttpRequest.Builder b = new HttpRequest.Builder(baseUrl + "/test/upload/inputstream").using(m);
 
             for (Map.Entry<String, Object> e : UploadInputStreamServlet.EXPECTED_INPUTSTREAM.entrySet()) {
@@ -335,8 +337,8 @@ public abstract class RestServiceContractTest {
 
     @Test
     public void testUploadRequest_Mix() throws Exception {
-        HttpMethod[] meths = new HttpMethod[]{HttpMethod.PUT, HttpMethod.POST};
-        for (HttpMethod m : meths) {
+        String[] meths = {"PUT", "POST"};
+        for (String m : meths) {
             HttpRequest.Builder b = new HttpRequest.Builder(baseUrl + "/test/upload/mixed")
                     .using(m)
                     .addQueryParams(SimpleMethodsServlet.EXPECTED_SIMPLE_QUERY)

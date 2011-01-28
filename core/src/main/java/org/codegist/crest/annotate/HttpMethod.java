@@ -32,12 +32,18 @@ import java.lang.annotation.Target;
  * <p>Can be set at interface level to default all interface method values if not specified at method level.
  * @see org.codegist.crest.config.MethodConfig#DEFAULT_HTTP_METHOD
  * @see org.codegist.crest.config.MethodConfig#getHttpMethod()
- * @deprecated Should use one of the following instead: org.codegist.crest.annotate.(GET|POST|PUT|DELETE|HEAD|OPTIONS)
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE,ElementType.METHOD,ElementType.ANNOTATION_TYPE})
-@Deprecated()// to remove deprecation, set target to be only annotation_type and change doc to reflect extension possibility. Also use String instead of HttpMethod ?
+@Target({ElementType.ANNOTATION_TYPE})
 public @interface HttpMethod {
-    org.codegist.crest.HttpMethod value();
+
+    String GET = "GET";
+    String POST = "POST";
+    String PUT = "PUT";
+    String DELETE = "DELETE";
+    String OPTIONS = "OPTIONS";
+    String HEAD = "HEAD";
+
+    String value();
 }

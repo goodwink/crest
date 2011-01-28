@@ -53,7 +53,7 @@ public class HttpRequestBuilderTest {
         HttpRequest.Builder request = getFull("http://127.0.0.1/{1}/{0}/?p1=v1&p2={0}&p3={1}&p20={1}");
         assertEquals("http://127.0.0.1/v3/v2/", request.getBaseUri());
         assertEquals("utf-8", request.getEncoding());
-        assertEquals(HttpMethod.PUT, request.getMeth());
+        assertEquals("PUT", request.getMeth());
         assertEquals(new URL("http://127.0.0.1/v3/v2/?p1=v1&p2=v2&p3=v3&p20=v3&p4=v4&p5=v5&p6=v6"), request.getUrl(true));
         assertEquals(new URL("http://127.0.0.1/v3/v2/"), request.getUrl(false));
         assertEquals(("http://127.0.0.1/v3/v2/?p1=v1&p2=v2&p3=v3&p20=v3&p4=v4&p5=v5&p6=v6"), request.getUrlString(true));
@@ -66,7 +66,7 @@ public class HttpRequestBuilderTest {
     @Test
     public void testFullBuild() throws URISyntaxException, MalformedURLException, UnsupportedEncodingException {
         HttpRequest request = getFull().build();
-        assertEquals(HttpMethod.PUT, request.getMeth());
+        assertEquals("PUT", request.getMeth());
         assertEquals(new URI("http://127.0.0.1/v3/v2/"), request.getUri());
         assertEquals("http://127.0.0.1/v3/v2/?p1=v1&p2=v2&p3=v3&p4=v4&p5=v5&p6=v6", request.getUrlString(true));
         assertEquals(new URL("http://127.0.0.1/v3/v2/?p1=v1&p2=v2&p3=v3&p4=v4&p5=v5&p6=v6"), request.getUrl(true));
@@ -108,7 +108,7 @@ public class HttpRequestBuilderTest {
                     put("p4", "v4");
                     put("p5", "v5");
                 }}).build();
-        assertEquals(HttpMethod.PUT, request.getMeth());
+        assertEquals("PUT", request.getMeth());
         assertEquals(new URI("http://127.0.0.1/v3/v2/"), request.getUri());
         assertEquals("http://127.0.0.1/v3/v2/?p3=newv3&p4=v4&p5=v5", request.getUrlString(true));
         assertEquals(new URL("http://127.0.0.1/v3/v2/?p3=newv3&p4=v4&p5=v5"), request.getUrl(true));
@@ -139,7 +139,7 @@ public class HttpRequestBuilderTest {
     public void testDefaultBuild1() throws URISyntaxException, MalformedURLException, UnsupportedEncodingException {
         HttpRequest.Builder builder = new HttpRequest.Builder("http://127.0.0.1", "ISO-8859-1");
         HttpRequest request = builder.build();
-        assertEquals(HttpMethod.GET, request.getMeth());
+        assertEquals("GET", request.getMeth());
         assertEquals(new URI("http://127.0.0.1"), request.getUri());
         assertEquals("http://127.0.0.1", request.getUrlString(true));
         assertEquals(new URL("http://127.0.0.1"), request.getUrl(true));
@@ -156,7 +156,7 @@ public class HttpRequestBuilderTest {
     public void testDefaultBuild2() throws URISyntaxException, MalformedURLException, UnsupportedEncodingException {
         HttpRequest.Builder builder = new HttpRequest.Builder("http://127.0.0.1", "iso");
         HttpRequest request = builder.build();
-        assertEquals(HttpMethod.GET, request.getMeth());
+        assertEquals("GET", request.getMeth());
         assertEquals(new URI("http://127.0.0.1"), request.getUri());
         assertEquals("http://127.0.0.1", request.getUrlString(true));
         assertEquals(new URL("http://127.0.0.1"), request.getUrl(true));
@@ -220,7 +220,7 @@ public class HttpRequestBuilderTest {
 
                 .timeoutConnectionAfter(10l)
                 .timeoutSocketAfter(20l)
-                .using(HttpMethod.PUT)
+                .using("PUT")
                 .replacePlaceholderInUri(1, "v3")
                 .replacePlaceholderInUri(0, "v2");
     }

@@ -20,7 +20,6 @@
 
 package org.codegist.crest.config;
 
-import org.codegist.crest.HttpMethod;
 import org.codegist.crest.handler.*;
 import org.codegist.crest.interceptor.EmptyRequestInterceptor;
 import org.codegist.crest.interceptor.RequestInterceptor;
@@ -63,18 +62,18 @@ public interface MethodConfig {
     String DEFAULT_PATH = "";
 
     /**
-     * Default method params.
+     * Default method extra params.
      *
-     * @see MethodConfig#getPath()
+     * @see org.codegist.crest.config.MethodConfig#getExtraParams()
      */
-    StaticParam[] DEFAULT_PARAMS = new StaticParam[0];
+    BasicParamConfig[] DEFAULT_EXTRA_PARAMS = new BasicParamConfig[0];
 
     /**
      * Default http method applied when non specified.
      *
      * @see MethodConfig#getHttpMethod()
      */
-    HttpMethod DEFAULT_HTTP_METHOD = HttpMethod.GET;
+    String DEFAULT_HTTP_METHOD = "GET";
 
     /**
      * Default response handler applied when non specified.
@@ -111,8 +110,6 @@ public interface MethodConfig {
      */
     Method getMethod();
 
-    StaticParam[] getStaticParams();
-
     ResponseHandler getResponseHandler();
 
     ErrorHandler getErrorHandler();
@@ -137,7 +134,9 @@ public interface MethodConfig {
      */
     String getPath();
 
-    HttpMethod getHttpMethod();
+    String getHttpMethod();
+
+    BasicParamConfig[] getExtraParams();
 
     /**
      * Get the ParamConfig object holding the configuration of the method's arguments at the requested index.

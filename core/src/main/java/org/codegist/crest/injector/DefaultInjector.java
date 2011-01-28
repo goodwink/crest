@@ -24,6 +24,7 @@ import org.codegist.common.lang.Strings;
 import org.codegist.crest.HttpRequest;
 import org.codegist.crest.ParamContext;
 import org.codegist.crest.Params;
+import org.codegist.crest.config.Destination;
 
 /**
  * Default request injector used by CRest.
@@ -49,15 +50,24 @@ public class DefaultInjector implements Injector {
             builder.addBodyParam(context.getParamConfig().getName(), context.getRawValue());
         } else {
             String paramValue = context.getSerializedValue();
-            if (context.isForUrl()) {
-                if (Strings.isBlank(context.getParamConfig().getName())) {
-                    builder.replacePlaceholderInUri(context.getIndex(), paramValue);
-                } else {
-                    builder.addQueryParam(context.getParamConfig().getName(), paramValue);
-                }
-            } else {
-                // Can safely add it
-                builder.addBodyParam(context.getParamConfig().getName(), paramValue);
+            if(Strings.isBlank(paramValue)) {
+                paramValue = context.getParamConfig().getDefaultValue();
+            }
+            switch(context.getParamConfig().getDestination()){
+                case BODY:
+                    builder.addBodyParam(context.getParamConfig().getName(), paramValue);
+                    break;
+                case HEADER:
+                    builder.addHeader(context.getParamConfig().getName(), paramValue);
+                    break;
+                default:
+                    if (context.isForUrl()) {
+                        if (Strings.isBlank(context.getParamConfig().getName())) {
+                            builder.replacePlaceholderInUri(context.getIndex(), paramValue);
+                        } else {
+                            builder.addQueryParam(context.getParamConfig().getName(), paramValue);
+                        }
+                    }
             }
         }
     }

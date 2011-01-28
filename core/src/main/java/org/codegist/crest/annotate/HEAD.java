@@ -25,13 +25,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import static org.codegist.crest.HttpMethod.HEAD;
 
 /**
  * @author laurent.gilles@codegist.org
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE,ElementType.METHOD})
-@HttpMethod(HEAD)
+@HttpMethod(HttpMethod.HEAD)
 public @interface HEAD {
 }

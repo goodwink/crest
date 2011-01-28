@@ -1,2 +1,31 @@
-Add caching layer
-Autogenerate sitemap.xml
+CREST SITE
+* Autogenerate sitemap.xml
+
+CREST
+* Add caching layer (?)
+* Proper integration test of CRest
+* Should AuthentificationManager be at the RestService level instead than implemented as an RequestInterceptor?
+  Pros: - adds authentification informations just before firing request, no one can possibly modify it after
+  Cons: - What about the possibility of authentifying some methods and some not?
+* Should deprecate @Param, @Name, @Destination and use instead:
+  **** But what about @Serializer/@Injector then ?? ****
+  @QueryParam(name="my-name",def="default value")
+  @PathParam(name="my-name",def="default value")
+  @FormParam(name="my-name",def="default value")
+  @HeaderParam(name="my-name",def="default value")
+
+
+  @QueryParams({
+    @QueryParam(name="my-static-param",def="default value"),
+    @QueryParam(name="my-static-param2",def="default value")
+  })
+  interface A {
+
+        @Path("/{string}/")
+        @HeaderParam(name="method-header",def="value")
+        void m(
+            @PathParam(name="string",def="stringvalue") String s,
+            @QueryParam(name="count",def="10") int b);
+
+        ----> /stringvalue/?count=10
+  }

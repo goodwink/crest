@@ -20,7 +20,6 @@
 
 package org.codegist.crest.config;
 
-import org.codegist.crest.HttpMethod;
 import org.codegist.crest.Stubs;
 import org.codegist.crest.TestUtils;
 import org.codegist.crest.handler.ErrorHandler;
@@ -54,37 +53,38 @@ public class ConfigsTest {
         Method T2 = TestUtils.getMethod(TestInterface.class, "test2", int[].class, Object.class);
     }
 
-    static final DefaultInterfaceConfig FULL_CONFIG = new ConfigBuilders.InterfaceConfigBuilder(TestInterface.class, "server")
+    static final DefaultInterfaceConfig FULL_CONFIG = new ConfigBuilders.InterfaceConfigBuilder(TestInterface.class)
+            .setEndPoint("server")
             .setContextPath("path")
             .setEncoding("iso")
             .setGlobalInterceptor(new Stubs.RequestInterceptor1())
             .setMethodsSocketTimeout(1l)
             .setMethodsConnectionTimeout(2l)
             .setParamsSerializer(new Stubs.Serializer1())
-            .setParamsName("name")
-            .setParamsDestination(Destination.BODY)
+//            .setParamsName("name")
+//            .setParamsDestination(Destination.BODY)
             .setMethodsRequestInterceptor(new Stubs.RequestInterceptor1())
             .setMethodsResponseHandler(new Stubs.ResponseHandler1())
             .startMethodConfig(TestInterface.T1)
             .setPath("path2")
-            .setHttpMethod(HttpMethod.GET)
+            .setHttpMethod("GET")
             .setConnectionTimeout(3l)
             .setSocketTimeout(4l)
             .setRequestInterceptor(new Stubs.RequestInterceptor2())
             .setResponseHandler(new Stubs.ResponseHandler2())
             .setParamsSerializer(new Stubs.Serializer2())
-            .setParamsName("name2")
-            .setParamsDestination(Destination.URL)
+//            .setParamsName("name2")
+//            .setParamsDestination(Destination.URL)
             .endMethodConfig()
             .startMethodConfig(TestInterface.T2)
             .setPath("path2")
-            .setHttpMethod(HttpMethod.GET)
+            .setHttpMethod("GET")
             .setConnectionTimeout(5l)
             .setSocketTimeout(6l)
             .setRequestInterceptor(new Stubs.RequestInterceptor3())
             .setParamsSerializer(new Stubs.Serializer3())
-            .setParamsName("name3")
-            .setParamsDestination(Destination.URL)
+//            .setParamsName("name3")
+//            .setParamsDestination(Destination.URL)
             .startParamConfig(0)
             .setDestination("URL")
             .setName("name4")
@@ -102,15 +102,15 @@ public class ConfigsTest {
     @Test
     public void testNullOverride() throws NoSuchMethodException {
         DefaultInterfaceConfig override = null;
-        DefaultInterfaceConfig config = new ConfigBuilders.InterfaceConfigBuilder(TestInterface.class, "server").build();
+        DefaultInterfaceConfig config = new ConfigBuilders.InterfaceConfigBuilder(TestInterface.class).setEndPoint("server").build();
         assertEquals(config, Configs.override(config, override));
     }
 
     @Test
     public void testEmptyOverride() throws NoSuchMethodException {
-        DefaultInterfaceConfig config = new ConfigBuilders.InterfaceConfigBuilder(TestInterface.class, "server").build();
-        DefaultInterfaceConfig override = new ConfigBuilders.InterfaceConfigBuilder(TestInterface.class, "server").build();
-        DefaultInterfaceConfig expected = new ConfigBuilders.InterfaceConfigBuilder(TestInterface.class, "server")
+        DefaultInterfaceConfig config = new ConfigBuilders.InterfaceConfigBuilder(TestInterface.class).setEndPoint("server").build();
+        DefaultInterfaceConfig override = new ConfigBuilders.InterfaceConfigBuilder(TestInterface.class).setEndPoint("server").build();
+        DefaultInterfaceConfig expected = new ConfigBuilders.InterfaceConfigBuilder(TestInterface.class).setEndPoint("server")
                 .setGlobalInterceptor(new CompositeRequestInterceptor())
                 .setMethodsRequestInterceptor(new CompositeRequestInterceptor())
                 .build();
@@ -120,39 +120,39 @@ public class ConfigsTest {
 
     @Test
     public void testFullOverride() throws NoSuchMethodException, InstantiationException, IllegalAccessException {
-        DefaultInterfaceConfig base = new ConfigBuilders.InterfaceConfigBuilder(TestInterface.class, "server").build();
+        DefaultInterfaceConfig base = new ConfigBuilders.InterfaceConfigBuilder(TestInterface.class).setEndPoint("server").build();
         InterfaceConfig result = Configs.override(base, FULL_CONFIG);
-        DefaultInterfaceConfig expected = new ConfigBuilders.InterfaceConfigBuilder(TestInterface.class, "server")
+        DefaultInterfaceConfig expected = new ConfigBuilders.InterfaceConfigBuilder(TestInterface.class).setEndPoint("server")
                 .setContextPath("path")
                 .setMethodsSocketTimeout(1l)
                 .setMethodsConnectionTimeout(2l)
                 .setEncoding("iso")
                 .setParamsSerializer(new Stubs.Serializer1())
-                .setParamsName("name")
-                .setParamsDestination(Destination.BODY)
+//                .setParamsName("name")
+//                .setParamsDestination(Destination.BODY)
                 .setGlobalInterceptor(new CompositeRequestInterceptor(new Stubs.RequestInterceptor1(), new EmptyRequestInterceptor()))
                 .setMethodsRequestInterceptor(new CompositeRequestInterceptor(new Stubs.RequestInterceptor1(), new EmptyRequestInterceptor()))
                 .setMethodsResponseHandler(new Stubs.ResponseHandler1())
                 .startMethodConfig(TestInterface.T1)
                 .setPath("path2")
-                .setHttpMethod(HttpMethod.GET)
+                .setHttpMethod("GET")
                 .setConnectionTimeout(3l)
                 .setSocketTimeout(4l)
                 .setRequestInterceptor(new CompositeRequestInterceptor(new Stubs.RequestInterceptor2(), new EmptyRequestInterceptor()))
                 .setResponseHandler(new Stubs.ResponseHandler2())
                 .setParamsSerializer(new Stubs.Serializer2())
-                .setParamsName("name2")
-                .setParamsDestination(Destination.URL)
+//                .setParamsName("name2")
+//                .setParamsDestination(Destination.URL)
                 .endMethodConfig()
                 .startMethodConfig(TestInterface.T2)
                 .setPath("path2")
-                .setHttpMethod(HttpMethod.GET)
+                .setHttpMethod("GET")
                 .setConnectionTimeout(5l)
                 .setSocketTimeout(6l)
                 .setRequestInterceptor(new CompositeRequestInterceptor(new Stubs.RequestInterceptor3(), new EmptyRequestInterceptor()))
                 .setParamsSerializer(new Stubs.Serializer3())
-                .setParamsName("name3")
-                .setParamsDestination(Destination.URL)
+//                .setParamsName("name3")
+//                .setParamsDestination(Destination.URL)
                 .startParamConfig(0)
                 .setDestination("URL")
                 .setName("name4")
@@ -172,8 +172,8 @@ public class ConfigsTest {
     @Test
     public void testPartialOverride() throws NoSuchMethodException, InstantiationException, IllegalAccessException {
 
-        DefaultInterfaceConfig override = new ConfigBuilders.InterfaceConfigBuilder(TestInterface.class, "server2")
-                .setParamsDestination(Destination.URL)
+        DefaultInterfaceConfig override = new ConfigBuilders.InterfaceConfigBuilder(TestInterface.class).setEndPoint("server2")
+//                .setParamsDestination(Destination.URL)
                 .startMethodConfig(TestInterface.T1)
                 .setRequestInterceptor(new Stubs.RequestInterceptor3())
                 .setPath("path2bis")
@@ -181,15 +181,15 @@ public class ConfigsTest {
                 .startMethodConfig(TestInterface.T2)
                 .setRequestInterceptor(new Stubs.RequestInterceptor2())
                 .setParamsSerializer(new Stubs.Serializer2())
-                .setParamsName("name3bis")
-                .setParamsDestination(Destination.BODY)
+//                .setParamsName("name3bis")
+//                .setParamsDestination(Destination.BODY)
                 .startParamConfig(1)
                 .setDestination("URL")
                 .setName("name6")
                 .endParamConfig()
                 .endMethodConfig()
                 .build(false);
-        InterfaceConfig expected = new ConfigBuilders.InterfaceConfigBuilder(TestInterface.class, "server2")
+        InterfaceConfig expected = new ConfigBuilders.InterfaceConfigBuilder(TestInterface.class).setEndPoint("server2")
                 .setContextPath("path")
                 .setEncoding("iso")
                 .setGlobalInterceptor(new Stubs.RequestInterceptor1())
@@ -199,24 +199,24 @@ public class ConfigsTest {
                 .setMethodsResponseHandler(new Stubs.ResponseHandler1())
                 .startMethodConfig(TestInterface.T1)
                 .setPath("path2bis")
-                .setHttpMethod(HttpMethod.GET)
+                .setHttpMethod("GET")
                 .setConnectionTimeout(3l)
                 .setSocketTimeout(4l)
                 .setRequestInterceptor(new CompositeRequestInterceptor(new Stubs.RequestInterceptor3(), new Stubs.RequestInterceptor2()))
                 .setResponseHandler(new Stubs.ResponseHandler2())
                 .setParamsSerializer(new Stubs.Serializer2())
-                .setParamsName("name2bis")
-                .setParamsDestination(Destination.URL)
+//                .setParamsName("name2bis")
+//                .setParamsDestination(Destination.URL)
                 .endMethodConfig()
                 .startMethodConfig(TestInterface.T2)
                 .setPath("path2")
-                .setHttpMethod(HttpMethod.GET)
+                .setHttpMethod("GET")
                 .setConnectionTimeout(5l)
                 .setSocketTimeout(6l)
                 .setRequestInterceptor(new CompositeRequestInterceptor(new Stubs.RequestInterceptor2(), new Stubs.RequestInterceptor3()))
                 .setParamsSerializer(new Stubs.Serializer2())
-                .setParamsName("name3bis")
-                .setParamsDestination(Destination.BODY)
+//                .setParamsName("name3bis")
+//                .setParamsDestination(Destination.BODY)
                 .startParamConfig(0)
                 .setName("name3bis")
                 .endParamConfig()
@@ -243,7 +243,7 @@ public class ConfigsTest {
                 MutableMethodConfig mutableMethodConfig = new MutableMethodConfig();
                 mutableMethodConfig.setPath("/test");
                 mutableMethodConfig.setMethod(meth);
-                mutableMethodConfig.setHttpMethod(HttpMethod.POST);
+                mutableMethodConfig.setHttpMethod("POST");
                 mutableMethodConfig.setSocketTimeout(12l);
                 mutableMethodConfig.setConnectionTimeout(13l);
                 mutableMethodConfig.setRequestInterceptor(new Stubs.RequestInterceptor1());
@@ -286,9 +286,9 @@ public class ConfigsTest {
         assertEquals("hello", result.getContextPath());
 
         MutableMethodConfig m = ((MutableMethodConfig) mutableBase.getMethodConfig(TestInterface.T1));
-        assertEquals(HttpMethod.POST, result.getMethodConfig(TestInterface.T1).getHttpMethod());
-        m.setHttpMethod(HttpMethod.PUT);
-        assertEquals(HttpMethod.PUT, result.getMethodConfig(TestInterface.T1).getHttpMethod());
+        assertEquals("POST", result.getMethodConfig(TestInterface.T1).getHttpMethod());
+        m.setHttpMethod("PUT");
+        assertEquals("PUT", result.getMethodConfig(TestInterface.T1).getHttpMethod());
 
         MutableParamConfig p = (MutableParamConfig) ((MutableMethodConfig) mutableBase.getMethodConfig(TestInterface.T2)).getParamConfig(0);
         assertEquals("name0", result.getMethodConfig(TestInterface.T2).getParamConfig(0).getName());
@@ -375,8 +375,7 @@ public class ConfigsTest {
     private static class MutableMethodConfig implements MethodConfig {
         private Method method;
         private String path;
-        private StaticParam[] defaultParams;
-        private HttpMethod httpMethod;
+        private String httpMethod;
         private Long socketTimeout;
         private Long connectionTimeout;
         private RequestInterceptor requestInterceptor;
@@ -385,6 +384,7 @@ public class ConfigsTest {
         private RetryHandler retryHandler;
 
         private ParamConfig[] paramConfigs;
+        private BasicParamConfig[] extraParams;
 
         
         public ParamConfig getParamConfig(int index) {
@@ -392,12 +392,12 @@ public class ConfigsTest {
         }
 
         
-        public StaticParam[] getStaticParams() {
-            return defaultParams;
+        public BasicParamConfig[] getExtraParams() {
+            return extraParams;
         }
 
-        public void setDefaultParams(StaticParam[] defaultParams) {
-            this.defaultParams = defaultParams;
+        public void setExtraParams(BasicParamConfig[] extraParams) {
+            this.extraParams = extraParams;
         }
 
         
@@ -424,11 +424,11 @@ public class ConfigsTest {
         }
 
         
-        public HttpMethod getHttpMethod() {
+        public String getHttpMethod() {
             return httpMethod;
         }
 
-        public void setHttpMethod(HttpMethod httpMethod) {
+        public void setHttpMethod(String httpMethod) {
             this.httpMethod = httpMethod;
         }
 
@@ -496,6 +496,7 @@ public class ConfigsTest {
 
     private static class MutableParamConfig implements ParamConfig {
         private String name;
+        private String defaultValue;
         private Destination dest;
         private Serializer serializer;
         private Injector injector;
@@ -510,7 +511,14 @@ public class ConfigsTest {
             this.name = name;
         }
 
-        
+        public String getDefaultValue() {
+            return defaultValue;
+        }
+
+        public void setDefaultValue(String defaultValue) {
+            this.defaultValue = defaultValue;
+        }
+
         public Destination getDestination() {
             return dest;
         }

@@ -42,7 +42,7 @@ import java.util.regex.Pattern;
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
 public class HttpRequest {
-    private final HttpMethod meth;
+    private final String meth;
     private final URI uri;
     private final Long socketTimeout;
     private final Long connectionTimeout;
@@ -51,7 +51,7 @@ public class HttpRequest {
     private final Map<String, String> queryParams;
     private final Map<String, Object> bodyParams;
 
-    private HttpRequest(HttpMethod meth, URI uri, Long socketTimeout, Long connectionTimeout, String encoding, Map<String, String> headers, Map<String, String> queryParams, Map<String, Object> bodyParams) {
+    private HttpRequest(String meth, URI uri, Long socketTimeout, Long connectionTimeout, String encoding, Map<String, String> headers, Map<String, String> queryParams, Map<String, Object> bodyParams) {
         this.meth = meth;
         this.uri = uri;
         this.socketTimeout = socketTimeout;
@@ -62,7 +62,7 @@ public class HttpRequest {
         this.bodyParams = Collections.unmodifiableMap(bodyParams);
     }
 
-    public HttpMethod getMeth() {
+    public String getMeth() {
         return meth;
     }
 
@@ -165,8 +165,8 @@ public class HttpRequest {
      */
     public static class Builder {
         static final String ENCODING = "utf-8";
-        static final HttpMethod METH = HttpMethod.GET;
-        private HttpMethod meth = METH;
+        static final String METH = "GET";
+        private String meth = METH;
         private String baseUri;
         private Map<String, String> headers;
         private Long socketTimeout = null;
@@ -361,7 +361,7 @@ public class HttpRequest {
          * @param meth Http method to use to the resulting request.
          * @return current builder
          */
-        public Builder using(HttpMethod meth) {
+        public Builder using(String meth) {
             this.meth = meth;
             return this;
         }
@@ -488,7 +488,7 @@ public class HttpRequest {
             return queryString;
         }
 
-        public HttpMethod getMeth() {
+        public String getMeth() {
             return meth;
         }
 

@@ -22,9 +22,6 @@ package org.codegist.crest.config;
 
 import org.codegist.common.lang.Objects;
 import org.codegist.common.lang.Strings;
-import org.codegist.crest.HttpMethod;
-import org.codegist.crest.annotate.Destination;
-import org.codegist.crest.annotate.Name;
 import org.codegist.crest.handler.ErrorHandler;
 import org.codegist.crest.handler.ResponseHandler;
 import org.codegist.crest.handler.RetryHandler;
@@ -34,9 +31,7 @@ import org.codegist.crest.interceptor.RequestInterceptor;
 import org.codegist.crest.serializer.Serializer;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -84,10 +79,10 @@ public final class Configs {
      * @see Configs#override(InterfaceConfig, InterfaceConfig, boolean)
      * @param base      Normal full configured config, respect the general contract of InterfaceConfig object
      * @param overrides Config template, can hold null values, that plays as flag to indicate a fallback to the base config
-     * @return A view that gives priority of "overrides" non-null values object upon "base" object. Any changes at runtime will be reflected.
+     * @return A view that gives priority of "overrides" non-null values object upon "base" object. This is a static override, changes over time of both config won't be reflected
      */
     public static InterfaceConfig override(InterfaceConfig base, InterfaceConfig overrides) {
-        return override(base, overrides, true);
+        return override(base, overrides, false);
     }
 
     /**
@@ -115,7 +110,6 @@ public final class Configs {
         return new DefaultMethodConfig(
                 Objects.defaultIfNull(overrides.getMethod(), base.getMethod()),
                 Strings.defaultIfBlank(overrides.getPath(), base.getPath()),
-                Objects.defaultIfNull(overrides.getStaticParams(), base.getStaticParams()),
                 Objects.defaultIfNull(overrides.getHttpMethod(), base.getHttpMethod()),
                 Objects.defaultIfNull(overrides.getSocketTimeout(), base.getSocketTimeout()),
                 Objects.defaultIfNull(overrides.getConnectionTimeout(), base.getConnectionTimeout()),
@@ -123,7 +117,8 @@ public final class Configs {
                 Objects.defaultIfNull(overrides.getResponseHandler(), base.getResponseHandler()),
                 Objects.defaultIfNull(overrides.getErrorHandler(), base.getErrorHandler()),
                 Objects.defaultIfNull(overrides.getRetryHandler(), base.getRetryHandler()),
-                pl
+                pl,
+                Objects.defaultIfNull(overrides.getExtraParams(), base.getExtraParams())
         );
     }
     /**
@@ -154,6 +149,7 @@ public final class Configs {
 
         return new DefaultParamConfig(
                 Strings.defaultIfBlank(overrides.getName(), base.getName()),
+                Strings.defaultIfBlank(overrides.getDefaultValue(), base.getDefaultValue()),
                 Objects.defaultIfNull(overrides.getDestination(), base.getDestination()),
                 Objects.defaultIfNull(overrides.getSerializer(), base.getSerializer()),
                 Objects.defaultIfNull(overrides.getInjector(), base.getInjector())
@@ -175,13 +171,9 @@ public final class Configs {
     static ConfigBuilders.ParamConfigBuilder injectAnnotatedConfig(ConfigBuilders.ParamConfigBuilder config, Class<?> paramType) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
         /* Params type specifics */
         org.codegist.crest.annotate.Serializer serializer = paramType.getAnnotation(org.codegist.crest.annotate.Serializer.class);
-        Name name = paramType.getAnnotation(Name.class);
-        Destination destination = paramType.getAnnotation(org.codegist.crest.annotate.Destination.class);
         org.codegist.crest.annotate.Injector injector = paramType.getAnnotation(org.codegist.crest.annotate.Injector.class);
 
         if(serializer != null) config.setSerializer(serializer.value());
-        if(name != null) config.setName(name.value());
-        if(destination != null) config.setDestination(destination.value());
         if(injector != null) config.setInjector(injector.value());
 
         return config;
@@ -209,6 +201,10 @@ public final class Configs {
             return Strings.defaultIfBlank(override.getName(), base.getName());
         }
 
+        public String getDefaultValue() {
+            return Strings.defaultIfBlank(override.getDefaultValue(), base.getDefaultValue());
+        }
+
         public Injector getInjector() {
             return Objects.defaultIfNull(override.getInjector(), base.getInjector());
         }
@@ -223,8 +219,8 @@ public final class Configs {
             this.override = override;
         }
 
-        public StaticParam[] getStaticParams() {
-            return Objects.defaultIfNull(override.getStaticParams(), base.getStaticParams());
+        public BasicParamConfig[] getExtraParams() {
+            return Objects.defaultIfNull(override.getExtraParams(), base.getExtraParams());
         }
 
         public Integer getParamCount() {
@@ -269,8 +265,8 @@ public final class Configs {
             return Objects.defaultIfNull(override.getMethod(), base.getMethod());
         }
 
-        public HttpMethod getHttpMethod() {
-            return Objects.defaultIfNull(override.getHttpMethod(), base.getHttpMethod());
+        public String getHttpMethod() {
+            return Strings.defaultIfBlank(override.getHttpMethod(), base.getHttpMethod());
         }
 
         public ParamConfig getParamConfig(int index) {

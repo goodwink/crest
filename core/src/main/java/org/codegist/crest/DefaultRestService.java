@@ -71,7 +71,7 @@ public class DefaultRestService implements RestService {
         URL url = request.getUrl(true);
         HttpURLConnection con = newConnection(url);
 
-        con.setRequestMethod(request.getMeth().toString());
+        con.setRequestMethod(request.getMeth());
         if (request.getConnectionTimeout() != null && request.getConnectionTimeout() >= 0)
             con.setConnectTimeout(request.getConnectionTimeout().intValue());
         if (request.getSocketTimeout() != null && request.getSocketTimeout() >= 0)
@@ -83,70 +83,66 @@ public class DefaultRestService implements RestService {
             }
         }
 
-        switch (request.getMeth()) {
-            case POST:
-            case PUT:
-                if (Params.isForUpload(request.getBodyParams())) {
-                    String boundary = Randoms.randomAlphaNumeric(16) + System.currentTimeMillis();
-                    con.setRequestProperty("Content-Type", MULTIPART + boundary);
-                    if (request.getBodyParams() != null) {
-                        boundary = "--" + boundary;
-                        con.setDoOutput(true);
-                        OutputStream os = con.getOutputStream();
-                        DataOutputStream out = new DataOutputStream(os);
+        if ("PUT".equals(request.getMeth()) || "POST".equals(request.getMeth())) {
+            if (Params.isForUpload(request.getBodyParams())) {
+                String boundary = Randoms.randomAlphaNumeric(16) + System.currentTimeMillis();
+                con.setRequestProperty("Content-Type", MULTIPART + boundary);
+                if (request.getBodyParams() != null) {
+                    boundary = "--" + boundary;
+                    con.setDoOutput(true);
+                    OutputStream os = con.getOutputStream();
+                    DataOutputStream out = new DataOutputStream(os);
 
-                        for (Map.Entry<String, Object> param : request.getBodyParams().entrySet()) {
-                            InputStream upload = null;
-                            String name = null;
-                            if (param.getValue() instanceof InputStream) {
-                                upload = (InputStream) param.getValue();
-                                name = param.getKey();
-                            } else if (param.getValue() instanceof File) {
-                                upload = new FileInputStream((File) param.getValue());
-                                name = ((File) param.getValue()).getName();
-                            }
-
-                            if (upload != null) {
-                                out.writeBytes(boundary + "\r\n");
-                                out.writeBytes("Content-Disposition: form-data; name=\"" + param.getKey() + "\"; filename=\"" + name + "\"\r\n");
-                                out.writeBytes("Content-Type: Content-Type: application/octet-stream\r\n\r\n");
-                                BufferedInputStream in = null;
-                                try {
-                                    in = (BufferedInputStream) (upload instanceof BufferedInputStream ? upload : new BufferedInputStream(upload));
-                                    IOs.copy(in, out);
-                                    out.writeBytes("\r\n");
-                                } finally {
-                                    IOs.close(in);
-                                }
-                            } else if (param.getValue() != null) {
-                                out.writeBytes(boundary + "\r\n");
-                                out.writeBytes("Content-Disposition: form-data; name=\"" + param.getKey() + "\"\r\n");
-                                out.writeBytes("Content-Type: text/plain; charset=" + request.getEncoding() + "\r\n\r\n");
-                                out.write(param.getValue().toString().getBytes(request.getEncoding()));
-                                out.writeBytes("\r\n");
-                            }
+                    for (Map.Entry<String, Object> param : request.getBodyParams().entrySet()) {
+                        InputStream upload = null;
+                        String name = null;
+                        if (param.getValue() instanceof InputStream) {
+                            upload = (InputStream) param.getValue();
+                            name = param.getKey();
+                        } else if (param.getValue() instanceof File) {
+                            upload = new FileInputStream((File) param.getValue());
+                            name = ((File) param.getValue()).getName();
                         }
-                        out.writeBytes(boundary + "--\r\n");
-                        out.writeBytes("\r\n");
+
+                        if (upload != null) {
+                            out.writeBytes(boundary + "\r\n");
+                            out.writeBytes("Content-Disposition: form-data; name=\"" + param.getKey() + "\"; filename=\"" + name + "\"\r\n");
+                            out.writeBytes("Content-Type: Content-Type: application/octet-stream\r\n\r\n");
+                            BufferedInputStream in = null;
+                            try {
+                                in = (BufferedInputStream) (upload instanceof BufferedInputStream ? upload : new BufferedInputStream(upload));
+                                IOs.copy(in, out);
+                                out.writeBytes("\r\n");
+                            } finally {
+                                IOs.close(in);
+                            }
+                        } else if (param.getValue() != null) {
+                            out.writeBytes(boundary + "\r\n");
+                            out.writeBytes("Content-Disposition: form-data; name=\"" + param.getKey() + "\"\r\n");
+                            out.writeBytes("Content-Type: text/plain; charset=" + request.getEncoding() + "\r\n\r\n");
+                            out.write(param.getValue().toString().getBytes(request.getEncoding()));
+                            out.writeBytes("\r\n");
+                        }
                     }
-                } else {
-                    byte[] data = new byte[0];
-                    if (request.getBodyParams() != null) {
-                        data = Params.encodeParams(request.getBodyParams(), request.getEncoding()).getBytes(request.getEncoding());
-                    }
-                    con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=" + request.getEncoding());
-                    con.setRequestProperty("Content-Length", Integer.toString(data.length));
-                    if (data.length > 0) {
-                        con.setDoOutput(true);
-                        OutputStream os = con.getOutputStream();
-                        DataOutputStream out = new DataOutputStream(os);
-                        out.write(data);
-                        os.flush();
-                        os.close();
-                    }
+                    out.writeBytes(boundary + "--\r\n");
+                    out.writeBytes("\r\n");
                 }
-                break;
-            default:
+            } else {
+                byte[] data = new byte[0];
+                if (request.getBodyParams() != null) {
+                    data = Params.encodeParams(request.getBodyParams(), request.getEncoding()).getBytes(request.getEncoding());
+                }
+                con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=" + request.getEncoding());
+                con.setRequestProperty("Content-Length", Integer.toString(data.length));
+                if (data.length > 0) {
+                    con.setDoOutput(true);
+                    OutputStream os = con.getOutputStream();
+                    DataOutputStream out = new DataOutputStream(os);
+                    out.write(data);
+                    os.flush();
+                    os.close();
+                }
+            }
         }
 
         return con;

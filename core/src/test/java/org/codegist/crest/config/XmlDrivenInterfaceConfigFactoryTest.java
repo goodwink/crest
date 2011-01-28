@@ -129,7 +129,7 @@ public class XmlDrivenInterfaceConfigFactoryTest extends AbstractInterfaceConfig
         String serverConfig = "<crest-config end-point=\"hello\"/>";
         XmlDrivenInterfaceConfigFactory factory = newFactory(new ByteArrayInputStream(serverConfig.getBytes()));
         InterfaceConfig config = factory.newConfig(Interface.class, mockContext);
-        InterfaceConfig expected = new ConfigBuilders.InterfaceConfigBuilder(Interface.class, "hello").build();
+        InterfaceConfig expected = new ConfigBuilders.InterfaceConfigBuilder(Interface.class).setEndPoint("hello").build();
         InterfaceConfigTestHelper.assertExpected(expected, config, Interface.class);
     }
 

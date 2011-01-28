@@ -24,10 +24,10 @@ import org.codegist.common.lang.Disposable;
 import org.codegist.common.lang.Disposables;
 import org.codegist.common.lang.Strings;
 import org.codegist.common.reflect.ObjectMethodsAwareInvocationHandler;
+import org.codegist.crest.config.BasicParamConfig;
 import org.codegist.crest.config.ConfigFactoryException;
 import org.codegist.crest.config.InterfaceConfig;
 import org.codegist.crest.config.MethodConfig;
-import org.codegist.crest.config.StaticParam;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -165,16 +165,16 @@ public class DefaultCRest implements CRest, Disposable {
             requestContext.getMethodConfig().getRequestInterceptor().beforeParamsInjectionHandle(builder, requestContext);
 
             // Add default params
-            for(StaticParam param : requestContext.getMethodConfig().getStaticParams()){
+            for(BasicParamConfig param : requestContext.getMethodConfig().getExtraParams()){
                 switch(param.getDestination()){
                     case HEADER:
-                        builder.addHeader(param.getName(), param.getValue());
+                        builder.addHeader(param.getName(), param.getDefaultValue());
                         break;
                     case BODY:
-                        builder.addBodyParam(param.getName(), param.getValue());
+                        builder.addBodyParam(param.getName(), param.getDefaultValue());
                         break;
                     default:
-                        builder.addQueryParam(param.getName(), param.getValue());
+                        builder.addQueryParam(param.getName(), param.getDefaultValue());
                         break;
                 }
             }

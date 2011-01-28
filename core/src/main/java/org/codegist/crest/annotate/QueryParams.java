@@ -30,6 +30,8 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE,ElementType.METHOD})
-@HttpMethod(HttpMethod.OPTIONS)
-public @interface OPTIONS {
+public @interface QueryParams {
+
+    QueryParam[] value();
+
 }

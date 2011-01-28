@@ -25,32 +25,30 @@ import org.codegist.crest.twitter.model.Cursor;
 import org.codegist.crest.twitter.model.Status;
 import org.codegist.crest.twitter.model.User;
 
-import static org.codegist.crest.HttpMethod.POST;
-import static org.codegist.crest.config.Destination.BODY;
-import static org.codegist.crest.config.Destination.HEADER;
-
 /**
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
 @EndPoint("http://api.twitter.com")
 @ContextPath("/1/statuses")
-@Param(name = "Accept-Encoding", value = "gzip", dest = HEADER)
+@HeaderParam(name = "Accept-Encoding", value = "gzip")
 public interface StatusService {
 
     @POST
-    @Path("/update.json") 
-    @Destination(BODY)
-    Status updateStatus(@Name("status") String status);
+    @Path("/update.json")
+    Status updateStatus(@FormParam(name="status") String status);
 
-    @POST @Path("/update.json?lat={1}&long={2}")
+    @POST
+    @Path("/update.json?lat={1}&long={2}")
     Status changeStatus(
-            @Name("status") @Destination(BODY) String status,
+            @FormParam(name="status") String status,
             float lat, float longitude);
 
-    @POST @Path("/destroy/{0}.json")
+    @POST
+    @Path("/destroy/{0}.json")
     Status removeStatus(long id);
 
-    @POST @Path("/retweet/{0}.json")
+    @POST
+    @Path("/retweet/{0}.json")
     Status retweetStatus(long id);
 
     @Path("/show/{0}.json")

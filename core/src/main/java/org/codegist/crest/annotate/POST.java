@@ -25,13 +25,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import static org.codegist.crest.HttpMethod.POST;
-
 /**
  * @author laurent.gilles@codegist.org
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE,ElementType.METHOD})
-@HttpMethod(POST)
+@HttpMethod(HttpMethod.POST)
 public @interface POST {
 }

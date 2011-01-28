@@ -60,6 +60,8 @@ public class JaxRSAnnotationDrivenInterfaceConfigFactory implements InterfaceCon
 
                 //        HttpMethod httpMethod = interfaze.getAnnotation(HttpMethod.class); todo
                 Path path = meth.getAnnotation(Path.class);
+                DefaultValue defaultValue = (DefaultValue) meth.getAnnotation(DefaultValue.class);
+
                 HttpMethod method = null;
                 for(Annotation a : meth.getAnnotations()){
                     method = a.annotationType().getAnnotation(HttpMethod.class);
@@ -68,12 +70,10 @@ public class JaxRSAnnotationDrivenInterfaceConfigFactory implements InterfaceCon
 
                 ConfigBuilders.MethodConfigBuilder mcb = icb.startMethodConfig(meth);
 
-                if(path != null)
-                    mcb.setPath(path.value());
+                if(path != null) mcb.setPath(path.value());
+                if(method != null)  mcb.setHttpMethod(method.value());
+                if(defaultValue != null)  mcb.setParamsDefautValue(defaultValue.value());
 
-                if(method != null) {
-                    mcb.setHttpMethod(method.value());
-                }
 
                 for(int i = 0, max = meth.getParameterTypes().length; i < max ; i++){
                     Map<Class<? extends Annotation>,Annotation> paramAnnotations = Methods.getParamsAnnotation(meth, i);
@@ -81,6 +81,8 @@ public class JaxRSAnnotationDrivenInterfaceConfigFactory implements InterfaceCon
 
                     // Injects user type annotated config.
                     Configs.injectAnnotatedConfig(pcb, meth.getParameterTypes()[i]);
+                    defaultValue = (DefaultValue) paramAnnotations.get(DefaultValue.class);
+
                     //param
                     FormParam formParam = (FormParam) paramAnnotations.get(FormParam.class);
                     HeaderParam headerParam = (HeaderParam) paramAnnotations.get(HeaderParam.class);
@@ -89,6 +91,7 @@ public class JaxRSAnnotationDrivenInterfaceConfigFactory implements InterfaceCon
 //                    CookieParam cookieParam = (CookieParam) paramAnnotations.get(CookieParam.class); todo
 //                    MatrixParam matrixParam = (MatrixParam) paramAnnotations.get(MatrixParam.class); todo
 
+                    if(defaultValue != null) pcb.setDefaultValue(defaultValue.value());
                     if(formParam != null) {
                         pcb.setDestination(Destination.BODY);
                         pcb.setName(formParam.value());

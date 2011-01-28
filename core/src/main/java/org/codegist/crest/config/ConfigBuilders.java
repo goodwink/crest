@@ -26,7 +26,6 @@ import org.codegist.common.lang.Objects;
 import org.codegist.common.lang.Strings;
 import org.codegist.crest.CRestException;
 import org.codegist.crest.CRestProperty;
-import org.codegist.crest.HttpMethod;
 import org.codegist.crest.handler.ErrorHandler;
 import org.codegist.crest.handler.ResponseHandler;
 import org.codegist.crest.handler.RetryHandler;
@@ -42,6 +41,7 @@ import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Handy builders for {@link org.codegist.crest.config.DefaultInterfaceConfig}.
@@ -100,23 +100,6 @@ public abstract class ConfigBuilders {
             this(interfaze, (Map<String, Object>) null);
         }
 
-        @Deprecated
-        public InterfaceConfigBuilder(Class interfaze, String endPoint) {
-            this(interfaze, endPoint, null);
-        }
-
-        /**
-         * Given properties map can contains user-defined default values, that override interface predefined defauts.
-         * @param interfaze interface to bind the config to
-         * @param endPoint endpoint
-         * @param customProperties default values holder
-         */
-        @Deprecated
-        public InterfaceConfigBuilder(Class interfaze, String endPoint, Map<String, Object> customProperties) {
-            this(interfaze, customProperties);
-            this.endPoint = endPoint;
-        }
-
         /**
          * Given properties map can contains user-defined default values, that override interface predefined defauts.
          * @param interfaze interface to bind the config to
@@ -150,6 +133,12 @@ public abstract class ConfigBuilders {
             for (Map.Entry<Method, MethodConfigBuilder> entry : builderCache.entrySet()) {
                 mConfig.put(entry.getKey(), entry.getValue().build(useDefaults));
             }
+            // make local copies so that we don't mess with builder state to be able to call build multiple times on it
+            String contextPath = this.contextPath;
+            String encoding = this.encoding;
+            String endPoint = this.endPoint;
+            RequestInterceptor globalInterceptor = this.globalInterceptor;
+
             if (useDefaults) {
                 contextPath = defaultIfUndefined(contextPath, CRestProperty.CONFIG_INTERFACE_DEFAULT_CONTEXT_PATH, InterfaceConfig.DEFAULT_CONTEXT_PATH);
                 encoding = defaultIfUndefined(encoding, CRestProperty.CONFIG_INTERFACE_DEFAULT_ENCODING, InterfaceConfig.DEFAULT_ENCODING);
@@ -237,10 +226,24 @@ public abstract class ConfigBuilders {
             return this;
         }     
 
-        public InterfaceConfigBuilder addMethodsStaticParam(String name, String value, Destination destination){
+        public InterfaceConfigBuilder addMethodsExtraParams(Set<BasicParamConfig> params){
+            if (ignore(params)) return this;
+            for (MethodConfigBuilder b : builderCache.values()) {
+                b.addExtraParams(params);
+            }
+            return this;
+        }
+        public InterfaceConfigBuilder addMethodsExtraParam(BasicParamConfig param){
+            if (ignore(param)) return this;
+            for (MethodConfigBuilder b : builderCache.values()) {
+                b.addExtraParam(param);
+            }
+            return this;
+        }
+        public InterfaceConfigBuilder addMethodsExtraParam(String name, String value, Destination destination){
             if (ignore(name, value, destination)) return this;
             for (MethodConfigBuilder b : builderCache.values()) {
-                b.addStaticParam(name, value, destination);
+                b.addExtraParam(name, value, destination);
             }
             return this;
         }
@@ -289,30 +292,6 @@ public abstract class ConfigBuilders {
             if (ignore(injectorCls)) return this;
             for (MethodConfigBuilder b : builderCache.values()) {
                 b.setParamsInjector(injectorCls);
-            }
-            return this;
-        }
-
-        public InterfaceConfigBuilder setParamsName(String paramName) {
-            if (ignore(paramName)) return this;
-            for (MethodConfigBuilder b : builderCache.values()) {
-                b.setParamsName(paramName);
-            }
-            return this;
-        }
-
-        public InterfaceConfigBuilder setParamsDestination(Destination paramDestination) {
-            if (ignore(paramDestination)) return this;
-            for (MethodConfigBuilder b : builderCache.values()) {
-                b.setParamsDestination(paramDestination);
-            }
-            return this;
-        }
-
-        public InterfaceConfigBuilder setParamsDestination(String destination) {
-            if (ignore(destination)) return this;
-            for (MethodConfigBuilder b : builderCache.values()) {
-                b.setParamsDestination(destination);
             }
             return this;
         }
@@ -421,14 +400,6 @@ public abstract class ConfigBuilders {
             return this;
         }
 
-        public InterfaceConfigBuilder setMethodsHttpMethod(HttpMethod meth) {
-            if (ignore(meth)) return this;
-            for (MethodConfigBuilder b : builderCache.values()) {
-                b.setHttpMethod(meth);
-            }
-            return this;
-        }
-
         public InterfaceConfigBuilder setMethodsHttpMethod(String meth) {
             if (ignore(meth)) return this;
             for (MethodConfigBuilder b : builderCache.values()) {
@@ -445,8 +416,8 @@ public abstract class ConfigBuilders {
         private final InterfaceConfigBuilder parent;
 
         private String path;
-        private HttpMethod meth;
-        private Map<String,StaticParam> params = new LinkedHashMap<String, StaticParam>();
+        private String meth;
+        private Map<String, BasicParamConfig> extraParams = new LinkedHashMap<String, BasicParamConfig>();
         private Long socketTimeout;
         private Long connectionTimeout;
         private RequestInterceptor requestInterceptor;
@@ -495,12 +466,22 @@ public abstract class ConfigBuilders {
             for (int i = 0; i < paramConfigBuilders.length; i++) {
                 pConfig[i] = this.paramConfigBuilders[i].build(useDefaults);
             }
-            StaticParam[] defaultParams = params != null && params.size() > 0 ? params.values().toArray(new StaticParam[params.size()]) : null;
+            // make local copies so that we don't mess with builder state to be able to call build multiple times on it
+            String path = this.path;
+            String meth = this.meth;
+            Long socketTimeout = this.socketTimeout;
+            Long connectionTimeout = this.connectionTimeout;
+            RequestInterceptor requestInterceptor = this.requestInterceptor;
+            ResponseHandler responseHandler = this.responseHandler;
+            ErrorHandler errorHandler = this.errorHandler;
+            RetryHandler retryHandler = this.retryHandler;
+
+            BasicParamConfig[] extraParams = this.extraParams != null && this.extraParams.size() > 0 ? this.extraParams.values().toArray(new BasicParamConfig[this.extraParams.size()]) : null;
             if (useDefaults) {
                 path = defaultIfUndefined(path, CRestProperty.CONFIG_METHOD_DEFAULT_PATH, MethodConfig.DEFAULT_PATH);
                 meth = defaultIfUndefined(meth, CRestProperty.CONFIG_METHOD_DEFAULT_HTTP_METHOD, MethodConfig.DEFAULT_HTTP_METHOD);
-                StaticParam[] defs = defaultIfUndefined(null, CRestProperty.CONFIG_METHOD_DEFAULT_PARAMS, MethodConfig.DEFAULT_PARAMS);
-                defaultParams = Arrays.merge(StaticParam.class, defaultParams, defs);
+                BasicParamConfig[] defs = defaultIfUndefined(null, CRestProperty.CONFIG_METHOD_DEFAULT_EXTRA_PARAMS, MethodConfig.DEFAULT_EXTRA_PARAMS);
+                extraParams = Arrays.merge(BasicParamConfig.class, extraParams, defs);
                 socketTimeout = defaultIfUndefined(socketTimeout, CRestProperty.CONFIG_METHOD_DEFAULT_SO_TIMEOUT, MethodConfig.DEFAULT_SO_TIMEOUT);
                 connectionTimeout = defaultIfUndefined(connectionTimeout, CRestProperty.CONFIG_METHOD_DEFAULT_CO_TIMEOUT, MethodConfig.DEFAULT_CO_TIMEOUT);
                 requestInterceptor = defaultIfUndefined(requestInterceptor, CRestProperty.CONFIG_METHOD_DEFAULT_REQUEST_INTERCEPTOR, newInstance(MethodConfig.DEFAULT_REQUEST_INTERCEPTOR));
@@ -511,7 +492,6 @@ public abstract class ConfigBuilders {
             return new DefaultMethodConfig(
                     method,
                     path,
-                    defaultParams,
                     meth,
                     socketTimeout,
                     connectionTimeout,
@@ -519,7 +499,8 @@ public abstract class ConfigBuilders {
                     responseHandler,
                     errorHandler,
                     retryHandler,
-                    pConfig
+                    pConfig,
+                    extraParams
             );
         }
 
@@ -542,18 +523,24 @@ public abstract class ConfigBuilders {
             return this;
         }
 
-        public MethodConfigBuilder addStaticParam(String name, String value, Destination destination){
+        public MethodConfigBuilder addExtraParams(Set<BasicParamConfig> params){
+            if (ignore(params)) return this;
+            for(BasicParamConfig p : params){
+                addExtraParam(p);
+            }
+            return this;
+        }
+        public MethodConfigBuilder addExtraParam(BasicParamConfig param){
+            if (ignore(param)) return this;
+            return addExtraParam(param.getName(), param.getDefaultValue(), param.getDestination());
+        }
+        public MethodConfigBuilder addExtraParam(String name, String value, Destination destination){
             if (ignore(name, value, destination)) return this;
-            this.params.put(name, new DefaultStaticParam(name, value, destination));
+            this.extraParams.put(name, new DefaultBasicParamConfig(name, value, destination));
             return this;
         }
 
         public MethodConfigBuilder setHttpMethod(String meth) {
-            if (ignore(meth)) return this;
-            return setHttpMethod(HttpMethod.valueOf(meth));
-        }
-
-        public MethodConfigBuilder setHttpMethod(HttpMethod meth) {
             if (ignore(meth)) return this;
             this.meth = meth;
             return this;
@@ -696,26 +683,10 @@ public abstract class ConfigBuilders {
             return this;
         }
 
-        public MethodConfigBuilder setParamsName(String paramName) {
-            if (ignore(paramName)) return this;
+        public MethodConfigBuilder setParamsDefautValue(String value) throws IllegalAccessException, InstantiationException {
+            if (ignore(value)) return this;
             for (ParamConfigBuilder b : paramConfigBuilders) {
-                b.setName(paramName);
-            }
-            return this;
-        }
-
-        public MethodConfigBuilder setParamsDestination(String destination) {
-            if (ignore(destination)) return this;
-            for (ParamConfigBuilder b : paramConfigBuilders) {
-                b.setDestination(destination);
-            }
-            return this;
-        }
-
-        public MethodConfigBuilder setParamsDestination(Destination paramDestination) {
-            if (ignore(paramDestination)) return this;
-            for (ParamConfigBuilder b : paramConfigBuilders) {
-                b.setDestination(paramDestination);
+                b.setDefaultValue(value);
             }
             return this;
         }
@@ -727,6 +698,7 @@ public abstract class ConfigBuilders {
         private final MethodConfigBuilder parent;
         private final Type type;
         private String name;
+        private String defaultValue;
         private Destination dest;
         private Serializer serializer;
         private Injector injector;
@@ -759,8 +731,16 @@ public abstract class ConfigBuilders {
         }
 
         public DefaultParamConfig build(boolean useDefaults) {
+            // make local copies so that we don't mess with builder state to be able to call build multiple times on it
+            String name = this.name;
+            String defaultValue = this.defaultValue;
+            Destination dest = this.dest;
+            Injector injector = this.injector;
+            Serializer serializer = this.serializer;
+
             if (useDefaults) {
                 name = defaultIfUndefined(name, CRestProperty.CONFIG_PARAM_DEFAULT_NAME, ParamConfig.DEFAULT_NAME);
+                defaultValue = defaultIfUndefined(defaultValue, CRestProperty.CONFIG_PARAM_DEFAULT_VALUE, ParamConfig.DEFAULT_VALUE);
                 dest = defaultIfUndefined(dest, CRestProperty.CONFIG_PARAM_DEFAULT_DESTINATION, ParamConfig.DEFAULT_DESTINATION);
                 injector = defaultIfUndefined(injector, CRestProperty.CONFIG_PARAM_DEFAULT_INJECTOR, newInstance(ParamConfig.DEFAULT_INJECTOR));
                 serializer = defaultIfUndefined(serializer, CRestProperty.CONFIG_PARAM_DEFAULT_SERIALIZER, newInstance(ParamConfig.DEFAULT_SERIALIZER));
@@ -772,6 +752,7 @@ public abstract class ConfigBuilders {
             }
             return new DefaultParamConfig(
                     name,
+                    defaultValue,
                     dest,
                     serializer,
                     injector
@@ -790,6 +771,13 @@ public abstract class ConfigBuilders {
         public ParamConfigBuilder setName(String name) {
             if (ignore(name)) return this;
             this.name = name;
+            return this;
+        }
+
+
+        public ParamConfigBuilder setDefaultValue(String defaultValue) {
+            if (ignore(defaultValue)) return this;
+            this.defaultValue = defaultValue;
             return this;
         }
 

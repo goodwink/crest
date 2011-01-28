@@ -25,17 +25,17 @@ import org.codegist.crest.CRestContext;
 /**
  * @author laurent.gilles@codegist.org
  */
-public class AnnotationDrivenInterfaceConfigFactory implements InterfaceConfigFactory {
+public class JaxRSAwareAnnotationDrivenInterfaceConfigFactory implements InterfaceConfigFactory {
 
     private final InterfaceConfigFactory crestAnnotationFactory = new CRestAnnotationDrivenInterfaceConfigFactory(false);
     private final InterfaceConfigFactory jaxRsAnnotationFactory = new JaxRSAnnotationDrivenInterfaceConfigFactory(false);
     private final boolean crestPriority;
 
-    public AnnotationDrivenInterfaceConfigFactory(boolean crestPriority) {
+    public JaxRSAwareAnnotationDrivenInterfaceConfigFactory(boolean crestPriority) {
         this.crestPriority = crestPriority;
     }
 
-    public AnnotationDrivenInterfaceConfigFactory() {
+    public JaxRSAwareAnnotationDrivenInterfaceConfigFactory() {
         this(true);
     }
 
@@ -49,9 +49,9 @@ public class AnnotationDrivenInterfaceConfigFactory implements InterfaceConfigFa
         InterfaceConfig base = crestPriority ? jaxRsConfig : crestConfig;
         InterfaceConfig overrides = crestPriority ? crestConfig : jaxRsConfig;
 
-        InterfaceConfig overridden = Configs.override(base, overrides, false);
+        InterfaceConfig overridden = Configs.override(base, overrides);
 
-        return Configs.override(baseDefaultConfig, overridden, false);
+        return Configs.override(baseDefaultConfig, overridden);
     }
 
 }

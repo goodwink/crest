@@ -20,7 +20,6 @@
 
 package org.codegist.crest.config;
 
-import org.codegist.crest.HttpMethod;
 import org.codegist.crest.Stubs;
 import org.codegist.crest.TestUtils;
 import org.codegist.crest.handler.ErrorHandler;
@@ -49,7 +48,7 @@ import static org.codegist.crest.config.ParamConfig.*;
  */
 public class ConfigBuildersTest {
 
-    private static final StaticParam[] PARAMS = new StaticParam[]{new DefaultStaticParam("1","2", Destination.BODY)};
+    private static final BasicParamConfig[] PARAMS = new BasicParamConfig[]{new DefaultBasicParamConfig("1","2", Destination.BODY)};
 
     @Test
     public void testDefaultOverrides() throws InstantiationException, IllegalAccessException {
@@ -63,9 +62,9 @@ public class ConfigBuildersTest {
         defaultOverrides.put(CONFIG_METHOD_DEFAULT_CO_TIMEOUT, 121l);
         defaultOverrides.put(CONFIG_METHOD_DEFAULT_ERROR_HANDLER, new Stubs.ErrorHandler1());
         defaultOverrides.put(CONFIG_METHOD_DEFAULT_RETRY_HANDLER, new Stubs.RetryHandler1());
-        defaultOverrides.put(CONFIG_METHOD_DEFAULT_HTTP_METHOD, HttpMethod.HEAD);
+        defaultOverrides.put(CONFIG_METHOD_DEFAULT_HTTP_METHOD, "HEAD");
         defaultOverrides.put(CONFIG_METHOD_DEFAULT_RESPONSE_HANDLER, new Stubs.ResponseHandler1());
-        defaultOverrides.put(CONFIG_METHOD_DEFAULT_PARAMS, PARAMS);
+        defaultOverrides.put(CONFIG_METHOD_DEFAULT_EXTRA_PARAMS, PARAMS);
         defaultOverrides.put(CONFIG_PARAM_DEFAULT_DESTINATION, Destination.BODY);
         defaultOverrides.put(CONFIG_PARAM_DEFAULT_INJECTOR, new Stubs.RequestParameterInjector1());
         defaultOverrides.put(CONFIG_PARAM_DEFAULT_SERIALIZER, new Stubs.Serializer1());
@@ -80,8 +79,7 @@ public class ConfigBuildersTest {
                     put(Interface.A, new DefaultMethodConfig(
                             Interface.A,
                             (String) defaultOverrides.get(CONFIG_METHOD_DEFAULT_PATH),
-                            (StaticParam[]) defaultOverrides.get(CONFIG_METHOD_DEFAULT_PARAMS),
-                            (HttpMethod) defaultOverrides.get(CONFIG_METHOD_DEFAULT_HTTP_METHOD),
+                            (String) defaultOverrides.get(CONFIG_METHOD_DEFAULT_HTTP_METHOD),
                             (Long) defaultOverrides.get(CONFIG_METHOD_DEFAULT_SO_TIMEOUT),
                             (Long) defaultOverrides.get(CONFIG_METHOD_DEFAULT_CO_TIMEOUT),
                             (RequestInterceptor) defaultOverrides.get(CONFIG_METHOD_DEFAULT_REQUEST_INTERCEPTOR),
@@ -91,17 +89,18 @@ public class ConfigBuildersTest {
                             new ParamConfig[]{
                                     new DefaultParamConfig(
                                             (String) defaultOverrides.get(CONFIG_PARAM_DEFAULT_NAME),
+                                            (String) defaultOverrides.get(CONFIG_PARAM_DEFAULT_VALUE),
                                             (Destination) defaultOverrides.get(CONFIG_PARAM_DEFAULT_DESTINATION),
                                             (Serializer) defaultOverrides.get(CONFIG_PARAM_DEFAULT_SERIALIZER),
                                             (Injector) defaultOverrides.get(CONFIG_PARAM_DEFAULT_INJECTOR)
                                     )
-                            }
+                            },
+                            (BasicParamConfig[]) defaultOverrides.get(CONFIG_METHOD_DEFAULT_EXTRA_PARAMS)
                     ));
                     put(Interface.B, new DefaultMethodConfig(
                             Interface.B,
                             (String) defaultOverrides.get(CONFIG_METHOD_DEFAULT_PATH),
-                            (StaticParam[]) defaultOverrides.get(CONFIG_METHOD_DEFAULT_PARAMS),
-                            (HttpMethod) defaultOverrides.get(CONFIG_METHOD_DEFAULT_HTTP_METHOD),
+                            (String) defaultOverrides.get(CONFIG_METHOD_DEFAULT_HTTP_METHOD),
                             (Long) defaultOverrides.get(CONFIG_METHOD_DEFAULT_SO_TIMEOUT),
                             (Long) defaultOverrides.get(CONFIG_METHOD_DEFAULT_CO_TIMEOUT),
                             (RequestInterceptor) defaultOverrides.get(CONFIG_METHOD_DEFAULT_REQUEST_INTERCEPTOR),
@@ -111,23 +110,27 @@ public class ConfigBuildersTest {
                             new ParamConfig[]{
                                     new DefaultParamConfig(
                                             (String) defaultOverrides.get(CONFIG_PARAM_DEFAULT_NAME),
+                                            (String) defaultOverrides.get(CONFIG_PARAM_DEFAULT_VALUE),
                                             (Destination) defaultOverrides.get(CONFIG_PARAM_DEFAULT_DESTINATION),
                                             (Serializer) defaultOverrides.get(CONFIG_PARAM_DEFAULT_SERIALIZER),
                                             (Injector) defaultOverrides.get(CONFIG_PARAM_DEFAULT_INJECTOR)
                                     ),
                                     new DefaultParamConfig(
                                             (String) defaultOverrides.get(CONFIG_PARAM_DEFAULT_NAME),
+                                            (String) defaultOverrides.get(CONFIG_PARAM_DEFAULT_VALUE),
                                             (Destination) defaultOverrides.get(CONFIG_PARAM_DEFAULT_DESTINATION),
                                             (Serializer) defaultOverrides.get(CONFIG_PARAM_DEFAULT_SERIALIZER),
                                             (Injector) defaultOverrides.get(CONFIG_PARAM_DEFAULT_INJECTOR)
                                     ),
                                     new DefaultParamConfig(
                                             (String) defaultOverrides.get(CONFIG_PARAM_DEFAULT_NAME),
+                                            (String) defaultOverrides.get(CONFIG_PARAM_DEFAULT_VALUE),
                                             (Destination) defaultOverrides.get(CONFIG_PARAM_DEFAULT_DESTINATION),
                                             (Serializer) defaultOverrides.get(CONFIG_PARAM_DEFAULT_SERIALIZER),
                                             (Injector) defaultOverrides.get(CONFIG_PARAM_DEFAULT_INJECTOR)
                                     )
-                            }
+                            },
+                            (BasicParamConfig[]) defaultOverrides.get(CONFIG_METHOD_DEFAULT_EXTRA_PARAMS)
                     ));
                 }}
         );
@@ -147,7 +150,6 @@ public class ConfigBuildersTest {
                     put(Interface.A, new DefaultMethodConfig(
                             Interface.A,
                             DEFAULT_PATH,
-                            DEFAULT_PARAMS,
                             DEFAULT_HTTP_METHOD,
                             DEFAULT_SO_TIMEOUT,
                             DEFAULT_CO_TIMEOUT,
@@ -158,16 +160,17 @@ public class ConfigBuildersTest {
                             new ParamConfig[]{
                                     new DefaultParamConfig(
                                             DEFAULT_NAME,
+                                            DEFAULT_VALUE,
                                             DEFAULT_DESTINATION,
                                             new ToStringSerializer(),
                                             TestUtils.newInstance(DEFAULT_INJECTOR)
                                     )
-                            }
+                            },
+                            DEFAULT_EXTRA_PARAMS
                     ));
                     put(Interface.B, new DefaultMethodConfig(
                             Interface.B,
                             DEFAULT_PATH,
-                            DEFAULT_PARAMS,
                             DEFAULT_HTTP_METHOD,
                             DEFAULT_SO_TIMEOUT,
                             DEFAULT_CO_TIMEOUT,
@@ -178,27 +181,31 @@ public class ConfigBuildersTest {
                             new ParamConfig[]{
                                     new DefaultParamConfig(
                                             DEFAULT_NAME,
+                                            DEFAULT_VALUE,
                                             DEFAULT_DESTINATION,
                                             new ToStringSerializer(),
                                             TestUtils.newInstance(DEFAULT_INJECTOR)
                                     ),
                                     new DefaultParamConfig(
                                             DEFAULT_NAME,
+                                            DEFAULT_VALUE,
                                             DEFAULT_DESTINATION,
                                             new ArraySerializer(),
                                             TestUtils.newInstance(DEFAULT_INJECTOR)
                                     ),
                                     new DefaultParamConfig(
                                             DEFAULT_NAME,
+                                            DEFAULT_VALUE,
                                             DEFAULT_DESTINATION,
                                             new DateSerializer(),
                                             TestUtils.newInstance(DEFAULT_INJECTOR)
                                     )
-                            }
+                            },
+                            DEFAULT_EXTRA_PARAMS
                     ));
                 }}
         );
-        InterfaceConfig config = new ConfigBuilders.InterfaceConfigBuilder(Interface.class, "http://server:8080").build();
+        InterfaceConfig config = new ConfigBuilders.InterfaceConfigBuilder(Interface.class).setEndPoint("http://server:8080").build();
         InterfaceConfigTestHelper.assertExpected(expected, config, Interface.class);
     }
 
@@ -214,8 +221,7 @@ public class ConfigBuildersTest {
                     put(Interface.A, new DefaultMethodConfig(
                             Interface.A,
                             "/test",
-                            PARAMS,
-                            HttpMethod.DELETE,
+                            "DELETE",
                             10l,
                             11l,
                             new Stubs.RequestInterceptor2(),
@@ -224,18 +230,19 @@ public class ConfigBuildersTest {
                             new Stubs.RetryHandler2(),
                             new ParamConfig[]{
                                     new DefaultParamConfig(
-                                            "name",
-                                            Destination.BODY,
+                                            DEFAULT_NAME,
+                                            DEFAULT_VALUE,
+                                            DEFAULT_DESTINATION,
                                             new Stubs.Serializer2(),
                                             new Stubs.RequestParameterInjector2()
                                     )
-                            }
+                            },
+                            PARAMS
                     ));
                     put(Interface.B, new DefaultMethodConfig(
                             Interface.B,
                             "/test",
-                            PARAMS,
-                            HttpMethod.DELETE,
+                            "DELETE",
                             10l,
                             11l,
                             new Stubs.RequestInterceptor2(),
@@ -244,39 +251,42 @@ public class ConfigBuildersTest {
                             new Stubs.RetryHandler2(),
                             new ParamConfig[]{
                                     new DefaultParamConfig(
-                                            "name",
-                                            Destination.BODY,
+                                            DEFAULT_NAME,
+                                            DEFAULT_VALUE,
+                                            DEFAULT_DESTINATION,
                                             new Stubs.Serializer2(),
                                             new Stubs.RequestParameterInjector2()
                                     ),
                                     new DefaultParamConfig(
-                                            "name",
-                                            Destination.BODY,
+                                            DEFAULT_NAME,
+                                            DEFAULT_VALUE,
+                                            DEFAULT_DESTINATION,
                                             new Stubs.Serializer2(),
                                             new Stubs.RequestParameterInjector2()
                                     ),
                                     new DefaultParamConfig(
-                                            "name",
-                                            Destination.BODY,
+                                            DEFAULT_NAME,
+                                            DEFAULT_VALUE,
+                                            DEFAULT_DESTINATION,
                                             new Stubs.Serializer2(),
                                             new Stubs.RequestParameterInjector2()
                                     )
-                            }
+                            },
+                            PARAMS
                     ));
                 }}
         );
-        InterfaceConfig config = new ConfigBuilders.InterfaceConfigBuilder(Interface.class, "http://server:8080")
+        InterfaceConfig config = new ConfigBuilders.InterfaceConfigBuilder(Interface.class)
+                .setEndPoint("http://server:8080")
                 .setMethodsPath("/test")
-                .addMethodsStaticParam("1", "2", Destination.BODY)
-                .setMethodsHttpMethod(HttpMethod.DELETE)
+                .addMethodsExtraParam("1", "2", Destination.BODY)
+                .setMethodsHttpMethod("DELETE")
                 .setMethodsSocketTimeout(10l)
                 .setMethodsConnectionTimeout(11l)
                 .setMethodsRequestInterceptor(new Stubs.RequestInterceptor2())
                 .setMethodsResponseHandler(new Stubs.ResponseHandler2())
                 .setMethodsErrorHandler(new Stubs.ErrorHandler2())
                 .setMethodsRetryHandler(new Stubs.RetryHandler2())
-                .setParamsName("name")
-                .setParamsDestination("BODY")
                 .setParamsSerializer(new Stubs.Serializer2())
                 .setParamsInjector(new Stubs.RequestParameterInjector2())
                 .build();
@@ -295,8 +305,7 @@ public class ConfigBuildersTest {
                     put(Interface.A, new DefaultMethodConfig(
                             Interface.A,
                             "/test",
-                            PARAMS,
-                            HttpMethod.DELETE,
+                            "DELETE",
                             10l,
                             11l,
                             new Stubs.RequestInterceptor2(),
@@ -305,18 +314,19 @@ public class ConfigBuildersTest {
                             new Stubs.RetryHandler1(),
                             new ParamConfig[]{
                                     new DefaultParamConfig(
-                                            "name",
-                                            Destination.BODY,
+                                            DEFAULT_NAME,
+                                            DEFAULT_VALUE,
+                                            DEFAULT_DESTINATION,
                                             new Stubs.Serializer2(),
                                             new Stubs.RequestParameterInjector2()
                                     )
-                            }
+                            },
+                            PARAMS
                     ));
                     put(Interface.B, new DefaultMethodConfig(
                             Interface.B,
                             "/test2",
-                            PARAMS,
-                            HttpMethod.POST,
+                            "POST",
                             12l,
                             13l,
                             new Stubs.RequestInterceptor3(),
@@ -325,52 +335,52 @@ public class ConfigBuildersTest {
                             new Stubs.RetryHandler2(),
                             new ParamConfig[]{
                                     new DefaultParamConfig(
-                                            "name2",
-                                            Destination.URL,
+                                            DEFAULT_NAME,
+                                            DEFAULT_VALUE,
+                                            DEFAULT_DESTINATION,
                                             new Stubs.Serializer3(),
                                             new Stubs.RequestParameterInjector3()
                                     ),
                                     new DefaultParamConfig(
-                                            "name2",
-                                            Destination.URL,
+                                            DEFAULT_NAME,
+                                            DEFAULT_VALUE,
+                                            DEFAULT_DESTINATION,
                                             new Stubs.Serializer3(),
                                             new Stubs.RequestParameterInjector3()
                                     ),
                                     new DefaultParamConfig(
-                                            "name2",
-                                            Destination.URL,
+                                            DEFAULT_NAME,
+                                            DEFAULT_VALUE,
+                                            DEFAULT_DESTINATION,
                                             new Stubs.Serializer3(),
                                             new Stubs.RequestParameterInjector3()
                                     )
-                            }
+                            },
+                            PARAMS
                     ));
                 }}
         );
-        InterfaceConfig config = new ConfigBuilders.InterfaceConfigBuilder(Interface.class, "http://server:8080")
+        InterfaceConfig config = new ConfigBuilders.InterfaceConfigBuilder(Interface.class).setEndPoint("http://server:8080")
                 .setMethodsPath("/test")
-                .addMethodsStaticParam("1", "2", Destination.BODY)
-                .setMethodsHttpMethod(HttpMethod.DELETE)
+                .addMethodsExtraParam("1", "2", Destination.BODY)
+                .setMethodsHttpMethod("DELETE")
                 .setMethodsSocketTimeout(10l)
                 .setMethodsConnectionTimeout(11l)
                 .setMethodsRequestInterceptor(new Stubs.RequestInterceptor2())
                 .setMethodsResponseHandler(new Stubs.ResponseHandler2())
                 .setMethodsErrorHandler(new Stubs.ErrorHandler2())
                 .setMethodsRetryHandler(new Stubs.RetryHandler1())
-                .setParamsName("name")
-                .setParamsDestination("BODY")
                 .setParamsSerializer(new Stubs.Serializer2())
                 .setParamsInjector(new Stubs.RequestParameterInjector2())
                 .startMethodConfig(Interface.B)
                 .setPath("/test2")
-                .setHttpMethod(HttpMethod.POST)
+                .setHttpMethod("POST")
                 .setSocketTimeout(12l)
                 .setConnectionTimeout(13l)
                 .setRequestInterceptor(new Stubs.RequestInterceptor3())
                 .setResponseHandler(new Stubs.ResponseHandler3())
                 .setErrorHandler(new Stubs.ErrorHandler3())
                 .setRetryHandler(new Stubs.RetryHandler2())
-                .setParamsName("name2")
-                .setParamsDestination("URL")
                 .setParamsSerializer(new Stubs.Serializer3())
                 .setParamsInjector(new Stubs.RequestParameterInjector3())
                 .endMethodConfig()
@@ -390,8 +400,7 @@ public class ConfigBuildersTest {
                     put(Interface.A, new DefaultMethodConfig(
                             Interface.A,
                             "/test",
-                            PARAMS,
-                            HttpMethod.DELETE,
+                            "DELETE",
                             10l,
                             11l,
                             new Stubs.RequestInterceptor2(),
@@ -400,18 +409,19 @@ public class ConfigBuildersTest {
                             new Stubs.RetryHandler2(),
                             new ParamConfig[]{
                                     new DefaultParamConfig(
-                                            "name4",
-                                            Destination.URL,
+                                            DEFAULT_NAME,
+                                            DEFAULT_VALUE,
+                                            DEFAULT_DESTINATION,
                                             new Stubs.Serializer1(),
                                             new Stubs.RequestParameterInjector1()
                                     )
-                            }
+                            },
+                            PARAMS
                     ));
                     put(Interface.B, new DefaultMethodConfig(
                             Interface.B,
                             "/test2",
-                            PARAMS,
-                            HttpMethod.POST,
+                            "POST",
                             12l,
                             13l,
                             new Stubs.RequestInterceptor3(),
@@ -420,39 +430,42 @@ public class ConfigBuildersTest {
                             new Stubs.RetryHandler1(),
                             new ParamConfig[]{
                                     new DefaultParamConfig(
-                                            "name3",
-                                            Destination.BODY,
+                                            DEFAULT_NAME,
+                                            DEFAULT_VALUE,
+                                            DEFAULT_DESTINATION,
                                             new Stubs.Serializer1(),
                                             new Stubs.RequestParameterInjector1()
                                     ),
                                     new DefaultParamConfig(
-                                            "name2",
-                                            Destination.URL,
+                                            DEFAULT_NAME,
+                                            DEFAULT_VALUE,
+                                            DEFAULT_DESTINATION,
                                             new Stubs.Serializer3(),
                                             new Stubs.RequestParameterInjector3()
                                     ),
                                     new DefaultParamConfig(
-                                            "name2",
-                                            Destination.URL,
+                                            DEFAULT_NAME,
+                                            DEFAULT_VALUE,
+                                            DEFAULT_DESTINATION,
                                             new Stubs.Serializer3(),
                                             new Stubs.RequestParameterInjector3()
                                     )
-                            }
+                            },
+                            PARAMS
                     ));
                 }}
         );
-        InterfaceConfig config = new ConfigBuilders.InterfaceConfigBuilder(Interface.class, "http://server:8080")
+        InterfaceConfig config = new ConfigBuilders.InterfaceConfigBuilder(Interface.class)
+                .setEndPoint("http://server:8080")
                 .setMethodsPath("/test")
-                .addMethodsStaticParam("1", "2", Destination.BODY)
-                .setMethodsHttpMethod(HttpMethod.DELETE)
+                .addMethodsExtraParam("1", "2", Destination.BODY)
+                .setMethodsHttpMethod("DELETE")
                 .setMethodsSocketTimeout(10l)
                 .setMethodsConnectionTimeout(11l)
                 .setMethodsRequestInterceptor(new Stubs.RequestInterceptor2())
                 .setMethodsResponseHandler(new Stubs.ResponseHandler2())
                 .setMethodsErrorHandler(new Stubs.ErrorHandler2())
                 .setMethodsRetryHandler(new Stubs.RetryHandler2())
-                .setParamsName("name")
-                .setParamsDestination("BODY")
                 .setParamsSerializer(new Stubs.Serializer2())
                 .setParamsInjector(new Stubs.RequestParameterInjector2())
                 .startMethodConfig(Interface.A)
@@ -465,20 +478,16 @@ public class ConfigBuildersTest {
                 .endMethodConfig()
                 .startMethodConfig(Interface.B)
                 .setPath("/test2")
-                .setHttpMethod(HttpMethod.POST)
+                .setHttpMethod("POST")
                 .setSocketTimeout(12l)
                 .setConnectionTimeout(13l)
                 .setRequestInterceptor(new Stubs.RequestInterceptor3())
                 .setResponseHandler(new Stubs.ResponseHandler3())
                 .setErrorHandler(new Stubs.ErrorHandler3())
                 .setRetryHandler(new Stubs.RetryHandler1())
-                .setParamsName("name2")
-                .setParamsDestination("URL")
                 .setParamsSerializer(new Stubs.Serializer3())
                 .setParamsInjector(new Stubs.RequestParameterInjector3())
                 .startParamConfig(0)
-                .setName("name3")
-                .setDestination("BODY")
                 .setSerializer(new Stubs.Serializer1())
                 .setInjector(new Stubs.RequestParameterInjector1())
                 .endParamConfig()
@@ -498,21 +507,21 @@ public class ConfigBuildersTest {
                             Interface.A,
                             null, null, null, null, null, null, null, null, null,
                             new ParamConfig[]{
-                                    new DefaultParamConfig(null, null, null, null)
+                                    new DefaultParamConfig(null, null, null, null, null)
                             }
                     ));
                     put(Interface.B, new DefaultMethodConfig(
                             Interface.B,
                             null, null, null, null, null, null, null, null,null,
                             new ParamConfig[]{
-                                    new DefaultParamConfig(null, null, null, null),
-                                    new DefaultParamConfig(null, null, null, null),
-                                    new DefaultParamConfig(null, null, null, null)
+                                    new DefaultParamConfig(null, null, null, null, null),
+                                    new DefaultParamConfig(null, null, null, null, null),
+                                    new DefaultParamConfig(null, null, null, null, null)
                             }
                     ));
                 }}
         );
-        InterfaceConfig config = new ConfigBuilders.InterfaceConfigBuilder(Interface.class, "http://server:8080").build(false);
+        InterfaceConfig config = new ConfigBuilders.InterfaceConfigBuilder(Interface.class).setEndPoint("http://server:8080").build(false);
         InterfaceConfigTestHelper.assertExpected(expected, config, Interface.class);
     }
 

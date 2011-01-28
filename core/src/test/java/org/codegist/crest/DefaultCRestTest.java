@@ -152,7 +152,7 @@ public class DefaultCRestTest {
                         mockRestService,
                         mockProxyFactory,
                         new PreconfiguredInterfaceConfigFactory(
-                                new ConfigBuilders.InterfaceConfigBuilder(RetryTest.class, "http://test.com")
+                                new ConfigBuilders.InterfaceConfigBuilder(RetryTest.class).setEndPoint("http://test.com")
                                         .setMethodsRetryHandler(retryHandler)
                                         .build()
                         ),
@@ -236,7 +236,7 @@ public class DefaultCRestTest {
 
         Reader testReader();
 
-        InterfaceConfig CONFIG = new ConfigBuilders.InterfaceConfigBuilder(RawInterface.class, "http://test.com").build();
+        InterfaceConfig CONFIG = new ConfigBuilders.InterfaceConfigBuilder(RawInterface.class).setEndPoint("http://test.com").build();
     }
 
 
@@ -266,21 +266,21 @@ public class DefaultCRestTest {
                 if (u.contains("aaa")) {
                     assertEquals(15, r.getSocketTimeout().intValue());
                     assertEquals(10, r.getConnectionTimeout().intValue());
-                    assertEquals(HttpMethod.GET, r.getMeth());
+                    assertEquals("GET", r.getMeth());
                     assertEquals("http://test-server:8080/path/aaa", r.getUri().toString());
                     assertEquals(0, r.getBodyParams().size());
                     assertEquals(2, r.getQueryParams().size());
                 } else if (u.contains("bbb")) {
                     assertEquals(15, r.getSocketTimeout().intValue());
                     assertEquals(55, r.getConnectionTimeout().intValue());
-                    assertEquals(HttpMethod.GET, r.getMeth());
+                    assertEquals("GET", r.getMeth());
                     assertEquals("http://test-server:8080/path/bbb/c/c", r.getUri().toString());
                     assertEquals(0, r.getBodyParams().size());
                     assertEquals(2, r.getQueryParams().size());
                 } else if (u.contains("ccc")) {
                     assertEquals(15, r.getSocketTimeout().intValue());
                     assertEquals(10, r.getConnectionTimeout().intValue());
-                    assertEquals(HttpMethod.POST, r.getMeth());
+                    assertEquals("POST", r.getMeth());
                     assertEquals("http://test-server:8080/path/ccc/100", r.getUri().toString());
                     assertEquals(1, r.getBodyParams().size());
                     assertEquals(1, r.getQueryParams().size());
@@ -289,7 +289,7 @@ public class DefaultCRestTest {
                 } else if (u.contains("ddd")) {
                     assertEquals(15, r.getSocketTimeout().intValue());
                     assertEquals(10, r.getConnectionTimeout().intValue());
-                    assertEquals(HttpMethod.POST, r.getMeth());
+                    assertEquals("POST", r.getMeth());
                     assertEquals("http://test-server:8080/path/ddd", r.getUri().toString());
                     assertEquals(1, r.getQueryParams().size());
                     assertEquals(3, r.getBodyParams().size());
@@ -338,13 +338,13 @@ public class DefaultCRestTest {
                 .startParamConfig(0).setSerializer(new Ser()).endParamConfig()
                 .endMethodConfig()
                 .startMethodConfig(Rest.CCC).setPath("/ccc/{0}?aa={1}")
-                .setHttpMethod(HttpMethod.POST)
+                .setHttpMethod("POST")
                 .startParamConfig(0).setDestination("URL").endParamConfig()
                 .startParamConfig(1).setDestination("URL").endParamConfig()
                 .startParamConfig(2).setDestination("BODY").setName("bb").endParamConfig()
                 .endMethodConfig()
                 .startMethodConfig(Rest.DDD).setPath("/ddd?c={2}")
-                .setHttpMethod(HttpMethod.POST)
+                .setHttpMethod("POST")
                 .startParamConfig(0)
                 .setDestination("BODY")
                 .setInjector(new AnnotatedBeanParamInjector())

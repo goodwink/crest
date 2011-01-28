@@ -24,6 +24,7 @@ import org.apache.http.*;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.*;
+import org.apache.http.client.params.HttpClientParams;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.params.ConnManagerParams;
@@ -53,6 +54,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.ProxySelector;
 import java.util.*;
 
@@ -100,7 +102,7 @@ public class HttpClientRestService implements RestService, Disposable {
         boolean inError = false;
         try {
             logger.debug("%4s %s", httpRequest.getMeth(), request.getURI());
-            logger.trace(request);
+            logger.trace(request);       
             response = http.execute(request);
             if (response == null) {
                 throw new HttpException("No Response!", new HttpResponse(httpRequest, -1));
@@ -117,7 +119,7 @@ public class HttpClientRestService implements RestService, Disposable {
                 if (res.getStatusCode() != HttpStatus.SC_OK) {
                     throw new HttpException(response.getStatusLine().getReasonPhrase(), res);
                 }
-            } else if (httpRequest.getMeth().equals(HttpMethod.HEAD)) {
+            } else if (httpRequest.getMeth().equals("HEAD")) {
                 res = new HttpResponse(httpRequest, response.getStatusLine().getStatusCode(), toHeaders(response.getAllHeaders()));
             } else {
                 throw new HttpException(response.getStatusLine().getReasonPhrase(), new HttpResponse(httpRequest, response.getStatusLine().getStatusCode(), toHeaders(response.getAllHeaders())));
@@ -144,10 +146,16 @@ public class HttpClientRestService implements RestService, Disposable {
         }
     }
 
+    private static final Map<String,Class<? extends HttpUriRequest>> METH_MAP = new HashMap<String, Class<? extends HttpUriRequest>>();{
+        METH_MAP.put("GET", HttpGet.class);
+        METH_MAP.put("POST", HttpPost.class);
+        METH_MAP.put("PUT", HttpPut.class);
+        METH_MAP.put("DELETE", HttpDelete.class);
+        METH_MAP.put("HEAD", HttpHead.class);
+        METH_MAP.put("OPTIONS", HttpOptions.class);
+    }
+
     private static HttpUriRequest toHttpUriRequest(HttpRequest request) throws UnsupportedEncodingException {
-        HttpUriRequest uriRequest;
-
-
         String queryString = "";
         if (request.getQueryParams() != null) {
             List<NameValuePair> params = new ArrayList<NameValuePair>();
@@ -159,27 +167,14 @@ public class HttpClientRestService implements RestService, Disposable {
         }
         String uri = request.getUri().toString() + queryString;
 
-        switch (request.getMeth()) {
-            default:
-            case GET:
-                uriRequest = new HttpGet(uri);
-                break;
-            case POST:
-                uriRequest = new HttpPost(uri);
-                break;
-            case PUT:
-                uriRequest = new HttpPut(uri);
-                break;
-            case DELETE:
-                uriRequest = new HttpDelete(uri);
-                break;
-            case HEAD:
-                uriRequest = new HttpHead(uri);
-                break;
-            case OPTIONS:
-                uriRequest = new HttpOptions(uri);
-                break;
+        Class<? extends HttpUriRequest> uriRequestClass = METH_MAP.containsKey(request.getMeth()) ? METH_MAP.get(request.getMeth()) : HttpGet.class;
+        HttpUriRequest uriRequest = null;
+        try {
+            uriRequest = uriRequestClass.getConstructor(String.class).newInstance(uri);
+        } catch (Exception e) {
+            throw new CRestException("Unknown method:" + request.getMeth(), e);
         }
+
         if (uriRequest instanceof HttpEntityEnclosingRequestBase) {
             HttpEntityEnclosingRequestBase enclosingRequestBase = ((HttpEntityEnclosingRequestBase) uriRequest);
             HttpEntity entity;

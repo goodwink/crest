@@ -20,6 +20,8 @@
 
 package org.codegist.crest.config;
 
+import org.codegist.common.lang.EqualsBuilder;
+import org.codegist.common.lang.HashCodeBuilder;
 import org.codegist.common.lang.ToStringBuilder;
 import org.codegist.crest.injector.Injector;
 import org.codegist.crest.serializer.Serializer;
@@ -28,26 +30,15 @@ import org.codegist.crest.serializer.Serializer;
  * Default immutable in-memory implementation of {@link org.codegist.crest.config.DefaultParamConfig}
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
-class DefaultParamConfig implements ParamConfig {
+class DefaultParamConfig extends DefaultBasicParamConfig implements ParamConfig {
 
-    private final String name;
-    private final Destination dest;
     private final Serializer serializer;
     private final Injector injector;
 
-    DefaultParamConfig(String name, Destination dest, Serializer serializer, Injector injector) {
-        this.name = name;
-        this.dest = dest;
+    DefaultParamConfig(String name, String defaultValue, Destination destination, Serializer serializer, Injector injector) {
+        super(name, defaultValue, destination);
         this.serializer = serializer;
         this.injector = injector;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public Destination getDestination() {
-        return dest;
     }
 
     public Serializer getSerializer() {
@@ -58,10 +49,34 @@ class DefaultParamConfig implements ParamConfig {
         return injector;
     }
 
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DefaultParamConfig that = (DefaultParamConfig) o;
+
+        return new EqualsBuilder()
+                .appendSuper(true)
+                .append(serializer, that.serializer)
+                .append(injector, that.injector)
+                .equals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder()
+                .appendSuper(super.hashCode())
+                .append(serializer)
+                .append(injector)
+                .hashCode();
+    }
+
     public String toString() {
         return new ToStringBuilder(this)
-                .append("name", name)
-                .append("dest", dest)
+                .append("name", getName())
+                .append("defaultValue", getDefaultValue())
+                .append("destination", getDestination())
                 .append("serializer", serializer)
                 .append("injector", injector)
                 .toString();

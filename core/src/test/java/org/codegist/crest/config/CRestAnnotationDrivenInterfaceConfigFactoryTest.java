@@ -1,21 +1,21 @@
 /*
  * Copyright 2010 CodeGist.org
  *
- *    Licensed under the Apache License, Version 2.0 (the "License");
- *    you may not use this file except in compliance with the License.
- *    You may obtain a copy of the License at
+ *     Licensed under the Apache License, Version 2.0 (the "License");
+ *     you may not use this file except in compliance with the License.
+ *     You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *         http://www.apache.org/licenses/LICENSE-2.0
  *
- *    Unless required by applicable law or agreed to in writing, software
- *    distributed under the License is distributed on an "AS IS" BASIS,
- *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and
- *    limitations under the License.
+ *     Unless required by applicable law or agreed to in writing, software
+ *     distributed under the License is distributed on an "AS IS" BASIS,
+ *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *     See the License for the specific language governing permissions and
+ *     limitations under the License.
  *
- * ===================================================================
+ *  ==================================================================
  *
- * More information at http://www.codegist.org.
+ *  More information at http://www.codegist.org.
  */
 
 package org.codegist.crest.config;
@@ -24,13 +24,11 @@ import org.codegist.crest.CRestContext;
 import org.codegist.crest.Stubs;
 import org.codegist.crest.TestUtils;
 import org.codegist.crest.annotate.*;
-import org.codegist.crest.annotate.Destination;
 import org.codegist.crest.injector.DefaultInjector;
 import org.junit.Test;
 
 import java.lang.reflect.Method;
 
-import static org.codegist.crest.HttpMethod.*;
 import static org.codegist.crest.config.Destination.*;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -70,11 +68,9 @@ public class CRestAnnotationDrivenInterfaceConfigFactoryTest extends AbstractInt
     @Test
     public void testInterfaceOverridesTypeInjector() throws ConfigFactoryException {
         InterfaceConfig cfg = configFactory.newConfig(RestInjectorOverrideInterface.class, mockContext);
-        assertEquals("interface-overrides", cfg.getMethodConfig(RestInjectorOverrideInterface.M).getParamConfig(0).getName());
         assertEquals(Stubs.Serializer2.class, cfg.getMethodConfig(RestInjectorOverrideInterface.M).getParamConfig(0).getSerializer().getClass());
         assertEquals(Stubs.RequestParameterInjector2.class, cfg.getMethodConfig(RestInjectorOverrideInterface.M).getParamConfig(0).getInjector().getClass());
 
-        assertEquals("my-specific-name", cfg.getMethodConfig(RestInjectorOverrideInterface.M2).getParamConfig(0).getName());
         assertEquals(Stubs.Serializer3.class, cfg.getMethodConfig(RestInjectorOverrideInterface.M2).getParamConfig(0).getSerializer().getClass());
         assertEquals(Stubs.RequestParameterInjector1.class, cfg.getMethodConfig(RestInjectorOverrideInterface.M2).getParamConfig(0).getInjector().getClass());
     }
@@ -87,7 +83,6 @@ public class CRestAnnotationDrivenInterfaceConfigFactoryTest extends AbstractInt
     }
 
     @Injector(Stubs.RequestParameterInjector1.class)
-    @Name("my-specific-name")
     @Serializer(Stubs.Serializer3.class)
     static class Model {
 
@@ -97,7 +92,6 @@ public class CRestAnnotationDrivenInterfaceConfigFactoryTest extends AbstractInt
     static interface RestInjectorOverrideInterface {
         void get(
                 @Injector(Stubs.RequestParameterInjector2.class)
-                @Name("interface-overrides")
                 @Serializer(Stubs.Serializer2.class) Model m);
 
         void get2(Model m);
@@ -148,10 +142,10 @@ public class CRestAnnotationDrivenInterfaceConfigFactoryTest extends AbstractInt
         Object m1(@Serializer(Stubs.Serializer3.class) @Injector(Stubs.RequestParameterInjector3.class) String a);
 
         @Path("/m1") @Injector(Stubs.RequestParameterInjector2.class)
-        Object m1(String a, @Name("c") int b);
+        Object m1(String a, @PathParam(name="c", value = "444") int b);
 
         @Path("/m1") @Injector(Stubs.RequestParameterInjector2.class)
-        Object m1(String a, @Name("c") int[] b);
+        Object m1(String a, @QueryParam(name="c") int[] b);
 
 
         @Path("/m2/1")
@@ -169,18 +163,31 @@ public class CRestAnnotationDrivenInterfaceConfigFactoryTest extends AbstractInt
     @ConnectionTimeout( 2)
     @Encoding( "utf-8")
     @Path( "/hello")
-    @Params({
-        @Param(name="body-param",value="gen-value1",dest=BODY),
-        @Param(name="url-param",value="gen-value2",dest=URL),
-        @Param(name="header-param",value="gen-value3",dest=HEADER)
+    @FormParam(name="body-param",value="body-value")
+    @FormParams({
+            @FormParam(name="body-param1",value="body-value1"),
+            @FormParam(name="body-param2",value="body-value2")
+    })
+    @PathParam(name="path-param",value="path-value")
+    @PathParams({
+            @PathParam(name="path-param1",value="path-value1"),
+            @PathParam(name="path-param2",value="path-value2")
+    })
+    @QueryParam(name="query-param",value="query-value")
+    @QueryParams({
+            @QueryParam(name="query-param1",value="query-value1"),
+            @QueryParam(name="query-param2",value="query-value2")
+    })
+    @HeaderParam(name="header-param",value="header-value")
+    @HeaderParams({
+            @HeaderParam(name="header-param1",value="header-value1"),
+            @HeaderParam(name="header-param2",value="header-value2")
     })
     @DELETE
     @GlobalInterceptor(Stubs.RequestInterceptor1.class)
     @RequestInterceptor( Stubs.RequestInterceptor1.class)
     @ResponseHandler( Stubs.ResponseHandler1.class)
     @Serializer( Stubs.Serializer1.class)
-    @Name( "name")
-    @Destination(BODY)
     @Injector( Stubs.RequestParameterInjector1.class)
     @ErrorHandler( Stubs.ErrorHandler1.class)
     @RetryHandler(Stubs.RetryHandler1.class)
@@ -188,15 +195,13 @@ public class CRestAnnotationDrivenInterfaceConfigFactoryTest extends AbstractInt
 
 
         @Path("/m1")
-        @Params({
-            @Param(name="body-param",value="over-value1",dest=BODY),
-            @Param(name="body-param-2",value="new-value",dest=BODY)
+        @FormParams({
+            @FormParam(name="body-param",value="over-value1"),
+            @FormParam(name="body-param3",value="new-value")
         })
         @PUT
         @SocketTimeout(3)
         @ConnectionTimeout(4)
-        @Name("name1")
-        @Destination(URL)
         @RequestInterceptor(Stubs.RequestInterceptor3.class)
         @ResponseHandler(Stubs.ResponseHandler1.class)
         @Serializer(Stubs.Serializer3.class)
@@ -206,19 +211,16 @@ public class CRestAnnotationDrivenInterfaceConfigFactoryTest extends AbstractInt
         Object m1();
 
         @Path("/m1")
-        @Param(name="body-param",value="over-value1",dest=URL)
+        @PathParam(name="body-param",value="over-value1")
         @POST
         @SocketTimeout(5)
         @ConnectionTimeout(6)
-        @Name("name1")
-        @Destination(URL)
         @RequestInterceptor(Stubs.RequestInterceptor2.class)
         @ResponseHandler(Stubs.ResponseHandler2.class)
         @Serializer(Stubs.Serializer2.class)
         @Injector(Stubs.RequestParameterInjector2.class)
         Object m1(
-                @Name("a")
-                @Destination(URL)
+                @HeaderParam(name="a", value = "deff")
                 @Serializer(Stubs.Serializer3.class)
                 @Injector(Stubs.RequestParameterInjector3.class)
                 String a
@@ -228,19 +230,15 @@ public class CRestAnnotationDrivenInterfaceConfigFactoryTest extends AbstractInt
         @DELETE
         @SocketTimeout(7)
         @ConnectionTimeout(8)
-        @Name("name2")
-        @Destination(URL)
         @RequestInterceptor(Stubs.RequestInterceptor3.class)
         @ResponseHandler(Stubs.ResponseHandler1.class)
         @Serializer(Stubs.Serializer3.class)
         Object m1(
-                @Name("b")
-                @Destination(BODY)
+                @FormParam(name="b")
                 @Serializer(Stubs.Serializer1.class)
                 @Injector(Stubs.RequestParameterInjector3.class)
                 String a,
-                @Name("c")
-                @Destination(URL)
+                @QueryParam(name="c")
                 @Serializer(Stubs.Serializer2.class)
                 int b);
 
@@ -248,18 +246,14 @@ public class CRestAnnotationDrivenInterfaceConfigFactoryTest extends AbstractInt
         @HEAD
         @SocketTimeout(9)
         @ConnectionTimeout(10)
-        @Name("name2")
-        @Destination(URL)
         @RequestInterceptor(Stubs.RequestInterceptor1.class)
         @ResponseHandler(Stubs.ResponseHandler1.class)
         @Serializer(Stubs.Serializer1.class)
         Object m1(
-                @Name("d")
-                @Destination(URL)
+                @QueryParam(name="d")
                 @Serializer(Stubs.Serializer1.class)
                 String a,
-                @Name("e")
-                @Destination(BODY)
+                @FormParam(name="e")
                 @Serializer(Stubs.Serializer3.class)
                 int[] b);
 
@@ -268,8 +262,6 @@ public class CRestAnnotationDrivenInterfaceConfigFactoryTest extends AbstractInt
         @GET
         @SocketTimeout(11)
         @ConnectionTimeout(12)
-        @Name("name2")
-        @Destination(URL)
         @RequestInterceptor(Stubs.RequestInterceptor3.class)
         @ResponseHandler(Stubs.ResponseHandler1.class)
         @Serializer(Stubs.Serializer1.class)
@@ -279,18 +271,14 @@ public class CRestAnnotationDrivenInterfaceConfigFactoryTest extends AbstractInt
         @POST
         @SocketTimeout(13)
         @ConnectionTimeout(14)
-        @Name("name2")
-        @Destination(URL)
         @RequestInterceptor(Stubs.RequestInterceptor2.class)
         @ResponseHandler(Stubs.ResponseHandler2.class)
         @Serializer(Stubs.Serializer2.class)
         void m2(
-                @Name("f")
-                @Destination(URL)
+                @PathParam(name="f")
                 @Serializer(Stubs.Serializer3.class)
                 float f,
-                @Name("g")
-                @Destination(URL)
+                @QueryParam(name="g")
                 @Serializer(Stubs.Serializer1.class)
                 String... a);
     }
@@ -317,17 +305,17 @@ public class CRestAnnotationDrivenInterfaceConfigFactoryTest extends AbstractInt
         @Path("/ccc/{0}?aa={1}")
         @POST
         void ccc(
-                @Destination(URL) int a,
-                @org.codegist.crest.annotate.Destination(URL) int d,
-                @Destination(BODY) @Name("bb") String[] b);
+                int a,
+                int d,
+                @FormParam(name="bb") String[] b);
 
         Method CCC = TestUtils.getMethod(Rest.class, "ccc", int.class, int.class, String[].class);
 
         @Path("/ddd?c={2}")
         @POST
         Object ddd(
-                @Destination(BODY) Object a,
-                @Destination(BODY) @Name("bb") String[] b,
+                @FormParam(name="dd") Object a,
+                @FormParam(name="bb") String[] b,
                 String c);
 
         Method DDD = TestUtils.getMethod(Rest.class, "ddd", Object.class, String[].class, String.class);
@@ -344,14 +332,14 @@ public class CRestAnnotationDrivenInterfaceConfigFactoryTest extends AbstractInt
                 .startParamConfig(0).setSerializer(new Stubs.Serializer2()).endParamConfig()
                 .endMethodConfig()
                 .startMethodConfig(CCC).setPath("/ccc/{0}?aa={1}")
-                .setHttpMethod(POST)
+                .setHttpMethod("POST")
                 .startParamConfig(0).setDestination(URL).endParamConfig()
                 .startParamConfig(1).setDestination(URL).endParamConfig()
                 .startParamConfig(2).setDestination(BODY).setName("bb").endParamConfig()
                 .endMethodConfig()
                 .startMethodConfig(DDD).setPath("/ddd?c={2}")
-                .setHttpMethod(POST)
-                .startParamConfig(0).setDestination(BODY)/*.setAssembler(new SimpleAnnotatedBeanAssembler())*/.endParamConfig()
+                .setHttpMethod("POST")
+                .startParamConfig(0).setDestination(BODY).setName("dd").endParamConfig()
                 .startParamConfig(1).setDestination(BODY).setName("bb").endParamConfig()
                 .endMethodConfig()
                 .build();

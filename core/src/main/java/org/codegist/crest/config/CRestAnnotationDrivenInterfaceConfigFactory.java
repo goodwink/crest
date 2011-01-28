@@ -1,21 +1,21 @@
 /*
  * Copyright 2010 CodeGist.org
  *
- *    Licensed under the Apache License, Version 2.0 (the "License");
- *    you may not use this file except in compliance with the License.
- *    You may obtain a copy of the License at
+ *     Licensed under the Apache License, Version 2.0 (the "License");
+ *     you may not use this file except in compliance with the License.
+ *     You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *         http://www.apache.org/licenses/LICENSE-2.0
  *
- *    Unless required by applicable law or agreed to in writing, software
- *    distributed under the License is distributed on an "AS IS" BASIS,
- *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and
- *    limitations under the License.
+ *     Unless required by applicable law or agreed to in writing, software
+ *     distributed under the License is distributed on an "AS IS" BASIS,
+ *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *     See the License for the specific language governing permissions and
+ *     limitations under the License.
  *
- * ===================================================================
+ *  ==================================================================
  *
- * More information at http://www.codegist.org.
+ *  More information at http://www.codegist.org.
  */
 
 package org.codegist.crest.config;
@@ -23,14 +23,18 @@ package org.codegist.crest.config;
 import org.codegist.common.reflect.Methods;
 import org.codegist.crest.CRestContext;
 import org.codegist.crest.annotate.*;
-import org.codegist.crest.annotate.Destination;
+import org.codegist.crest.annotate.FormParam;
+import org.codegist.crest.annotate.HeaderParam;
 import org.codegist.crest.annotate.HttpMethod;
 import org.codegist.crest.annotate.Path;
+import org.codegist.crest.annotate.PathParam;
+import org.codegist.crest.annotate.QueryParam;
 
-import javax.ws.rs.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * <p>Annotation based config factory of any possible interfaces given to the factory.
@@ -65,20 +69,17 @@ public class CRestAnnotationDrivenInterfaceConfigFactory implements InterfaceCon
 
             /* Methods defaults */
             Path path = interfaze.getAnnotation(Path.class);
-            org.codegist.crest.annotate.Param param = interfaze.getAnnotation(org.codegist.crest.annotate.Param.class);
-            org.codegist.crest.annotate.Params params = interfaze.getAnnotation(org.codegist.crest.annotate.Params.class);
             SocketTimeout socketTimeout = interfaze.getAnnotation(SocketTimeout.class);
             ConnectionTimeout connectionTimeout = interfaze.getAnnotation(ConnectionTimeout.class);
             RequestInterceptor interceptor = interfaze.getAnnotation(RequestInterceptor.class);
             ResponseHandler responseHandler = interfaze.getAnnotation(ResponseHandler.class);
             ErrorHandler errorHandler = interfaze.getAnnotation(ErrorHandler.class);
             RetryHandler retryHandler = interfaze.getAnnotation(RetryHandler.class);
-            HttpMethod httpMethod = getHttpMethod(interfaze.getAnnotations());
+            HttpMethod httpMethod = getHttpMethod(interfaze.getAnnotations(), interfaze.getAnnotation(HttpMethod.class));
+            Set<BasicParamConfig> extraParams = getExtraParamConfigs(interfaze.getAnnotations());
 
             /* Params defaults */
             Serializer serializer = interfaze.getAnnotation(Serializer.class);
-            Name name = interfaze.getAnnotation(Name.class);
-            Destination destination = interfaze.getAnnotation(Destination.class);
             Injector injector = interfaze.getAnnotation(Injector.class);
 
             ConfigBuilders.InterfaceConfigBuilder config = new ConfigBuilders.InterfaceConfigBuilder(interfaze, context.getProperties());
@@ -86,16 +87,7 @@ public class CRestAnnotationDrivenInterfaceConfigFactory implements InterfaceCon
             if(contextPath != null) config.setContextPath(contextPath.value());
             if(encoding != null) config.setEncoding(encoding.value());
             if(globalInterceptor != null) config.setGlobalInterceptor(globalInterceptor.value());
-
-            if(param != null) {
-                config.addMethodsStaticParam(param.name(), param.value(), param.dest());
-            }
-            if(params != null) {
-                for(org.codegist.crest.annotate.Param p : params.value()){
-                    config.addMethodsStaticParam(p.name(), p.value(), p.dest());
-                }
-            }
-            
+            if(extraParams != null) config.addMethodsExtraParams(extraParams);
             if(path != null) config.setMethodsPath(path.value());
             if(socketTimeout != null) config.setMethodsSocketTimeout(socketTimeout.value());
             if(connectionTimeout != null) config.setMethodsConnectionTimeout(connectionTimeout.value());
@@ -106,41 +98,28 @@ public class CRestAnnotationDrivenInterfaceConfigFactory implements InterfaceCon
             if(httpMethod != null) config.setMethodsHttpMethod(httpMethod.value());
 
             if(serializer != null) config.setParamsSerializer(serializer.value());
-            if(name != null) config.setParamsName(name.value());
-            if(destination != null) config.setParamsDestination(destination.value());
             if(injector != null) config.setParamsInjector(injector.value());
 
 
             for (Method meth : interfaze.getDeclaredMethods()) {
                 /* Methods specifics */
                 path = meth.getAnnotation(Path.class);
-                param = meth.getAnnotation(org.codegist.crest.annotate.Param.class);
-                params = meth.getAnnotation(org.codegist.crest.annotate.Params.class);
+                extraParams = getExtraParamConfigs(meth.getAnnotations());
                 socketTimeout = meth.getAnnotation(SocketTimeout.class);
                 connectionTimeout = meth.getAnnotation(ConnectionTimeout.class);
                 interceptor = meth.getAnnotation(RequestInterceptor.class);
                 responseHandler = meth.getAnnotation(ResponseHandler.class);
                 errorHandler = meth.getAnnotation(ErrorHandler.class);
                 retryHandler = meth.getAnnotation(RetryHandler.class);
-                httpMethod = getHttpMethod(meth.getAnnotations());
+                httpMethod = getHttpMethod(meth.getAnnotations(), meth.getAnnotation(HttpMethod.class));
 
                 /* Params defaults */
                 serializer = meth.getAnnotation(Serializer.class);
-                name = meth.getAnnotation(Name.class);
-                destination = meth.getAnnotation(Destination.class);
                 injector = meth.getAnnotation(Injector.class);
 
                 ConfigBuilders.MethodConfigBuilder methodConfigBuilder = config.startMethodConfig(meth);
 
-                if(param != null) {
-                    methodConfigBuilder.addStaticParam(param.name(), param.value(), param.dest());
-                }
-                if(params != null) {
-                    for(org.codegist.crest.annotate.Param p : params.value()){
-                        methodConfigBuilder.addStaticParam(p.name(), p.value(), p.dest());
-                    }
-                }
-
+                if(extraParams != null) methodConfigBuilder.addExtraParams(extraParams);
                 if(path != null) methodConfigBuilder.setPath(path.value());
                 if(socketTimeout != null) methodConfigBuilder.setSocketTimeout(socketTimeout.value());
                 if(connectionTimeout != null) methodConfigBuilder.setConnectionTimeout(connectionTimeout.value());
@@ -150,8 +129,6 @@ public class CRestAnnotationDrivenInterfaceConfigFactory implements InterfaceCon
                 if(retryHandler != null) methodConfigBuilder.setRetryHandler(retryHandler.value());
                 if(httpMethod != null) methodConfigBuilder.setHttpMethod(httpMethod.value());
 
-                if(name != null) methodConfigBuilder.setParamsName(name.value());
-                if(destination != null) methodConfigBuilder.setParamsDestination(destination.value());
                 if(serializer != null) methodConfigBuilder.setParamsSerializer(serializer.value());
                 if(injector != null) methodConfigBuilder.setParamsInjector(injector.value());
 
@@ -165,14 +142,15 @@ public class CRestAnnotationDrivenInterfaceConfigFactory implements InterfaceCon
 
                     /* Params specifics - Override user annotated config */
                     serializer = (Serializer) paramAnnotations.get(Serializer.class);
-                    name = (Name) paramAnnotations.get(Name.class);
-                    destination = (org.codegist.crest.annotate.Destination) paramAnnotations.get(Destination.class);
                     injector = (Injector) paramAnnotations.get(Injector.class);
 
                     if(serializer != null) paramConfigBuilder.setSerializer(serializer.value());
-                    if(name != null) paramConfigBuilder.setName(name.value());
-                    if(destination != null) paramConfigBuilder.setDestination(destination.value());
                     if(injector != null) paramConfigBuilder.setInjector(injector.value());
+
+                    BasicParamConfig pconfig = getFirstExtraParamConfig(paramAnnotations.values().toArray(new Annotation[paramAnnotations.size()]));
+                    paramConfigBuilder.setName(pconfig.getName());
+                    paramConfigBuilder.setDestination(pconfig.getDestination());
+                    paramConfigBuilder.setDefaultValue(pconfig.getDefaultValue());
 
                     paramConfigBuilder.endParamConfig();
                 }
@@ -188,11 +166,58 @@ public class CRestAnnotationDrivenInterfaceConfigFactory implements InterfaceCon
         }
     }
 
-    private static HttpMethod getHttpMethod(Annotation[] annotations){
+    
+    private static BasicParamConfig getFirstExtraParamConfig(Annotation[] annotations){
+        Set<BasicParamConfig> config = getExtraParamConfigs(annotations);
+        if(config.isEmpty()) return new DefaultBasicParamConfig(null,null,null);
+        return config.iterator().next();// get the first
+    }
+    private static Set<BasicParamConfig> getExtraParamConfigs(Annotation[] annotations){
+        Set<BasicParamConfig> params = new LinkedHashSet<BasicParamConfig>();
+
+        for(Annotation a : annotations){
+            if(a instanceof FormParam) {
+                FormParam p = (FormParam) a;
+                params.add(new DefaultBasicParamConfig(p.name(), p.value(), org.codegist.crest.config.Destination.BODY));
+            }else if(a instanceof FormParams) {
+                FormParams ps = (FormParams) a;
+                for(FormParam p : ps.value()){
+                    params.add(new DefaultBasicParamConfig(p.name(), p.value(), org.codegist.crest.config.Destination.BODY));
+                }
+            }else if(a instanceof PathParam) {
+                PathParam p = (PathParam) a;
+                params.add(new DefaultBasicParamConfig(p.name(), p.value(), org.codegist.crest.config.Destination.URL));
+            }else if(a instanceof PathParams) {
+                PathParams ps = (PathParams) a;
+                for(PathParam p : ps.value()){
+                    params.add(new DefaultBasicParamConfig(p.name(), p.value(), org.codegist.crest.config.Destination.URL));
+                }
+            }else if(a instanceof QueryParam) {
+                QueryParam p = (QueryParam) a;
+                params.add(new DefaultBasicParamConfig(p.name(), p.value(), org.codegist.crest.config.Destination.URL));
+            }else if(a instanceof QueryParams) {
+                QueryParams ps = (QueryParams) a;
+                for(QueryParam p : ps.value()){
+                    params.add(new DefaultBasicParamConfig(p.name(), p.value(), org.codegist.crest.config.Destination.URL));
+                }
+            }else if(a instanceof HeaderParam) {
+                HeaderParam p = (HeaderParam) a;
+                params.add(new DefaultBasicParamConfig(p.name(), p.value(), org.codegist.crest.config.Destination.HEADER));
+            }else if(a instanceof HeaderParams) {
+                HeaderParams ps = (HeaderParams) a;
+                for(HeaderParam p : ps.value()){
+                    params.add(new DefaultBasicParamConfig(p.name(), p.value(), org.codegist.crest.config.Destination.HEADER));
+                }
+            }
+        }
+        return params;
+    }
+
+    private static HttpMethod getHttpMethod(Annotation[] annotations, HttpMethod def){
         for(Annotation a : annotations){
             HttpMethod meth = a.annotationType().getAnnotation(HttpMethod.class);
             if(meth != null) return meth;
         }
-        return null;
+        return def;
     }
 }

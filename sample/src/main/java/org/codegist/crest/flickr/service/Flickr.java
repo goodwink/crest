@@ -31,10 +31,6 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.Date;
 
-import static org.codegist.crest.HttpMethod.GET;
-import static org.codegist.crest.HttpMethod.POST;
-import static org.codegist.crest.config.Destination.BODY;
-
 /**
  * see http://www.flickr.com/services/api/
  *
@@ -53,14 +49,14 @@ public interface Flickr {
 
     @Path("/rest?method=flickr.galleries.create")
     Gallery newGallery(
-            @Name("title") String title,
-            @Name("description") String description);
+            @FormParam(name="title") String title,
+            @FormParam(name="description") String description);
 
     @Path("/rest?method=flickr.galleries.create")
     Gallery newGallery(
-            @Name("title") String title,
-            @Name("description") String description,
-            @Name("primary_photo_id") long primaryPhotoId);
+            @FormParam(name="title") String title,
+            @FormParam(name="description") String description,
+            @FormParam(name="primary_photo_id") long primaryPhotoId);
 
     @Path("/rest?method=flickr.galleries.addPhoto&gallery_id={0}&photo_id={1}&comment={2}")
     void addPhotoToGallery(String galleryId, long photoId, String comment);
@@ -82,53 +78,47 @@ public interface Flickr {
 
 
     @Path("/upload")
-    @Destination(BODY)
-    long uploadPhoto(@Name("photo") File photo);
+    long uploadPhoto(@FormParam(name="photo") File photo);
 
     @Path("/upload")
-    @Destination(BODY)
-    long uploadPhoto(@Name("photo") InputStream photo);
+    long uploadPhoto(@FormParam(name="photo") InputStream photo);
 
     @Path("/upload")
-    @Destination(BODY)
     long uploadPhoto(
-            @Name("photo") InputStream photo,
-            @Name("title") String title,
-            @Name("description") String description,
-            @Name("tags") String[] tags,
-            @Name("is_public") boolean isPublic,
-            @Name("is_friend") boolean isFriend,
-            @Name("is_family") boolean isFamily,
-            @Name("safety_level") SafetyLevel safetyLevel,
-            @Name("content_type") ContentType contentLype,
-            @Name("hidden") Visibility searchVisibility
+            @FormParam(name="photo") InputStream photo,
+            @FormParam(name="title") String title,
+            @FormParam(name="description") String description,
+            @FormParam(name="tags") String[] tags,
+            @FormParam(name="is_public") boolean isPublic,
+            @FormParam(name="is_friend") boolean isFriend,
+            @FormParam(name="is_family") boolean isFamily,
+            @FormParam(name="safety_level") SafetyLevel safetyLevel,
+            @FormParam(name="content_type") ContentType contentLype,
+            @FormParam(name="hidden") Visibility searchVisibility
     );
 
 
     @Path("/upload")
-    @Param(name = "async", value = "1", dest = BODY)
-    @Destination(BODY)
-    String asyncUploadPhoto(@Name("photo") File photo);
+    @FormParam(name = "async", value = "1")
+    String asyncUploadPhoto(@FormParam(name="photo") File photo);
 
     @Path("/upload")
-    @Param(name = "async", value = "1", dest = BODY)
-    @Destination(BODY)
-    String asyncUploadPhoto(@Name("photo") InputStream photo);
+    @FormParam(name = "async", value = "1")
+    String asyncUploadPhoto(@FormParam(name="photo") InputStream photo);
 
     @Path("/upload")
-    @Param(name = "async", value = "1", dest = BODY)
-    @Destination(BODY)
+    @FormParam(name = "async", value = "1")
     String asyncUploadPhoto(
-            @Name("photo") InputStream photo,
-            @Name("title") String title,
-            @Name("description") String description,
-            @Name("tags") String[] tags,
-            @Name("is_public") boolean isPublic,
-            @Name("is_friend") boolean isFriend,
-            @Name("is_family") boolean isFamily,
-            @Name("safety_level") SafetyLevel safetyLevel,
-            @Name("content_type") ContentType contentLype,
-            @Name("hidden") Visibility searchVisibility
+            @FormParam(name="photo") InputStream photo,
+            @FormParam(name="title") String title,
+            @FormParam(name="description") String description,
+            @FormParam(name="tags") String[] tags,
+            @FormParam(name="is_public") boolean isPublic,
+            @FormParam(name="is_friend") boolean isFriend,
+            @FormParam(name="is_family") boolean isFamily,
+            @FormParam(name="safety_level") SafetyLevel safetyLevel,
+            @FormParam(name="content_type") ContentType contentLype,
+            @FormParam(name="hidden") Visibility searchVisibility
     );
 
     @Path("/rest?method=flickr.photos.upload.checkTickets&tickets={0}")
@@ -136,10 +126,9 @@ public interface Flickr {
 
 
     @Path("/replace")
-    @Destination(BODY)
     long replacePhoto(
-            @Name("photo") InputStream photo,
-            @Name("photo_id") long photoId
+            @FormParam(name="photo") InputStream photo,
+            @FormParam(name="photo_id") long photoId
     );
 
 

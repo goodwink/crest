@@ -30,7 +30,6 @@ import org.codegist.common.reflect.CglibProxyFactory;
 import org.codegist.common.reflect.JdkProxyFactory;
 import org.codegist.common.reflect.ProxyFactory;
 import org.codegist.crest.config.*;
-import org.codegist.crest.interceptor.CompositeRequestInterceptor;
 import org.codegist.crest.interceptor.RequestInterceptor;
 import org.codegist.crest.oauth.OAuthenticator;
 import org.codegist.crest.oauth.OAuthenticatorV10;
@@ -89,7 +88,7 @@ public class CRestBuilder {
     private Map<String,String> properties = null;
     private Document document = null;
     private InterfaceConfigFactory overridesFactory = null;
-    private boolean dynamicOverride = true;
+    private boolean dynamicOverride = false;
     private boolean crestPriority = true;
     private boolean enableJaxRSSupport = false;
     private String modelPackageName = null;
@@ -204,19 +203,17 @@ public class CRestBuilder {
         switch (configType) {
             default:
             case CFG_TYPE_ANNO:
-                InterfaceConfigFactory baseConfigFactory = enableJaxRSSupport ? new AnnotationDrivenInterfaceConfigFactory(crestPriority) : new CRestAnnotationDrivenInterfaceConfigFactory();
+                InterfaceConfigFactory baseConfigFactory = enableJaxRSSupport ? new JaxRSAwareAnnotationDrivenInterfaceConfigFactory(crestPriority) : new CRestAnnotationDrivenInterfaceConfigFactory();
 
                 if (properties != null) {
                     configFactory = new OverridingInterfaceConfigFactory(
                             baseConfigFactory,
-                            new PropertiesDrivenInterfaceConfigFactory(properties, false),
-                            false
+                            new PropertiesDrivenInterfaceConfigFactory(properties, false)
                     );
                 } else if (document != null) {
                     configFactory = new OverridingInterfaceConfigFactory(
                             baseConfigFactory,
-                            new XmlDrivenInterfaceConfigFactory(document, false),
-                            false
+                            new XmlDrivenInterfaceConfigFactory(document, false)
                     );
                 }else {
                     configFactory = baseConfigFactory;

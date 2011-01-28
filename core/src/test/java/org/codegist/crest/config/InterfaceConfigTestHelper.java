@@ -69,9 +69,9 @@ public class InterfaceConfigTestHelper {
             assertEquals(testMsg, TestUtils.getClass(expMethCfg.getErrorHandler()), TestUtils.getClass(testMethCfg.getErrorHandler()));
             assertEquals(testMsg, TestUtils.getClass(expMethCfg.getRetryHandler()), TestUtils.getClass(testMethCfg.getRetryHandler()));
             assertEquals(testMsg, TestUtils.getClass(expMethCfg.getResponseHandler()), TestUtils.getClass(testMethCfg.getResponseHandler()));
-            assertTrue((expMethCfg.getStaticParams() == null && testMethCfg.getStaticParams() == null) || (expMethCfg.getStaticParams() != null && testMethCfg.getStaticParams() != null));
-            if(expMethCfg.getStaticParams() != null && testMethCfg.getStaticParams() != null) {
-                assertEquals(testMsg, new HashSet<StaticParam>(java.util.Arrays.asList(expMethCfg.getStaticParams())), new HashSet<StaticParam>(java.util.Arrays.asList(testMethCfg.getStaticParams())));
+            assertTrue((expMethCfg.getExtraParams() == null && testMethCfg.getExtraParams() == null) || (expMethCfg.getExtraParams() != null && testMethCfg.getExtraParams() != null));
+            if(expMethCfg.getExtraParams() != null && testMethCfg.getExtraParams() != null) {
+                assertEquals(testMsg, new HashSet<BasicParamConfig>(java.util.Arrays.asList(expMethCfg.getExtraParams())), new HashSet<BasicParamConfig>(java.util.Arrays.asList(testMethCfg.getExtraParams())));
             }
 
             if (expMethCfg.getRequestInterceptor() instanceof CompositeRequestInterceptor) {
@@ -95,6 +95,7 @@ public class InterfaceConfigTestHelper {
                 }
                 assertEquals(tag, expMethCfg.getParamConfig(i).getDestination(), testMethCfg.getParamConfig(i).getDestination());
                 assertEquals(tag, expMethCfg.getParamConfig(i).getName(), testMethCfg.getParamConfig(i).getName());
+                assertEquals(tag, expMethCfg.getParamConfig(i).getDefaultValue(), testMethCfg.getParamConfig(i).getDefaultValue());
                 assertEquals(tag, TestUtils.getClass(expMethCfg.getParamConfig(i).getSerializer()), TestUtils.getClass(testMethCfg.getParamConfig(i).getSerializer()));
                 assertEquals(tag, TestUtils.getClass(expMethCfg.getParamConfig(i).getInjector()), TestUtils.getClass(testMethCfg.getParamConfig(i).getInjector()));
             }

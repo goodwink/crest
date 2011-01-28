@@ -25,11 +25,17 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import static org.codegist.crest.config.Destination.URL;
+
 /**
  * @author laurent.gilles@codegist.org
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE,ElementType.METHOD})
-@HttpMethod(HttpMethod.OPTIONS)
-public @interface OPTIONS {
+@Target({ElementType.TYPE,ElementType.METHOD, ElementType.PARAMETER})
+public @interface QueryParam {
+
+    String name();
+
+    String value() default "";
+
 }

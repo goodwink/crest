@@ -22,18 +22,17 @@ package org.codegist.crest.twitter.service;
 
 import org.codegist.crest.annotate.ContextPath;
 import org.codegist.crest.annotate.EndPoint;
-import org.codegist.crest.annotate.Param;
+import org.codegist.crest.annotate.HeaderParam;
 import org.codegist.crest.annotate.Path;
 import org.codegist.crest.twitter.model.User;
 
-import static org.codegist.crest.config.Destination.HEADER;
 
 /**
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
 @EndPoint("http://api.twitter.com")
 @ContextPath("/1/users")
-@Param(name = "Accept-Encoding", value = "gzip", dest = HEADER)
+@HeaderParam(name = "Accept-Encoding", value = "gzip")
 public interface UserService {
 
     @Path("/search.json?q={0}")

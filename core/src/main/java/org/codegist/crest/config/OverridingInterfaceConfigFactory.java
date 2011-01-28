@@ -52,14 +52,14 @@ public class OverridingInterfaceConfigFactory implements InterfaceConfigFactory 
     }
 
     /**
-     * Uses dynamic overrides by default
+     * Uses static overrides by default
      *
      * @param baseFactory Factory from which results will be overridden by override
      * @param override    InterfaceConfig override template.
      * @see org.codegist.crest.config.OverridingInterfaceConfigFactory#OverridingInterfaceConfigFactory(InterfaceConfigFactory, InterfaceConfig, boolean)
      */
     public OverridingInterfaceConfigFactory(InterfaceConfigFactory baseFactory, InterfaceConfig override) {
-        this(baseFactory, override, true);
+        this(baseFactory, override, false);
     }
 
     /**

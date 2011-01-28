@@ -75,13 +75,13 @@ public class OAuthenticatorV10 implements OAuthenticator {
     private final boolean toHeaders;
 
     private final String requestTokenUrl;
-    private final HttpMethod requestTokenMeth;
+    private final String requestTokenMeth;
 
     private final String accessTokenUrl;
-    private final HttpMethod accessTokenMeth;
+    private final String accessTokenMeth;
 
     private final String refreshAccessTokenUrl;
-    private final HttpMethod refreshAccessTokenMeth;
+    private final String refreshAccessTokenMeth;
 
     public OAuthenticatorV10(RestService restService, Token consumerToken, VariantProvider variant) {
         this(restService, consumerToken, null, variant);
@@ -97,21 +97,21 @@ public class OAuthenticatorV10 implements OAuthenticator {
 
         this.requestTokenUrl = (String) config.get(CONFIG_TOKEN_REQUEST_URL);
         if (Strings.isNotBlank((String) config.get(CONFIG_TOKEN_REQUEST_URL_METHOD)))
-            requestTokenMeth = HttpMethod.valueOf((String) config.get(CONFIG_TOKEN_REQUEST_URL_METHOD));
+            requestTokenMeth = (String) config.get(CONFIG_TOKEN_REQUEST_URL_METHOD);
         else
-            requestTokenMeth = HttpMethod.POST;
+            requestTokenMeth = "POST";
 
         this.accessTokenUrl = (String) config.get(CONFIG_TOKEN_ACCESS_URL);
         if (Strings.isNotBlank((String) config.get(CONFIG_TOKEN_ACCESS_URL_METHOD)))
-            accessTokenMeth = HttpMethod.valueOf((String) config.get(CONFIG_TOKEN_ACCESS_URL_METHOD));
+            accessTokenMeth = (String) config.get(CONFIG_TOKEN_ACCESS_URL_METHOD);
         else
-            accessTokenMeth = HttpMethod.POST;
+            accessTokenMeth = "POST";
 
         this.refreshAccessTokenUrl = (String) config.get(CONFIG_TOKEN_ACCESS_REFRESH_URL);
         if (Strings.isNotBlank((String) config.get(CONFIG_TOKEN_ACCESS_REFRESH_URL_METHOD)))
-            refreshAccessTokenMeth = HttpMethod.valueOf((String) config.get(CONFIG_TOKEN_ACCESS_REFRESH_URL_METHOD));
+            refreshAccessTokenMeth = (String) config.get(CONFIG_TOKEN_ACCESS_REFRESH_URL_METHOD);
         else
-            refreshAccessTokenMeth = HttpMethod.POST;
+            refreshAccessTokenMeth = "POST";
     }
 
     public OAuthenticatorV10(RestService restService, Token consumerToken, Map<String,Object> config) {
@@ -134,7 +134,7 @@ public class OAuthenticatorV10 implements OAuthenticator {
             String sign = generateSignature(new Token("",""), request, oauthParams);
             oauthParams.add(new Pair<String,String>("oauth_signature", sign));
 
-            if(HttpMethod.GET.equals(requestTokenMeth)) {
+            if("GET".equals(requestTokenMeth)) {
                 request.addQueryParams(toParamMap(oauthParams));
             }else{
                 request.addBodyParams((Map)toParamMap(oauthParams));
@@ -178,7 +178,7 @@ public class OAuthenticatorV10 implements OAuthenticator {
         return token;
     }
 
-    private Token getAccessToken(String url, HttpMethod meth, Token requestToken, Set<Pair<String,String>> extras) {
+    private Token getAccessToken(String url, String meth, Token requestToken, Set<Pair<String,String>> extras) {
         HttpResponse refreshTokenResponse = null;
         try {
             HttpRequest.Builder request = new HttpRequest.Builder(url, "utf-8").using(meth);
@@ -190,7 +190,7 @@ public class OAuthenticatorV10 implements OAuthenticator {
             String sign = generateSignature(requestToken, request, oauthParams);
             oauthParams.add(new Pair<String,String>("oauth_signature", sign));
 
-            if(HttpMethod.GET.equals(meth)) {
+            if("GET".equals(meth)) {
                 request.addQueryParams(toParamMap(oauthParams));
             }else{
                 request.addBodyParams((Map)toParamMap(oauthParams));

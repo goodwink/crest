@@ -20,7 +20,6 @@
 
 package org.codegist.crest.oauth;
 
-import org.codegist.crest.HttpMethod;
 import org.codegist.crest.HttpRequest;
 import org.codegist.crest.HttpResponse;
 import org.codegist.crest.RestService;
@@ -101,7 +100,7 @@ public class OAuthenticatorV10Test {
         OAuthenticator oauth = new OAuthenticatorV10(restService, consumer, config, variantProvider);
         oauth.getRequestToken();
         verify(restService).exec(argThat(new HttpRequestMatcher(new HttpRequest.Builder(requestTokUrl)
-                .using(HttpMethod.GET)
+                .using("GET")
                 .addQueryParam("oauth_consumer_key","dpf43f3p2l4k3l03")
                 .addQueryParam("oauth_signature_method","HMAC-SHA1")
                 .addQueryParam("oauth_timestamp","1191242096")
@@ -124,7 +123,7 @@ public class OAuthenticatorV10Test {
         OAuthenticator oauth = new OAuthenticatorV10(restService, consumer, config, variantProvider);
         oauth.getRequestToken();
         verify(restService).exec(argThat(new HttpRequestMatcher(new HttpRequest.Builder(requestTokUrl)
-                .using(HttpMethod.POST)
+                .using("POST")
                 .addBodyParam("oauth_consumer_key","dpf43f3p2l4k3l03")
                 .addBodyParam("oauth_signature_method","HMAC-SHA1")
                 .addBodyParam("oauth_timestamp","1191242096")
@@ -147,7 +146,7 @@ public class OAuthenticatorV10Test {
         OAuthenticator oauth = new OAuthenticatorV10(restService, consumer, config, variantProvider);
         oauth.getAccessToken(new Token("abc","cde"), "123");
         verify(restService).exec(argThat(new HttpRequestMatcher(new HttpRequest.Builder(accessTokUrl)
-                .using(HttpMethod.GET)
+                .using("GET")
                 .addQueryParam("oauth_consumer_key","dpf43f3p2l4k3l03")
                 .addQueryParam("oauth_signature_method","HMAC-SHA1")
                 .addQueryParam("oauth_timestamp","1191242096")
@@ -171,7 +170,7 @@ public class OAuthenticatorV10Test {
         OAuthenticator oauth = new OAuthenticatorV10(restService, consumer, config, variantProvider);
         oauth.getAccessToken(new Token("abc","cde"), "123");
         verify(restService).exec(argThat(new HttpRequestMatcher(new HttpRequest.Builder(accessTokUrl)
-                .using(HttpMethod.POST)
+                .using("POST")
                 .addBodyParam("oauth_consumer_key","dpf43f3p2l4k3l03")
                 .addBodyParam("oauth_signature_method","HMAC-SHA1")
                 .addBodyParam("oauth_timestamp","1191242096")
@@ -195,7 +194,7 @@ public class OAuthenticatorV10Test {
         OAuthenticator oauth = new OAuthenticatorV10(restService, consumer, config, variantProvider);
         oauth.refreshAccessToken(new Token("abc","cde", new HashMap<String, String>(){{put("extra","456");}}), "extra");
         verify(restService).exec(argThat(new HttpRequestMatcher(new HttpRequest.Builder(refreshTokUrl)
-                .using(HttpMethod.GET)
+                .using("GET")
                 .addQueryParam("oauth_consumer_key","dpf43f3p2l4k3l03")
                 .addQueryParam("oauth_signature_method","HMAC-SHA1")
                 .addQueryParam("oauth_timestamp","1191242096")
@@ -219,7 +218,7 @@ public class OAuthenticatorV10Test {
         OAuthenticator oauth = new OAuthenticatorV10(restService, consumer, config, variantProvider);
         oauth.refreshAccessToken(new Token("abc","cde", new HashMap<String, String>(){{put("extra","456");}}), "extra");
         verify(restService).exec(argThat(new HttpRequestMatcher(new HttpRequest.Builder(refreshTokUrl)
-                .using(HttpMethod.POST)
+                .using("POST")
                 .addBodyParam("oauth_consumer_key","dpf43f3p2l4k3l03")
                 .addBodyParam("oauth_signature_method","HMAC-SHA1")
                 .addBodyParam("oauth_timestamp","1191242096")
