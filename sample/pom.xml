@@ -19,7 +19,8 @@
   ~ More information at http://www.codegist.org.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.codegist.crest</groupId>
@@ -33,7 +34,9 @@
     <packaging>jar</packaging>
     <url>http://crest.codegist.org/sample/</url>
 
-    <description>CRest Samples offers a small set of java implementation samples of some well known public rest services using CRest.</description>
+    <description>CRest Samples offers a small set of java implementation samples of some well known public rest services
+        using CRest.
+    </description>
 
     <scm>
         <url>https://github.com/codegist/crest</url>
@@ -51,23 +54,47 @@
         </plugins>
     </reporting>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.1</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <mainClass>org.codegist.crest.SampleRunner</mainClass>
+                    <arguments>
+                        <argument>${crest.sample.delicious.consumer-key}</argument>
+                        <argument>${crest.sample.delicious.consumer-secret}</argument>
+                        <argument>${crest.sample.delicious.access-token}</argument>
+                        <argument>${crest.sample.delicious.access-token-secret}</argument>
+                        <argument>${crest.sample.delicious.session-handle}</argument>
+                        <argument>${crest.sample.twitter.consumer-key}</argument>
+                        <argument>${crest.sample.twitter.consumer-secret}</argument>
+                        <argument>${crest.sample.twitter.access-token}</argument>
+                        <argument>${crest.sample.twitter.access-token-secret}</argument>
+                        <argument>${crest.sample.flickr.key}</argument>
+                        <argument>${crest.sample.flickr.secret}</argument>
+                        <argument>${crest.sample.flickr.token}</argument>
+                    </arguments>
+                    <classpathScope>compile</classpathScope>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
     <dependencies>
         <dependency>
             <groupId>org.codegist.crest</groupId>
             <artifactId>codegist-crest</artifactId>
             <version>1.0.2-SNAPSHOT</version>
         </dependency>
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>1.2.16</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.xml.bind</groupId>
-            <artifactId>jaxb-impl</artifactId>
-            <version>2.1</version>
-        </dependency>
-
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
@@ -76,7 +103,7 @@
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpmime</artifactId>
-            <version>4.0.3</version>
+            <version>4.1</version>
         </dependency>
         <dependency>
             <groupId>org.codehaus.jackson</groupId>
@@ -89,10 +116,10 @@
             <version>2.1</version>
         </dependency>
         <dependency>
-            <groupId>commons-lang</groupId>
-            <artifactId>commons-lang</artifactId>
-            <version>2.5</version>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.16</version>
+            <optional>true</optional>
         </dependency>
-        
     </dependencies>
 </project>

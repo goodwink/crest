@@ -38,8 +38,8 @@ public class RangeInjector implements Injector<Range> {
             builder.addQueryParam("start", start);
             builder.addQueryParam("results", results);
         }else{
-            builder.addBodyParam("start", start);
-            builder.addBodyParam("results", results);
+            builder.addFormParam("start", start);
+            builder.addFormParam("results", results);
         }
     }
 }

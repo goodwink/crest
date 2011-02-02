@@ -77,23 +77,23 @@ public class DefaultRestService implements RestService {
         if (request.getSocketTimeout() != null && request.getSocketTimeout() >= 0)
             con.setReadTimeout(request.getSocketTimeout().intValue());
 
-        if (request.getHeaders() != null) {
-            for (Map.Entry<String, String> header : request.getHeaders().entrySet()) {
+        if (request.getHeaderParams() != null) {
+            for (Map.Entry<String, String> header : request.getHeaderParams().entrySet()) {
                 con.setRequestProperty(header.getKey(), header.getValue());
             }
         }
 
         if ("PUT".equals(request.getMeth()) || "POST".equals(request.getMeth())) {
-            if (Params.isForUpload(request.getBodyParams())) {
+            if (Params.isForUpload(request.getFormParams())) {
                 String boundary = Randoms.randomAlphaNumeric(16) + System.currentTimeMillis();
                 con.setRequestProperty("Content-Type", MULTIPART + boundary);
-                if (request.getBodyParams() != null) {
+                if (request.getFormParams() != null) {
                     boundary = "--" + boundary;
                     con.setDoOutput(true);
                     OutputStream os = con.getOutputStream();
                     DataOutputStream out = new DataOutputStream(os);
 
-                    for (Map.Entry<String, Object> param : request.getBodyParams().entrySet()) {
+                    for (Map.Entry<String, Object> param : request.getFormParams().entrySet()) {
                         InputStream upload = null;
                         String name = null;
                         if (param.getValue() instanceof InputStream) {
@@ -129,8 +129,8 @@ public class DefaultRestService implements RestService {
                 }
             } else {
                 byte[] data = new byte[0];
-                if (request.getBodyParams() != null) {
-                    data = Params.encodeParams(request.getBodyParams(), request.getEncoding()).getBytes(request.getEncoding());
+                if (request.getFormParams() != null) {
+                    data = Params.encodeParams(request.getFormParams(), request.getEncoding()).getBytes(request.getEncoding());
                 }
                 con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=" + request.getEncoding());
                 con.setRequestProperty("Content-Length", Integer.toString(data.length));

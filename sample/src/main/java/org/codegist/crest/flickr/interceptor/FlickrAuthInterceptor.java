@@ -61,16 +61,16 @@ public class FlickrAuthInterceptor extends RequestInterceptorAdapter {
         StringBuilder sb = new StringBuilder(appSecret);
 
         if (isForBody(builder.getMeth())) {
-            builder.addBodyParam("api_key", apiKey);
-            builder.addBodyParam("auth_token", authToken);
+            builder.addFormParam("api_key", apiKey);
+            builder.addFormParam("auth_token", authToken);
         } else {
             builder.addQueryParam("api_key", apiKey);
             builder.addQueryParam("auth_token", authToken);
         }
 
         SortedMap<String, String> map = new TreeMap<String, String>(builder.getQueryString());
-        if (builder.getBodyParams() != null) {
-            for (Map.Entry<String, Object> param : builder.getBodyParams().entrySet()) {
+        if (builder.getFormParams() != null) {
+            for (Map.Entry<String, Object> param : builder.getFormParams().entrySet()) {
                 if (Params.isForUpload(param.getValue())) continue;
                 map.put(param.getKey(), String.valueOf(param.getValue()));
             }
@@ -82,7 +82,7 @@ public class FlickrAuthInterceptor extends RequestInterceptorAdapter {
         digest.update(sb.toString().getBytes());
         String hash = Hex.encodeAsString(digest.digest());
         if (isForBody(builder.getMeth())) {
-            builder.addBodyParam("api_sig", hash);
+            builder.addFormParam("api_sig", hash);
         } else {
             builder.addQueryParam("api_sig", hash);
         }

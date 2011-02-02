@@ -21,7 +21,7 @@
 package org.codegist.crest.delicious.model;
 
 
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.codegist.common.lang.ToStringBuilder;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -52,6 +52,9 @@ public class Bundle {
 
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this);
+        return new ToStringBuilder(this)
+                .append("name",name)
+                .append("tags",tags)
+                .toString();
     }
 }

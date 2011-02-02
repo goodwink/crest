@@ -129,7 +129,6 @@ public class XmlDrivenInterfaceConfigFactory implements InterfaceConfigFactory {
     public InterfaceConfig newConfig(Class<?> interfaze, CRestContext context) throws ConfigFactoryException {
 
         try {
-
             String globalEndpoint = getString(config, "/crest-config/@end-point");
 
             String endPoint = Strings.defaultIfBlank(getString(config, "/crest-config/service[@class=\"%s\"]/end-point", interfaze.getName()), globalEndpoint);
@@ -151,20 +150,15 @@ public class XmlDrivenInterfaceConfigFactory implements InterfaceConfigFactory {
                     .setMethodsRequestInterceptor(getString(interfaceConfig, "methods/default/request-interceptor"))
                     .setMethodsPath(getString(interfaceConfig, "methods/default/path"))
 
-
-//                    .setParamsName(getString(interfaceConfig, "methods/default/params/default/@name"))
-//                    .setParamsDestination(getString(interfaceConfig, "methods/default/params/default/@destination"))
                     .setParamsSerializer(getString(interfaceConfig, "methods/default/params/default/serializer"))
                     .setParamsInjector(getString(interfaceConfig, "methods/default/params/default/injector"));
 
-            NodeList staticParams = getNodes(interfaceConfig, "methods/default/params/static-param");
-            if (staticParams != null) {
-                for (int i = 0; i < staticParams.getLength(); i++) {
-                    Node staticParam = staticParams.item(i);
-                    String name = getString(staticParam, "@name");
-                    String destination = getString(staticParam, "@destination");
-                    Destination dest = Strings.isBlank(destination) ? Destination.URL : Destination.valueOf(destination);
-                    icb.addMethodsExtraParam(name, staticParam.getTextContent(), dest);
+            NodeList extraParams = getNodes(interfaceConfig, "methods/default/params/*[(name() = 'form' or name() = 'path' or name() = 'query' or name() = 'header') and not(@index)]");
+            if (extraParams != null) {
+                for (int i = 0; i < extraParams.getLength(); i++) {
+                    Node extraParam = extraParams.item(i);
+                    String name = getString(extraParam, "@name");
+                    icb.addMethodsExtraParam(name, extraParam.getTextContent(), extraParam.getNodeName());
                 }
             }
 
@@ -187,13 +181,11 @@ public class XmlDrivenInterfaceConfigFactory implements InterfaceConfigFactory {
                     if (Arrays.asList(methods).contains(method)) {
                         methodNode = entry.getValue();
 
-                        NodeList methStaticParams = getNodes(methodNode, "params/static-param");
-                        for (int i = 0; i < methStaticParams.getLength(); i++) {
-                            Node methStaticParam = methStaticParams.item(i);
-                            String name = getString(methStaticParam, "@name");
-                            String destination = getString(methStaticParam, "@destination");
-                            Destination dest = Strings.isBlank(destination) ? Destination.URL : Destination.valueOf(destination);
-                            mcb.addExtraParam(name, methStaticParam.getTextContent(), dest);
+                        NodeList methExtraParams = getNodes(methodNode, "params/*[(name() = 'form' or name() = 'path' or name() = 'query' or name() = 'header') and not(@index)]");
+                        for (int i = 0; i < methExtraParams.getLength(); i++) {
+                            Node methExtraParam = methExtraParams.item(i);
+                            String name = getString(methExtraParam, "@name");
+                            icb.addMethodsExtraParam(name, methExtraParam.getTextContent(), methExtraParam.getNodeName());
                         }
 
                         mcb.setPath(getString(methodNode, "path"))
@@ -204,9 +196,6 @@ public class XmlDrivenInterfaceConfigFactory implements InterfaceConfigFactory {
                                 .setResponseHandler(getString(methodNode, "response-handler"))
                                 .setErrorHandler(getString(methodNode, "error-handler"))
                                 .setRetryHandler(getString(methodNode, "retry-handler"))
-
-//                                .setParamsName(getString(methodNode, "params/default/@name"))
-//                                .setParamsDestination(getString(methodNode, "params/default/@destination"))
                                 .setParamsSerializer(getString(methodNode, "params/default/serializer"))
                                 .setParamsInjector(getString(methodNode, "params/default/injector"));
                         break;
@@ -216,9 +205,9 @@ public class XmlDrivenInterfaceConfigFactory implements InterfaceConfigFactory {
                     ConfigBuilders.ParamConfigBuilder pcb = mcb.startParamConfig(i).setIgnoreNullOrEmptyValues(true);
                     // Injects user type annotated config.
                     Configs.injectAnnotatedConfig(pcb, method.getParameterTypes()[i]);
-                    Node paramNode = getNode(methodNode, "params/param[@index='%d']", i);
+                    Node paramNode = getNode(methodNode, "params/*[(name() = 'form' or name() = 'path' or name() = 'query' or name() = 'header') and @index='%d']", i);
                     pcb.setName(getString(paramNode, "@name"))
-                            .setDestination(getString(paramNode, "@destination"))
+                            .setDestination(paramNode.getNodeName())
                             .setInjector(getString(paramNode, "injector"))
                             .setSerializer(getString(paramNode, "serializer"))
                             .endParamConfig();

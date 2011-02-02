@@ -26,10 +26,8 @@
         <methods>
             <default>
                 <params>
-                    <default>
-                        <serializer>org.codegist.crest.Stubs$Serializer1</serializer>
-                        <injector>org.codegist.crest.Stubs$RequestParameterInjector1</injector>
-                    </default>
+                    <serializer>org.codegist.crest.Stubs$Serializer1</serializer>
+                    <injector>org.codegist.crest.Stubs$RequestParameterInjector1</injector>
                 </params>
             </default>
             <method match="m1\(\)">
@@ -39,21 +37,24 @@
             <method match="m1\(java\.lang\.String\)" method="POST">
                 <path>/m1</path>
                 <params>
-                    <default>
-                        <serializer>org.codegist.crest.Stubs$Serializer2</serializer>
-                    </default>
-                    <param index="0">
+                    <serializer>org.codegist.crest.Stubs$Serializer2</serializer>
+                    <path index="0">
                         <serializer>org.codegist.crest.Stubs$Serializer3</serializer>
                         <injector>org.codegist.crest.Stubs$RequestParameterInjector3</injector>
-                    </param>
+                    </path>
                 </params>
             </method>
-            <method match="m1\(java\.lang\.String,((int)|(int\[\]))\)">
+            <method match="m1\(java\.lang\.String,int\)">
                 <path>/m1</path>
                 <params>
-                    <default>
-                        <injector>org.codegist.crest.Stubs$RequestParameterInjector2</injector>
-                    </default>
+                    <injector>org.codegist.crest.Stubs$RequestParameterInjector2</injector>
+                    <param index="1" name="c" default="444"/>
+                </params>
+            </method>
+            <method match="m1\(java\.lang\.String,int\[\]\)">
+                <path>/m1</path>
+                <params>
+                    <injector>org.codegist.crest.Stubs$RequestParameterInjector2</injector>
                     <param index="1" name="c"/>
                 </params>
             </method>

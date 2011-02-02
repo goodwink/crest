@@ -26,13 +26,17 @@ package org.codegist.crest.config;
  */
 public enum Destination {
     /**
-     * Use it to configure a parameter to be part of the http request url (either queryString or path)
+     * Use it to configure a parameter to be part of the http request queryString
      */
-    URL,
+    QUERY,
+    /**
+     * Use it to configure a parameter to be part of the http request path
+     */
+    PATH,
     /**
      * Use it to configure a parameter to be part of the http request Body
      */
-    BODY,
+    FORM,
     /**
      * Use it to configure a parameter to be part of the http request Header
      */

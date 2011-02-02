@@ -20,7 +20,7 @@
 
 package org.codegist.crest.google.domain;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.codegist.common.lang.ToStringBuilder;
 import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonProperty;
 
@@ -83,6 +83,14 @@ public class Address {
     }
 
     public String toString() {
-        return ToStringBuilder.reflectionToString(this);
+        return new ToStringBuilder(this)
+                .append("unescapedUrl",unescapedUrl)
+                .append("url",url)
+                .append("visibleUrl",visibleUrl)
+                .append("cacheUrl",cacheUrl)
+                .append("title",title)
+                .append("titleNoFormatting",titleNoFormatting)
+                .append("content",content)
+                .toString();
     }
 }

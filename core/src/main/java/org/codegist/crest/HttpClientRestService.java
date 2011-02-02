@@ -24,7 +24,6 @@ import org.apache.http.*;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.*;
-import org.apache.http.client.params.HttpClientParams;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.params.ConnManagerParams;
@@ -54,7 +53,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.InvocationTargetException;
 import java.net.ProxySelector;
 import java.util.*;
 
@@ -178,9 +176,9 @@ public class HttpClientRestService implements RestService, Disposable {
         if (uriRequest instanceof HttpEntityEnclosingRequestBase) {
             HttpEntityEnclosingRequestBase enclosingRequestBase = ((HttpEntityEnclosingRequestBase) uriRequest);
             HttpEntity entity;
-            if (Params.isForUpload(request.getBodyParams().values())) {
+            if (Params.isForUpload(request.getFormParams().values())) {
                 MultipartEntity multipartEntity = new MultipartEntity();
-                for (Map.Entry<String, Object> param : request.getBodyParams().entrySet()) {
+                for (Map.Entry<String, Object> param : request.getFormParams().entrySet()) {
                     ContentBody body;
                     if (param.getValue() instanceof InputStream) {
                         body = new InputStreamBody((InputStream) param.getValue(), param.getKey());
@@ -195,8 +193,8 @@ public class HttpClientRestService implements RestService, Disposable {
                 }
                 entity = multipartEntity;
             } else {
-                List<NameValuePair> params = new ArrayList<NameValuePair>(request.getBodyParams().size());
-                for (Map.Entry<String, Object> param : request.getBodyParams().entrySet()) {
+                List<NameValuePair> params = new ArrayList<NameValuePair>(request.getFormParams().size());
+                for (Map.Entry<String, Object> param : request.getFormParams().entrySet()) {
                     params.add(new BasicNameValuePair(param.getKey(), param.getValue() != null ? param.getValue().toString() : null));
                 }
                 entity = new UrlEncodedFormEntity(params, request.getEncoding());
@@ -205,8 +203,8 @@ public class HttpClientRestService implements RestService, Disposable {
             enclosingRequestBase.setEntity(entity);
         }
 
-        if (request.getHeaders() != null && !request.getHeaders().isEmpty()) {
-            for (Map.Entry<String, String> header : request.getHeaders().entrySet()) {
+        if (request.getHeaderParams() != null && !request.getHeaderParams().isEmpty()) {
+            for (Map.Entry<String, String> header : request.getHeaderParams().entrySet()) {
                 uriRequest.setHeader(header.getKey(), header.getValue());
             }
         }

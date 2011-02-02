@@ -20,7 +20,7 @@
 
 package org.codegist.crest.flickr.model;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.codegist.common.lang.ToStringBuilder;
 
 import javax.xml.bind.annotation.*;
 import java.util.Date;
@@ -75,6 +75,13 @@ public class Comment implements SimplePayload<String> {
 
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this);
+        return new ToStringBuilder(this)
+                .append("id", id)
+                .append("authorId", authorId)
+                .append("authorName", authorname)
+                .append("datecreated", datecreated)
+                .append("permalink", permalink)
+                .append("comment", comment)
+                .toString();
     }
 }

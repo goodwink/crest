@@ -70,7 +70,39 @@ public interface StatusService {
 
     In the day to day development process, you may want to be able to switch <<<EndPoint>>> to point to different server dependending on which environment you are running your application on.
 
-    In order to do so, you can use the Properties driven configuration in addition to the annotation driven one in order to override some information.
+    In order to do so, you can use the Properties driven configuration in addition to the annotation driven one in order to override some information, or use the placeholder approach:
+
+    With the following interface:
+
++-----
+@EndPoint("http://{my.server}:{my.port}")
+@ContextPath("/1/statuses")
+public interface StatusService {
+
+    @Path("/retweets/{0}.json")
+    @ConnectionTimeout(10000)
+    Status[] getRetweets(long id);
+
+    @HttpMethod(POST)
+    @Path("/update.json?lat={1}&long={2}")
+    Status changeStatus(@Name("status") @Destination(BODY) String status, float lat, float longitude);
+
+}
++-----
+
+    You can create a <<CRest>> instance as follow:
+
++-----
+CRest crest = new CRestBuilder()
+                .setConfigPlaceholder("my.server", "127.0.0.1")
+                .setConfigPlaceholder("my.port", "8080")
+                .build();
++-----
+
+    Any occurrences of either {my.server} or {my.port} in any string-value based annotation will be replaced by the provided placeholder.
+
+    Properties and Xml configuration files can also use placeholders, that will be then replaced as well.
+
 
 ** Xml
 

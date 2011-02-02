@@ -20,6 +20,7 @@
 
 package org.codegist.crest.delicious;
 
+import org.codegist.common.log.Logger;
 import org.codegist.crest.CRest;
 import org.codegist.crest.CRestBuilder;
 import org.codegist.crest.CRestProperty;
@@ -35,17 +36,27 @@ import java.util.HashMap;
 /**
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
-public class DeliciousSample {
-    public static void main(String[] args) throws IOException {
+public class DeliciousSample implements Runnable {
+    
+    private static final Logger LOG = Logger.getLogger(DeliciousSample.class);
+    private final String consumerKey;
+    private final String consumerSecret;
+    private final String accessToken;
+    private final String accessTokenSecret;
+    private final String sessionHandle;
 
-        final String consumerKey = args[0];
-        final String consumerSecret = args[1];
-        final String accessToken = args[2];
-        final String accessTokenSecret = args[3];
-        final String sessionHandle = args[4];
+    public DeliciousSample(String consumerKey, String consumerSecret, String accessToken, String accessTokenSecret, String sessionHandle) {
+        this.consumerKey = consumerKey;
+        this.consumerSecret = consumerSecret;
+        this.accessToken = accessToken;
+        this.accessTokenSecret = accessTokenSecret;
+        this.sessionHandle = sessionHandle;
+    }
 
+    public void run(){
         /* Get the factory */
         CRest crest = new CRestBuilder()
+                .useHttpClientRestService()
                 .expectsXml(DeliciousModelFactory.class)
                 .setListSerializerSeparator(" ")
                 .setBooleanSerializer("yes", "no")
@@ -63,8 +74,12 @@ public class DeliciousSample {
         Posts posts = delicious.getAllPosts("opensource", new Range(1,15), new Date(), new Date(), false);
         boolean done = delicious.renameTag("os", "opensource");
 
-        System.out.println("Posts=" + posts);
-        System.out.println("Rename done=" + done);
+        LOG.info("Posts=" + posts);
+        LOG.info("Rename done=" + done);
+    }
+
+    public static void main(String[] args) throws IOException {
+        new DeliciousSample(args[0],args[1],args[2],args[3],args[4]).run();
     }
 
 }

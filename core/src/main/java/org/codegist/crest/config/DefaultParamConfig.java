@@ -35,6 +35,9 @@ class DefaultParamConfig extends DefaultBasicParamConfig implements ParamConfig 
     private final Serializer serializer;
     private final Injector injector;
 
+    DefaultParamConfig(DefaultBasicParamConfig base, Serializer serializer, Injector injector) {
+        this(base.getName(), base.getDefaultValue(), base.getDestination(), serializer, injector);
+    }
     DefaultParamConfig(String name, String defaultValue, Destination destination, Serializer serializer, Injector injector) {
         super(name, defaultValue, destination);
         this.serializer = serializer;

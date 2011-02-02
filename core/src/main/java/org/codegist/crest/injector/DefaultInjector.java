@@ -24,7 +24,6 @@ import org.codegist.common.lang.Strings;
 import org.codegist.crest.HttpRequest;
 import org.codegist.crest.ParamContext;
 import org.codegist.crest.Params;
-import org.codegist.crest.config.Destination;
 
 /**
  * Default request injector used by CRest.
@@ -45,30 +44,19 @@ public class DefaultInjector implements Injector {
      * @see org.codegist.crest.config.ParamConfig#DEFAULT_SERIALIZER
      */
     public void inject(HttpRequest.Builder builder, ParamContext context) {
+        String name = context.getParamConfig().getName();
+        if(Strings.isBlank(name)) {
+            throw new IllegalStateException("Parameter name must be provided! (param method=" + context.getMethod() + ",index=" + context.getIndex() + ")");
+        }
         if (Params.isForUpload(context.getRawValue())) {
             // add it raw
-            builder.addBodyParam(context.getParamConfig().getName(), context.getRawValue());
+            builder.addFormParam(name, context.getRawValue());
         } else {
-            String paramValue = context.getSerializedValue();
-            if(Strings.isBlank(paramValue)) {
-                paramValue = context.getParamConfig().getDefaultValue();
+            String value = context.getSerializedValue();
+            if(Strings.isBlank(value)) {
+                value = context.getParamConfig().getDefaultValue();
             }
-            switch(context.getParamConfig().getDestination()){
-                case BODY:
-                    builder.addBodyParam(context.getParamConfig().getName(), paramValue);
-                    break;
-                case HEADER:
-                    builder.addHeader(context.getParamConfig().getName(), paramValue);
-                    break;
-                default:
-                    if (context.isForUrl()) {
-                        if (Strings.isBlank(context.getParamConfig().getName())) {
-                            builder.replacePlaceholderInUri(context.getIndex(), paramValue);
-                        } else {
-                            builder.addQueryParam(context.getParamConfig().getName(), paramValue);
-                        }
-                    }
-            }
+            builder.addParam(name, value, context.getParamConfig().getDestination());
         }
     }
 }

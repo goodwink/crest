@@ -27,6 +27,7 @@ import java.lang.annotation.Target;
 
 /**
  * <p>Mandatory interface level annotation, sets the service end point.
+ * @see org.codegist.crest.CRestBuilder#setConfigPlaceholder(String, String)
  * @see org.codegist.crest.config.InterfaceConfig#getEndPoint()
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */

@@ -29,3 +29,4 @@ CREST
 
         ----> /stringvalue/?count=10
   }
+* Does it work to pass JSON in the HttpRequest.Builder.addQueryParam etc.. or should it be encoded ? Could conflict with placeholder syntax!

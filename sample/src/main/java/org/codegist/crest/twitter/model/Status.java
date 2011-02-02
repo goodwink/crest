@@ -20,7 +20,7 @@
 
 package org.codegist.crest.twitter.model;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.codegist.common.lang.ToStringBuilder;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 /**
@@ -54,7 +54,18 @@ public class Status {
     private Status retweetedStatus;
 
     public String toString() {
-        return ToStringBuilder.reflectionToString(this);
+        return new ToStringBuilder(this)
+                .append("id",id)
+                .append("inReplyToScreenName",inReplyToScreenName)
+                .append("inReplyToStatusId",inReplyToStatusId)
+                .append("inReplyToUserId",inReplyToUserId)
+                .append("retweeted",retweeted)
+                .append("source",source)
+                .append("text",text)
+                .append("truncated",truncated)
+                .append("user",user)
+                .append("retweetedStatus",retweetedStatus)
+                .toString();
     }
 
     public boolean isFavorited() {

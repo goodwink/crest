@@ -27,6 +27,7 @@ import java.lang.annotation.Target;
 
 /**
  * <p>Optional interface level annotation, sets the service encoding. If not specified, defaults to the interface config default value.
+ * @see org.codegist.crest.CRestBuilder#setConfigPlaceholder(String, String)
  * @see org.codegist.crest.config.InterfaceConfig#DEFAULT_ENCODING
  * @see org.codegist.crest.config.InterfaceConfig#getEncoding()
  * @author Laurent Gilles (laurent.gilles@codegist.org)

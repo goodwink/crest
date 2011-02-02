@@ -20,7 +20,7 @@
 
 package org.codegist.crest.google.domain;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.codegist.common.lang.ToStringBuilder;
 import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonProperty;
 
@@ -55,6 +55,10 @@ public class LanguageGuess {
     }
 
     public String toString() {
-        return ToStringBuilder.reflectionToString(this);
+        return new ToStringBuilder(this)
+                .append("language", language)
+                .append("isReliable", isReliable)
+                .append("confidence", confidence)
+                .toString();
     }
 }

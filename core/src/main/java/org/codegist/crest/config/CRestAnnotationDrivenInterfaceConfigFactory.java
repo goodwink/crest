@@ -87,7 +87,11 @@ public class CRestAnnotationDrivenInterfaceConfigFactory implements InterfaceCon
             if(contextPath != null) config.setContextPath(contextPath.value());
             if(encoding != null) config.setEncoding(encoding.value());
             if(globalInterceptor != null) config.setGlobalInterceptor(globalInterceptor.value());
-            if(extraParams != null) config.addMethodsExtraParams(extraParams);
+            if(extraParams != null) {
+                for(BasicParamConfig c : extraParams){
+                    config.addMethodsExtraParam(c.getName(), c.getDefaultValue(),c.getDestination());
+                }
+            }
             if(path != null) config.setMethodsPath(path.value());
             if(socketTimeout != null) config.setMethodsSocketTimeout(socketTimeout.value());
             if(connectionTimeout != null) config.setMethodsConnectionTimeout(connectionTimeout.value());
@@ -119,7 +123,14 @@ public class CRestAnnotationDrivenInterfaceConfigFactory implements InterfaceCon
 
                 ConfigBuilders.MethodConfigBuilder methodConfigBuilder = config.startMethodConfig(meth);
 
-                if(extraParams != null) methodConfigBuilder.addExtraParams(extraParams);
+                if(extraParams != null) {
+                    for(BasicParamConfig c : extraParams){
+                        methodConfigBuilder.startExtraParamConfig(c.getName())
+                                .setDefaultValue(c.getDefaultValue())
+                                .setDestination(c.getDestination())
+                                .endParamConfig();
+                    }
+                }
                 if(path != null) methodConfigBuilder.setPath(path.value());
                 if(socketTimeout != null) methodConfigBuilder.setSocketTimeout(socketTimeout.value());
                 if(connectionTimeout != null) methodConfigBuilder.setConnectionTimeout(connectionTimeout.value());
@@ -178,27 +189,27 @@ public class CRestAnnotationDrivenInterfaceConfigFactory implements InterfaceCon
         for(Annotation a : annotations){
             if(a instanceof FormParam) {
                 FormParam p = (FormParam) a;
-                params.add(new DefaultBasicParamConfig(p.name(), p.value(), org.codegist.crest.config.Destination.BODY));
+                params.add(new DefaultBasicParamConfig(p.name(), p.value(), org.codegist.crest.config.Destination.FORM));
             }else if(a instanceof FormParams) {
                 FormParams ps = (FormParams) a;
                 for(FormParam p : ps.value()){
-                    params.add(new DefaultBasicParamConfig(p.name(), p.value(), org.codegist.crest.config.Destination.BODY));
+                    params.add(new DefaultBasicParamConfig(p.name(), p.value(), org.codegist.crest.config.Destination.FORM));
                 }
             }else if(a instanceof PathParam) {
                 PathParam p = (PathParam) a;
-                params.add(new DefaultBasicParamConfig(p.name(), p.value(), org.codegist.crest.config.Destination.URL));
+                params.add(new DefaultBasicParamConfig(p.name(), p.value(), org.codegist.crest.config.Destination.PATH));
             }else if(a instanceof PathParams) {
                 PathParams ps = (PathParams) a;
                 for(PathParam p : ps.value()){
-                    params.add(new DefaultBasicParamConfig(p.name(), p.value(), org.codegist.crest.config.Destination.URL));
+                    params.add(new DefaultBasicParamConfig(p.name(), p.value(), org.codegist.crest.config.Destination.PATH));
                 }
             }else if(a instanceof QueryParam) {
                 QueryParam p = (QueryParam) a;
-                params.add(new DefaultBasicParamConfig(p.name(), p.value(), org.codegist.crest.config.Destination.URL));
+                params.add(new DefaultBasicParamConfig(p.name(), p.value(), org.codegist.crest.config.Destination.QUERY));
             }else if(a instanceof QueryParams) {
                 QueryParams ps = (QueryParams) a;
                 for(QueryParam p : ps.value()){
-                    params.add(new DefaultBasicParamConfig(p.name(), p.value(), org.codegist.crest.config.Destination.URL));
+                    params.add(new DefaultBasicParamConfig(p.name(), p.value(), org.codegist.crest.config.Destination.QUERY));
                 }
             }else if(a instanceof HeaderParam) {
                 HeaderParam p = (HeaderParam) a;

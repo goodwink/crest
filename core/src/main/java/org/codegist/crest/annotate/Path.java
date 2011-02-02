@@ -28,6 +28,7 @@ import java.lang.annotation.Target;
 /**
  * <p>Optional method level annotation, sets the method path. If not specified, defaults to the method config default value.
  * <p>Can be set at interface level to default all interface method values if not specified at method level.
+ * @see org.codegist.crest.CRestBuilder#setConfigPlaceholder(String, String)
  * @see org.codegist.crest.config.MethodConfig#DEFAULT_PATH
  * @see org.codegist.crest.config.MethodConfig#getPath()
  * @author Laurent Gilles (laurent.gilles@codegist.org)

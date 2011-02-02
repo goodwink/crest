@@ -20,7 +20,7 @@
 
 package org.codegist.crest.twitter.model;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.codegist.common.lang.ToStringBuilder;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 /**
@@ -111,6 +111,15 @@ public class Message {
     }
 
     public String toString() {
-        return ToStringBuilder.reflectionToString(this);
+        return new ToStringBuilder(this)
+                .append("id",id)
+                .append("text",text)
+                .append("sender",sender)
+                .append("recipientId",recipientId)
+                .append("recipientScreenName",recipientScreenName)
+                .append("recipient",recipient)
+                .append("senderId",senderId)
+                .append("senderScreenName",senderScreenName)
+                .toString();
     }
 }

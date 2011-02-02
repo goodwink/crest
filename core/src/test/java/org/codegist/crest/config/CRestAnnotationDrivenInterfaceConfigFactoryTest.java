@@ -92,9 +92,10 @@ public class CRestAnnotationDrivenInterfaceConfigFactoryTest extends AbstractInt
     static interface RestInjectorOverrideInterface {
         void get(
                 @Injector(Stubs.RequestParameterInjector2.class)
-                @Serializer(Stubs.Serializer2.class) Model m);
+                @Serializer(Stubs.Serializer2.class)
+                @FormParam(name="d") Model m);
 
-        void get2(Model m);
+        void get2(@FormParam(name="d") Model m);
 
         Method M = TestUtils.getMethod(RestInjectorOverrideInterface.class, "get", Model.class);
         Method M2 = TestUtils.getMethod(RestInjectorOverrideInterface.class, "get2", Model.class);
@@ -102,7 +103,7 @@ public class CRestAnnotationDrivenInterfaceConfigFactoryTest extends AbstractInt
 
     @EndPoint("http://dd")
     static interface TypeInjectorInterface {
-        void get(Model m, Model[] ms);
+        void get(@FormParam(name="d") Model m, @FormParam(name="ds") Model[] ms);
 
         Method M = TestUtils.getMethod(TypeInjectorInterface.class, "get", Model.class, Model[].class);
     }
@@ -113,17 +114,17 @@ public class CRestAnnotationDrivenInterfaceConfigFactoryTest extends AbstractInt
         @Path("/m1")
         Object m1();
 
-        Object m1(String a);
+        Object m1(@QueryParam(name="param") String a);
 
         @Path("/m1")
-        Object m1(String a, int b);
+        Object m1(@PathParam(name="param1") String a, @QueryParam(name="param2") int b);
 
-        Object m1(String a, int[] b);
+        Object m1(@QueryParam(name="param1") String a, @QueryParam(name="param2") int[] b);
 
         @Path("/m2/1")
         void m2();
 
-        void m2(float f, String... a);
+        void m2(@QueryParam(name="param1") float f, @QueryParam(name="param2") String... a);
     }
 
     @EndPoint("http://localhost:8080")
@@ -139,13 +140,13 @@ public class CRestAnnotationDrivenInterfaceConfigFactoryTest extends AbstractInt
         @Path("/m1")
         @POST
         @Serializer(Stubs.Serializer2.class)
-        Object m1(@Serializer(Stubs.Serializer3.class) @Injector(Stubs.RequestParameterInjector3.class) String a);
+        Object m1(@Serializer(Stubs.Serializer3.class) @Injector(Stubs.RequestParameterInjector3.class) @QueryParam(name="pname") String a);
 
         @Path("/m1") @Injector(Stubs.RequestParameterInjector2.class)
-        Object m1(String a, @PathParam(name="c", value = "444") int b);
+        Object m1(@FormParam(name="d") String a, @QueryParam(name="c", value = "444") int b);
 
         @Path("/m1") @Injector(Stubs.RequestParameterInjector2.class)
-        Object m1(String a, @QueryParam(name="c") int[] b);
+        Object m1(@PathParam(name="f") String a, @QueryParam(name="c") int[] b);
 
 
         @Path("/m2/1")
@@ -154,7 +155,7 @@ public class CRestAnnotationDrivenInterfaceConfigFactoryTest extends AbstractInt
         @ConnectionTimeout(12)
         void m2();
 
-        void m2(float f, String... a);
+        void m2(@QueryParam(name="fd")float f, @QueryParam(name="cf")String... a);
     }
 
     @EndPoint("http://localhost:8080")
@@ -163,10 +164,10 @@ public class CRestAnnotationDrivenInterfaceConfigFactoryTest extends AbstractInt
     @ConnectionTimeout( 2)
     @Encoding( "utf-8")
     @Path( "/hello")
-    @FormParam(name="body-param",value="body-value")
+    @FormParam(name="form-param",value="form-value")
     @FormParams({
-            @FormParam(name="body-param1",value="body-value1"),
-            @FormParam(name="body-param2",value="body-value2")
+            @FormParam(name="form-param1",value="form-value1"),
+            @FormParam(name="form-param2",value="form-value2")
     })
     @PathParam(name="path-param",value="path-value")
     @PathParams({
@@ -196,8 +197,8 @@ public class CRestAnnotationDrivenInterfaceConfigFactoryTest extends AbstractInt
 
         @Path("/m1")
         @FormParams({
-            @FormParam(name="body-param",value="over-value1"),
-            @FormParam(name="body-param3",value="new-value")
+            @FormParam(name="form-param",value="over-value1"),
+            @FormParam(name="form-param3",value="new-value")
         })
         @PUT
         @SocketTimeout(3)
@@ -211,7 +212,7 @@ public class CRestAnnotationDrivenInterfaceConfigFactoryTest extends AbstractInt
         Object m1();
 
         @Path("/m1")
-        @PathParam(name="body-param",value="over-value1")
+        @PathParam(name="form-param",value="over-value1")
         @POST
         @SocketTimeout(5)
         @ConnectionTimeout(6)
@@ -250,7 +251,7 @@ public class CRestAnnotationDrivenInterfaceConfigFactoryTest extends AbstractInt
         @ResponseHandler(Stubs.ResponseHandler1.class)
         @Serializer(Stubs.Serializer1.class)
         Object m1(
-                @QueryParam(name="d")
+                @PathParam(name="d")
                 @Serializer(Stubs.Serializer1.class)
                 String a,
                 @FormParam(name="e")
@@ -278,7 +279,7 @@ public class CRestAnnotationDrivenInterfaceConfigFactoryTest extends AbstractInt
                 @PathParam(name="f")
                 @Serializer(Stubs.Serializer3.class)
                 float f,
-                @QueryParam(name="g")
+                @PathParam(name="g")
                 @Serializer(Stubs.Serializer1.class)
                 String... a);
     }
@@ -291,32 +292,32 @@ public class CRestAnnotationDrivenInterfaceConfigFactoryTest extends AbstractInt
     @Encoding("utf-8")
     public static interface Rest {
 
-        @Path("/aaa?b={1}&a={0}")
-        void aaa(int a, String[] b);
+        @Path("/aaa")
+        void aaa(@QueryParam(name="a") int a, @QueryParam(name="b") String[] b);
 
         Method AAA = TestUtils.getMethod(Rest.class, "aaa", int.class, String[].class);
 
-        @Path("/bbb/{2}?b={1}&a={0}")
+        @Path("/bbb/{pa}")
         @ConnectionTimeout(55)
-        void bbb(@Serializer(Stubs.Serializer2.class) int a, String[] b, String c);
+        void bbb(@Serializer(Stubs.Serializer2.class) @PathParam(name="pa")int a, @QueryParam(name="a")String[] b, @QueryParam(name="b")String c);
 
         Method BBB = TestUtils.getMethod(Rest.class, "bbb", int.class, String[].class, String.class);
 
-        @Path("/ccc/{0}?aa={1}")
+        @Path("/ccc/{a}")
         @POST
         void ccc(
-                int a,
-                int d,
+                @PathParam(name="a") int a,
+                @QueryParam(name="aa") int d,
                 @FormParam(name="bb") String[] b);
 
         Method CCC = TestUtils.getMethod(Rest.class, "ccc", int.class, int.class, String[].class);
 
-        @Path("/ddd?c={2}")
+        @Path("/ddd")
         @POST
         Object ddd(
                 @FormParam(name="dd") Object a,
                 @FormParam(name="bb") String[] b,
-                String c);
+                @QueryParam(name="c") String c);
 
         Method DDD = TestUtils.getMethod(Rest.class, "ddd", Object.class, String[].class, String.class);
 
@@ -326,21 +327,27 @@ public class CRestAnnotationDrivenInterfaceConfigFactoryTest extends AbstractInt
                 .setMethodsSocketTimeout(15l)
                 .setMethodsConnectionTimeout(10l)
                 .setEncoding("utf-8")
-                .startMethodConfig(AAA).setPath("/aaa?b={1}&a={0}").endMethodConfig()
-                .startMethodConfig(BBB).setPath("/bbb/{2}?b={1}&a={0}")
+                .startMethodConfig(AAA).setPath("/aaa")
+                .startParamConfig(0).setName("a").endParamConfig()
+                .startParamConfig(1).setName("b").endParamConfig()
+                .endMethodConfig()
+                .startMethodConfig(BBB).setPath("/bbb/{pa}")
                 .setConnectionTimeout(55l)
-                .startParamConfig(0).setSerializer(new Stubs.Serializer2()).endParamConfig()
+                .startParamConfig(0).forPath().setName("pa").setSerializer(new Stubs.Serializer2()).endParamConfig()
+                .startParamConfig(1).setName("a").endParamConfig()
+                .startParamConfig(2).setName("b").endParamConfig()
                 .endMethodConfig()
-                .startMethodConfig(CCC).setPath("/ccc/{0}?aa={1}")
+                .startMethodConfig(CCC).setPath("/ccc/{a}")
                 .setHttpMethod("POST")
-                .startParamConfig(0).setDestination(URL).endParamConfig()
-                .startParamConfig(1).setDestination(URL).endParamConfig()
-                .startParamConfig(2).setDestination(BODY).setName("bb").endParamConfig()
+                .startParamConfig(0).forPath().setName("a").endParamConfig()
+                .startParamConfig(1).forQuery().setName("aa").endParamConfig()
+                .startParamConfig(2).forForm().setName("bb").endParamConfig()
                 .endMethodConfig()
-                .startMethodConfig(DDD).setPath("/ddd?c={2}")
+                .startMethodConfig(DDD).setPath("/ddd")
                 .setHttpMethod("POST")
-                .startParamConfig(0).setDestination(BODY).setName("dd").endParamConfig()
-                .startParamConfig(1).setDestination(BODY).setName("bb").endParamConfig()
+                .startParamConfig(0).forForm().setName("dd").endParamConfig()
+                .startParamConfig(1).forForm().setName("bb").endParamConfig()
+                .startParamConfig(2).forQuery().setName("c").endParamConfig()
                 .endMethodConfig()
                 .build();
     }

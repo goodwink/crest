@@ -24,12 +24,35 @@
         <end-point>http://localhost:8080</end-point>
         <context-path>/my-path</context-path>
         <methods>
-            <method match="m1\((java\.lang\.String,int)?\)">
+            <method match="m1\(\)">
                 <path>/m1</path>
             </method>
-            <method match="m1\(java\.lang\.String(,int\[\])?\)"/>
+            <method match="m1\(java\.lang\.String\)">
+                <params>
+                    <query index="0" name="param"/>
+                </params>
+            </method>
+            <method match="m1\(java\.lang\.String,int\)">
+                <path>/m1</path>
+                <params>
+                    <path index="0" name="param1"/>
+                    <query index="1" name="param2"/>
+                </params>
+            </method>
+            <method match="m1\(java\.lang\.String,int\[\]\)">
+                <params>
+                    <query index="0" name="param1"/>
+                    <query index="1" name="param2"/>
+                </params>
+            </method>
             <method match="m2\(\)">
                 <path>/m2/1</path>
+            </method>
+            <method match="m2\(float,java.lang.String\[\]\)">
+                <params>
+                    <query index="0" name="param1"/>
+                    <query index="1" name="param2"/>
+                </params>
             </method>
         </methods>
     </service>

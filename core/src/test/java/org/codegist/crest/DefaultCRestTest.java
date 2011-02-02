@@ -268,34 +268,34 @@ public class DefaultCRestTest {
                     assertEquals(10, r.getConnectionTimeout().intValue());
                     assertEquals("GET", r.getMeth());
                     assertEquals("http://test-server:8080/path/aaa", r.getUri().toString());
-                    assertEquals(0, r.getBodyParams().size());
+                    assertEquals(0, r.getFormParams().size());
                     assertEquals(2, r.getQueryParams().size());
                 } else if (u.contains("bbb")) {
                     assertEquals(15, r.getSocketTimeout().intValue());
                     assertEquals(55, r.getConnectionTimeout().intValue());
                     assertEquals("GET", r.getMeth());
                     assertEquals("http://test-server:8080/path/bbb/c/c", r.getUri().toString());
-                    assertEquals(0, r.getBodyParams().size());
+                    assertEquals(0, r.getFormParams().size());
                     assertEquals(2, r.getQueryParams().size());
                 } else if (u.contains("ccc")) {
                     assertEquals(15, r.getSocketTimeout().intValue());
                     assertEquals(10, r.getConnectionTimeout().intValue());
                     assertEquals("POST", r.getMeth());
                     assertEquals("http://test-server:8080/path/ccc/100", r.getUri().toString());
-                    assertEquals(1, r.getBodyParams().size());
+                    assertEquals(1, r.getFormParams().size());
                     assertEquals(1, r.getQueryParams().size());
                     assertEquals("1000", r.getQueryParams().get("aa"));
-                    assertEquals("b b1,bb2", r.getBodyParams().get("bb"));
+                    assertEquals("b b1,bb2", r.getFormParams().get("bb"));
                 } else if (u.contains("ddd")) {
                     assertEquals(15, r.getSocketTimeout().intValue());
                     assertEquals(10, r.getConnectionTimeout().intValue());
                     assertEquals("POST", r.getMeth());
                     assertEquals("http://test-server:8080/path/ddd", r.getUri().toString());
                     assertEquals(1, r.getQueryParams().size());
-                    assertEquals(3, r.getBodyParams().size());
-                    assertEquals("aVal", r.getBodyParams().get("aa"));
-                    assertEquals("cVal", r.getBodyParams().get("c"));
-                    assertEquals("b b1,bb2", r.getBodyParams().get("bb"));
+                    assertEquals(3, r.getFormParams().size());
+                    assertEquals("aVal", r.getFormParams().get("aa"));
+                    assertEquals("cVal", r.getFormParams().get("c"));
+                    assertEquals("b b1,bb2", r.getFormParams().get("bb"));
 
                     assertEquals("cc", r.getQueryParams().get("c"));
                 }
@@ -332,24 +332,27 @@ public class DefaultCRestTest {
                 .setMethodsSocketTimeout(15l)
                 .setMethodsConnectionTimeout(10l)
                 .setEncoding("utf-8")
-                .startMethodConfig(Rest.AAA).setPath("/aaa?b={1}&a={0}").endMethodConfig()
-                .startMethodConfig(Rest.BBB).setPath("/bbb/{2}?b={1}&a={0}")
+                .startMethodConfig(Rest.AAA).setPath("/aaa")
+                .startParamConfig(0).setName("a").forQuery().endParamConfig()
+                .startParamConfig(1).setName("b").endParamConfig()
+                .endMethodConfig()
+                .startMethodConfig(Rest.BBB).setPath("/bbb/{p}")
                 .setConnectionTimeout(55l)
-                .startParamConfig(0).setSerializer(new Ser()).endParamConfig()
+                .startParamConfig(0).setName("a").setSerializer(new Ser()).endParamConfig()
+                .startParamConfig(1).setName("b").endParamConfig()
+                .startParamConfig(2).forPath().setName("p").endParamConfig()
                 .endMethodConfig()
-                .startMethodConfig(Rest.CCC).setPath("/ccc/{0}?aa={1}")
+                .startMethodConfig(Rest.CCC).setPath("/ccc/{p}")
                 .setHttpMethod("POST")
-                .startParamConfig(0).setDestination("URL").endParamConfig()
-                .startParamConfig(1).setDestination("URL").endParamConfig()
-                .startParamConfig(2).setDestination("BODY").setName("bb").endParamConfig()
+                .startParamConfig(0).forPath().setName("p").endParamConfig()
+                .startParamConfig(1).forQuery().setName("aa").endParamConfig()
+                .startParamConfig(2).forForm().setName("bb").endParamConfig()
                 .endMethodConfig()
-                .startMethodConfig(Rest.DDD).setPath("/ddd?c={2}")
+                .startMethodConfig(Rest.DDD).setPath("/ddd")
                 .setHttpMethod("POST")
-                .startParamConfig(0)
-                .setDestination("BODY")
-                .setInjector(new AnnotatedBeanParamInjector())
-                .endParamConfig()
-                .startParamConfig(1).setDestination("BODY").setName("bb").endParamConfig()
+                .startParamConfig(0).forForm().setName("name").setInjector(new AnnotatedBeanParamInjector()).endParamConfig()
+                .startParamConfig(1).forForm().setName("bb").endParamConfig()
+                .startParamConfig(2).forQuery().setName("c").endParamConfig()
                 .endMethodConfig()
                 .build();
         CRest factory = new DefaultCRest(new DefaultCRestContext(
@@ -480,7 +483,7 @@ public class DefaultCRestTest {
             if (context.isForUrl()) {
                 builder.addQueryParams(map);
             } else {
-                builder.addBodyParams(map);
+                builder.addFormParams(map);
             }
 
         }

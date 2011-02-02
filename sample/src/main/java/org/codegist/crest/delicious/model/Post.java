@@ -20,7 +20,7 @@
 
 package org.codegist.crest.delicious.model;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.codegist.common.lang.ToStringBuilder;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -87,6 +87,15 @@ public class Post {
 
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this);
+        return new ToStringBuilder(this)
+                .append("href", href)
+                .append("hash", hash)
+                .append("meta", meta)
+                .append("description", description)
+                .append("tags", tags)
+                .append("time", time)
+                .append("extended", extended)
+                .append("shared", shared)
+                .toString();
     }
 }

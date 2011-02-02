@@ -27,6 +27,7 @@ import java.lang.annotation.Target;
 
 /**
  * <p>Optional interface level annotation, sets the service context path. If not specified, defaults to the interface config default value.
+ * @see org.codegist.crest.CRestBuilder#setConfigPlaceholder(String, String)
  * @see org.codegist.crest.config.InterfaceConfig#DEFAULT_CONTEXT_PATH
  * @see org.codegist.crest.config.InterfaceConfig#getContextPath()
  * @author Laurent Gilles (laurent.gilles@codegist.org)

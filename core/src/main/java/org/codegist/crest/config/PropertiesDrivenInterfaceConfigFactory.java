@@ -21,7 +21,6 @@
 package org.codegist.crest.config;
 
 import org.codegist.common.collect.Maps;
-import org.codegist.common.lang.Strings;
 import org.codegist.common.reflect.Methods;
 import org.codegist.crest.CRestContext;
 
@@ -153,7 +152,7 @@ public class PropertiesDrivenInterfaceConfigFactory implements InterfaceConfigFa
                 for(String[] param : paramDest.getValue()){
                     String name = param[0];
                     String value = param[1];
-                    ricb.addMethodsExtraParam(name, value, dest);
+                    ricb.addMethodsExtraParam(name, value, dest.toString());
                 }
             }
 
@@ -174,7 +173,11 @@ public class PropertiesDrivenInterfaceConfigFactory implements InterfaceConfigFa
                             for(String[] param : paramDest.getValue()){
                                 String name = param[0];
                                 String value = param[1];
-                                mcb.addExtraParam(name, value, dest);
+                                mcb.startExtraParamConfig(name)
+                                        .setIgnoreNullOrEmptyValues(true)
+                                        .setDestination(dest)
+                                        .setDefaultValue(value)
+                                        .endParamConfig();
                             }
                         }
 
@@ -197,7 +200,7 @@ public class PropertiesDrivenInterfaceConfigFactory implements InterfaceConfigFa
                     Configs.injectAnnotatedConfig(pcb, method.getParameterTypes()[i]);
 
                     pcb.setName(getParamProp(serviceAlias, methAlias, i, "name"))
-                        .setDestination(getDestinationForType(getParamProp(serviceAlias, methAlias, i, "type")))
+                        .setDestination(getParamProp(serviceAlias, methAlias, i, "type"))
                         .setDefaultValue(getParamProp(serviceAlias, methAlias, i, "default"))
                         .setInjector(getParamProp(serviceAlias, methAlias, i, "injector"))
                         .setSerializer(getParamProp(serviceAlias, methAlias, i, "serializer"))
@@ -212,15 +215,6 @@ public class PropertiesDrivenInterfaceConfigFactory implements InterfaceConfigFa
         } catch (Exception e) {
             throw new ConfigFactoryException(e);
         }
-    }
-
-    private static Destination getDestinationForType(String type){
-        if("header".equals(type))
-            return Destination.HEADER;
-        else if("form".equals(type))
-            return Destination.BODY;
-        else
-            return Destination.URL;
     }
 
     private String getServiceGlobalProp(String prop) {
@@ -297,7 +291,7 @@ public class PropertiesDrivenInterfaceConfigFactory implements InterfaceConfigFa
             String paramName = split[split.length - 1];
             String type = split[split.length - 2];
 
-            Destination dest = getDestinationForType(type);
+            Destination dest = Destination.valueOf(type.toUpperCase());
             List<String[]> values = res.get(dest);
             if(values == null) {
                 res.put(dest, values = new ArrayList<String[]>());

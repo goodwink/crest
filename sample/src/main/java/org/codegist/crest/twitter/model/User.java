@@ -20,7 +20,7 @@
 
 package org.codegist.crest.twitter.model;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.codegist.common.lang.ToStringBuilder;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 /**
@@ -90,12 +90,6 @@ public class User {
     private boolean verified;
     @JsonProperty("status")
     private Status status;
-
-
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this);
-    }
-
 
     public boolean isContributorsEnabled() {
         return contributorsEnabled;
@@ -344,4 +338,44 @@ public class User {
     public void setStatus(Status status) {
         this.status = status;
     }
+
+
+
+
+    public String toString() {
+        return new ToStringBuilder(this)
+                .append("contributorsEnabled",contributorsEnabled)
+                .append("description",description)
+                .append("favouritesCount",favouritesCount)
+                .append("followRequestSent",followRequestSent)
+                .append("followersCount",followersCount)
+                .append("following",following)
+                .append("friendsCount",friendsCount)
+                .append("geoEnabled",geoEnabled)
+                .append("id",id)
+                .append("lang",lang)
+                .append("listedCount",listedCount)
+                .append("name",name)
+                .append("notifications",notifications)
+                .append("profileBackgroundColor",profileBackgroundColor)
+                .append("profileBackgroundImageUrl",profileBackgroundImageUrl)
+                .append("profileBackgroundTile",profileBackgroundTile)
+                .append("profileImageUrl",profileImageUrl)
+                .append("profileLinkColor",profileLinkColor)
+                .append("profileSidebarBorderColor",profileSidebarBorderColor)
+                .append("profileSidebarFillColor",profileSidebarFillColor)
+                .append("profileTextColor",profileTextColor)
+                .append("profileUseBackgroundImage",profileUseBackgroundImage)
+                .append("protect",protect)
+                .append("screenName",screenName)
+                .append("showAllInlineMedia",showAllInlineMedia)
+                .append("statusesCount",statusesCount)
+                .append("timeZone",timeZone)
+                .append("url",url)
+                .append("utcOffset",utcOffset)
+                .append("verified",verified)
+                .append("status",status)
+                .toString();
+    }
+
 }

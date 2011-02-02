@@ -27,6 +27,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.LinkedHashMap;
 
 import static org.junit.Assert.assertEquals;
 
@@ -60,17 +61,43 @@ public class HttpRequestTest {
         assertEquals(new URL("http://127.0.0.1:8080/test"), request.getUrl(false));
         assertEquals(("http://127.0.0.1:8080/test"), request.getUrlString(false));
     }
-    @Test
-    public void testHttpRequestEquals() throws URISyntaxException {
-        HttpRequest request1 = HttpRequestBuilderTest.getFull().build();
-        HttpRequest request2 = HttpRequestBuilderTest.getFull().build();
-        assertEquals(request1, request2);
+
+    private static final String PLACEHOLDERS_URI =  "http://127.0.0.1:8080/{p1}/{p2}/{p1}/test?p1=v1&q1={q1}&q={q1}-{q2}&q3={q3}";
+    @Test(expected = IllegalStateException.class)
+    public void testHttpRequestWithUnresolvedQueryPlaceholders() throws URISyntaxException, MalformedURLException, UnsupportedEncodingException {
+        new HttpRequest.Builder(PLACEHOLDERS_URI)
+                .addPathParam("p1", "pv1")
+                .addPathParam("p2", "pv2")
+                .build();
+    }
+    @Test(expected = IllegalStateException.class)
+    public void testHttpRequestWithUnresolvedPathPlaceholders() throws URISyntaxException, MalformedURLException, UnsupportedEncodingException {
+        new HttpRequest.Builder(PLACEHOLDERS_URI)
+                .addQueryParam("q1", "qv1")
+                .addQueryParam("q", "qv2")
+                .addQueryParam("q3", "qv3")
+                .build();
     }
     @Test
-    public void testHttpRequestHashCode() throws URISyntaxException {
-        HttpRequest request1 = HttpRequestBuilderTest.getFull().build();
-        HttpRequest request2 = HttpRequestBuilderTest.getFull().build();
-        assertEquals(request1.hashCode(), request2.hashCode());
+    public void testHttpRequestWithPlaceholders() throws URISyntaxException, MalformedURLException, UnsupportedEncodingException {
+        HttpRequest req = new HttpRequest.Builder(PLACEHOLDERS_URI)
+                .addPathParam("p1", "pv1")
+                .addPathParam("p2", "pv2")
+                .addQueryParam("q1", "qv1")
+                .addQueryParam("q2", "qv2")
+                .addQueryParam("q3", "")
+                .addQueryParam("q4", "qv4")
+                .build();
+        assertEquals(new URL("http://127.0.0.1:8080/pv1/pv2/pv1/test"), req.getUrl(false));
+        assertEquals(new URI("http://127.0.0.1:8080/pv1/pv2/pv1/test"), req.getUri());
+        assertEquals(new URL("http://127.0.0.1:8080/pv1/pv2/pv1/test?p1=v1&q=qv1-qv2&q3=&q4=qv4"), req.getUrl(true));
+        assertEquals(new LinkedHashMap<String,String>(){{
+            put("p1","v1");
+            put("q","qv1-qv2");
+            put("q3","");
+            put("q4","qv4");
+        }}, req.getQueryParams());
+
     }
 
 }

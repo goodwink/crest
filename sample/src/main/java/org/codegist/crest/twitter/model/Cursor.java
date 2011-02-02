@@ -20,7 +20,7 @@
 
 package org.codegist.crest.twitter.model;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.codegist.common.lang.ToStringBuilder;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 /**
@@ -69,7 +69,11 @@ public abstract class Cursor<T> {
     public abstract void setPayload(T payload);
 
     public String toString() {
-        return ToStringBuilder.reflectionToString(this);
+        return new ToStringBuilder(this)
+                .append("nextCursor",nextCursor)
+                .append("previousCursor",previousCursor)
+                .append("payload",payload)
+                .toString();
     }
 }
 

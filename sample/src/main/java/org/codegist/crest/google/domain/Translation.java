@@ -20,7 +20,7 @@
 
 package org.codegist.crest.google.domain;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.codegist.common.lang.ToStringBuilder;
 import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonProperty;
 
@@ -40,6 +40,8 @@ public class Translation {
     }
 
     public String toString() {
-        return ToStringBuilder.reflectionToString(this);
+        return new ToStringBuilder(this)
+                .append("text",text)
+                .toString();
     }
 }

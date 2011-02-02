@@ -32,6 +32,7 @@ import org.codegist.common.marshal.Unmarshaller;
 import org.codegist.common.reflect.CglibProxyFactory;
 import org.codegist.common.reflect.JdkProxyFactory;
 import org.codegist.common.reflect.ProxyFactory;
+import org.codegist.crest.annotate.EndPoint;
 import org.codegist.crest.config.*;
 import org.codegist.crest.oauth.OAuthenticator;
 import org.codegist.crest.oauth.Token;
@@ -68,6 +69,23 @@ public class CRestBuilderTest {
         assertContext(context);
     }
 
+
+    @Test
+    public void testPlaceHolders() throws ConfigFactoryException {
+        CRestContext cRestContext = builder
+                .setConfigPlaceholder("server", "120")
+                .setConfigPlaceholder("port", "8081")
+                .buildContext();
+        
+        InterfaceConfig cfg = cRestContext.getConfigFactory().newConfig(In.class, cRestContext);
+        assertEquals("http://120:8081", cfg.getEndPoint());
+
+    }
+
+    @EndPoint("http://{server}:{port}")
+    static interface In {
+
+    }
 
     @Test
     public void testProperties() {
@@ -378,6 +396,7 @@ public class CRestBuilderTest {
             put(ProxyFactory.class.getName(), context.getProxyFactory());
             put(InterfaceConfigFactory.class.getName(), context.getConfigFactory());
             put(CRestProperty.SERIALIZER_CUSTOM_SERIALIZER_MAP, Collections.emptyMap());
+            put(CRestProperty.CONFIG_PLACEHOLDERS_MAP, Collections.emptyMap());
             put(AuthentificationManager.class.getName(), null);
             put(Marshaller.class.getName(), null);
             put(Unmarshaller.class.getName(), null);

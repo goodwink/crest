@@ -20,6 +20,7 @@
 
 package org.codegist.crest.google;
 
+import org.codegist.common.log.Logger;
 import org.codegist.crest.CRest;
 import org.codegist.crest.CRestBuilder;
 import org.codegist.crest.google.domain.Address;
@@ -32,24 +33,35 @@ import org.codegist.crest.google.service.SearchService;
 /**
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
-public class GoogleServicesSample {
+public class GoogleServicesSample implements Runnable {
 
-    public static void main(String[] args) {
+    private static final Logger LOG = Logger.getLogger(GoogleServicesSample.class);
+
+    public GoogleServicesSample() {
+    }
+
+    public void run() {
         /* Get the factory */
-        CRest crest = new CRestBuilder().expectsJson().build();
+        CRest crest = new CRestBuilder()
+                .expectsJson()
+                .build();
 
         /* Build services instances */
         SearchService searchService = crest.build(SearchService.class);
         LanguageService languageService = crest.build(LanguageService.class);
 
         /* Use them! */
-        SearchResult<Address> searchResult = searchService.search("this is a google search");
         LanguageGuess searchLanguageGuess = languageService.detectLanguage("Guess it!");
         Translation searchTranslation = languageService.translate("Translate me if you can!", "en", "fr");
+        SearchResult<Address> searchResult = searchService.search("this is a google search");
 
-        System.out.println("search=" + searchResult);
-        System.out.println("detectLanguage=" + searchLanguageGuess);
-        System.out.println("translate=" + searchTranslation);
+        LOG.info("search=" + searchResult);
+        LOG.info("detectLanguage=" + searchLanguageGuess);
+        LOG.info("translate=" + searchTranslation);
+    }
+
+    public static void main(String[] args) {
+        new GoogleServicesSample().run();
     }
 
 

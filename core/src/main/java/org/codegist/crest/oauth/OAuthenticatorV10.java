@@ -137,7 +137,7 @@ public class OAuthenticatorV10 implements OAuthenticator {
             if("GET".equals(requestTokenMeth)) {
                 request.addQueryParams(toParamMap(oauthParams));
             }else{
-                request.addBodyParams((Map)toParamMap(oauthParams));
+                request.addFormParams((Map)toParamMap(oauthParams));
             }
             refreshTokenResponse = restService.exec(request.build());
             Map<String,String> result = Urls.parseQueryString(refreshTokenResponse.asString());
@@ -193,7 +193,7 @@ public class OAuthenticatorV10 implements OAuthenticator {
             if("GET".equals(meth)) {
                 request.addQueryParams(toParamMap(oauthParams));
             }else{
-                request.addBodyParams((Map)toParamMap(oauthParams));
+                request.addFormParams((Map)toParamMap(oauthParams));
             }
             refreshTokenResponse = restService.exec(request.build());
             Map<String,String> result = Urls.parseQueryString(refreshTokenResponse.asString());
@@ -237,7 +237,7 @@ public class OAuthenticatorV10 implements OAuthenticator {
         oauthParams.add(new Pair<String,String>("oauth_signature", signature));
 
         if (toHeaders) {
-            request.addHeader("Authorization", generateOAuthHeader(oauthParams));
+            request.addHeaderParam("Authorization", generateOAuthHeader(oauthParams));
         } else {
             for (Pair<String,String> p : oauthParams) {
                 request.addQueryParam(p.getName(), p.getValue());
@@ -265,11 +265,11 @@ public class OAuthenticatorV10 implements OAuthenticator {
 
     private static List<Pair<String,String>> extractOAuthParams(HttpRequest.Builder builder) {
         List<Pair<String,String>> params = new ArrayList<Pair<String,String>>();
-        if (builder.getQueryString() != null) {
-            params.addAll(toParamSet(builder.getQueryString()));
+        if (builder.getQueryParams() != null) {
+            params.addAll(toParamSet(builder.getQueryParams()));
         }
-        if (builder.getBodyParams() != null)
-            for (Map.Entry<String, Object> entry : builder.getBodyParams().entrySet()) {
+        if (builder.getFormParams() != null)
+            for (Map.Entry<String, Object> entry : builder.getFormParams().entrySet()) {
                 if (Params.isForUpload(entry.getValue())) continue;
                 params.add(new Pair<String,String>(entry.getKey(), entry.getValue().toString()));
             }

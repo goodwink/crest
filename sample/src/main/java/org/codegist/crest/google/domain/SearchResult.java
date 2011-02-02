@@ -20,7 +20,7 @@
 
 package org.codegist.crest.google.domain;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.codegist.common.lang.ToStringBuilder;
 import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonProperty;
 
@@ -49,7 +49,10 @@ public class SearchResult<T> {
     }
 
     public String toString() {
-        return ToStringBuilder.reflectionToString(this);
+        return new ToStringBuilder(this)
+                .append("cursor",cursor)
+                .append("results",results)
+                .toString();
     }
 
     public static class Cursor {
@@ -87,7 +90,12 @@ public class SearchResult<T> {
         }
 
         public String toString() {
-            return ToStringBuilder.reflectionToString(this);
+            return new ToStringBuilder(this)
+                .append("pages",pages)
+                .append("estimatedResultCount",estimatedResultCount)
+                .append("currentPageIndex",currentPageIndex)
+                .append("moreResultsUrl",moreResultsUrl)
+                .toString();
         }
 
         public static class Page {
@@ -111,7 +119,10 @@ public class SearchResult<T> {
             }
 
             public String toString() {
-                return ToStringBuilder.reflectionToString(this);
+                return new ToStringBuilder(this)
+                .append("start",start)
+                .append("label",label)
+                .toString();
             }
         }
     }

@@ -20,6 +20,7 @@
 
 package org.codegist.crest.flickr;
 
+import org.codegist.common.log.Logger;
 import org.codegist.crest.CRest;
 import org.codegist.crest.CRestBuilder;
 import org.codegist.crest.flickr.interceptor.FlickrAuthInterceptor;
@@ -31,15 +32,24 @@ import org.codegist.crest.flickr.service.Flickr;
 /**
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
-public class FlickrSample {
+public class FlickrSample implements Runnable {
 
-    public static void main(String[] args) throws InterruptedException {
-        String apiKey = args[0];
-        String appSecret = args[1];
-        String authToken = args[2];
+    private static final Logger LOG = Logger.getLogger(FlickrSample.class);
 
+    private final String apiKey;
+    private final String appSecret;
+    private final String authToken;
+
+    public FlickrSample(String apiKey, String appSecret, String authToken) {
+        this.apiKey = apiKey;
+        this.appSecret = appSecret;
+        this.authToken = authToken;
+    }
+
+    public void run() {
         /* Get the factory */
         CRest crest = new CRestBuilder()
+                .useHttpClientRestService()
                 .expectsXml(FlickrModelFactory.class)
                 .setDateSerializerFormat("Millis")
                 .setListSerializerSeparator(" ")
@@ -58,10 +68,14 @@ public class FlickrSample {
         Uploader upload = flickr.checkUploads(ticketId);
         Gallery gallery = flickr.newGallery("My Gallery Title", "My Gallery Desc", photoId);
 
-        System.out.println("photoId=" + photoId);
-        System.out.println("ticketId=" + ticketId);
-        System.out.println("upload=" + upload);
-        System.out.println("gallery=" + gallery);
+        LOG.info("photoId=" + photoId);
+        LOG.info("ticketId=" + ticketId);
+        LOG.info("upload=" + upload);
+        LOG.info("gallery=" + gallery);
+    }
+
+    public static void main(String[] args) {
+        new FlickrSample(args[0],args[1],args[2]).run();
     }
 
 }

@@ -20,7 +20,7 @@
 
 package org.codegist.crest.flickr.model;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.codegist.common.lang.ToStringBuilder;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -48,6 +48,9 @@ public class Gallery implements Payload {
 
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this);
+        return new ToStringBuilder(this)
+                .append("id", id)
+                .append("url", url)
+                .toString();
     }
 }

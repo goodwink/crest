@@ -294,9 +294,9 @@ public abstract class RestServiceContractTest {
             String tag = "HttpMethod failed : " + meth;
             HttpResponse res = getRestService().exec(new HttpRequest.Builder(baseUrl + "/test/simple")
                     .using(meth)
-                    .addBodyParams(SimpleMethodsServlet.EXPECTED_SIMPLE_BODY)
+                    .addFormParams(SimpleMethodsServlet.EXPECTED_SIMPLE_BODY)
                     .addQueryParams(SimpleMethodsServlet.EXPECTED_SIMPLE_QUERY)
-                    .addHeaders(SimpleMethodsServlet.EXPECTED_SIMPLE_HEADERS)
+                    .addHeaderParams(SimpleMethodsServlet.EXPECTED_SIMPLE_HEADERS)
                     .build());
             assertNotNull(tag, res);
             assertEquals(tag, 200, res.getStatusCode());
@@ -312,7 +312,7 @@ public abstract class RestServiceContractTest {
         for (String m : meths) {
             HttpResponse res = getRestService().exec(new HttpRequest.Builder(baseUrl + "/test/upload/file")
                     .using(m)
-                    .addBodyParams(UploadFileServlet.EXPECTED_FILES)
+                    .addFormParams(UploadFileServlet.EXPECTED_FILES)
                     .build());
             assertEquals(200, res.getStatusCode());
             assertEquals("OK", res.asString());
@@ -326,7 +326,7 @@ public abstract class RestServiceContractTest {
             HttpRequest.Builder b = new HttpRequest.Builder(baseUrl + "/test/upload/inputstream").using(m);
 
             for (Map.Entry<String, Object> e : UploadInputStreamServlet.EXPECTED_INPUTSTREAM.entrySet()) {
-                b.addBodyParam(e.getKey(), RestServiceContractTest.class.getResourceAsStream(e.getValue().toString()));
+                b.addFormParam(e.getKey(), RestServiceContractTest.class.getResourceAsStream(e.getValue().toString()));
             }
 
             HttpResponse res = getRestService().exec(b.build());
@@ -342,11 +342,11 @@ public abstract class RestServiceContractTest {
             HttpRequest.Builder b = new HttpRequest.Builder(baseUrl + "/test/upload/mixed")
                     .using(m)
                     .addQueryParams(SimpleMethodsServlet.EXPECTED_SIMPLE_QUERY)
-                    .addHeaders(SimpleMethodsServlet.EXPECTED_SIMPLE_HEADERS)
-                    .addBodyParams(SimpleMethodsServlet.EXPECTED_SIMPLE_BODY)
-                    .addBodyParams(UploadFileServlet.EXPECTED_FILES);
+                    .addHeaderParams(SimpleMethodsServlet.EXPECTED_SIMPLE_HEADERS)
+                    .addFormParams(SimpleMethodsServlet.EXPECTED_SIMPLE_BODY)
+                    .addFormParams(UploadFileServlet.EXPECTED_FILES);
             for (Map.Entry<String, Object> e : UploadInputStreamServlet.EXPECTED_INPUTSTREAM.entrySet()) {
-                b.addBodyParam(e.getKey(), RestServiceContractTest.class.getResourceAsStream(e.getValue().toString()));
+                b.addFormParam(e.getKey(), RestServiceContractTest.class.getResourceAsStream(e.getValue().toString()));
             }
             HttpResponse res = getRestService().exec(b.build());
             assertEquals(200, res.getStatusCode());

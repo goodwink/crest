@@ -20,11 +20,11 @@
 
 package org.codegist.crest;
 
-import org.codegist.common.collect.Maps;
 import org.codegist.common.lang.EqualsBuilder;
 import org.codegist.common.lang.HashCodeBuilder;
 import org.codegist.common.lang.ToStringBuilder;
 import org.codegist.common.net.Urls;
+import org.codegist.crest.config.Destination;
 
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
@@ -32,10 +32,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Pattern;
 
 /**
@@ -47,19 +44,19 @@ public class HttpRequest {
     private final Long socketTimeout;
     private final Long connectionTimeout;
     private final String encoding;
-    private final Map<String, String> headers;
+    private final Map<String, String> headerParams;
     private final Map<String, String> queryParams;
-    private final Map<String, Object> bodyParams;
+    private final Map<String, Object> formParams;
 
-    private HttpRequest(String meth, URI uri, Long socketTimeout, Long connectionTimeout, String encoding, Map<String, String> headers, Map<String, String> queryParams, Map<String, Object> bodyParams) {
+    private HttpRequest(String meth, URI uri, Long socketTimeout, Long connectionTimeout, String encoding, Map<String, String> headerParams, Map<String, String> queryParams, Map<String, Object> formParams) {
         this.meth = meth;
         this.uri = uri;
         this.socketTimeout = socketTimeout;
         this.connectionTimeout = connectionTimeout;
         this.encoding = encoding;
-        this.headers = Collections.unmodifiableMap(headers);
+        this.headerParams = Collections.unmodifiableMap(headerParams);
         this.queryParams = Collections.unmodifiableMap(queryParams);
-        this.bodyParams = Collections.unmodifiableMap(bodyParams);
+        this.formParams = Collections.unmodifiableMap(formParams);
     }
 
     public String getMeth() {
@@ -99,16 +96,16 @@ public class HttpRequest {
         }
     }
 
-    public Map<String, String> getHeaders() {
-        return headers;
+    public Map<String, String> getHeaderParams() {
+        return headerParams;
     }
 
     public Map<String, String> getQueryParams() {
         return queryParams;
     }
 
-    public Map<String, Object> getBodyParams() {
-        return bodyParams;
+    public Map<String, Object> getFormParams() {
+        return formParams;
     }
 
     @Override
@@ -117,10 +114,10 @@ public class HttpRequest {
         if (o == null || getClass() != o.getClass()) return false;
         HttpRequest that = (HttpRequest) o;
         return new EqualsBuilder()
-                .append(bodyParams, that.bodyParams)
+                .append(formParams, that.formParams)
                 .append(connectionTimeout, that.connectionTimeout)
                 .append(encoding, that.encoding)
-                .append(headers, that.headers)
+                .append(headerParams, that.headerParams)
                 .append(meth, that.meth)
                 .append(queryParams, that.queryParams)
                 .append(socketTimeout, that.socketTimeout)
@@ -135,9 +132,9 @@ public class HttpRequest {
                 .append(socketTimeout)
                 .append(connectionTimeout)
                 .append(encoding)
-                .append(headers)
+                .append(headerParams)
                 .append(queryParams)
-                .append(bodyParams)
+                .append(formParams)
                 .hashCode();
     }
 
@@ -148,9 +145,9 @@ public class HttpRequest {
                 .append("socketTimeout", socketTimeout)
                 .append("connectionTimeout", connectionTimeout)
                 .append("encoding", encoding)
-                .append("headers", headers)
+                .append("headerParams", headerParams)
                 .append("queryParams", queryParams)
-                .append("bodyParams", bodyParams)
+                .append("formParams", formParams)
                 .toString();
     }
 
@@ -164,17 +161,20 @@ public class HttpRequest {
      * <p>Will create an GET utf-8 HttpRequest object.
      */
     public static class Builder {
+        private static final Pattern PARAM_CONTENT_PATTERN = Pattern.compile("[^\\s\\}]+");
+        private static final Pattern SINGLE_PLACEHOLDER_PATTERN = Pattern.compile("[\\{\\(](" + PARAM_CONTENT_PATTERN.pattern() + ")[\\}\\)]");
+        private static final Pattern CONTAINS_PLACEHOLDER_PATTERN = Pattern.compile(".*" + SINGLE_PLACEHOLDER_PATTERN + ".*");
         static final String ENCODING = "utf-8";
         static final String METH = "GET";
         private String meth = METH;
         private String baseUri;
-        private Map<String, String> headers;
         private Long socketTimeout = null;
         private Long connectionTimeout = null;
         private String encoding = ENCODING;
-        private Map<String, String> queryString;
-        private Map<String, Object> bodyParams;
-        private Map<String, List<String>> originalQSReversed;
+        private final LinkedHashMap<String, String> headerParams = new LinkedHashMap<String, String>();
+        private final LinkedHashMap<String, String> queryParams = new LinkedHashMap<String, String>();
+        private final LinkedHashMap<String, String> pathParams = new LinkedHashMap<String, String>();
+        private final LinkedHashMap<String, Object> formParams = new LinkedHashMap<String, Object>();
 
         /**
          * Creates a GET request pointing to the given url
@@ -202,18 +202,70 @@ public class HttpRequest {
         public HttpRequest build() throws URISyntaxException {
             return new HttpRequest(
                     meth,
-                    new URI(baseUri),
+                    new URI(buildBaseUriString()),
                     socketTimeout,
                     connectionTimeout,
                     encoding,
-                    headers != null ? headers : new LinkedHashMap<String, String>(),
-                    queryString != null ? queryString : new LinkedHashMap<String, String>(),
-                    bodyParams != null ? bodyParams : new LinkedHashMap<String, Object>()
+                    headerParams != null ? headerParams : new LinkedHashMap<String, String>(),
+                    buildQueryParams(),
+                    formParams != null ? formParams : new LinkedHashMap<String, Object>()
             );
         }
-                        
-    
-        private static final Pattern FIX_URL_PATTERN = Pattern.compile("\\{(\\d+)\\}");
+
+        private static boolean hasUnresolvedPlaceholders(String value){
+            return CONTAINS_PLACEHOLDER_PATTERN.matcher(value).matches();
+        }
+
+        private String buildBaseUriString(){
+            String baseUri = this.baseUri;
+            for(Map.Entry<String, String> param : pathParams.entrySet()){
+                String name = param.getKey();
+                String value = param.getValue();
+                baseUri = baseUri.replaceAll("\\(" + Pattern.quote(name) + "\\)", value);
+            }
+            if(hasUnresolvedPlaceholders(baseUri)) {
+                throw new IllegalStateException("Not all path parameters have been provided for base uri '" + this.baseUri + "'! (current built baseUri='" + baseUri + "')");
+            }
+            return baseUri;
+        }
+
+        private Map<String,String> buildQueryParams(){
+            Set<String> placeholders = new HashSet<String>();
+            Map<String,String> queryParams = new LinkedHashMap<String, String>();
+            for(Map.Entry<String, String> queryStringEntry : this.queryParams.entrySet()){
+                String name = queryStringEntry.getKey();
+                String value = queryStringEntry.getValue();
+                if(hasUnresolvedPlaceholders(value)) {
+                    for(Map.Entry<String, String> queryStringEntry2 : this.queryParams.entrySet()){
+                        if(!hasUnresolvedPlaceholders(value)) {
+                            break;
+                        }
+                        String potentialPlaceholderName = queryStringEntry2.getKey();
+                        String potentialPlaceholderValue = queryStringEntry2.getValue();
+                        String newValue = value.replaceAll("\\(" + Pattern.quote(potentialPlaceholderName) + "\\)", potentialPlaceholderValue);
+                        if(!value.equals(newValue)) {
+                            placeholders.add(potentialPlaceholderName);
+                        }
+                        value = newValue;
+                    }
+                    if(hasUnresolvedPlaceholders(value)) {
+                        throw new IllegalStateException("QueryString parameter '" + name + "'' value still contain unresolved placeholder! (value='" + value + "')");
+                    }else{
+                        queryParams.put(name, value);
+                    }
+
+                }else{
+                    // no placeholder found, adding it.
+                    // NB:Might be removed later on if it is actualy a placeholder value
+                    queryParams.put(name, value);
+                }
+            }
+            for(String placeHolder : placeholders){
+                queryParams.remove(placeHolder);
+            }
+            return queryParams;
+        }
+
 
         /**
          * Sets the url the request will point to using the default encoding (utf-8)
@@ -231,23 +283,20 @@ public class HttpRequest {
         /**
          * Sets the url the request will point to.
          * <p>Can contains a predefined query string
-         * <p>This value can contain placeholders that points to method arguments. eg http://localhost:8080/my-path/{2}/{0}/{2}.json?my-param={1}.
-         * <p>Any placeholder can then be replaced by a value using {@link Builder#replacePlaceholderInUri(int, String)}
+         * <p>This value can contain placeholders that points to method arguments. eg http://localhost:8080/my-path/{my-param-name}/{2}/{2}.json?my-param={1}.
          *
          * @param uriString Url the request will point to
          * @param encoding  Request encoding
          * @return current builder
          * @throws URISyntaxException If the uriString is not a valid URL
-         * @see Builder#replacePlaceholderInUri(int, String)
          */
         public Builder pointsTo(String uriString, String encoding) throws URISyntaxException {
-            uriString = FIX_URL_PATTERN.matcher(uriString).replaceAll("\\($1\\)");
+            uriString = SINGLE_PLACEHOLDER_PATTERN.matcher(uriString).replaceAll("\\($1\\)");
             URI uri = new URI(uriString);
             String baseUri = uri.getScheme() + "://" + uri.getAuthority() + uri.getPath();
             this.encoding = encoding;
-            this.queryString = uri.getRawQuery() != null ? Urls.parseQueryString(uri.getRawQuery(), encoding) : new LinkedHashMap<String, String>();
-            this.originalQSReversed = Maps.reverse(queryString);
             this.baseUri = baseUri;
+            this.setQueryParams(uri.getRawQuery() != null ? Urls.parseQueryString(uri.getRawQuery(), encoding) : new LinkedHashMap<String, String>());
             return this;
         }
 
@@ -259,8 +308,11 @@ public class HttpRequest {
          * @throws UnsupportedEncodingException not supported parameter encoding
          */
         public String getUrlString(boolean includeQueryString) throws UnsupportedEncodingException {
-            if (!includeQueryString || queryString.isEmpty()) return baseUri;
-            return baseUri + "?" + Urls.buildQueryString(queryString, encoding);
+            String uri = buildBaseUriString();
+            if (!includeQueryString) return uri;
+            Map<String,String> query = buildQueryParams();
+            if(query.isEmpty()) return uri;
+            return uri + "?" + Urls.buildQueryString(query, encoding);
         }
 
         /**
@@ -273,61 +325,6 @@ public class HttpRequest {
          */
         public URL getUrl(boolean includeQueryString) throws MalformedURLException, UnsupportedEncodingException {
             return new URL(getUrlString(includeQueryString));
-        }
-
-        /**
-         * Returns the query string parameter name list by placeholder index.
-         *
-         * @param index the index of the place holder to retrieve the parameter names from
-         * @return parameter name list of the given placeholder index
-         * @see Builder#pointsTo(String, String)
-         * @see Builder#replacePlaceholderInUri(int, String)
-         */
-        public List<String> getQueryParamNameByPlaceholderIndex(int index) {
-            return originalQSReversed.get("(" + index + ")");
-        }
-
-        /**
-         * Replace all url placeholder at the given index with the given value.
-         * <p>NB: any placeholder that belong to the query string will be URL-encoded. Other placeholder will be set as given.
-         * <p>Given an url as http://localhost:8080/my-path/{2}/{0}/{2}.json?my-param={1}.
-         * <p/>
-         * <p>Calling this method with index=1,value="hello world" will gives :
-         * <p>Given an url as http://localhost:8080/my-path/{2}/{0}/{2}.json?my-param=hello%20world.
-         * <p/>
-         * <p>Calling this method with index=0,value="hello world" will gives :
-         * <p>Given an url as http://localhost:8080/my-path/{2}/hello world/{2}.json?my-param={1}.
-         * <p/>
-         * <p>Calling this method with index=2,value="hi/there" will gives :
-         * <p>Given an url as http://localhost:8080/my-path/hi/there/{0}/hi/there.json?my-param={1}.
-         * <p/>
-         * <p>NB : You can put placeholder inside a predefined query string parameter as well, eg :
-         * <p>http://localhost:8080/my-path.json?my-preformatted-param={1}%20{0}%20with%20formatting%20{3}.
-         * <p>When doing so, the preformatted parameter should already by pre-encoded, and the merged values won't be encoded.
-         *
-         * @param index The placeholder index
-         * @param value The value to merge
-         * @return current builder
-         */
-        public Builder replacePlaceholderInUri(int index, String value) {
-            List<String> paramNames = getQueryParamNameByPlaceholderIndex(index);
-            if (paramNames != null && !paramNames.isEmpty()) {
-                for (String param : paramNames) {
-                    addQueryParam(param, value);// Can safely add it
-                }
-            }
-            // params can either belongs to uri path (eg : http://localhost:8080/my/dynamic/path/{1}/{0}/...)
-            // don't add it to the requestBuilder yet, baseUri string map can still contain placeholders
-            Pattern p = Pattern.compile("\\(" + index + "\\)");
-            baseUri = p.matcher(baseUri).replaceAll(value);
-            Map<String, String> copy = new LinkedHashMap<String, String>();
-            for (Map.Entry<String, String> param : queryString.entrySet()) {
-                String key = p.matcher(param.getKey()).replaceAll(value);
-                String val = p.matcher(param.getValue()).replaceAll(value);
-                copy.put(key, val);
-            }
-            queryString = copy;
-            return this;
         }
 
 
@@ -367,53 +364,89 @@ public class HttpRequest {
         }
 
         /**
-         * Adds a request header to the resulting request's headers
+         * Adds a request header to the resulting request's headerParams
          *
-         * @param key   Header name
+         * @param name   Header name
          * @param value Header value
          * @return current builder
          */
-        public Builder addHeader(String key, Object value) {
-            if (headers == null) headers = new LinkedHashMap<String, String>();
-            headers.put(key, value != null ? value.toString() : null);
+        public Builder addHeaderParam(String name, Object value) {
+            headerParams.put(name, value != null ? value.toString() : null);
             return this;
         }
 
         /**
-         * Sets the resulting request's headers to the given map
+         * Sets the resulting request's headerParams to the given map
          *
-         * @param headers request headers map
+         * @param headers request headerParams map
          * @return current builder
          */
-        public Builder setHeaders(Map<String, String> headers) {
-            this.headers = headers;
+        public Builder setHeaderParams(Map<String, String> headers) {
+            this.headerParams.clear();
+            return addHeaderParams(headers);
+        }
+
+        /**
+         * Adds the the given map to the resulting request's headerParams
+         *
+         * @param headers request headerParams map
+         * @return current builder
+         */
+        public Builder addHeaderParams(Map<String, String> headers) {
+            this.headerParams.putAll(headers);
             return this;
         }
 
         /**
-         * Adds the the given map to the resulting request's headers
+         * Adds a parameter to the resulting request's path string
          *
-         * @param headers request headers map
+         * @param name   path parameter name
+         * @param value path parameter value
          * @return current builder
          */
-        public Builder addHeaders(Map<String, String> headers) {
-            if (this.headers == null)
-                this.headers = new LinkedHashMap<String, String>(headers);
-            else
-                this.headers.putAll(headers);
+        public Builder addPathParam(String name, String value) {
+            this.pathParams.put(name,value);
             return this;
         }
 
         /**
-         * Adds a parameter to the resulting request's query string
+         * Sets the resulting request's path parameters to the given map
          *
-         * @param key   query string parameter name
-         * @param value query string parameter value
+         * @param params path parameters map
          * @return current builder
          */
-        public Builder addQueryParam(String key, String value) {
-            if (queryString == null) queryString = new LinkedHashMap<String, String>();
-            queryString.put(key, value);
+        public Builder setPathParams(Map<String, String> params) {
+            this.pathParams.clear();
+            return addPathParams(params);
+        }
+
+        /**
+         * Adds the given map to the resulting request's path parameters
+         *
+         * @param params path parameters map
+         * @return current builder
+         */
+        public Builder addPathParams(Map<String, String> params) {
+            this.pathParams.putAll(params);
+            return this;
+        }
+
+        /**
+         * Adds a parameter to the resulting request's query string.
+         * If this parameter name correspond to a placeholder name (cotnained in a query string parameter value), then it will replace the placeholder value without adding a new query string parameter
+         * Placeholder in query string can be set as follow:
+         * <p>eg: ?p={0}-formatted-param-{name}
+         * <p>Can be set with:
+         * <code><pre>
+         * builder.setQueryParamPlaceholder("0", "myValue")
+         *        .setQueryParamPlaceholder("name", "mySecondValue")
+         * </pre></code>
+         * @param name query string parameter name or placeholder name
+         * @param value query string parameter value or placeholder name
+         * @return current builder
+         */
+        public Builder addQueryParam(String name, String value) {
+            queryParams.put(name, value);
             return this;
         }
 
@@ -423,9 +456,9 @@ public class HttpRequest {
          * @param params query string parameters map
          * @return current builder
          */
-        public Builder setQueryString(Map<String, String> params) {
-            this.queryString = params;
-            return this;
+        public Builder setQueryParams(Map<String, String> params) {
+            this.queryParams.clear();
+            return addQueryParams(params);
         }
 
         /**
@@ -435,23 +468,19 @@ public class HttpRequest {
          * @return current builder
          */
         public Builder addQueryParams(Map<String, String> params) {
-            if (this.queryString == null)
-                this.queryString = new LinkedHashMap<String, String>(params);
-            else
-                this.queryString.putAll(params);
+            this.queryParams.putAll(params);
             return this;
         }
 
         /**
          * Adds a body parameter to the resulting request's body parameters
          *
-         * @param key   query string parameter name
+         * @param name   query string parameter name
          * @param value query string parameter value
          * @return current builder
          */
-        public Builder addBodyParam(String key, Object value) {
-            if (bodyParams == null) bodyParams = new LinkedHashMap<String, Object>();
-            bodyParams.put(key, value);
+        public Builder addFormParam(String name, Object value) {
+            formParams.put(name, value);
             return this;
         }
 
@@ -461,9 +490,9 @@ public class HttpRequest {
          * @param params query string parameters map
          * @return current builder
          */
-        public Builder setBodyParams(Map<String, Object> params) {
-            this.bodyParams = params;
-            return this;
+        public Builder setFormParams(Map<String, Object> params) {
+            this.formParams.clear();
+            return addFormParams(params);
         }
 
         /**
@@ -472,20 +501,25 @@ public class HttpRequest {
          * @param params query string parameters map
          * @return current builder
          */
-        public Builder addBodyParams(Map<String, Object> params) {
-            if (this.bodyParams == null)
-                this.bodyParams = new LinkedHashMap<String, Object>(params);
-            else
-                this.bodyParams.putAll(params);
+        public Builder addFormParams(Map<String, Object> params) {
+            this.formParams.putAll(params);
             return this;
         }
 
-        public Map<String, Object> getBodyParams() {
-            return bodyParams;
-        }
-
-        public Map<String, String> getQueryString() {
-            return queryString;
+        /**
+         * Adds a parameter to the given destination in the final http request
+         * @param name name of the parameter
+         * @param value value of the parameter
+         * @return current builder
+         */
+        public Builder addParam(String name, Object value, Destination dest) {
+            switch(dest){
+                case FORM: return addFormParam(name, value);
+                case PATH: return addPathParam(name, value.toString());
+                case QUERY: return addQueryParam(name, value.toString());
+                case HEADER: return addHeaderParam(name, value.toString());
+                default: throw new IllegalStateException("shouldn't be here!");
+            }
         }
 
         public String getMeth() {
@@ -493,11 +527,23 @@ public class HttpRequest {
         }
 
         public String getBaseUri() {
-            return baseUri;
+            return buildBaseUriString();
         }
 
-        public Map<String, String> getHeaders() {
-            return headers;
+        public Map<String, String> getHeaderParams() {
+            return headerParams;
+        }
+
+        public Map<String, Object> getFormParams() {
+            return formParams;
+        }
+
+        public Map<String, String> getQueryParams() {
+            return queryParams;
+        }
+
+        public Map<String, String> getPathParams() {
+            return pathParams;
         }
 
         public Long getSocketTimeout() {

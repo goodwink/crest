@@ -20,6 +20,7 @@
 
 package org.codegist.crest.twitter;
 
+import org.codegist.common.log.Logger;
 import org.codegist.crest.CRest;
 import org.codegist.crest.CRestBuilder;
 import org.codegist.crest.twitter.model.Message;
@@ -29,21 +30,29 @@ import org.codegist.crest.twitter.service.DirectMessageService;
 import org.codegist.crest.twitter.service.StatusService;
 import org.codegist.crest.twitter.service.UserService;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
 
 /**
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
-public class TwitterSample {
+public class TwitterSample implements Runnable {
+    
+    private static final Logger LOG = Logger.getLogger(TwitterSample.class);
 
-    public static void main(String[] args) throws IOException {
-        String consumerKey = args[0];
-        String consumerSecret = args[1];
-        String accessToken = args[2];
-        String accessTokenSecret = args[3];
+    private final String consumerKey;
+    private final String consumerSecret;
+    private final String accessToken;
+    private final String accessTokenSecret;
 
+    public TwitterSample(String consumerKey, String consumerSecret, String accessToken, String accessTokenSecret) {
+        this.consumerKey = consumerKey;
+        this.consumerSecret = consumerSecret;
+        this.accessToken = accessToken;
+        this.accessTokenSecret = accessTokenSecret;
+    }
+
+    public void run() {
         /* Get the factory */
         CRest crest = new CRestBuilder()
                 .expectsJson()
@@ -60,8 +69,12 @@ public class TwitterSample {
         User[] users = userService.search("username");
         Message[] messages = directMessageService.getReceived(10, 1);
 
-        System.out.println("status=" + status);
-        System.out.println("users=" + Arrays.toString(users));
-        System.out.println("messages=" + Arrays.toString(messages));
+        LOG.info("status=" + status);
+        LOG.info("users=" + Arrays.toString(users));
+        LOG.info("messages=" + Arrays.toString(messages));
+    }
+
+    public static void main(String[] args) {
+        new TwitterSample(args[0],args[1],args[2],args[3]).run();
     }
 }

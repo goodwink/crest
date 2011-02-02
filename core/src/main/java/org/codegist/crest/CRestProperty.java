@@ -162,8 +162,14 @@ public interface CRestProperty {
 
     /**
      * override the default max retry count {@link org.codegist.crest.handler.MaxAttemptRetryHandler#DEFAULT_MAX}.
+     * <p>Expects an int.
      */
     String HANDLER_RETRY_MAX_ATTEMPTS = "handler.retry.attempts.max";
+
+    /**
+     * override the default max retry count {@link org.codegist.crest.handler.MaxAttemptRetryHandler#DEFAULT_MAX}.
+     */
+    String CONFIG_PLACEHOLDERS_MAP = "config.placeholders.map";
 
     /*********************************************************
      *********************************************************

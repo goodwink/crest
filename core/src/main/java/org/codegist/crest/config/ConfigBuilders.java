@@ -42,6 +42,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 /**
  * Handy builders for {@link org.codegist.crest.config.DefaultInterfaceConfig}.
@@ -84,7 +85,7 @@ public abstract class ConfigBuilders {
          * <p>This will create an unbound builder, eg to attached to any interface, thus it cannot contains any method configuration.
          */
         public InterfaceConfigBuilder() {
-            this(null, (Map<String, Object>) null);
+            this(null, null);
         }
 
         /**
@@ -97,7 +98,7 @@ public abstract class ConfigBuilders {
         }
 
         public InterfaceConfigBuilder(Class interfaze) {
-            this(interfaze, (Map<String, Object>) null);
+            this(interfaze, null);
         }
 
         /**
@@ -162,19 +163,19 @@ public abstract class ConfigBuilders {
 
         public InterfaceConfigBuilder setEndPoint(String endPoint) {
             if (ignore(endPoint)) return this;
-            this.endPoint = endPoint;
+            this.endPoint = replacePlaceholders(endPoint);
             return this;
         }
 
         public InterfaceConfigBuilder setContextPath(String contextPath) {
             if (ignore(contextPath)) return this;
-            this.contextPath = contextPath;
+            this.contextPath = replacePlaceholders(contextPath);
             return this;
         }
 
         public InterfaceConfigBuilder setEncoding(String encoding) {
             if (ignore(encoding)) return this;
-            this.encoding = encoding;
+            this.encoding = replacePlaceholders(encoding);
             return this;
         }
 
@@ -186,7 +187,7 @@ public abstract class ConfigBuilders {
 
         public InterfaceConfigBuilder setGlobalInterceptor(String interceptorClassName) throws IllegalAccessException, InstantiationException, ClassNotFoundException {
             if (ignore(interceptorClassName)) return this;
-            return setGlobalInterceptor((Class<? extends RequestInterceptor>) Class.forName(interceptorClassName));
+            return setGlobalInterceptor((Class<? extends RequestInterceptor>) Class.forName(replacePlaceholders(interceptorClassName)));
         }
 
         public InterfaceConfigBuilder setGlobalInterceptor(Class<? extends RequestInterceptor> interceptorCls) throws IllegalAccessException, InstantiationException {
@@ -226,72 +227,27 @@ public abstract class ConfigBuilders {
             return this;
         }     
 
-        public InterfaceConfigBuilder addMethodsExtraParams(Set<BasicParamConfig> params){
-            if (ignore(params)) return this;
-            for (MethodConfigBuilder b : builderCache.values()) {
-                b.addExtraParams(params);
-            }
-            return this;
+        public InterfaceConfigBuilder addMethodsExtraFormParam(String name, String value){
+            return addMethodsExtraParam(name, value, Destination.FORM);
         }
-        public InterfaceConfigBuilder addMethodsExtraParam(BasicParamConfig param){
-            if (ignore(param)) return this;
-            for (MethodConfigBuilder b : builderCache.values()) {
-                b.addExtraParam(param);
-            }
-            return this;
+        public InterfaceConfigBuilder addMethodsExtraHeaderParam(String name, String value){
+            return addMethodsExtraParam(name, value, Destination.HEADER);
+        }
+        public InterfaceConfigBuilder addMethodsExtraPathParam(String name, String value){
+            return addMethodsExtraParam(name, value, Destination.PATH);
+        }
+        public InterfaceConfigBuilder addMethodsExtraQueryParam(String name, String value){
+            return addMethodsExtraParam(name, value, Destination.QUERY);
         }
         public InterfaceConfigBuilder addMethodsExtraParam(String name, String value, Destination destination){
-            if (ignore(name, value, destination)) return this;
             for (MethodConfigBuilder b : builderCache.values()) {
                 b.addExtraParam(name, value, destination);
             }
             return this;
         }
-
-        public InterfaceConfigBuilder setParamsSerializer(Serializer paramSerializer) {
-            if (ignore(paramSerializer)) return this;
+        public InterfaceConfigBuilder addMethodsExtraParam(String name, String value, String destination){
             for (MethodConfigBuilder b : builderCache.values()) {
-                b.setParamsSerializer(paramSerializer);
-            }
-            return this;
-        }
-
-        public InterfaceConfigBuilder setParamsSerializer(String paramSerializerClassName) throws IllegalAccessException, InstantiationException, ClassNotFoundException {
-            if (ignore(paramSerializerClassName)) return this;
-            for (MethodConfigBuilder b : builderCache.values()) {
-                b.setParamsSerializer(paramSerializerClassName);
-            }
-            return this;
-        }
-
-        public InterfaceConfigBuilder setParamsSerializer(Class<? extends Serializer> paramSerializerCls) throws IllegalAccessException, InstantiationException {
-            if (ignore(paramSerializerCls)) return this;
-            for (MethodConfigBuilder b : builderCache.values()) {
-                b.setParamsSerializer(paramSerializerCls);
-            }
-            return this;
-        }
-
-        public InterfaceConfigBuilder setParamsInjector(Injector injector) {
-            if (ignore(injector)) return this;
-            for (MethodConfigBuilder b : builderCache.values()) {
-                b.setParamsInjector(injector);
-            }
-            return this;
-        }
-
-        public InterfaceConfigBuilder setParamsInjector(String injectorClassName) throws IllegalAccessException, InstantiationException, ClassNotFoundException {
-            if (ignore(injectorClassName)) return this;
-            for (MethodConfigBuilder b : builderCache.values()) {
-                b.setParamsInjector(injectorClassName);
-            }
-            return this;
-        }
-
-        public InterfaceConfigBuilder setParamsInjector(Class<? extends Injector> injectorCls) throws IllegalAccessException, InstantiationException {
-            if (ignore(injectorCls)) return this;
-            for (MethodConfigBuilder b : builderCache.values()) {
-                b.setParamsInjector(injectorCls);
+                b.addExtraParam(name, value, destination);
             }
             return this;
         }
@@ -407,17 +363,65 @@ public abstract class ConfigBuilders {
             }
             return this;
         }
+
+        public InterfaceConfigBuilder setParamsSerializer(Serializer paramSerializer) {
+            if (ignore(paramSerializer)) return this;
+            for (MethodConfigBuilder b : builderCache.values()) {
+                b.setParamsSerializer(paramSerializer);
+            }
+            return this;
+        }
+
+        public InterfaceConfigBuilder setParamsSerializer(String paramSerializerClassName) throws IllegalAccessException, InstantiationException, ClassNotFoundException {
+            if (ignore(paramSerializerClassName)) return this;
+            for (MethodConfigBuilder b : builderCache.values()) {
+                b.setParamsSerializer(paramSerializerClassName);
+            }
+            return this;
+        }
+
+        public InterfaceConfigBuilder setParamsSerializer(Class<? extends Serializer> paramSerializerCls) throws IllegalAccessException, InstantiationException {
+            if (ignore(paramSerializerCls)) return this;
+            for (MethodConfigBuilder b : builderCache.values()) {
+                b.setParamsSerializer(paramSerializerCls);
+            }
+            return this;
+        }
+
+        public InterfaceConfigBuilder setParamsInjector(Injector injector) {
+            if (ignore(injector)) return this;
+            for (MethodConfigBuilder b : builderCache.values()) {
+                b.setParamsInjector(injector);
+            }
+            return this;
+        }
+
+        public InterfaceConfigBuilder setParamsInjector(String injectorClassName) throws IllegalAccessException, InstantiationException, ClassNotFoundException {
+            if (ignore(injectorClassName)) return this;
+            for (MethodConfigBuilder b : builderCache.values()) {
+                b.setParamsInjector(injectorClassName);
+            }
+            return this;
+        }
+
+        public InterfaceConfigBuilder setParamsInjector(Class<? extends Injector> injectorCls) throws IllegalAccessException, InstantiationException {
+            if (ignore(injectorCls)) return this;
+            for (MethodConfigBuilder b : builderCache.values()) {
+                b.setParamsInjector(injectorCls);
+            }
+            return this;
+        }
     }
 
     @SuppressWarnings("unchecked")
     public static class MethodConfigBuilder extends ConfigBuilders {
         private final Method method;
-        private final ParamConfigBuilder[] paramConfigBuilders;
         private final InterfaceConfigBuilder parent;
+        private final Map<String, BasicParamConfigBuilder> extraParamBuilders = new LinkedHashMap<String, BasicParamConfigBuilder>();
+        private final ParamConfigBuilder[] paramConfigBuilders;
 
         private String path;
         private String meth;
-        private Map<String, BasicParamConfig> extraParams = new LinkedHashMap<String, BasicParamConfig>();
         private Long socketTimeout;
         private Long connectionTimeout;
         private RequestInterceptor requestInterceptor;
@@ -466,6 +470,12 @@ public abstract class ConfigBuilders {
             for (int i = 0; i < paramConfigBuilders.length; i++) {
                 pConfig[i] = this.paramConfigBuilders[i].build(useDefaults);
             }
+            BasicParamConfig[] extraParams = new BasicParamConfig[extraParamBuilders.size()];
+            int i = 0;
+            for (BasicParamConfigBuilder b : extraParamBuilders.values()) {
+                extraParams[i++] = b.build(useDefaults);
+            }
+
             // make local copies so that we don't mess with builder state to be able to call build multiple times on it
             String path = this.path;
             String meth = this.meth;
@@ -476,7 +486,6 @@ public abstract class ConfigBuilders {
             ErrorHandler errorHandler = this.errorHandler;
             RetryHandler retryHandler = this.retryHandler;
 
-            BasicParamConfig[] extraParams = this.extraParams != null && this.extraParams.size() > 0 ? this.extraParams.values().toArray(new BasicParamConfig[this.extraParams.size()]) : null;
             if (useDefaults) {
                 path = defaultIfUndefined(path, CRestProperty.CONFIG_METHOD_DEFAULT_PATH, MethodConfig.DEFAULT_PATH);
                 meth = defaultIfUndefined(meth, CRestProperty.CONFIG_METHOD_DEFAULT_HTTP_METHOD, MethodConfig.DEFAULT_HTTP_METHOD);
@@ -519,30 +528,47 @@ public abstract class ConfigBuilders {
 
         public MethodConfigBuilder setPath(String path) {
             if (ignore(path)) return this;
-            this.path = path;
+            this.path = replacePlaceholders(path);
             return this;
         }
 
-        public MethodConfigBuilder addExtraParams(Set<BasicParamConfig> params){
-            if (ignore(params)) return this;
-            for(BasicParamConfig p : params){
-                addExtraParam(p);
+        public MethodConfigBuilder addExtraFormParam(String name, String defaultValue){
+            return addExtraParam(name, defaultValue, Destination.FORM);
+        }
+        public MethodConfigBuilder addExtraHeaderParam(String name, String defaultValue){
+            return addExtraParam(name, defaultValue, Destination.HEADER);
+        }
+        public MethodConfigBuilder addExtraQueryParam(String name, String defaultValue){
+            return addExtraParam(name, defaultValue, Destination.QUERY);
+        }
+        public MethodConfigBuilder addExtraPathParam(String name, String defaultValue){
+            return addExtraParam(name, defaultValue, Destination.PATH);
+        }
+        public MethodConfigBuilder addExtraParam(String name, String defaultValue, String dest){
+            return startExtraParamConfig(name)
+                    .setDefaultValue(defaultValue)
+                    .setDestination(dest)
+                    .endParamConfig();
+        }
+
+        public MethodConfigBuilder addExtraParam(String name, String defaultValue, Destination dest){
+            return startExtraParamConfig(name)
+                    .setDefaultValue(defaultValue)
+                    .setDestination(dest)
+                    .endParamConfig();
+        }
+
+        public BasicParamConfigBuilder startExtraParamConfig(String name){
+            BasicParamConfigBuilder builder = extraParamBuilders.get(name);
+            if(builder == null) {
+                extraParamBuilders.put(name, builder = new BasicParamConfigBuilder(this, customProperties).setName(replacePlaceholders(name)));
             }
-            return this;
-        }
-        public MethodConfigBuilder addExtraParam(BasicParamConfig param){
-            if (ignore(param)) return this;
-            return addExtraParam(param.getName(), param.getDefaultValue(), param.getDestination());
-        }
-        public MethodConfigBuilder addExtraParam(String name, String value, Destination destination){
-            if (ignore(name, value, destination)) return this;
-            this.extraParams.put(name, new DefaultBasicParamConfig(name, value, destination));
-            return this;
+            return builder;
         }
 
         public MethodConfigBuilder setHttpMethod(String meth) {
             if (ignore(meth)) return this;
-            this.meth = meth;
+            this.meth = replacePlaceholders(meth);
             return this;
         }
 
@@ -554,7 +580,7 @@ public abstract class ConfigBuilders {
 
         public MethodConfigBuilder setSocketTimeout(String socketTimeout) {
             if (ignore(socketTimeout)) return this;
-            return setSocketTimeout(Long.parseLong(socketTimeout));
+            return setSocketTimeout(Long.parseLong(replacePlaceholders(socketTimeout)));
         }
 
         public MethodConfigBuilder setConnectionTimeout(Long connectionTimeout) {
@@ -565,7 +591,7 @@ public abstract class ConfigBuilders {
 
         public MethodConfigBuilder setConnectionTimeout(String connectionTimeout) {
             if (ignore(connectionTimeout)) return this;
-            return setConnectionTimeout(Long.parseLong(connectionTimeout));
+            return setConnectionTimeout(Long.parseLong(replacePlaceholders(connectionTimeout)));
         }
 
         public MethodConfigBuilder setRequestInterceptor(RequestInterceptor requestInterceptor) {
@@ -576,7 +602,7 @@ public abstract class ConfigBuilders {
 
         public MethodConfigBuilder setRequestInterceptor(String interceptorClassName) throws IllegalAccessException, InstantiationException, ClassNotFoundException {
             if (ignore(interceptorClassName)) return this;
-            return setRequestInterceptor((Class<? extends RequestInterceptor>) Class.forName(interceptorClassName));
+            return setRequestInterceptor((Class<? extends RequestInterceptor>) Class.forName(replacePlaceholders(interceptorClassName)));
         }
 
         public MethodConfigBuilder setRequestInterceptor(Class<? extends RequestInterceptor> interceptorCls) throws IllegalAccessException, InstantiationException {
@@ -592,7 +618,7 @@ public abstract class ConfigBuilders {
 
         public MethodConfigBuilder setResponseHandler(String responseHandlerClassName) throws IllegalAccessException, InstantiationException, ClassNotFoundException {
             if (ignore(responseHandlerClassName)) return this;
-            return setResponseHandler((Class<? extends ResponseHandler>) Class.forName(responseHandlerClassName));
+            return setResponseHandler((Class<? extends ResponseHandler>) Class.forName(replacePlaceholders(responseHandlerClassName)));
         }
 
         public MethodConfigBuilder setResponseHandler(Class<? extends ResponseHandler> responseHandlerClass) throws IllegalAccessException, InstantiationException {
@@ -609,7 +635,7 @@ public abstract class ConfigBuilders {
 
         public MethodConfigBuilder setErrorHandler(String methodHandlerClassName) throws IllegalAccessException, InstantiationException, ClassNotFoundException {
             if (ignore(methodHandlerClassName)) return this;
-            return setErrorHandler((Class<? extends ErrorHandler>) Class.forName(methodHandlerClassName));
+            return setErrorHandler((Class<? extends ErrorHandler>) Class.forName(replacePlaceholders(methodHandlerClassName)));
         }
 
         public MethodConfigBuilder setErrorHandler(Class<? extends ErrorHandler> methodHandlerClass) throws IllegalAccessException, InstantiationException {
@@ -626,14 +652,13 @@ public abstract class ConfigBuilders {
 
         public MethodConfigBuilder setRetryHandler(String retryHandlerClassName) throws IllegalAccessException, InstantiationException, ClassNotFoundException {
             if (ignore(retryHandlerClassName)) return this;
-            return setRetryHandler((Class<? extends RetryHandler>) Class.forName(retryHandlerClassName));
+            return setRetryHandler((Class<? extends RetryHandler>) Class.forName(replacePlaceholders(retryHandlerClassName)));
         }
 
         public MethodConfigBuilder setRetryHandler(Class<? extends RetryHandler> retryHandlerClass) throws IllegalAccessException, InstantiationException {
             if (ignore(retryHandlerClass)) return this;
             return setRetryHandler(newInstance(retryHandlerClass));
         }
-
 
         public MethodConfigBuilder setParamsSerializer(Serializer paramSerializer) {
             if (ignore(paramSerializer)) return this;
@@ -682,44 +707,115 @@ public abstract class ConfigBuilders {
             }
             return this;
         }
-
-        public MethodConfigBuilder setParamsDefautValue(String value) throws IllegalAccessException, InstantiationException {
-            if (ignore(value)) return this;
-            for (ParamConfigBuilder b : paramConfigBuilders) {
-                b.setDefaultValue(value);
-            }
-            return this;
-        }
-
     }
 
     @SuppressWarnings("unchecked")
-    public static class ParamConfigBuilder extends ConfigBuilders {
+    public static class BasicParamConfigBuilder extends ConfigBuilders {
         private final MethodConfigBuilder parent;
-        private final Type type;
         private String name;
         private String defaultValue;
         private Destination dest;
-        private Serializer serializer;
-        private Injector injector;
 
 
         /**
          * Given properties map can contains user-defined default values, that override interface predefined defauts.
          * @param customProperties default values holder
          */
+        public BasicParamConfigBuilder(Map<String, Object> customProperties) {
+            this(null, customProperties);
+        }
+
+        private BasicParamConfigBuilder(MethodConfigBuilder parent) {
+            this(parent, null);
+        }
+
+        private BasicParamConfigBuilder(MethodConfigBuilder parent, Map<String, Object> customProperties) {
+            super(customProperties);
+            this.parent = parent;
+        }
+
+        public DefaultBasicParamConfig build() {
+            return build(true);
+        }
+
+        public DefaultBasicParamConfig buildOverrideTemplate() {
+            return build(false);
+        }
+
+        public DefaultBasicParamConfig build(boolean useDefaults) {
+            // make local copies so that we don't mess with builder state to be able to call build multiple times on it
+            String name = this.name;
+            String defaultValue = this.defaultValue;
+            Destination dest = this.dest;
+
+            if (useDefaults) {
+                name = defaultIfUndefined(name, CRestProperty.CONFIG_PARAM_DEFAULT_NAME, ParamConfig.DEFAULT_NAME);
+                defaultValue = defaultIfUndefined(defaultValue, CRestProperty.CONFIG_PARAM_DEFAULT_VALUE, ParamConfig.DEFAULT_VALUE);
+                dest = defaultIfUndefined(dest, CRestProperty.CONFIG_PARAM_DEFAULT_DESTINATION, ParamConfig.DEFAULT_DESTINATION);
+            }
+//            if(Strings.isBlank(name)) throw new IllegalStateException("Parameter must have a name");
+            return new DefaultBasicParamConfig(name, defaultValue, dest);
+        }
+
+        public MethodConfigBuilder endParamConfig() {
+            return parent;
+        }
+
+        @Override
+        public BasicParamConfigBuilder setIgnoreNullOrEmptyValues(boolean ignoreNullOrEmptyValues) {
+            return (BasicParamConfigBuilder) super.setIgnoreNullOrEmptyValues(ignoreNullOrEmptyValues);
+        }
+
+        public BasicParamConfigBuilder setName(String name) {
+            if (ignore(name)) return this;
+            this.name = replacePlaceholders(name);
+            return this;
+        }
+
+
+        public BasicParamConfigBuilder setDefaultValue(String defaultValue) {
+            if (ignore(defaultValue)) return this;
+            this.defaultValue = replacePlaceholders(defaultValue);
+            return this;
+        }
+
+        public BasicParamConfigBuilder setDestination(String dest) {
+            if (ignore(dest)) return this;
+            return setDestination(Destination.valueOf(replacePlaceholders(dest).toUpperCase()));
+        }
+
+        public BasicParamConfigBuilder setDestination(Destination dest) {
+            if (ignore(dest)) return this;
+            this.dest = dest;
+            return this;
+        }
+
+
+    }
+
+    @SuppressWarnings("unchecked")
+    public static class ParamConfigBuilder extends BasicParamConfigBuilder {
+        private final Type type;
+        private Serializer serializer;
+        private Injector injector;
+
+        /**
+         * Given properties map can contains user-defined default values, that override interface predefined defauts.
+         * @param customProperties default values holder
+         */
         public ParamConfigBuilder(Type type, Map<String, Object> customProperties) {
-            this(null, type, customProperties);
+            super(null, customProperties);
+            this.type = type;
         }
 
         private ParamConfigBuilder(MethodConfigBuilder parent, Type type) {
-            this(parent, type, null);
+            super(parent, null);
+            this.type = type;
         }
 
         private ParamConfigBuilder(MethodConfigBuilder parent, Type type, Map<String, Object> customProperties) {
-            super(customProperties);
+            super(parent, customProperties);
             this.type = type;
-            this.parent = parent;
         }
 
         public DefaultParamConfig build() {
@@ -732,16 +828,10 @@ public abstract class ConfigBuilders {
 
         public DefaultParamConfig build(boolean useDefaults) {
             // make local copies so that we don't mess with builder state to be able to call build multiple times on it
-            String name = this.name;
-            String defaultValue = this.defaultValue;
-            Destination dest = this.dest;
             Injector injector = this.injector;
             Serializer serializer = this.serializer;
 
             if (useDefaults) {
-                name = defaultIfUndefined(name, CRestProperty.CONFIG_PARAM_DEFAULT_NAME, ParamConfig.DEFAULT_NAME);
-                defaultValue = defaultIfUndefined(defaultValue, CRestProperty.CONFIG_PARAM_DEFAULT_VALUE, ParamConfig.DEFAULT_VALUE);
-                dest = defaultIfUndefined(dest, CRestProperty.CONFIG_PARAM_DEFAULT_DESTINATION, ParamConfig.DEFAULT_DESTINATION);
                 injector = defaultIfUndefined(injector, CRestProperty.CONFIG_PARAM_DEFAULT_INJECTOR, newInstance(ParamConfig.DEFAULT_INJECTOR));
                 serializer = defaultIfUndefined(serializer, CRestProperty.CONFIG_PARAM_DEFAULT_SERIALIZER, newInstance(ParamConfig.DEFAULT_SERIALIZER));
 
@@ -751,45 +841,10 @@ public abstract class ConfigBuilders {
                 }
             }
             return new DefaultParamConfig(
-                    name,
-                    defaultValue,
-                    dest,
+                    super.build(useDefaults),
                     serializer,
                     injector
             );
-        }
-
-        public MethodConfigBuilder endParamConfig() {
-            return parent;
-        }
-
-        @Override
-        public ParamConfigBuilder setIgnoreNullOrEmptyValues(boolean ignoreNullOrEmptyValues) {
-            return (ParamConfigBuilder) super.setIgnoreNullOrEmptyValues(ignoreNullOrEmptyValues);
-        }
-
-        public ParamConfigBuilder setName(String name) {
-            if (ignore(name)) return this;
-            this.name = name;
-            return this;
-        }
-
-
-        public ParamConfigBuilder setDefaultValue(String defaultValue) {
-            if (ignore(defaultValue)) return this;
-            this.defaultValue = defaultValue;
-            return this;
-        }
-
-        public ParamConfigBuilder setDestination(String dest) {
-            if (ignore(dest)) return this;
-            return setDestination(Destination.valueOf(dest));
-        }
-
-        public ParamConfigBuilder setDestination(Destination dest) {
-            if (ignore(dest)) return this;
-            this.dest = dest;
-            return this;
         }
 
         /**
@@ -810,7 +865,7 @@ public abstract class ConfigBuilders {
          */
         public ParamConfigBuilder setSerializer(String serializerClassName) throws IllegalAccessException, InstantiationException, ClassNotFoundException {
             if (ignore(serializerClassName)) return this;
-            return setSerializer((Class<? extends Serializer>) Class.forName(serializerClassName));
+            return setSerializer((Class<? extends Serializer>) Class.forName(replacePlaceholders(serializerClassName)));
         }
 
         /**
@@ -831,20 +886,77 @@ public abstract class ConfigBuilders {
 
         public ParamConfigBuilder setInjector(String injectorClassName) throws IllegalAccessException, InstantiationException, ClassNotFoundException {
             if (ignore(injectorClassName)) return this;
-            return setInjector((Class<? extends Injector>) Class.forName(injectorClassName));
+            return setInjector((Class<? extends Injector>) Class.forName(replacePlaceholders(injectorClassName)));
         }
 
         public ParamConfigBuilder setInjector(Class<? extends Injector> injector) throws IllegalAccessException, InstantiationException {
             if (ignore(injector)) return this;
             return setInjector(newInstance(injector));
         }
+
+
+        @Override
+        public ParamConfigBuilder setIgnoreNullOrEmptyValues(boolean ignoreNullOrEmptyValues) {
+            return (ParamConfigBuilder) super.setIgnoreNullOrEmptyValues(ignoreNullOrEmptyValues);
+        }
+
+        @Override
+        public ParamConfigBuilder setName(String name) {
+            return (ParamConfigBuilder) super.setName(name);
+        }
+
+        @Override
+        public ParamConfigBuilder setDefaultValue(String defaultValue) {
+            return (ParamConfigBuilder) super.setDefaultValue(defaultValue);
+        }
+
+        public ParamConfigBuilder forPath(){
+            return setDestination(Destination.PATH);
+        }
+        public ParamConfigBuilder forQuery(){
+            return setDestination(Destination.QUERY);
+        }
+        public ParamConfigBuilder forForm(){
+            return setDestination(Destination.FORM);
+        }
+        public ParamConfigBuilder forHeader(){
+            return setDestination(Destination.HEADER);
+        }
+        @Override
+        public ParamConfigBuilder setDestination(String dest) {
+            return (ParamConfigBuilder) super.setDestination(dest);
+        }
+        @Override
+        public ParamConfigBuilder setDestination(Destination dest) {
+            return (ParamConfigBuilder) super.setDestination(dest);
+        }
     }
 
     protected final Map<String, Object> customProperties;
+    protected final Map<Pattern, String> placeholders;
     private boolean ignoreNullOrEmptyValues;
 
-    private ConfigBuilders(Map<String, Object> customProperties) {
+    ConfigBuilders(Map<String, Object> customProperties) {
         this.customProperties = Maps.unmodifiable(customProperties);
+
+        Map<String, String> placeholders = Maps.defaultsIfNull((Map<String,String>) this.customProperties.get(CRestProperty.CONFIG_PLACEHOLDERS_MAP));
+        this.placeholders = new HashMap<Pattern, String>();
+        for(Map.Entry<String,String> entry : placeholders.entrySet()){
+            String placeholder = entry.getKey();
+            String value = entry.getValue().replaceAll("\\$", "\\\\\\$");
+            this.placeholders.put(Pattern.compile("\\{" + Pattern.quote(placeholder) + "\\}"), value);
+        }
+    }
+
+    String replacePlaceholders(String str){
+        if(Strings.isBlank(str)) return str;
+        for(Map.Entry<Pattern,String> entry : placeholders.entrySet()){
+            Pattern placeholder = entry.getKey();
+            String value = entry.getValue();
+            str = placeholder.matcher(str).replaceAll(value);
+        }
+        str = str.replaceAll("\\\\\\{", "{").replaceAll("\\\\\\}", "}"); // replace escaped with non escaped
+        return str;
     }
 
     <T> T defaultIfUndefined(T value, String defProp, T def) {
@@ -882,13 +994,6 @@ public abstract class ConfigBuilders {
         } catch (InvocationTargetException e) {
             throw new CRestException(e.getCause());
         }
-    }
-
-    boolean ignore(Object... values) {
-        for(Object v : values){
-            if(ignore(v)) return true;
-        }
-        return false;
     }
     boolean ignore(Object value) {
         if (!ignoreNullOrEmptyValues) return false;

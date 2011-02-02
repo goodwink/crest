@@ -168,12 +168,15 @@ public class DefaultCRest implements CRest, Disposable {
             for(BasicParamConfig param : requestContext.getMethodConfig().getExtraParams()){
                 switch(param.getDestination()){
                     case HEADER:
-                        builder.addHeader(param.getName(), param.getDefaultValue());
+                        builder.addHeaderParam(param.getName(), param.getDefaultValue());
                         break;
-                    case BODY:
-                        builder.addBodyParam(param.getName(), param.getDefaultValue());
+                    case FORM:
+                        builder.addFormParam(param.getName(), param.getDefaultValue());
                         break;
-                    default:
+                    case PATH:
+                        builder.addPathParam(param.getName(), param.getDefaultValue());
+                        break;
+                    case QUERY:
                         builder.addQueryParam(param.getName(), param.getDefaultValue());
                         break;
                 }

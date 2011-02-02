@@ -42,7 +42,7 @@ public interface BasicParamConfig {
      *
      * @see org.codegist.crest.config.BasicParamConfig#getDestination()
      */
-    Destination DEFAULT_DESTINATION = Destination.URL;
+    Destination DEFAULT_DESTINATION = Destination.QUERY;
 
     /**
      * Default parameter value if not specified.

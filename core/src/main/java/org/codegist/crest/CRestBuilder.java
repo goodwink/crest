@@ -95,11 +95,11 @@ public class CRestBuilder {
     private Class<?> modelPackageFactory = null;
 
     private Map<String, Object> customProperties = new HashMap<String, Object>();
+    private Map<String, String> placeholders = new HashMap<String, String>();
     private Map<Type, Serializer> serializersMap = new HashMap<Type, Serializer>();
 
     private RestService restService;
 
-    private boolean globalAuthentification = false;
     private boolean useHttpClient = false;
     private int maxConnections = 1;
     private int maxConnectionsPerRoute = 1;
@@ -143,8 +143,9 @@ public class CRestBuilder {
         Maps.putIfNotPresent(customProperties, InterfaceConfigFactory.class.getName(), configFactory);
 
         /* Put then in the properties. These are not part of the API */
-        Maps.putIfNotPresent(customProperties, CRestProperty.SERIALIZER_CUSTOM_SERIALIZER_MAP, serializersMap);
-        
+        Maps.putIfNotPresent(customProperties, CRestProperty.SERIALIZER_CUSTOM_SERIALIZER_MAP, Maps.unmodifiable(serializersMap));
+        Maps.putIfNotPresent(customProperties, CRestProperty.CONFIG_PLACEHOLDERS_MAP, Maps.unmodifiable(placeholders));
+
         return new DefaultCRestContext(restService, proxyFactory, configFactory, customProperties);
     }
 
@@ -237,19 +238,12 @@ public class CRestBuilder {
         String consumerSecret = (String) customProperties.get(OAUTH_CONSUMER_SECRET);
         String accessTok = (String) customProperties.get(OAUTH_ACCESS_TOKEN);
         String accessTokenSecret = (String) customProperties.get(OAUTH_ACCESS_TOKEN_SECRET);
-        String paramDest = (String) customProperties.get(OAUTH_PARAM_DEST);
         Map<String, String> accessTokenExtras = (Map<String, String>) customProperties.get(OAUTH_ACCESS_TOKEN_EXTRAS);
 
         if (Strings.isBlank(consumerKey)
                 || Strings.isBlank(consumerSecret)
                 || Strings.isBlank(accessTok)
                 || Strings.isBlank(accessTokenSecret)) return null;
-
-        customProperties.put(OAUTH_CONSUMER_KEY, consumerKey);
-        customProperties.put(OAUTH_CONSUMER_SECRET, consumerSecret);
-        customProperties.put(OAUTH_ACCESS_TOKEN, accessTok);
-        customProperties.put(OAUTH_ACCESS_TOKEN_SECRET, accessTokenSecret);
-        customProperties.put(OAUTH_PARAM_DEST, paramDest);
 
         Token consumerToken = new Token(consumerKey, consumerSecret);
         OAuthenticator authenticator = new OAuthenticatorV10(restService, consumerToken, customProperties);
@@ -547,7 +541,6 @@ public class CRestBuilder {
      * @return current builder
      */
     public CRestBuilder usePreauthentifiedOAuth(String consumerKey, String consumerSecret, String accessToken, String accessTokenSecret, boolean authParamsInHeaders) {
-        this.globalAuthentification = true;
         this.customProperties = Maps.defaultsIfNull(customProperties);
         customProperties.put(OAUTH_CONSUMER_KEY, consumerKey);
         customProperties.put(OAUTH_CONSUMER_SECRET, consumerSecret);
@@ -601,7 +594,6 @@ public class CRestBuilder {
         return this;
     }
 
-
     /**
      * JAX-RS annotation will take priority over CRest's equivalent annotations
      * @return current builder
@@ -632,4 +624,27 @@ public class CRestBuilder {
         this.enableJaxRSSupport = true;
         return this;
     }
+
+    /**
+     * Sets a placeholder key/value that will be used to replace interface config eg:
+     * <p>Calling
+     * <pre><code>
+     *      new CRestBuilder()
+     *          .setConfigPlaceholder("my.server", "127.0.0.1")
+     *          .setConfigPlaceholder("my.port", "8080");
+     * </code></pre>
+     * <p>will replace any place holder found in any interface location, eg:
+     * <code>@EndPoint("http://{my.server}:{my.port}")</code>
+     * <br>or
+     * <p>for properties files: <code>service.test.end-point=http://{my.server}:{my.port}</code>
+     * @param placeholder Placeholder key
+     * @param value Placeholder value
+     * @see CRestProperty#CONFIG_PLACEHOLDERS_MAP
+     * @return current builder
+     */
+    public CRestBuilder setConfigPlaceholder(String placeholder, String value){
+        placeholders.put(placeholder, value);
+        return this;
+    }
+
 }

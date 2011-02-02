@@ -240,13 +240,7 @@ public final class Configs {
         }
 
         public RequestInterceptor getRequestInterceptor() {
-            if (override.getRequestInterceptor() == null) {
-                return base.getRequestInterceptor();
-            } else if (base.getRequestInterceptor() == null) {
-                return override.getRequestInterceptor();
-            } else {
-                return new CompositeRequestInterceptor(override.getRequestInterceptor(), base.getRequestInterceptor());
-            }
+            return Objects.defaultIfNull(override.getRequestInterceptor(), base.getRequestInterceptor());
         }
 
         public Long getSocketTimeout() {
@@ -308,13 +302,7 @@ public final class Configs {
         }
 
         public RequestInterceptor getGlobalInterceptor() {
-            if (override.getGlobalInterceptor() == null) {
-                return base.getGlobalInterceptor();
-            } else if (base.getGlobalInterceptor() == null) {
-                return override.getGlobalInterceptor();
-            } else {
-                return new CompositeRequestInterceptor(override.getGlobalInterceptor(), base.getGlobalInterceptor());
-            }
+            return Objects.defaultIfNull(override.getGlobalInterceptor(), base.getGlobalInterceptor());
         }
 
         public MethodConfig getMethodConfig(Method meth) {
@@ -326,3 +314,4 @@ public final class Configs {
         }
     }
 }
+

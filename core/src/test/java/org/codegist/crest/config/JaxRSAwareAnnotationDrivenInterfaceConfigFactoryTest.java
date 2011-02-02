@@ -119,17 +119,17 @@ public class JaxRSAwareAnnotationDrivenInterfaceConfigFactoryTest extends Abstra
         @javax.ws.rs.Path("/m1")
         Object m1();
 
-        Object m1(String a);
+        Object m1(@javax.ws.rs.QueryParam("param") String a);
 
         @javax.ws.rs.Path("/m1")
-        Object m1(String a, int b);
+        Object m1(@javax.ws.rs.PathParam("param1") String a, @javax.ws.rs.QueryParam("param2") int b);
 
-        Object m1(String a, int[] b);
+        Object m1(@javax.ws.rs.QueryParam("param1") String a, @javax.ws.rs.QueryParam("param2") int[] b);
 
         @javax.ws.rs.Path("/m2/1")
         void m2();
 
-        void m2(float f, String... a);
+        void m2(@javax.ws.rs.QueryParam("param1") float f, @javax.ws.rs.QueryParam("param2") String... a);
     }
 
     @EndPoint("http://localhost:8080")
@@ -145,13 +145,13 @@ public class JaxRSAwareAnnotationDrivenInterfaceConfigFactoryTest extends Abstra
         @javax.ws.rs.Path("/m1")
         @javax.ws.rs.POST
         @Serializer(Stubs.Serializer2.class)
-        Object m1(@Serializer(Stubs.Serializer3.class) @Injector(Stubs.RequestParameterInjector3.class) String a);
+        Object m1(@Serializer(Stubs.Serializer3.class) @Injector(Stubs.RequestParameterInjector3.class) @javax.ws.rs.QueryParam("pname") String a);
 
         @javax.ws.rs.Path("/m1") @Injector(Stubs.RequestParameterInjector2.class)
-        Object m1(String a, @javax.ws.rs.PathParam("c") @DefaultValue("444") int b);
+        Object m1(@javax.ws.rs.FormParam("d") String a, @javax.ws.rs.QueryParam("c") @DefaultValue("444") int b);
 
         @javax.ws.rs.Path("/m1") @Injector(Stubs.RequestParameterInjector2.class)
-        Object m1(String a, @javax.ws.rs.QueryParam("c") int[] b);
+        Object m1(@javax.ws.rs.PathParam("f") String a, @javax.ws.rs.QueryParam("c") int[] b);
 
 
         @javax.ws.rs.Path("/m2/1")
@@ -160,7 +160,7 @@ public class JaxRSAwareAnnotationDrivenInterfaceConfigFactoryTest extends Abstra
         @ConnectionTimeout(12)
         void m2();
 
-        void m2(float f, String... a);
+        void m2(@javax.ws.rs.QueryParam("fd") float f, @javax.ws.rs.QueryParam("cf") String... a);
     }
 
     @javax.ws.rs.Path("/my-path")
@@ -169,10 +169,10 @@ public class JaxRSAwareAnnotationDrivenInterfaceConfigFactoryTest extends Abstra
     @ConnectionTimeout( 2)
     @Encoding( "utf-8")
 
-    @FormParam(name="body-param",value="body-value")
+    @FormParam(name="form-param",value="form-value")
     @FormParams({
-            @FormParam(name="body-param1",value="body-value1"),
-            @FormParam(name="body-param2",value="body-value2")
+            @FormParam(name="form-param1",value="form-value1"),
+            @FormParam(name="form-param2",value="form-value2")
     })
     @PathParam(name="path-param",value="path-value")
     @PathParams({
@@ -203,8 +203,8 @@ public class JaxRSAwareAnnotationDrivenInterfaceConfigFactoryTest extends Abstra
         @javax.ws.rs.Path("/m1")
         @javax.ws.rs.PUT
         @FormParams({
-            @FormParam(name="body-param",value="over-value1"),
-            @FormParam(name="body-param3",value="new-value")
+            @FormParam(name="form-param",value="over-value1"),
+            @FormParam(name="form-param3",value="new-value")
         })
         @SocketTimeout(3)
         @ConnectionTimeout(4)
@@ -218,7 +218,7 @@ public class JaxRSAwareAnnotationDrivenInterfaceConfigFactoryTest extends Abstra
 
         @javax.ws.rs.Path("/m1")
         @javax.ws.rs.POST
-        @PathParam(name="body-param",value="over-value1")
+        @PathParam(name="form-param",value="over-value1")
         @SocketTimeout(5)
         @ConnectionTimeout(6)
         @RequestInterceptor(Stubs.RequestInterceptor2.class)
@@ -244,7 +244,7 @@ public class JaxRSAwareAnnotationDrivenInterfaceConfigFactoryTest extends Abstra
                 @Serializer(Stubs.Serializer1.class)
                 @Injector(Stubs.RequestParameterInjector3.class)
                 String a,
-                @javax.ws.rs.PathParam("c")
+                @javax.ws.rs.QueryParam("c")
                 @Serializer(Stubs.Serializer2.class)
                 int b);
 
@@ -256,7 +256,7 @@ public class JaxRSAwareAnnotationDrivenInterfaceConfigFactoryTest extends Abstra
         @ResponseHandler(Stubs.ResponseHandler1.class)
         @Serializer(Stubs.Serializer1.class)
         Object m1(
-                @javax.ws.rs.QueryParam("d")
+                @javax.ws.rs.PathParam("d")
                 @Serializer(Stubs.Serializer1.class)
                 String a,
                 @javax.ws.rs.FormParam("e")
@@ -281,7 +281,7 @@ public class JaxRSAwareAnnotationDrivenInterfaceConfigFactoryTest extends Abstra
         @ResponseHandler(Stubs.ResponseHandler2.class)
         @Serializer(Stubs.Serializer2.class)
         void m2(
-                @javax.ws.rs.QueryParam("f")
+                @javax.ws.rs.PathParam("f")
                 @Serializer(Stubs.Serializer3.class)
                 float f,
                 @javax.ws.rs.PathParam("g")
@@ -297,32 +297,34 @@ public class JaxRSAwareAnnotationDrivenInterfaceConfigFactoryTest extends Abstra
     @Encoding("utf-8")
     public static interface Rest {
 
-        @javax.ws.rs.Path("/aaa?b={1}&a={0}")
-        void aaa(int a, String[] b);
+        @javax.ws.rs.Path("/aaa")
+        void aaa(@QueryParam(name="a") int a, @javax.ws.rs.QueryParam("b") String[] b);
 
         Method AAA = TestUtils.getMethod(Rest.class, "aaa", int.class, String[].class);
 
-        @javax.ws.rs.Path("/bbb/{2}?b={1}&a={0}")
+        @javax.ws.rs.Path("/bbb/{p}")
         @ConnectionTimeout(55)
-        void bbb(@Serializer(Stubs.Serializer2.class) int a, String[] b, String c);
+        void bbb(@Serializer(Stubs.Serializer2.class) @javax.ws.rs.QueryParam("a") int a,
+                 @javax.ws.rs.PathParam("p") String[] b,
+                 @javax.ws.rs.QueryParam("qq") String c);
 
         Method BBB = TestUtils.getMethod(Rest.class, "bbb", int.class, String[].class, String.class);
 
-        @javax.ws.rs.Path("/ccc/{0}?aa={1}")
+        @javax.ws.rs.Path("/ccc/{p}")
         @javax.ws.rs.POST
         void ccc(
-                int a,
-                int d,
+                @javax.ws.rs.PathParam("p") int a,
+                @javax.ws.rs.QueryParam("aa") int d,
                 @javax.ws.rs.FormParam("bb") String[] b);
 
         Method CCC = TestUtils.getMethod(Rest.class, "ccc", int.class, int.class, String[].class);
 
-        @javax.ws.rs.Path("/ddd?c={2}")
+        @javax.ws.rs.Path("/ddd")
         @javax.ws.rs.POST
         Object ddd(
                 @FormParam(name="obj") Object a,
                 @javax.ws.rs.FormParam("bb") String[] b,
-                String c);
+                @javax.ws.rs.FormParam("cb") String c);
 
         Method DDD = TestUtils.getMethod(Rest.class, "ddd", Object.class, String[].class, String.class);
 
@@ -332,21 +334,27 @@ public class JaxRSAwareAnnotationDrivenInterfaceConfigFactoryTest extends Abstra
                 .setMethodsSocketTimeout(15l)
                 .setMethodsConnectionTimeout(10l)
                 .setEncoding("utf-8")
-                .startMethodConfig(AAA).setPath("/aaa?b={1}&a={0}").endMethodConfig()
-                .startMethodConfig(BBB).setPath("/bbb/{2}?b={1}&a={0}")
+                .startMethodConfig(AAA).setPath("/aaa")
+                .startParamConfig(0).forQuery().setName("a").endParamConfig()
+                .startParamConfig(1).forQuery().setName("b").endParamConfig()
+                .endMethodConfig()
+                .startMethodConfig(BBB).setPath("/bbb/{p}")
                 .setConnectionTimeout(55l)
-                .startParamConfig(0).setSerializer(new Stubs.Serializer2()).endParamConfig()
+                .startParamConfig(0).forQuery().setName("a").setSerializer(new Stubs.Serializer2()).endParamConfig()
+                .startParamConfig(1).forPath().setName("p").endParamConfig()
+                .startParamConfig(2).forQuery().setName("qq").endParamConfig()
                 .endMethodConfig()
-                .startMethodConfig(CCC).setPath("/ccc/{0}?aa={1}")
+                .startMethodConfig(CCC).setPath("/ccc/{p}")
                 .setHttpMethod("POST")
-                .startParamConfig(0).setDestination(URL).endParamConfig()
-                .startParamConfig(1).setDestination(URL).endParamConfig()
-                .startParamConfig(2).setDestination(BODY).setName("bb").endParamConfig()
+                .startParamConfig(0).forPath().setName("p").endParamConfig()
+                .startParamConfig(1).forQuery().setName("aa").endParamConfig()
+                .startParamConfig(2).forForm().setName("bb").endParamConfig()
                 .endMethodConfig()
-                .startMethodConfig(DDD).setPath("/ddd?c={2}")
+                .startMethodConfig(DDD).setPath("/ddd")
                 .setHttpMethod("POST")
-                .startParamConfig(0).setDestination(BODY).setName("obj").endParamConfig()
-                .startParamConfig(1).setDestination(BODY).setName("bb").endParamConfig()
+                .startParamConfig(0).forForm().setName("obj").endParamConfig()
+                .startParamConfig(1).forForm() .setName("bb").endParamConfig()
+                .startParamConfig(2).forForm() .setName("cb").endParamConfig()
                 .endMethodConfig()
                 .build();
     }

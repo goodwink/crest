@@ -60,7 +60,7 @@ public class JaxRSAnnotationDrivenInterfaceConfigFactory implements InterfaceCon
 
                 //        HttpMethod httpMethod = interfaze.getAnnotation(HttpMethod.class); todo
                 Path path = meth.getAnnotation(Path.class);
-                DefaultValue defaultValue = (DefaultValue) meth.getAnnotation(DefaultValue.class);
+//                DefaultValue defaultValue = (DefaultValue) meth.getAnnotation(DefaultValue.class);
 
                 HttpMethod method = null;
                 for(Annotation a : meth.getAnnotations()){
@@ -72,7 +72,6 @@ public class JaxRSAnnotationDrivenInterfaceConfigFactory implements InterfaceCon
 
                 if(path != null) mcb.setPath(path.value());
                 if(method != null)  mcb.setHttpMethod(method.value());
-                if(defaultValue != null)  mcb.setParamsDefautValue(defaultValue.value());
 
 
                 for(int i = 0, max = meth.getParameterTypes().length; i < max ; i++){
@@ -81,7 +80,7 @@ public class JaxRSAnnotationDrivenInterfaceConfigFactory implements InterfaceCon
 
                     // Injects user type annotated config.
                     Configs.injectAnnotatedConfig(pcb, meth.getParameterTypes()[i]);
-                    defaultValue = (DefaultValue) paramAnnotations.get(DefaultValue.class);
+                    DefaultValue defaultValue = (DefaultValue) paramAnnotations.get(DefaultValue.class);
 
                     //param
                     FormParam formParam = (FormParam) paramAnnotations.get(FormParam.class);
@@ -93,17 +92,17 @@ public class JaxRSAnnotationDrivenInterfaceConfigFactory implements InterfaceCon
 
                     if(defaultValue != null) pcb.setDefaultValue(defaultValue.value());
                     if(formParam != null) {
-                        pcb.setDestination(Destination.BODY);
-                        pcb.setName(formParam.value());
+                        pcb.forForm()
+                           .setName(formParam.value());
                     }else if(headerParam != null) {
-                        pcb.setDestination(Destination.HEADER);
-                        pcb.setName(headerParam.value());
+                        pcb.forHeader()
+                           .setName(headerParam.value());
                     }else if(pathParam != null) {
-                        pcb.setDestination(Destination.URL);
-                        pcb.setName(pathParam.value());
+                        pcb.forPath()
+                           .setName(pathParam.value());
                     }else if(queryParam != null) {
-                        pcb.setDestination(Destination.URL);
-                        pcb.setName(queryParam.value());
+                        pcb.forQuery()
+                           .setName(queryParam.value());
                     }/*else if(matrixParam != null) {
 
                     }*/

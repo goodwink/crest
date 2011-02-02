@@ -20,7 +20,7 @@
 
 package org.codegist.crest.flickr.model;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.codegist.common.lang.ToStringBuilder;
 
 import javax.xml.bind.annotation.*;
 
@@ -47,6 +47,9 @@ public class Response<T extends Payload> {
 
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this);
+        return new ToStringBuilder(this)
+                .append("status", status)
+                .append("payload", payload)
+                .toString();
     }
 }

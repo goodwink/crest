@@ -21,7 +21,7 @@
 package org.codegist.crest.flickr.model;
 
 
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.codegist.common.lang.ToStringBuilder;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
@@ -41,6 +41,8 @@ public class PhotoId implements SimplePayload<Long> {
 
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this);
+        return new ToStringBuilder(this)
+                .append("value", value)
+                .toString();
     }
 }

@@ -124,13 +124,13 @@ public class OAuthenticatorV10Test {
         oauth.getRequestToken();
         verify(restService).exec(argThat(new HttpRequestMatcher(new HttpRequest.Builder(requestTokUrl)
                 .using("POST")
-                .addBodyParam("oauth_consumer_key","dpf43f3p2l4k3l03")
-                .addBodyParam("oauth_signature_method","HMAC-SHA1")
-                .addBodyParam("oauth_timestamp","1191242096")
-                .addBodyParam("oauth_nonce","kllo9940pd9333jh")
-                .addBodyParam("oauth_version","1.0")
-                .addBodyParam("oauth_callback","oob")
-                .addBodyParam("oauth_signature","KUkl3Z4v1zbpjyjtKdQ81nzWlkg=")
+                .addFormParam("oauth_consumer_key","dpf43f3p2l4k3l03")
+                .addFormParam("oauth_signature_method","HMAC-SHA1")
+                .addFormParam("oauth_timestamp","1191242096")
+                .addFormParam("oauth_nonce","kllo9940pd9333jh")
+                .addFormParam("oauth_version","1.0")
+                .addFormParam("oauth_callback","oob")
+                .addFormParam("oauth_signature","KUkl3Z4v1zbpjyjtKdQ81nzWlkg=")
                 .build())));
     }
     @Test
@@ -171,14 +171,14 @@ public class OAuthenticatorV10Test {
         oauth.getAccessToken(new Token("abc","cde"), "123");
         verify(restService).exec(argThat(new HttpRequestMatcher(new HttpRequest.Builder(accessTokUrl)
                 .using("POST")
-                .addBodyParam("oauth_consumer_key","dpf43f3p2l4k3l03")
-                .addBodyParam("oauth_signature_method","HMAC-SHA1")
-                .addBodyParam("oauth_timestamp","1191242096")
-                .addBodyParam("oauth_nonce","kllo9940pd9333jh")
-                .addBodyParam("oauth_version","1.0")
-                .addBodyParam("oauth_token","abc")
-                .addBodyParam("oauth_verifier","123")
-                .addBodyParam("oauth_signature","x8U4ouTFJDV+ITR5zjxw6HLZekI=")
+                .addFormParam("oauth_consumer_key","dpf43f3p2l4k3l03")
+                .addFormParam("oauth_signature_method","HMAC-SHA1")
+                .addFormParam("oauth_timestamp","1191242096")
+                .addFormParam("oauth_nonce","kllo9940pd9333jh")
+                .addFormParam("oauth_version","1.0")
+                .addFormParam("oauth_token","abc")
+                .addFormParam("oauth_verifier","123")
+                .addFormParam("oauth_signature","x8U4ouTFJDV+ITR5zjxw6HLZekI=")
                 .build())));
     }
     @Test
@@ -219,14 +219,14 @@ public class OAuthenticatorV10Test {
         oauth.refreshAccessToken(new Token("abc","cde", new HashMap<String, String>(){{put("extra","456");}}), "extra");
         verify(restService).exec(argThat(new HttpRequestMatcher(new HttpRequest.Builder(refreshTokUrl)
                 .using("POST")
-                .addBodyParam("oauth_consumer_key","dpf43f3p2l4k3l03")
-                .addBodyParam("oauth_signature_method","HMAC-SHA1")
-                .addBodyParam("oauth_timestamp","1191242096")
-                .addBodyParam("oauth_nonce","kllo9940pd9333jh")
-                .addBodyParam("oauth_version","1.0")
-                .addBodyParam("oauth_token","abc")
-                .addBodyParam("extra","456")
-                .addBodyParam("oauth_signature","Ayymy4Mxku5qVba67IuyKWEZ8Zw=")
+                .addFormParam("oauth_consumer_key","dpf43f3p2l4k3l03")
+                .addFormParam("oauth_signature_method","HMAC-SHA1")
+                .addFormParam("oauth_timestamp","1191242096")
+                .addFormParam("oauth_nonce","kllo9940pd9333jh")
+                .addFormParam("oauth_version","1.0")
+                .addFormParam("oauth_token","abc")
+                .addFormParam("extra","456")
+                .addFormParam("oauth_signature","Ayymy4Mxku5qVba67IuyKWEZ8Zw=")
                 .build())));
     }
 
@@ -253,11 +253,11 @@ public class OAuthenticatorV10Test {
         HttpRequest request = requestBuilder.build();
 
 
-        assertNotNull(request.getHeaders());
-        assertEquals(1, request.getHeaders().size());
-        assertNotNull(request.getHeaders().get("Authorization"));
+        assertNotNull(request.getHeaderParams());
+        assertEquals(1, request.getHeaderParams().size());
+        assertNotNull(request.getHeaderParams().get("Authorization"));
         assertEquals("http://photos.example.net/photos?file=vacation.jpg&size=original", request.getUrlString(true));
-        assertEquals("OAuth oauth_consumer_key=\"dpf43f3p2l4k3l03\",oauth_signature_method=\"HMAC-SHA1\",oauth_timestamp=\"1191242096\",oauth_nonce=\"kllo9940pd9333jh\",oauth_version=\"1.0\",oauth_token=\"nnch734d00sl2jdk\",oauth_signature=\"tR3%2BTy81lMeYAr%2FFid0kMTYa%2FWM%3D\"", request.getHeaders().get("Authorization"));
+        assertEquals("OAuth oauth_consumer_key=\"dpf43f3p2l4k3l03\",oauth_signature_method=\"HMAC-SHA1\",oauth_timestamp=\"1191242096\",oauth_nonce=\"kllo9940pd9333jh\",oauth_version=\"1.0\",oauth_token=\"nnch734d00sl2jdk\",oauth_signature=\"tR3%2BTy81lMeYAr%2FFid0kMTYa%2FWM%3D\"", request.getHeaderParams().get("Authorization"));
     }
 
     /**
@@ -275,8 +275,8 @@ public class OAuthenticatorV10Test {
         HttpRequest request = requestBuilder.build();
 
 
-        assertNotNull(request.getHeaders());
-        assertEquals(0, request.getHeaders().size());
+        assertNotNull(request.getHeaderParams());
+        assertEquals(0, request.getHeaderParams().size());
         assertEquals("http://photos.example.net/photos?file=vacation.jpg&size=original&oauth_consumer_key=dpf43f3p2l4k3l03&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1191242096&oauth_nonce=kllo9940pd9333jh&oauth_version=1.0&oauth_token=nnch734d00sl2jdk&oauth_signature=tR3%2BTy81lMeYAr%2FFid0kMTYa%2FWM%3D", request.getUrlString(true));
     }
 

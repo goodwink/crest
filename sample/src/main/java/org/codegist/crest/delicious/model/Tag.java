@@ -20,7 +20,7 @@
 
 package org.codegist.crest.delicious.model;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.codegist.common.lang.ToStringBuilder;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -50,6 +50,9 @@ public class Tag {
 
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this);
+        return new ToStringBuilder(this)
+                .append("count", count)
+                .append("tags", tags)
+                .toString();
     }
 }

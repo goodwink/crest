@@ -20,7 +20,7 @@
 
 package org.codegist.crest.flickr.model;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.codegist.common.lang.ToStringBuilder;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -37,7 +37,9 @@ public class Uploader implements Payload {
 
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this);
+        return new ToStringBuilder(this)
+                .append("tickets", tickets)
+                .toString();
     }
 
     @XmlRootElement(name = "ticket")
@@ -69,7 +71,12 @@ public class Uploader implements Payload {
 
         @Override
         public String toString() {
-            return ToStringBuilder.reflectionToString(this);
+            return new ToStringBuilder(this)
+                .append("id", id)
+                .append("complete", complete)
+                .append("invalid", invalid)
+                .append("photoId", photoId)
+                .toString();
         }
     }
 }

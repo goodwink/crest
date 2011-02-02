@@ -32,13 +32,20 @@
                 <error-handler>org.codegist.crest.Stubs$ErrorHandler1</error-handler>
                 <retry-handler>org.codegist.crest.Stubs$RetryHandler1</retry-handler>
                 <params>
-                    <static-param destination="BODY" name="body-param">gen-value1</static-param>
-                    <static-param destination="URL" name="url-param">gen-value2</static-param>
-                    <static-param destination="HEADER" name="header-param">gen-value3</static-param>
-                    <default destination="BODY" name="name">
-                        <serializer>org.codegist.crest.Stubs$Serializer1</serializer>
-                        <injector>org.codegist.crest.Stubs$RequestParameterInjector1</injector>
-                    </default>
+                    <serializer>org.codegist.crest.Stubs$Serializer1</serializer>
+                    <injector>org.codegist.crest.Stubs$RequestParameterInjector1</injector>
+                    <form name="body-param">body-value</form>
+                    <form name="body-param1">body-value1</form>
+                    <form name="body-param2">body-value2</form>
+                    <header name="header-param">header-value</header>
+                    <header name="header-param1">header-value1</header>
+                    <header name="header-param2">header-value2</header>
+                    <query name="query-param">query-value</query>
+                    <query name="query-param1">query-value1</query>
+                    <query name="query-param2">query-value2</query>
+                    <path name="path-param">path-value</path>
+                    <path name="path-param1">path-value1</path>
+                    <path name="path-param2">path-value2</path>
                 </params>
             </default>
             <method match="m1\(\)" socket-timeout="3" connection-timeout="4" method="PUT">
@@ -48,12 +55,10 @@
                 <error-handler>org.codegist.crest.Stubs$ErrorHandler2</error-handler>
                 <retry-handler>org.codegist.crest.Stubs$RetryHandler2</retry-handler>
                 <params>
-                    <static-param destination="BODY" name="body-param">over-value1</static-param>
-                    <static-param destination="BODY" name="body-param-2">new-value</static-param>
-                    <default destination="URL" name="name1">
-                        <serializer>org.codegist.crest.Stubs$Serializer3</serializer>
-                        <injector>org.codegist.crest.Stubs$RequestParameterInjector2</injector>
-                    </default>
+                    <serializer>org.codegist.crest.Stubs$Serializer3</serializer>
+                    <injector>org.codegist.crest.Stubs$RequestParameterInjector2</injector>
+                    <form name="body-param">over-value1</form>
+                    <form name="body-param-3">new-value</form>
                 </params>
             </method>
             <method match="m1\(java\.lang\.String\)" socket-timeout="5" connection-timeout="6" method="POST">
@@ -61,15 +66,13 @@
                 <request-interceptor>org.codegist.crest.Stubs$RequestInterceptor2</request-interceptor>
                 <response-handler>org.codegist.crest.Stubs$ResponseHandler2</response-handler>
                 <params>
-                    <static-param destination="URL" name="body-param">over-value1</static-param>
-                    <default destination="URL" name="name1">
-                        <serializer>org.codegist.crest.Stubs$Serializer2</serializer>
-                        <injector>org.codegist.crest.Stubs$RequestParameterInjector2</injector>
-                    </default>
-                    <param index="0" destination="URL" name="a">
+                    <serializer>org.codegist.crest.Stubs$Serializer2</serializer>
+                    <injector>org.codegist.crest.Stubs$RequestParameterInjector2</injector>
+                    <form name="body-param">over-value1</form>
+                    <header index="0" name="a" default="deff">
                         <serializer>org.codegist.crest.Stubs$Serializer3</serializer>
                         <injector>org.codegist.crest.Stubs$RequestParameterInjector3</injector>
-                    </param>
+                    </header>
                 </params>
             </method>
             <method match="m1\(java\.lang\.String,int\)" socket-timeout="7" connection-timeout="8" method="DELETE">
@@ -77,16 +80,14 @@
                 <request-interceptor>org.codegist.crest.Stubs$RequestInterceptor3</request-interceptor>
                 <response-handler>org.codegist.crest.Stubs$ResponseHandler1</response-handler>
                 <params>
-                    <default destination="URL" name="name2">
-                        <serializer>org.codegist.crest.Stubs$Serializer3</serializer>
-                    </default>
-                    <param index="0" destination="BODY" name="b">
+                    <serializer>org.codegist.crest.Stubs$Serializer3</serializer>
+                    <form index="0" name="b">
                         <serializer>org.codegist.crest.Stubs$Serializer1</serializer>
                         <injector>org.codegist.crest.Stubs$RequestParameterInjector3</injector>
-                    </param>
-                    <param index="1" destination="URL" name="c">
+                    </form>
+                    <query index="1" name="c">
                         <serializer>org.codegist.crest.Stubs$Serializer2</serializer>
-                    </param>
+                    </query>
                 </params>
             </method>
             <method match="m1\(java\.lang\.String,int\[\]\)" socket-timeout="9" connection-timeout="10" method="HEAD">
@@ -94,15 +95,13 @@
                 <request-interceptor>org.codegist.crest.Stubs$RequestInterceptor1</request-interceptor>
                 <response-handler>org.codegist.crest.Stubs$ResponseHandler1</response-handler>
                 <params>
-                    <default destination="URL" name="name2">
+                    <serializer>org.codegist.crest.Stubs$Serializer1</serializer>
+                    <path index="0" name="d">
                         <serializer>org.codegist.crest.Stubs$Serializer1</serializer>
-                    </default>
-                    <param index="0" destination="URL" name="d">
-                        <serializer>org.codegist.crest.Stubs$Serializer1</serializer>
-                    </param>
-                    <param index="1" destination="BODY" name="e">
+                    </path>
+                    <form index="1" name="e">
                         <serializer>org.codegist.crest.Stubs$Serializer3</serializer>
-                    </param>
+                    </form>
                 </params>
             </method>
             <method match="m2\(\)" socket-timeout="11" connection-timeout="12" method="GET">
@@ -110,9 +109,7 @@
                 <request-interceptor>org.codegist.crest.Stubs$RequestInterceptor3</request-interceptor>
                 <response-handler>org.codegist.crest.Stubs$ResponseHandler1</response-handler>
                 <params>
-                    <default destination="URL" name="name2">
-                        <serializer>org.codegist.crest.Stubs$Serializer1</serializer>
-                    </default>
+                    <serializer>org.codegist.crest.Stubs$Serializer1</serializer>
                 </params>
             </method>
             <method match="m2\(float,java\.lang\.String\[\]\)" socket-timeout="13" connection-timeout="14" method="POST">
@@ -120,15 +117,13 @@
                 <request-interceptor>org.codegist.crest.Stubs$RequestInterceptor2</request-interceptor>
                 <response-handler>org.codegist.crest.Stubs$ResponseHandler2</response-handler>
                 <params>
-                    <default destination="URL" name="name2">
-                        <serializer>org.codegist.crest.Stubs$Serializer2</serializer>
-                    </default>
-                    <param index="0" destination="URL" name="f">
+                    <serializer>org.codegist.crest.Stubs$Serializer2</serializer>
+                    <path index="0" name="f">
                         <serializer>org.codegist.crest.Stubs$Serializer3</serializer>
-                    </param>
-                    <param index="1" destination="URL" name="g">
+                    </path>
+                    <query index="1" name="g">
                         <serializer>org.codegist.crest.Stubs$Serializer1</serializer>
-                    </param>
+                    </query>
                 </params>
             </method>
         </methods>
