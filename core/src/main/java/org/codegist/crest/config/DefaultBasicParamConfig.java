@@ -23,8 +23,6 @@ package org.codegist.crest.config;
 import org.codegist.common.lang.EqualsBuilder;
 import org.codegist.common.lang.HashCodeBuilder;
 import org.codegist.common.lang.ToStringBuilder;
-import org.codegist.crest.injector.Injector;
-import org.codegist.crest.serializer.Serializer;
 
 /**
  * Default immutable in-memory implementation of {@link org.codegist.crest.config.DefaultBasicParamConfig}

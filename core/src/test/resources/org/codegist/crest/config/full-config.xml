@@ -18,7 +18,6 @@
   ~
   ~ More information at http://www.codegist.org.
   -->
-
 <crest-config>
     <service class="org.codegist.crest.config.AbstractInterfaceConfigFactoryTest$Interface" encoding="utf-8">
         <end-point>http://localhost:8080</end-point>
@@ -34,9 +33,9 @@
                 <params>
                     <serializer>org.codegist.crest.Stubs$Serializer1</serializer>
                     <injector>org.codegist.crest.Stubs$RequestParameterInjector1</injector>
-                    <form name="body-param">body-value</form>
-                    <form name="body-param1">body-value1</form>
-                    <form name="body-param2">body-value2</form>
+                    <form name="form-param">form-value</form>
+                    <form name="form-param1">form-value1</form>
+                    <form name="form-param2">form-value2</form>
                     <header name="header-param">header-value</header>
                     <header name="header-param1">header-value1</header>
                     <header name="header-param2">header-value2</header>
@@ -57,8 +56,8 @@
                 <params>
                     <serializer>org.codegist.crest.Stubs$Serializer3</serializer>
                     <injector>org.codegist.crest.Stubs$RequestParameterInjector2</injector>
-                    <form name="body-param">over-value1</form>
-                    <form name="body-param-3">new-value</form>
+                    <form name="form-param">over-value1</form>
+                    <form name="form-param3">new-value</form>
                 </params>
             </method>
             <method match="m1\(java\.lang\.String\)" socket-timeout="5" connection-timeout="6" method="POST">
@@ -68,7 +67,7 @@
                 <params>
                     <serializer>org.codegist.crest.Stubs$Serializer2</serializer>
                     <injector>org.codegist.crest.Stubs$RequestParameterInjector2</injector>
-                    <form name="body-param">over-value1</form>
+                    <path name="form-param">over-value1</path>
                     <header index="0" name="a" default="deff">
                         <serializer>org.codegist.crest.Stubs$Serializer3</serializer>
                         <injector>org.codegist.crest.Stubs$RequestParameterInjector3</injector>
@@ -121,9 +120,9 @@
                     <path index="0" name="f">
                         <serializer>org.codegist.crest.Stubs$Serializer3</serializer>
                     </path>
-                    <query index="1" name="g">
+                    <path index="1" name="g">
                         <serializer>org.codegist.crest.Stubs$Serializer1</serializer>
-                    </query>
+                    </path>
                 </params>
             </method>
         </methods>

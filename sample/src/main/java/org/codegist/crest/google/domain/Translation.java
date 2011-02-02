@@ -41,7 +41,7 @@ public class Translation {
 
     public String toString() {
         return new ToStringBuilder(this)
-                .append("text",text)
+                .append("text", text)
                 .toString();
     }
 }

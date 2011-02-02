@@ -38,6 +38,7 @@ public abstract class Cursor<T> {
 
     // this is a messy hack, to get a generic Cursor
     // since Twitter cursor payload property name varies with data types... 
+
     public static class User extends Cursor<org.codegist.crest.twitter.model.User[]> {
 
         @JsonProperty("users")
@@ -70,9 +71,9 @@ public abstract class Cursor<T> {
 
     public String toString() {
         return new ToStringBuilder(this)
-                .append("nextCursor",nextCursor)
-                .append("previousCursor",previousCursor)
-                .append("payload",payload)
+                .append("nextCursor", nextCursor)
+                .append("previousCursor", previousCursor)
+                .append("payload", payload)
                 .toString();
     }
 }

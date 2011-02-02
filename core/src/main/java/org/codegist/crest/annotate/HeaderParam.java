@@ -25,8 +25,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import static org.codegist.crest.config.Destination.HEADER;
-
 /**
  * @author laurent.gilles@codegist.org
  */

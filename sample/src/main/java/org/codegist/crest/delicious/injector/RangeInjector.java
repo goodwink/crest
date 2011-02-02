@@ -30,14 +30,14 @@ import org.codegist.crest.injector.Injector;
  */
 public class RangeInjector implements Injector<Range> {
     public void inject(HttpRequest.Builder builder, ParamContext<Range> context) {
-        if(context.getRawValue() == null) return;
+        if (context.getRawValue() == null) return;
         Range r = context.getRawValue();
         String start = String.valueOf(r.getStart());
         String results = String.valueOf(r.getResults());
-        if(context.isForUrl()){
+        if (context.isForUrl()) {
             builder.addQueryParam("start", start);
             builder.addQueryParam("results", results);
-        }else{
+        } else {
             builder.addFormParam("start", start);
             builder.addFormParam("results", results);
         }

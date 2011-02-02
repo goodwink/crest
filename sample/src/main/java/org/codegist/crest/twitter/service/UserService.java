@@ -20,10 +20,7 @@
 
 package org.codegist.crest.twitter.service;
 
-import org.codegist.crest.annotate.ContextPath;
-import org.codegist.crest.annotate.EndPoint;
-import org.codegist.crest.annotate.HeaderParam;
-import org.codegist.crest.annotate.Path;
+import org.codegist.crest.annotate.*;
 import org.codegist.crest.twitter.model.User;
 
 
@@ -35,21 +32,27 @@ import org.codegist.crest.twitter.model.User;
 @HeaderParam(name = "Accept-Encoding", value = "gzip")
 public interface UserService {
 
-    @Path("/search.json?q={0}")
-    User[] search(String search);
+    @Path("/search.json")
+    User[] search(
+            @QueryParam(name = "q") String search);
 
-    @Path("/search.json?q={0}&per_page={1}&page={2}")
-    User[] search(String search, long count, long page);
+    @Path("/search.json")
+    User[] search(
+            @QueryParam(name = "q") String search,
+            @QueryParam(name = "per_page") long count,
+            @QueryParam(name = "page") long page);
 
-    @Path("/show.json?user_id={0}")
-    User get(long id);
+    @Path("/show.json")
+    User get(@QueryParam(name = "user_id") long id);
 
-    @Path("/show.json?screen_name={0}")
-    User get(String screenName);
+    @Path("/show.json")
+    User get(@QueryParam(name = "screen_name") String screenName);
 
-    @Path("/lookup.json?user_id={0}&screen_name={1}")
-    User[] lookup(long id, String... screenName);
+    @Path("/lookup.json")
+    User[] lookup(
+            @QueryParam(name = "user_id") long id,
+            @QueryParam(name = "screen_name") String... screenName);
 
-    @Path("/lookup.json?screen_name={0}")
-    User[] lookup(String[] screenName);
+    @Path("/lookup.json")
+    User[] lookup(@QueryParam(name = "screen_name") String[] screenName);
 }

@@ -34,7 +34,7 @@ import java.util.Iterator;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "bundles")
-public class Bundles implements Iterable<Bundle>  {
+public class Bundles implements Iterable<Bundle> {
 
     @XmlElement(name = "bundle")
     private Bundle[] bundles;
@@ -53,12 +53,15 @@ public class Bundles implements Iterable<Bundle>  {
     public Iterator<Bundle> iterator() {
         return new Iterator<Bundle>() {
             int i = 0;
+
             public boolean hasNext() {
                 return i < bundles.length;
             }
+
             public Bundle next() {
                 return bundles[i++];
             }
+
             public void remove() {
                 throw new UnsupportedOperationException();
             }

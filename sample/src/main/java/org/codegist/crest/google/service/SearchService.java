@@ -20,10 +20,7 @@
 
 package org.codegist.crest.google.service;
 
-import org.codegist.crest.annotate.ContextPath;
-import org.codegist.crest.annotate.EndPoint;
-import org.codegist.crest.annotate.Path;
-import org.codegist.crest.annotate.ResponseHandler;
+import org.codegist.crest.annotate.*;
 import org.codegist.crest.google.domain.Address;
 import org.codegist.crest.google.domain.SearchResult;
 import org.codegist.crest.google.handler.GoogleResponseHandler;
@@ -33,12 +30,12 @@ import org.codegist.crest.google.handler.GoogleResponseHandler;
  */
 @EndPoint("http://ajax.googleapis.com")
 @ContextPath("/ajax/services/search")
+@QueryParam(name = "v", value = "1.0")
 @ResponseHandler(GoogleResponseHandler.class)
 public interface SearchService {
 
-
-    @Path("/web?v=1.0&q={0}")
-    SearchResult<Address> search(String text);
+    @Path("/web")
+    SearchResult<Address> search(@QueryParam(name = "q") String text);
 
 }
 

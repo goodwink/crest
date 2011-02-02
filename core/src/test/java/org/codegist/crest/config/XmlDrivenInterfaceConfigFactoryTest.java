@@ -50,9 +50,9 @@ public class XmlDrivenInterfaceConfigFactoryTest extends AbstractInterfaceConfig
                 "\t\t<methods>\n" +
                 "\t\t\t<method match=\"get.*\">\n" +
                 "\t\t\t\t<params>\n" +
-                "\t\t\t\t\t<param index=\"0\">\n" +
+                "\t\t\t\t\t<query index=\"0\">\n" +
                 "\t\t\t\t\t\t<injector>org.codegist.crest.Stubs$RequestParameterInjector3</injector>\n" +
-                "\t\t\t\t\t</param>\n" +
+                "\t\t\t\t\t</query>\n" +
                 "\t\t\t\t</params>\n" +
                 "\t\t\t</method>\n" +
                 "\t\t</methods>\n" +
@@ -68,6 +68,13 @@ public class XmlDrivenInterfaceConfigFactoryTest extends AbstractInterfaceConfig
         String xml = "<crest-config>\n" +
                 "    <service class=\"org.codegist.crest.config.XmlDrivenInterfaceConfigFactoryTest$InjectorTestInterface\">\n" +
                 "        <end-point>http://localhost:8080</end-point>    \n" +
+                "\t\t<methods>\n" +
+                "\t\t\t<method match=\"get.*\">\n" +
+                "\t\t\t\t<params>\n" +
+                "\t\t\t\t\t<query index=\"0\"/>\n" +
+                "\t\t\t\t</params>\n" +
+                "\t\t\t</method>\n" +
+                "\t\t</methods>\n" +
                 "\t</service>\n" +
                 "</crest-config>";
         XmlDrivenInterfaceConfigFactory factory = newFactory(new ByteArrayInputStream(xml.getBytes()));
@@ -126,11 +133,20 @@ public class XmlDrivenInterfaceConfigFactoryTest extends AbstractInterfaceConfig
 
     @Test
     public void testServerConfig() throws IOException, InstantiationException, IllegalAccessException, ConfigFactoryException, SAXException, ParserConfigurationException {
-        String serverConfig = "<crest-config end-point=\"hello\"/>";
+        String serverConfig = "<crest-config end-point=\"hello\">" +
+                "    <service class=\"org.codegist.crest.config.XmlDrivenInterfaceConfigFactoryTest$InjectorTestInterface\">\n" +
+                "\t\t<methods>\n" +
+                "\t\t\t<method match=\"get.*\">\n" +
+                "\t\t\t\t<params>\n" +
+                "\t\t\t\t\t<query index=\"0\"/>\n" +
+                "\t\t\t\t</params>\n" +
+                "\t\t\t</method>\n" +
+                "\t\t</methods>\n" +
+                "\t</service>\n" +
+                "</crest-config>";
         XmlDrivenInterfaceConfigFactory factory = newFactory(new ByteArrayInputStream(serverConfig.getBytes()));
-        InterfaceConfig config = factory.newConfig(Interface.class, mockContext);
-        InterfaceConfig expected = new ConfigBuilders.InterfaceConfigBuilder(Interface.class).setEndPoint("hello").build();
-        InterfaceConfigTestHelper.assertExpected(expected, config, Interface.class);
+        InterfaceConfig config = factory.newConfig(InjectorTestInterface.class, mockContext);
+        assertEquals("hello", config.getEndPoint());
     }
 
 }

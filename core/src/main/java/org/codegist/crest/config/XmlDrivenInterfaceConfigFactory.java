@@ -150,8 +150,8 @@ public class XmlDrivenInterfaceConfigFactory implements InterfaceConfigFactory {
                     .setMethodsRequestInterceptor(getString(interfaceConfig, "methods/default/request-interceptor"))
                     .setMethodsPath(getString(interfaceConfig, "methods/default/path"))
 
-                    .setParamsSerializer(getString(interfaceConfig, "methods/default/params/default/serializer"))
-                    .setParamsInjector(getString(interfaceConfig, "methods/default/params/default/injector"));
+                    .setParamsSerializer(getString(interfaceConfig, "methods/default/params/serializer"))
+                    .setParamsInjector(getString(interfaceConfig, "methods/default/params/injector"));
 
             NodeList extraParams = getNodes(interfaceConfig, "methods/default/params/*[(name() = 'form' or name() = 'path' or name() = 'query' or name() = 'header') and not(@index)]");
             if (extraParams != null) {
@@ -185,7 +185,7 @@ public class XmlDrivenInterfaceConfigFactory implements InterfaceConfigFactory {
                         for (int i = 0; i < methExtraParams.getLength(); i++) {
                             Node methExtraParam = methExtraParams.item(i);
                             String name = getString(methExtraParam, "@name");
-                            icb.addMethodsExtraParam(name, methExtraParam.getTextContent(), methExtraParam.getNodeName());
+                            mcb.addExtraParam(name, methExtraParam.getTextContent(), methExtraParam.getNodeName());
                         }
 
                         mcb.setPath(getString(methodNode, "path"))
@@ -196,8 +196,8 @@ public class XmlDrivenInterfaceConfigFactory implements InterfaceConfigFactory {
                                 .setResponseHandler(getString(methodNode, "response-handler"))
                                 .setErrorHandler(getString(methodNode, "error-handler"))
                                 .setRetryHandler(getString(methodNode, "retry-handler"))
-                                .setParamsSerializer(getString(methodNode, "params/default/serializer"))
-                                .setParamsInjector(getString(methodNode, "params/default/injector"));
+                                .setParamsSerializer(getString(methodNode, "params/serializer"))
+                                .setParamsInjector(getString(methodNode, "params/injector"));
                         break;
                     }
                 }
@@ -207,6 +207,7 @@ public class XmlDrivenInterfaceConfigFactory implements InterfaceConfigFactory {
                     Configs.injectAnnotatedConfig(pcb, method.getParameterTypes()[i]);
                     Node paramNode = getNode(methodNode, "params/*[(name() = 'form' or name() = 'path' or name() = 'query' or name() = 'header') and @index='%d']", i);
                     pcb.setName(getString(paramNode, "@name"))
+                            .setDefaultValue(getString(paramNode, "@default"))
                             .setDestination(paramNode.getNodeName())
                             .setInjector(getString(paramNode, "injector"))
                             .setSerializer(getString(paramNode, "serializer"))

@@ -31,28 +31,45 @@ import org.codegist.crest.twitter.model.Message;
 @HeaderParam(name = "Accept-Encoding", value = "gzip")
 public interface DirectMessageService {
 
-    @Path(".json?since_id={0}&max_id={1}&count={2}&page={3}")
-    Message[] getReceived(long sinceId, long maxId, long count, long page);
+    @Path(".json")
+    Message[] getReceived(
+            @QueryParam(name = "since_id") long sinceId,
+            @QueryParam(name = "max_id") long maxId,
+            @QueryParam(name = "count") long count,
+            @QueryParam(name = "page") long page);
 
-    @Path(".json?count={0}&page={1}")
-    Message[] getReceived(long count, long page);
+    @Path(".json")
+    Message[] getReceived(
+            @QueryParam(name = "count") long count,
+            @QueryParam(name = "page") long page);
 
-    @Path("/sent.json?since_id={0}&max_id={1}&count={2}&page={3}")
-    Message[] getSent(long sinceId, long maxId, long count, long page);
+    @Path("/sent.json")
+    Message[] getSent(
+            @QueryParam(name = "since_id") long sinceId,
+            @QueryParam(name = "max_id") long maxId,
+            @QueryParam(name = "count") long count,
+            @QueryParam(name = "page") long page);
 
-    @Path("/sent.json?count={0}&page={1}")
-    Message[] getSent(long count, long page);
+    @Path("/sent.json")
+    Message[] getSent(
+            @QueryParam(name = "count") long count,
+            @QueryParam(name = "page") long page);
 
     @POST
-    @Path("/new.json?user_id={0}&text={1}")
-    Message send(long userId, String msg);
+    @Path("/new.json")
+    Message send(
+            @QueryParam(name = "user_id") long userId,
+            @QueryParam(name = "text") String msg);
 
     @POST
-    @Path("/new.json?user_id={0}&screen_name={1}&text={2}")
-    Message send(long userId, String screenName, String msg);
+    @Path("/new.json")
+    Message send(
+            @QueryParam(name = "user_id") long userId,
+            @QueryParam(name = "screen_name") String screenName,
+            @QueryParam(name = "text") String msg);
 
     @DELETE
-    @Path("/destroy/{0}.json")
-    Message destroy(long msgId);
+    @Path("/destroy/{msgid}.json")
+    Message destroy(@PathParam(name = "msgid") long msgId);
 
 }

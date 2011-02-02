@@ -20,10 +20,7 @@
 
 package org.codegist.crest.delicious.service;
 
-import org.codegist.crest.annotate.EndPoint;
-import org.codegist.crest.annotate.Path;
-import org.codegist.crest.annotate.ResponseHandler;
-import org.codegist.crest.annotate.RetryHandler;
+import org.codegist.crest.annotate.*;
 import org.codegist.crest.delicious.handler.DeliciousResponseHandler;
 import org.codegist.crest.delicious.model.*;
 import org.codegist.crest.security.handler.RefreshAuthentificationRetryHandler;
@@ -41,61 +38,89 @@ public interface Delicious {
     @Path("/posts/recent")
     Posts getRecentsPosts();
 
-    @Path("/posts/recent?tag={0}&count={1}")
-    Posts getRecentsPosts(String tag, int count);
+    @Path("/posts/recent")
+    Posts getRecentsPosts(
+            @QueryParam(name = "tag") String tag,
+            @QueryParam(name = "count") int count);
 
     @Path("/posts/dates")
     Dates getPostsPerDate();
 
-    @Path("/posts/dates?tag={0}")
-    Dates getPostsPerDate(String tag);
+    @Path("/posts/dates")
+    Dates getPostsPerDate(@QueryParam(name = "tag") String tag);
 
     @Path("/posts/update")
     Update getLastUpdatePosts();
 
-    @Path("/posts/add?url={0}&description={1}")
-    boolean addPost(String url, String description);
+    @Path("/posts/add")
+    boolean addPost(
+            @QueryParam(name = "url") String url,
+            @QueryParam(name = "description") String description);
 
-    @Path("/posts/add?url={0}&description={1}&extended={2}&tags={3}&stamp={4}&replace={5}&shared={6}")
-    boolean addPost(String url, String description, String extended, String[] tags, Date stamp, boolean replace, boolean shared);
+    @Path("/posts/add")
+    boolean addPost(
+            @QueryParam(name = "url") String url,
+            @QueryParam(name = "description") String description,
+            @QueryParam(name = "extended") String extended,
+            @QueryParam(name = "tags") String[] tags,
+            @QueryParam(name = "stamp") Date stamp,
+            @QueryParam(name = "replace") boolean replace,
+            @QueryParam(name = "shared") boolean shared);
 
     @Path("/posts/get")
     Posts getPosts();
 
-    @Path("/posts/get?url={0}&dt={1}&tag={2}&hashes={3}&meta={4}")
-    Posts getPosts(String url, Date date, String[] tags, String[] hashes, Boolean meta);
+    @Path("/posts/get")
+    Posts getPosts(
+            @QueryParam(name = "url") String url,
+            @QueryParam(name = "dt") Date date,
+            @QueryParam(name = "tag") String[] tags,
+            @QueryParam(name = "hashes") String[] hashes,
+            @QueryParam(name = "meta") Boolean meta);
 
     @Path("/posts/all")
     Posts getAllPosts();
 
-    @Path("/posts/all?tag={0}&fromdt={2}&todt={3}&meta={4}")
-    Posts getAllPosts(String tag, Range resultRange, Date from, Date to, Boolean meta);
+    @Path("/posts/all")
+    Posts getAllPosts(
+            @QueryParam(name = "tag") String tag,
+            @QueryParam(name = "range") Range resultRange,// name doesn't really matter here as it get injected. todo something about ?
+            @QueryParam(name = "fromdt") Date from,
+            @QueryParam(name = "todt") Date to,
+            @QueryParam(name = "meta") Boolean meta);
 
-    @Path("/posts/all?hashes")
+    @QueryParam(name = "hashes")
+    @Path("/posts/all")
     Posts getAllPostHashes();
 
-    @Path("/posts/suggest?url={0}")
-    Suggest getSuggestedPosts(String url);
+    @Path("/posts/suggest")
+    Suggest getSuggestedPosts(
+            @QueryParam(name = "url") String url);
 
     @Path("/tags/get")
     Tags getTags();
 
-    @Path("/tags/delete?tag={0}")
-    boolean deleteTag(String tag);
+    @Path("/tags/delete")
+    boolean deleteTag(
+            @QueryParam(name = "tag") String tag);
 
-    @Path("/tags/rename?old={0}&new={1}")
-    boolean renameTag(String oldTag, String newTag);
+    @Path("/tags/rename")
+    boolean renameTag(
+            @QueryParam(name = "old") String oldTag,
+            @QueryParam(name = "new") String newTag);
 
     @Path("/tags/bundles/all")
     Bundles getTagBundles();
 
-    @Path("/tags/bundles/all?bundle={0}")
-    Bundles getTagBundle(String name);
+    @Path("/tags/bundles/all")
+    Bundles getTagBundle(@QueryParam(name = "bundle") String name);
 
-    @Path("/tags/bundles/set?bundle={0}&tags={1}")
-    boolean setTagBundle(String name, String... tags);
+    @Path("/tags/bundles/set")
+    boolean setTagBundle(
+            @QueryParam(name = "bundle") String name,
+            @QueryParam(name = "tags") String... tags);
 
-    @Path("/tags/bundles/delete?bundle={0}")
-    boolean deleteTagBundle(String name);
+    @Path("/tags/bundles/delete")
+    boolean deleteTagBundle(@QueryParam(name = "bundle") String name);
 
 }

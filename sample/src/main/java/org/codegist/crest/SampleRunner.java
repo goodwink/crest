@@ -55,12 +55,12 @@ public class SampleRunner {
     public static void main(String[] args) throws Exception {
         int i = 0;
         Runnable[] samples = {
-                new DeliciousSample(args[i++],args[i++],args[i++],args[i++],args[i++]),
-                new TwitterSample(args[i++],args[i++],args[i++],args[i++]),
-                new FlickrSample(args[i++],args[i++],args[i++]),
+                new DeliciousSample(args[i++], args[i++], args[i++], args[i++], args[i++]),
+                new TwitterSample(args[i++], args[i++], args[i++], args[i++]),
+                new FlickrSample(args[i++], args[i++], args[i++]),
                 new GoogleServicesSample()
         };
-        for(Runnable sample : samples){
+        for (Runnable sample : samples) {
             LOG.info("Running " + sample.getClass().getSimpleName());
             try {
                 sample.run();

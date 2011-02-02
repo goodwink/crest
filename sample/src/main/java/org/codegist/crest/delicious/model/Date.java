@@ -45,6 +45,7 @@ public class Date {
     public java.util.Date getDate() {
         return date;
     }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this)

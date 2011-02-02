@@ -53,8 +53,8 @@ public class Bundle {
     @Override
     public String toString() {
         return new ToStringBuilder(this)
-                .append("name",name)
-                .append("tags",tags)
+                .append("name", name)
+                .append("tags", tags)
                 .toString();
     }
 }

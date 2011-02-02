@@ -38,7 +38,7 @@ public class GoogleResponseHandler implements ResponseHandler {
 
     private final Marshaller marshaller;
 
-    public GoogleResponseHandler(Map<String,Object> parameters) {
+    public GoogleResponseHandler(Map<String, Object> parameters) {
         this.marshaller = (Marshaller) parameters.get(Marshaller.class.getName());
         Validate.notNull(this.marshaller, "No marshaller set, please construct CRest using either JSON or XML expected return type.");
     }

@@ -43,7 +43,7 @@ public class Post {
     private String meta;
     @XmlAttribute
     private String description;
-    @XmlAttribute(name="tag")
+    @XmlAttribute(name = "tag")
     @XmlJavaTypeAdapter(ArrayAdapter.class)
     private String[] tags;
     @XmlAttribute

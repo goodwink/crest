@@ -49,16 +49,19 @@ public class Tags implements Iterable<Tag> {
                 .append("tags", tags)
                 .toString();
     }
-    
+
     public Iterator<Tag> iterator() {
-        return new Iterator<Tag>(){
+        return new Iterator<Tag>() {
             int i = 0;
+
             public boolean hasNext() {
                 return i < tags.length;
             }
+
             public Tag next() {
                 return tags[i++];
             }
+
             public void remove() {
                 throw new UnsupportedOperationException();
             }

@@ -68,6 +68,6 @@ public class OAuthHelper {
         System.out.println("goto " + String.format(redirect, tok.getToken()));
         System.out.println("Input verifier :");
         Token accessToken = oauth.getAccessToken(tok, br.readLine());
-        System.out.println("Token  =" + accessToken); 
+        System.out.println("Token  =" + accessToken);
     }
 }

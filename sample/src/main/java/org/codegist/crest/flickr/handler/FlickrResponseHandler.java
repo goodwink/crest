@@ -40,7 +40,7 @@ public class FlickrResponseHandler implements ResponseHandler {
 
     private final Marshaller marshaller;
 
-    public FlickrResponseHandler(Map<String,Object> properties) {
+    public FlickrResponseHandler(Map<String, Object> properties) {
         this.marshaller = (Marshaller) properties.get(Marshaller.class.getName());
         Validate.notNull(this.marshaller, "No marshaller set, please construct CRest using either JSON or XML expected return type.");
     }

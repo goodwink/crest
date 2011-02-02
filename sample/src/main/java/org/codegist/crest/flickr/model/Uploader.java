@@ -28,7 +28,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "uploader")
 public class Uploader implements Payload {
-    @XmlElement(name="ticket")
+    @XmlElement(name = "ticket")
     private Ticket[] tickets;
 
     public Ticket[] getTickets() {
@@ -72,11 +72,11 @@ public class Uploader implements Payload {
         @Override
         public String toString() {
             return new ToStringBuilder(this)
-                .append("id", id)
-                .append("complete", complete)
-                .append("invalid", invalid)
-                .append("photoId", photoId)
-                .toString();
+                    .append("id", id)
+                    .append("complete", complete)
+                    .append("invalid", invalid)
+                    .append("photoId", photoId)
+                    .toString();
         }
     }
 }

@@ -44,91 +44,111 @@ import java.util.Date;
 public interface Flickr {
 
     @GET
-    @Path("/rest?method=flickr.blogs.getList")
+    @Path("/rest")
+    @QueryParam(name = "method", value = "flickr.blogs.getList")
     String getList();
 
-    @Path("/rest?method=flickr.galleries.create")
+    @Path("/rest")
+    @QueryParam(name = "method", value = "flickr.galleries.create")
     Gallery newGallery(
-            @FormParam(name="title") String title,
-            @FormParam(name="description") String description);
+            @FormParam(name = "title") String title,
+            @FormParam(name = "description") String description);
 
-    @Path("/rest?method=flickr.galleries.create")
+    @Path("/rest")
+    @QueryParam(name = "method", value = "flickr.galleries.create")
     Gallery newGallery(
-            @FormParam(name="title") String title,
-            @FormParam(name="description") String description,
-            @FormParam(name="primary_photo_id") long primaryPhotoId);
+            @FormParam(name = "title") String title,
+            @FormParam(name = "description") String description,
+            @FormParam(name = "primary_photo_id") long primaryPhotoId);
 
-    @Path("/rest?method=flickr.galleries.addPhoto&gallery_id={0}&photo_id={1}&comment={2}")
-    void addPhotoToGallery(String galleryId, long photoId, String comment);
+    @Path("/rest")
+    @QueryParam(name = "method", value = "flickr.galleries.addPhoto")
+    void addPhotoToGallery(
+            @QueryParam(name = "gallery_id") String galleryId,
+            @QueryParam(name = "photo_id") long photoId,
+            @QueryParam(name = "comment") String comment);
 
-    @Path("/rest?method=flickr.photos.comments.addComment&photo_id={0}&comment_text={1}")
-    String comment(long photoId, String comment);
+    @Path("/rest")
+    @QueryParam(name = "method", value = "flickr.photos.comments.addComment")
+    String comment(
+            @QueryParam(name = "photo_id") long photoId,
+            @QueryParam(name = "comment_text") String comment);
 
-    @Path("/rest?method=flickr.photos.comments.editComment&comment_id={0}&comment_text={1}")
-    void editComment(String commentId, String comment);
+    @Path("/rest")
+    @QueryParam(name = "method", value = "flickr.photos.comments.editComment")
+    void editComment(
+            @QueryParam(name = "comment_id") String commentId,
+            @QueryParam(name = "comment_text") String comment);
 
-    @Path("/rest?method=flickr.photos.comments.getList&photo_id={0}")
-    Comment[] getComments(long photoId);
+    @Path("/rest")
+    @QueryParam(name = "method", value = "flickr.photos.comments.getList")
+    Comment[] getComments(@QueryParam(name = "photo_id") long photoId);
 
-    @Path("/rest?method=flickr.photos.comments.getList&photo_id={0}&min_comment_date={1}&max_comment_date={2}")
-    Comment[] getComments(long photoId, Date from, Date to);
+    @Path("/rest")
+    @QueryParam(name = "method", value = "flickr.photos.comments.getList")
+    Comment[] getComments(
+            @QueryParam(name = "photo_id") long photoId,
+            @QueryParam(name = "min_comment_date") Date from,
+            @QueryParam(name = "max_comment_date") Date to);
 
-    @Path("/rest?method=flickr.photos.comments.deleteComment&comment_id={0}")
-    void deleteComment(String commentId);
+    @Path("/rest")
+    @QueryParam(name = "method", value = "flickr.photos.comments.deleteComment")
+    void deleteComment(@QueryParam(name = "comment_id") String commentId);
 
 
     @Path("/upload")
-    long uploadPhoto(@FormParam(name="photo") File photo);
+    long uploadPhoto(@FormParam(name = "photo") File photo);
 
     @Path("/upload")
-    long uploadPhoto(@FormParam(name="photo") InputStream photo);
+    long uploadPhoto(@FormParam(name = "photo") InputStream photo);
 
     @Path("/upload")
     long uploadPhoto(
-            @FormParam(name="photo") InputStream photo,
-            @FormParam(name="title") String title,
-            @FormParam(name="description") String description,
-            @FormParam(name="tags") String[] tags,
-            @FormParam(name="is_public") boolean isPublic,
-            @FormParam(name="is_friend") boolean isFriend,
-            @FormParam(name="is_family") boolean isFamily,
-            @FormParam(name="safety_level") SafetyLevel safetyLevel,
-            @FormParam(name="content_type") ContentType contentLype,
-            @FormParam(name="hidden") Visibility searchVisibility
+            @FormParam(name = "photo") InputStream photo,
+            @FormParam(name = "title") String title,
+            @FormParam(name = "description") String description,
+            @FormParam(name = "tags") String[] tags,
+            @FormParam(name = "is_public") boolean isPublic,
+            @FormParam(name = "is_friend") boolean isFriend,
+            @FormParam(name = "is_family") boolean isFamily,
+            @FormParam(name = "safety_level") SafetyLevel safetyLevel,
+            @FormParam(name = "content_type") ContentType contentLype,
+            @FormParam(name = "hidden") Visibility searchVisibility
     );
 
 
     @Path("/upload")
     @FormParam(name = "async", value = "1")
-    String asyncUploadPhoto(@FormParam(name="photo") File photo);
+    String asyncUploadPhoto(@FormParam(name = "photo") File photo);
 
     @Path("/upload")
     @FormParam(name = "async", value = "1")
-    String asyncUploadPhoto(@FormParam(name="photo") InputStream photo);
+    String asyncUploadPhoto(@FormParam(name = "photo") InputStream photo);
 
     @Path("/upload")
     @FormParam(name = "async", value = "1")
     String asyncUploadPhoto(
-            @FormParam(name="photo") InputStream photo,
-            @FormParam(name="title") String title,
-            @FormParam(name="description") String description,
-            @FormParam(name="tags") String[] tags,
-            @FormParam(name="is_public") boolean isPublic,
-            @FormParam(name="is_friend") boolean isFriend,
-            @FormParam(name="is_family") boolean isFamily,
-            @FormParam(name="safety_level") SafetyLevel safetyLevel,
-            @FormParam(name="content_type") ContentType contentLype,
-            @FormParam(name="hidden") Visibility searchVisibility
+            @FormParam(name = "photo") InputStream photo,
+            @FormParam(name = "title") String title,
+            @FormParam(name = "description") String description,
+            @FormParam(name = "tags") String[] tags,
+            @FormParam(name = "is_public") boolean isPublic,
+            @FormParam(name = "is_friend") boolean isFriend,
+            @FormParam(name = "is_family") boolean isFamily,
+            @FormParam(name = "safety_level") SafetyLevel safetyLevel,
+            @FormParam(name = "content_type") ContentType contentLype,
+            @FormParam(name = "hidden") Visibility searchVisibility
     );
 
-    @Path("/rest?method=flickr.photos.upload.checkTickets&tickets={0}")
-    Uploader checkUploads(String... tickets);
+    @Path("/rest")
+    @QueryParam(name = "method", value = "flickr.photos.upload.checkTickets")
+    Uploader checkUploads(@QueryParam(name = "tickets") String... tickets);
 
 
     @Path("/replace")
     long replacePhoto(
-            @FormParam(name="photo") InputStream photo,
-            @FormParam(name="photo_id") long photoId
+            @FormParam(name = "photo") InputStream photo,
+            @FormParam(name = "photo_id") long photoId
     );
 
 

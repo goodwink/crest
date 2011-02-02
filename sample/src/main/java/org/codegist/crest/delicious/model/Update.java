@@ -36,7 +36,7 @@ import java.util.Date;
 public class Update {
     @XmlAttribute
     private Date time;
-    @XmlAttribute(name="inboxnew")
+    @XmlAttribute(name = "inboxnew")
     private int inbox;
 
     public Date getTime() {

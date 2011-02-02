@@ -20,10 +20,7 @@
 
 package org.codegist.crest.google.service;
 
-import org.codegist.crest.annotate.ContextPath;
-import org.codegist.crest.annotate.EndPoint;
-import org.codegist.crest.annotate.Path;
-import org.codegist.crest.annotate.ResponseHandler;
+import org.codegist.crest.annotate.*;
 import org.codegist.crest.google.domain.LanguageGuess;
 import org.codegist.crest.google.domain.Translation;
 import org.codegist.crest.google.handler.GoogleResponseHandler;
@@ -33,14 +30,18 @@ import org.codegist.crest.google.handler.GoogleResponseHandler;
  */
 @EndPoint("http://ajax.googleapis.com")
 @ContextPath("/ajax/services/language")
+@QueryParam(name = "v", value = "1.0")
 @ResponseHandler(GoogleResponseHandler.class)
 public interface LanguageService {
 
-    @Path("/detect?v=1.0&q={0}")
-    LanguageGuess detectLanguage(String text);
+    @Path("/detect")
+    LanguageGuess detectLanguage(@QueryParam(name = "q") String text);
 
-    @Path("/translate?v=1.0&q={0}&langpair={1}%7C{2}")
-    Translation translate(String text, String from, String to);
+    @Path("/translate?langpair={left}%7C{right}")
+    Translation translate(
+            @QueryParam(name = "q") String text,
+            @QueryParam(name = "left") String from,
+            @QueryParam(name = "right") String to);
 
 }
 

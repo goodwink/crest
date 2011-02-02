@@ -50,8 +50,8 @@ public class SearchResult<T> {
 
     public String toString() {
         return new ToStringBuilder(this)
-                .append("cursor",cursor)
-                .append("results",results)
+                .append("cursor", cursor)
+                .append("results", results)
                 .toString();
     }
 
@@ -91,11 +91,11 @@ public class SearchResult<T> {
 
         public String toString() {
             return new ToStringBuilder(this)
-                .append("pages",pages)
-                .append("estimatedResultCount",estimatedResultCount)
-                .append("currentPageIndex",currentPageIndex)
-                .append("moreResultsUrl",moreResultsUrl)
-                .toString();
+                    .append("pages", pages)
+                    .append("estimatedResultCount", estimatedResultCount)
+                    .append("currentPageIndex", currentPageIndex)
+                    .append("moreResultsUrl", moreResultsUrl)
+                    .toString();
         }
 
         public static class Page {
@@ -120,9 +120,9 @@ public class SearchResult<T> {
 
             public String toString() {
                 return new ToStringBuilder(this)
-                .append("start",start)
-                .append("label",label)
-                .toString();
+                        .append("start", start)
+                        .append("label", label)
+                        .toString();
             }
         }
     }

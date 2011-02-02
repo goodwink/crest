@@ -37,7 +37,7 @@ import java.util.Date;
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
 public class TwitterSample implements Runnable {
-    
+
     private static final Logger LOG = Logger.getLogger(TwitterSample.class);
 
     private final String consumerKey;
@@ -75,6 +75,6 @@ public class TwitterSample implements Runnable {
     }
 
     public static void main(String[] args) {
-        new TwitterSample(args[0],args[1],args[2],args[3]).run();
+        new TwitterSample(args[0], args[1], args[2], args[3]).run();
     }
 }

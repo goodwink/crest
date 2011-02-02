@@ -28,7 +28,6 @@ import org.codegist.crest.handler.ResponseHandler;
 import org.codegist.crest.handler.RetryHandler;
 import org.codegist.crest.injector.Injector;
 import org.codegist.crest.interceptor.CompositeRequestInterceptor;
-import org.codegist.crest.interceptor.EmptyRequestInterceptor;
 import org.codegist.crest.interceptor.RequestInterceptor;
 import org.codegist.crest.serializer.Serializer;
 import org.junit.Test;

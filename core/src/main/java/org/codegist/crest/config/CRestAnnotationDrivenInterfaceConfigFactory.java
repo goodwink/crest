@@ -23,12 +23,6 @@ package org.codegist.crest.config;
 import org.codegist.common.reflect.Methods;
 import org.codegist.crest.CRestContext;
 import org.codegist.crest.annotate.*;
-import org.codegist.crest.annotate.FormParam;
-import org.codegist.crest.annotate.HeaderParam;
-import org.codegist.crest.annotate.HttpMethod;
-import org.codegist.crest.annotate.Path;
-import org.codegist.crest.annotate.PathParam;
-import org.codegist.crest.annotate.QueryParam;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;

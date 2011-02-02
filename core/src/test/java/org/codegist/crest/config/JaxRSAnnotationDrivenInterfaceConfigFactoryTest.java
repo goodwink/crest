@@ -25,7 +25,6 @@ import org.codegist.crest.TestUtils;
 import org.junit.Test;
 
 import javax.ws.rs.*;
-
 import java.lang.reflect.Method;
 
 import static org.mockito.Mockito.mock;

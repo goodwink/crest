@@ -24,17 +24,12 @@ import org.codegist.crest.CRestContext;
 import org.codegist.crest.Stubs;
 import org.codegist.crest.TestUtils;
 import org.codegist.crest.annotate.*;
-import org.codegist.crest.annotate.FormParam;
-import org.codegist.crest.annotate.HeaderParam;
-import org.codegist.crest.annotate.PathParam;
-import org.codegist.crest.annotate.QueryParam;
 import org.codegist.crest.injector.DefaultInjector;
 import org.junit.Test;
 
-import javax.ws.rs.*;
+import javax.ws.rs.DefaultValue;
 import java.lang.reflect.Method;
 
-import static org.codegist.crest.config.Destination.*;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 

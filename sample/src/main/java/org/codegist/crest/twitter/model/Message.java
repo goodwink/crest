@@ -112,14 +112,14 @@ public class Message {
 
     public String toString() {
         return new ToStringBuilder(this)
-                .append("id",id)
-                .append("text",text)
-                .append("sender",sender)
-                .append("recipientId",recipientId)
-                .append("recipientScreenName",recipientScreenName)
-                .append("recipient",recipient)
-                .append("senderId",senderId)
-                .append("senderScreenName",senderScreenName)
+                .append("id", id)
+                .append("text", text)
+                .append("sender", sender)
+                .append("recipientId", recipientId)
+                .append("recipientScreenName", recipientScreenName)
+                .append("recipient", recipient)
+                .append("senderId", senderId)
+                .append("senderScreenName", senderScreenName)
                 .toString();
     }
 }

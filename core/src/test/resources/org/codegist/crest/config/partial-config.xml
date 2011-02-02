@@ -19,6 +19,8 @@
   ~ More information at http://www.codegist.org.
   -->
 
+
+
 <crest-config>
     <service class="org.codegist.crest.config.AbstractInterfaceConfigFactoryTest$Interface" encoding="UTF-8">
         <end-point>http://localhost:8080</end-point>
@@ -38,30 +40,37 @@
                 <path>/m1</path>
                 <params>
                     <serializer>org.codegist.crest.Stubs$Serializer2</serializer>
-                    <path index="0">
+                    <query index="0" name="pname">
                         <serializer>org.codegist.crest.Stubs$Serializer3</serializer>
                         <injector>org.codegist.crest.Stubs$RequestParameterInjector3</injector>
-                    </path>
+                    </query>
                 </params>
             </method>
             <method match="m1\(java\.lang\.String,int\)">
                 <path>/m1</path>
                 <params>
                     <injector>org.codegist.crest.Stubs$RequestParameterInjector2</injector>
-                    <param index="1" name="c" default="444"/>
+                    <form index="0" name="d"/>
+                    <query index="1" name="c" default="444"/>
                 </params>
             </method>
             <method match="m1\(java\.lang\.String,int\[\]\)">
                 <path>/m1</path>
                 <params>
                     <injector>org.codegist.crest.Stubs$RequestParameterInjector2</injector>
-                    <param index="1" name="c"/>
+                    <path index="0" name="f"/>
+                    <query index="1" name="c"/>
                 </params>
             </method>
             <method match="m2\(\)" method="GET" socket-timeout="11" connection-timeout="12">
                 <path>/m2/1</path>
             </method>
-            <method match="m2\(float,String\[\]\)"/>
+            <method match="m2\(float,java\.lang\.String\[\]\)">
+                <params>
+                    <query index="0" name="fd"/>
+                    <query index="1" name="cf"/>
+                </params>
+            </method>
         </methods>
     </service>
 </crest-config>

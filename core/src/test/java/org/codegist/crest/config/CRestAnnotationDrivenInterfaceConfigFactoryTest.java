@@ -29,7 +29,6 @@ import org.junit.Test;
 
 import java.lang.reflect.Method;
 
-import static org.codegist.crest.config.Destination.*;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 

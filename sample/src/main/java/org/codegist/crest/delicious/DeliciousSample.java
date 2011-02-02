@@ -37,7 +37,7 @@ import java.util.HashMap;
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
 public class DeliciousSample implements Runnable {
-    
+
     private static final Logger LOG = Logger.getLogger(DeliciousSample.class);
     private final String consumerKey;
     private final String consumerSecret;
@@ -53,7 +53,7 @@ public class DeliciousSample implements Runnable {
         this.sessionHandle = sessionHandle;
     }
 
-    public void run(){
+    public void run() {
         /* Get the factory */
         CRest crest = new CRestBuilder()
                 .useHttpClientRestService()
@@ -71,7 +71,7 @@ public class DeliciousSample implements Runnable {
         Delicious delicious = crest.build(Delicious.class);
 
         /* Use it! */
-        Posts posts = delicious.getAllPosts("opensource", new Range(1,15), new Date(), new Date(), false);
+        Posts posts = delicious.getAllPosts("opensource", new Range(1, 15), new Date(), new Date(), false);
         boolean done = delicious.renameTag("os", "opensource");
 
         LOG.info("Posts=" + posts);
@@ -79,7 +79,7 @@ public class DeliciousSample implements Runnable {
     }
 
     public static void main(String[] args) throws IOException {
-        new DeliciousSample(args[0],args[1],args[2],args[3],args[4]).run();
+        new DeliciousSample(args[0], args[1], args[2], args[3], args[4]).run();
     }
 
 }

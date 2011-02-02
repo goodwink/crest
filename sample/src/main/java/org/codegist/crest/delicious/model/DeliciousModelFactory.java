@@ -27,37 +27,47 @@ import javax.xml.bind.annotation.XmlRegistry;
  */
 @XmlRegistry
 public class DeliciousModelFactory {
-    public Posts createPosts(){
+    public Posts createPosts() {
         return new Posts();
     }
-    public Post createPost(){
+
+    public Post createPost() {
         return new Post();
     }
-    public Update createUpdate(){
+
+    public Update createUpdate() {
         return new Update();
     }
-    public Dates createDates(){
+
+    public Dates createDates() {
         return new Dates();
     }
-    public Date createDate(){
+
+    public Date createDate() {
         return new Date();
     }
-    public Result createResult(){
+
+    public Result createResult() {
         return new Result();
     }
-    public Suggest createSuggest(){
+
+    public Suggest createSuggest() {
         return new Suggest();
     }
-    public Tag createTag(){
+
+    public Tag createTag() {
         return new Tag();
     }
-    public Tags createTags(){
+
+    public Tags createTags() {
         return new Tags();
     }
-    public Bundle createBundle(){
+
+    public Bundle createBundle() {
         return new Bundle();
     }
-    public Bundles createBundles(){
+
+    public Bundles createBundles() {
         return new Bundles();
     }
 }

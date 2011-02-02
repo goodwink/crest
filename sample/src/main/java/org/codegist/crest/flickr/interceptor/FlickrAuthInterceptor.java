@@ -22,7 +22,6 @@ package org.codegist.crest.flickr.interceptor;
 
 import org.codegist.common.codec.Hex;
 import org.codegist.common.lang.Validate;
-import org.codegist.crest.HttpMethod;
 import org.codegist.crest.HttpRequest;
 import org.codegist.crest.Params;
 import org.codegist.crest.RequestContext;
@@ -46,7 +45,7 @@ public class FlickrAuthInterceptor extends RequestInterceptorAdapter {
     private final String apiKey;
     private final String authToken;
 
-    public FlickrAuthInterceptor(Map<String,Object> properties) {
+    public FlickrAuthInterceptor(Map<String, Object> properties) {
         this.appSecret = (String) properties.get(APP_SECRET_PROP);
         this.apiKey = (String) properties.get(API_KEY_PROP);
         this.authToken = (String) properties.get(AUTH_TOKEN_PROP);
@@ -68,7 +67,7 @@ public class FlickrAuthInterceptor extends RequestInterceptorAdapter {
             builder.addQueryParam("auth_token", authToken);
         }
 
-        SortedMap<String, String> map = new TreeMap<String, String>(builder.getQueryString());
+        SortedMap<String, String> map = new TreeMap<String, String>(builder.getQueryParams());
         if (builder.getFormParams() != null) {
             for (Map.Entry<String, Object> param : builder.getFormParams().entrySet()) {
                 if (Params.isForUpload(param.getValue())) continue;
@@ -88,7 +87,7 @@ public class FlickrAuthInterceptor extends RequestInterceptorAdapter {
         }
     }
 
-    private boolean isForBody(HttpMethod m) {
-        return HttpMethod.POST.equals(m) || HttpMethod.PUT.equals(m);
+    private boolean isForBody(String meth) {
+        return "POST".equals(meth) || "PUT".equals(meth);
     }
 }

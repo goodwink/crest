@@ -27,7 +27,7 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 /**
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
-class ArrayAdapter extends XmlAdapter<String,String[]> {
+class ArrayAdapter extends XmlAdapter<String, String[]> {
     @Override
     public String[] unmarshal(String v) throws Exception {
         return v.split(",");

@@ -30,3 +30,5 @@ CREST
         ----> /stringvalue/?count=10
   }
 * Does it work to pass JSON in the HttpRequest.Builder.addQueryParam etc.. or should it be encoded ? Could conflict with placeholder syntax!
+* Should it fail at Factory time or at runtime when configuration do not contains param name ? Param name are mandatory now...
+* Write run-optional integration test for sample: ensuring that all changes are still compatible with sample apis is a good real-life usecase

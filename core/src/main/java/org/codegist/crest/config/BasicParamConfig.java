@@ -20,10 +20,6 @@
 
 package org.codegist.crest.config;
 
-import org.codegist.crest.injector.DefaultInjector;
-import org.codegist.crest.injector.Injector;
-import org.codegist.crest.serializer.Serializer;
-
 /**
  * Method's argument configuration holder object.
  * <p>Implementors must respect the following contract :

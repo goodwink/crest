@@ -31,7 +31,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "dates")
 public class Dates {
-    @XmlAttribute(name="tag")
+    @XmlAttribute(name = "tag")
     @XmlJavaTypeAdapter(ArrayAdapter.class)
     private String[] tags;
     @XmlAttribute
@@ -50,6 +50,7 @@ public class Dates {
     public Date[] getDates() {
         return dates;
     }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this)

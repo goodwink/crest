@@ -84,13 +84,13 @@ public class Address {
 
     public String toString() {
         return new ToStringBuilder(this)
-                .append("unescapedUrl",unescapedUrl)
-                .append("url",url)
-                .append("visibleUrl",visibleUrl)
-                .append("cacheUrl",cacheUrl)
-                .append("title",title)
-                .append("titleNoFormatting",titleNoFormatting)
-                .append("content",content)
+                .append("unescapedUrl", unescapedUrl)
+                .append("url", url)
+                .append("visibleUrl", visibleUrl)
+                .append("cacheUrl", cacheUrl)
+                .append("title", title)
+                .append("titleNoFormatting", titleNoFormatting)
+                .append("content", content)
                 .toString();
     }
 }

@@ -55,16 +55,16 @@ public class Status {
 
     public String toString() {
         return new ToStringBuilder(this)
-                .append("id",id)
-                .append("inReplyToScreenName",inReplyToScreenName)
-                .append("inReplyToStatusId",inReplyToStatusId)
-                .append("inReplyToUserId",inReplyToUserId)
-                .append("retweeted",retweeted)
-                .append("source",source)
-                .append("text",text)
-                .append("truncated",truncated)
-                .append("user",user)
-                .append("retweetedStatus",retweetedStatus)
+                .append("id", id)
+                .append("inReplyToScreenName", inReplyToScreenName)
+                .append("inReplyToStatusId", inReplyToStatusId)
+                .append("inReplyToUserId", inReplyToUserId)
+                .append("retweeted", retweeted)
+                .append("source", source)
+                .append("text", text)
+                .append("truncated", truncated)
+                .append("user", user)
+                .append("retweetedStatus", retweetedStatus)
                 .toString();
     }
 
