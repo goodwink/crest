@@ -18,24 +18,21 @@
  *  More information at http://www.codegist.org.
  */
 
-package org.codegist.crest.delicious;
+package org.codegist.crest.google;
 
-import org.codegist.crest.CRest;
-import org.codegist.crest.delicious.service.Delicious;
-import org.junit.Ignore;
+import org.codegist.crest.google.service.SearchService;
 
 /**
  * @author laurent.gilles@codegist.org
  */
-@Ignore
-public class DefaultDeliciousIntegrationTest extends AbstractDeliciousIntegrationTest {
-
-    public DefaultDeliciousIntegrationTest() {
-        super(getDelicious());
+public class HttpClientSearchServiceIntegrationTest extends AbstractSearchServiceIntegrationTest {
+    public HttpClientSearchServiceIntegrationTest() {
+        super(getSearchService());
     }
 
-    private static Delicious getDelicious() {
-        CRest crest = getBaseCRestBuilder().build();
-        return crest.build(Delicious.class);
+    private static SearchService getSearchService(){
+        return getBaseCRestBuilder()
+                .useHttpClientRestService()
+                .build().build(SearchService.class);
     }
 }

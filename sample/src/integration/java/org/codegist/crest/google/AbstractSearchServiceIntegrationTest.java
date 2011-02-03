@@ -18,24 +18,36 @@
  *  More information at http://www.codegist.org.
  */
 
-package org.codegist.crest.delicious;
+package org.codegist.crest.google;
 
-import org.codegist.crest.CRest;
-import org.codegist.crest.delicious.service.Delicious;
+import org.codegist.crest.CRestBuilder;
+import org.codegist.crest.google.domain.Address;
+import org.codegist.crest.google.domain.SearchResult;
+import org.codegist.crest.google.service.SearchService;
 import org.junit.Ignore;
+import org.junit.Test;
+
+import static org.junit.Assert.assertNotNull;
 
 /**
  * @author laurent.gilles@codegist.org
  */
 @Ignore
-public class DefaultDeliciousIntegrationTest extends AbstractDeliciousIntegrationTest {
+public class AbstractSearchServiceIntegrationTest {
+    private final SearchService searchService;
 
-    public DefaultDeliciousIntegrationTest() {
-        super(getDelicious());
+    public AbstractSearchServiceIntegrationTest(SearchService searchService) {
+        this.searchService = searchService;
     }
 
-    private static Delicious getDelicious() {
-        CRest crest = getBaseCRestBuilder().build();
-        return crest.build(Delicious.class);
+    @Test
+    public void testSearch(){
+        SearchResult<Address> result = searchService.search("google");
+        assertNotNull(result);
+        assertNotNull(result.getResults());
+    }
+
+    protected static CRestBuilder getBaseCRestBuilder(){
+        return new CRestBuilder().expectsJson();
     }
 }

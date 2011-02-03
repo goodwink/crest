@@ -20,7 +20,6 @@
 package org.codegist.crest.delicious;
 
 import org.codegist.common.lang.Randoms;
-import org.codegist.crest.CRest;
 import org.codegist.crest.CRestBuilder;
 import org.codegist.crest.CRestProperty;
 import org.codegist.crest.delicious.model.*;
