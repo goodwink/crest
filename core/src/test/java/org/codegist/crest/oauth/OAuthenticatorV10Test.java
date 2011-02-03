@@ -247,7 +247,9 @@ public class OAuthenticatorV10Test {
         OAuthenticator oauth = new OAuthenticatorV10(restService, consumer, new HashMap<String, Object>() {{
             put(OAuthenticatorV10.CONFIG_OAUTH_PARAM_DEST, "header");
         }}, variantProvider);
-        HttpRequest.Builder requestBuilder = new HttpRequest.Builder("http://photos.example.net/photos?file=vacation.jpg&size=original");
+        HttpRequest.Builder requestBuilder = new HttpRequest.Builder("http://photos.example.net/photos")
+                .addQueryParam("file", "vacation.jpg")
+                .addQueryParam("size", "original");
 
         oauth.sign(access, requestBuilder);
         HttpRequest request = requestBuilder.build();
@@ -269,7 +271,9 @@ public class OAuthenticatorV10Test {
             put(OAuthenticatorV10.CONFIG_OAUTH_PARAM_DEST, "url");
         }};
         OAuthenticator oauth = new OAuthenticatorV10(restService, consumer, config, variantProvider);
-        HttpRequest.Builder requestBuilder = new HttpRequest.Builder("http://photos.example.net/photos?file=vacation.jpg&size=original");
+        HttpRequest.Builder requestBuilder = new HttpRequest.Builder("http://photos.example.net/photos")
+                .addQueryParam("file", "vacation.jpg")
+                .addQueryParam("size", "original");
 
         oauth.sign(access, requestBuilder);
         HttpRequest request = requestBuilder.build();

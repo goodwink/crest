@@ -40,6 +40,10 @@ import static org.junit.Assert.*;
 public class HttpRequestBuilderTest {
 
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testQueryString() throws URISyntaxException {
+        new HttpRequest.Builder("http://test?test=test");
+    }
     @Test
     public void testTimeouts() throws URISyntaxException {
         HttpRequest.Builder request = new HttpRequest.Builder("http://test").timeoutAfter(100l);
@@ -156,22 +160,22 @@ public class HttpRequestBuilderTest {
 
     @Test
     public void testGetUrl() throws URISyntaxException, MalformedURLException, UnsupportedEncodingException {
-        HttpRequest.Builder request = new HttpRequest.Builder("http://127.0.0.1/{p1}/{p2}/?q={q1}-{q2}")
+        HttpRequest.Builder request = new HttpRequest.Builder("http://127.0.0.1/{p1}/{p2}/")
                 .addPathParam("p1", "vp1")
                 .addPathParam("p2", "vp2")
                 .addQueryParam("q1", "vq1")
                 .addQueryParam("q2", "vq2")
                 .addQueryParam("q3", "vq3");
         assertEquals("http://127.0.0.1/vp1/vp2/", request.getBaseUri());
-        assertEquals(new URL("http://127.0.0.1/vp1/vp2/?q=vq1-vq2&q3=vq3"), request.getUrl(true));
+        assertEquals(new URL("http://127.0.0.1/vp1/vp2/?q1=vq1&q2=vq2&q3=vq3"), request.getUrl(true));
         assertEquals(new URL("http://127.0.0.1/vp1/vp2/"), request.getUrl(false));
-        assertEquals("http://127.0.0.1/vp1/vp2/?q=vq1-vq2&q3=vq3", request.getUrlString(true));
+        assertEquals("http://127.0.0.1/vp1/vp2/?q1=vq1&q2=vq2&q3=vq3", request.getUrlString(true));
         assertEquals("http://127.0.0.1/vp1/vp2/", request.getUrlString(false));
     }
 
     @Test
     public void testGetUrlWithUnresolved() throws URISyntaxException, MalformedURLException, UnsupportedEncodingException {
-        HttpRequest.Builder request = new HttpRequest.Builder("http://127.0.0.1/{p1}/{p2}/?q={q1}-{q2}");
+        HttpRequest.Builder request = new HttpRequest.Builder("http://127.0.0.1/{p1}/{p2}/");
         try {
             request.getBaseUri();
             fail("should have failed");

@@ -20,9 +20,7 @@
 
 package org.codegist.crest;
 
-import org.codegist.common.lang.EqualsBuilder;
-import org.codegist.common.lang.HashCodeBuilder;
-import org.codegist.common.lang.ToStringBuilder;
+import org.codegist.common.lang.*;
 import org.codegist.common.net.Urls;
 import org.codegist.crest.config.Destination;
 
@@ -161,8 +159,8 @@ public class HttpRequest {
      * <p>Will create an GET utf-8 HttpRequest object.
      */
     public static class Builder {
-        private static final Pattern PARAM_CONTENT_PATTERN = Pattern.compile("[^\\s\\}]+");
-        private static final Pattern SINGLE_PLACEHOLDER_PATTERN = Pattern.compile("[\\{\\(](" + PARAM_CONTENT_PATTERN.pattern() + ")[\\}\\)]");
+        private static final Pattern PLACEHOLDER_CONTENT_PATTERN = Pattern.compile("[^\\s\\}]+");
+        private static final Pattern SINGLE_PLACEHOLDER_PATTERN = Pattern.compile("[\\{\\(](" + PLACEHOLDER_CONTENT_PATTERN.pattern() + ")[\\}\\)]");
         private static final Pattern CONTAINS_PLACEHOLDER_PATTERN = Pattern.compile(".*" + SINGLE_PLACEHOLDER_PATTERN + ".*");
         static final String ENCODING = "utf-8";
         static final String METH = "GET";
@@ -206,9 +204,9 @@ public class HttpRequest {
                     socketTimeout,
                     connectionTimeout,
                     encoding,
-                    headerParams != null ? headerParams : new LinkedHashMap<String, String>(),
-                    buildQueryParams(),
-                    formParams != null ? formParams : new LinkedHashMap<String, Object>()
+                    headerParams,
+                    queryParams,
+                    formParams
             );
         }
 
@@ -229,44 +227,6 @@ public class HttpRequest {
             return baseUri;
         }
 
-        private Map<String,String> buildQueryParams(){
-            Set<String> placeholders = new HashSet<String>();
-            Map<String,String> queryParams = new LinkedHashMap<String, String>();
-            for(Map.Entry<String, String> queryStringEntry : this.queryParams.entrySet()){
-                String name = queryStringEntry.getKey();
-                String value = queryStringEntry.getValue();
-                if(hasUnresolvedPlaceholders(value)) {
-                    for(Map.Entry<String, String> queryStringEntry2 : this.queryParams.entrySet()){
-                        if(!hasUnresolvedPlaceholders(value)) {
-                            break;
-                        }
-                        String potentialPlaceholderName = queryStringEntry2.getKey();
-                        String potentialPlaceholderValue = queryStringEntry2.getValue();
-                        String newValue = value.replaceAll("\\(" + Pattern.quote(potentialPlaceholderName) + "\\)", potentialPlaceholderValue);
-                        if(!value.equals(newValue)) {
-                            placeholders.add(potentialPlaceholderName);
-                        }
-                        value = newValue;
-                    }
-                    if(hasUnresolvedPlaceholders(value)) {
-                        throw new IllegalStateException("QueryString parameter '" + name + "'' value still contain unresolved placeholder! (value='" + value + "')");
-                    }else{
-                        queryParams.put(name, value);
-                    }
-
-                }else{
-                    // no placeholder found, adding it.
-                    // NB:Might be removed later on if it is actualy a placeholder value
-                    queryParams.put(name, value);
-                }
-            }
-            for(String placeHolder : placeholders){
-                queryParams.remove(placeHolder);
-            }
-            return queryParams;
-        }
-
-
         /**
          * Sets the url the request will point to using the default encoding (utf-8)
          * <p>Can contains a predefined query string
@@ -283,20 +243,22 @@ public class HttpRequest {
         /**
          * Sets the url the request will point to.
          * <p>Can contains a predefined query string
-         * <p>This value can contain placeholders that points to method arguments. eg http://localhost:8080/my-path/{my-param-name}/{2}/{2}.json?my-param={1}.
+         * <p>This value can contain placeholders that points to method arguments. eg http://localhost:8080/my-path/{my-param-name}/{p2}.json
          *
-         * @param uriString Url the request will point to
+         * @param uriString Url the request will point to - No query string allowed
          * @param encoding  Request encoding
          * @return current builder
          * @throws URISyntaxException If the uriString is not a valid URL
          */
         public Builder pointsTo(String uriString, String encoding) throws URISyntaxException {
-            uriString = SINGLE_PLACEHOLDER_PATTERN.matcher(uriString).replaceAll("\\($1\\)");
-            URI uri = new URI(uriString);
+            String fixed = SINGLE_PLACEHOLDER_PATTERN.matcher(uriString).replaceAll("\\($1\\)");
+            URI uri = new URI(fixed);
             String baseUri = uri.getScheme() + "://" + uri.getAuthority() + uri.getPath();
             this.encoding = encoding;
             this.baseUri = baseUri;
-            this.setQueryParams(uri.getRawQuery() != null ? Urls.parseQueryString(uri.getRawQuery(), encoding) : new LinkedHashMap<String, String>());
+            if(Strings.isNotBlank(uri.getRawQuery())) {
+                throw new IllegalArgumentException("Given uri contains a query string:" + uriString);
+            }
             return this;
         }
 
@@ -309,10 +271,8 @@ public class HttpRequest {
          */
         public String getUrlString(boolean includeQueryString) throws UnsupportedEncodingException {
             String uri = buildBaseUriString();
-            if (!includeQueryString) return uri;
-            Map<String,String> query = buildQueryParams();
-            if(query.isEmpty()) return uri;
-            return uri + "?" + Urls.buildQueryString(query, encoding);
+            if (!includeQueryString || queryParams.isEmpty()) return uri;
+            return uri + "?" + Urls.buildQueryString(queryParams, encoding);
         }
 
         /**

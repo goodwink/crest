@@ -31,10 +31,9 @@ import static org.junit.Assert.assertEquals;
  */
 public class DateSerializerTest {
 
-    @Test
+    @Test(expected = NullPointerException.class)
     public void testDateFormatNull(){
-        DateSerializer serializer = new DateSerializer();
-        assertEquals("", serializer.serialize(null));
+        new DateSerializer().serialize(null);
     }
     @Test
     public void testDateFormat(){

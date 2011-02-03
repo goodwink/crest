@@ -38,10 +38,13 @@ public class ArraySerializerTest {
         }
     };
     
+    @Test(expected = NullPointerException.class)
+    public void testNull(){
+        new ArraySerializer(itemSerializer).serialize(null);
+    }
     @Test
     public void testDefaultEmpty(){
         Serializer s = new ArraySerializer(itemSerializer);
-        assertEquals("", s.serialize(null));
         assertEquals("", s.serialize(new int[0]));
         assertEquals("", s.serialize(new ArrayList()));
     }

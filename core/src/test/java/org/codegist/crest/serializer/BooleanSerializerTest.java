@@ -32,6 +32,10 @@ import static org.junit.Assert.assertEquals;
  */
 public class BooleanSerializerTest {
     
+    @Test(expected = NullPointerException.class)
+    public void testNull(){
+        new BooleanSerializer().serialize(null);
+    }
     @Test
     public void testDefaults1(){
         test(new BooleanSerializer(), "true", "false");
@@ -53,7 +57,6 @@ public class BooleanSerializerTest {
     }
 
     public static void test(BooleanSerializer serializer, String expectedTrue, String expectedFalse){
-        assertEquals("", serializer.serialize(null));
         assertEquals(expectedTrue, serializer.serialize(true));
         assertEquals(expectedFalse, serializer.serialize(false));
         assertEquals(expectedTrue, serializer.serialize(Boolean.TRUE));

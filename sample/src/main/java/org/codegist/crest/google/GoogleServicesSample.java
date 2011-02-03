@@ -23,10 +23,7 @@ package org.codegist.crest.google;
 import org.codegist.common.log.Logger;
 import org.codegist.crest.CRest;
 import org.codegist.crest.CRestBuilder;
-import org.codegist.crest.google.domain.Address;
-import org.codegist.crest.google.domain.LanguageGuess;
-import org.codegist.crest.google.domain.SearchResult;
-import org.codegist.crest.google.domain.Translation;
+import org.codegist.crest.google.domain.*;
 import org.codegist.crest.google.service.LanguageService;
 import org.codegist.crest.google.service.SearchService;
 
@@ -52,7 +49,7 @@ public class GoogleServicesSample implements Runnable {
 
         /* Use them! */
         LanguageGuess searchLanguageGuess = languageService.detectLanguage("Guess it!");
-        Translation searchTranslation = languageService.translate("Translate me if you can!", "en", "fr");
+        Translation searchTranslation = languageService.translate("Translate me if you can!", new LangPair("en", "fr"));
         SearchResult<Address> searchResult = searchService.search("this is a google search");
 
         LOG.info("search=" + searchResult);

@@ -36,7 +36,6 @@ import static org.junit.Assert.assertEquals;
  */
 public class HttpRequestTest {
 
-
     @Test
     public void testHttpRequestUriNoParams() throws URISyntaxException, MalformedURLException, UnsupportedEncodingException {
         HttpRequest request = new HttpRequest.Builder("http://127.0.0.1:8080/test").build();
@@ -54,22 +53,16 @@ public class HttpRequestTest {
     }
     @Test
     public void testHttpRequestUriWithParams() throws URISyntaxException, MalformedURLException, UnsupportedEncodingException {
-        HttpRequest request = new HttpRequest.Builder("http://127.0.0.1:8080/test?p1=v1").addQueryParam("p2","v2").build();
+        HttpRequest request = new HttpRequest.Builder("http://127.0.0.1:8080/test").addQueryParam("p2","v2").build();
         assertEquals(new URI("http://127.0.0.1:8080/test"), request.getUri());
-        assertEquals(new URL("http://127.0.0.1:8080/test?p1=v1&p2=v2"), request.getUrl(true));
-        assertEquals(("http://127.0.0.1:8080/test?p1=v1&p2=v2"), request.getUrlString(true));
+        assertEquals(new URL("http://127.0.0.1:8080/test?p2=v2"), request.getUrl(true));
+        assertEquals(("http://127.0.0.1:8080/test?p2=v2"), request.getUrlString(true));
         assertEquals(new URL("http://127.0.0.1:8080/test"), request.getUrl(false));
         assertEquals(("http://127.0.0.1:8080/test"), request.getUrlString(false));
     }
 
-    private static final String PLACEHOLDERS_URI =  "http://127.0.0.1:8080/{p1}/{p2}/{p1}/test?p1=v1&q1={q1}&q={q1}-{q2}&q3={q3}";
-    @Test(expected = IllegalStateException.class)
-    public void testHttpRequestWithUnresolvedQueryPlaceholders() throws URISyntaxException, MalformedURLException, UnsupportedEncodingException {
-        new HttpRequest.Builder(PLACEHOLDERS_URI)
-                .addPathParam("p1", "pv1")
-                .addPathParam("p2", "pv2")
-                .build();
-    }
+    private static final String PLACEHOLDERS_URI =  "http://127.0.0.1:8080/{p1}/{p2}/{p1}/test";
+
     @Test(expected = IllegalStateException.class)
     public void testHttpRequestWithUnresolvedPathPlaceholders() throws URISyntaxException, MalformedURLException, UnsupportedEncodingException {
         new HttpRequest.Builder(PLACEHOLDERS_URI)
@@ -90,10 +83,10 @@ public class HttpRequestTest {
                 .build();
         assertEquals(new URL("http://127.0.0.1:8080/pv1/pv2/pv1/test"), req.getUrl(false));
         assertEquals(new URI("http://127.0.0.1:8080/pv1/pv2/pv1/test"), req.getUri());
-        assertEquals(new URL("http://127.0.0.1:8080/pv1/pv2/pv1/test?p1=v1&q=qv1-qv2&q3=&q4=qv4"), req.getUrl(true));
+        assertEquals(new URL("http://127.0.0.1:8080/pv1/pv2/pv1/test?q1=qv1&q2=qv2&q3=&q4=qv4"), req.getUrl(true));
         assertEquals(new LinkedHashMap<String,String>(){{
-            put("p1","v1");
-            put("q","qv1-qv2");
+            put("q1","qv1");
+            put("q2","qv2");
             put("q3","");
             put("q4","qv4");
         }}, req.getQueryParams());

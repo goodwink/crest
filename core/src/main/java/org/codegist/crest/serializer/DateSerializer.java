@@ -59,7 +59,6 @@ public class DateSerializer implements Serializer<Date> {
     }
 
     public String serialize(Date value) {
-        if(value == null) return "";
         if(formatter != null) {
              synchronized (formatter) {
                  return formatter.format(value);

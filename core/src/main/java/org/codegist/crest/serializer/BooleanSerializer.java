@@ -51,7 +51,6 @@ public class BooleanSerializer implements Serializer<Boolean> {
 
 
     public String serialize(Boolean value) {
-        if(value == null) return "";
-        return Boolean.TRUE.equals(value) ? trueString : falseString;
+        return value ? trueString : falseString;
     }
 }

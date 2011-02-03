@@ -21,9 +21,11 @@
 package org.codegist.crest.google.service;
 
 import org.codegist.crest.annotate.*;
+import org.codegist.crest.google.domain.LangPair;
 import org.codegist.crest.google.domain.LanguageGuess;
 import org.codegist.crest.google.domain.Translation;
 import org.codegist.crest.google.handler.GoogleResponseHandler;
+import org.codegist.crest.google.serializer.LangPairSerializer;
 
 /**
  * @author Laurent Gilles (laurent.gilles@codegist.org)
@@ -37,11 +39,10 @@ public interface LanguageService {
     @Path("/detect")
     LanguageGuess detectLanguage(@QueryParam(name = "q") String text);
 
-    @Path("/translate?langpair={left}%7C{right}")
+    @Path("/translate")
     Translation translate(
             @QueryParam(name = "q") String text,
-            @QueryParam(name = "left") String from,
-            @QueryParam(name = "right") String to);
+            @QueryParam(name = "langpair") @Serializer(LangPairSerializer.class) LangPair langPair);
 
 }
 

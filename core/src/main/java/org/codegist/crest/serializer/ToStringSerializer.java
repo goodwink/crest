@@ -35,6 +35,6 @@ public class ToStringSerializer<T> implements Serializer<T> {
      */
 
     public String serialize(T value) {
-        return value != null ? value.toString() : "";
+        return value.toString();
     }
 }

@@ -58,9 +58,7 @@ public class ArraySerializer<T> implements Serializer<T> {
     }
 
     public String serialize(T value) {
-        if (value == null) {
-            return "";
-        } else if (value.getClass().isArray())
+        if (value.getClass().isArray())
             return serializeArray(value);
         else if (value instanceof Collection)
             return serialize((Collection) value);

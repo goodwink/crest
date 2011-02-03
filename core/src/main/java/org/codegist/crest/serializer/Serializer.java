@@ -36,7 +36,8 @@ public interface Serializer<T> {
      *
      * @param value argument value
      * @return serialized version of the argument
+     * @throws NullPointerException when value is null
      */
-    String serialize(T value);
+    String serialize(T value) throws NullPointerException;
 
 }

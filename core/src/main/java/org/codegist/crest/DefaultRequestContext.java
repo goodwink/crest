@@ -59,6 +59,7 @@ class DefaultRequestContext extends DefaultInterfaceContext implements RequestCo
 
     public String getSerializedValue(int index) {
         Object value = getRawValue(index);
+        if(value == null) return "";
         Serializer serializer = getParamConfig(index).getSerializer();
         return serializer.serialize(value);
     }

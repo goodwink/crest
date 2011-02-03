@@ -29,10 +29,14 @@ import static org.junit.Assert.assertEquals;
  */
 public class ToStringSerializerTest {
 
+    @Test(expected = NullPointerException.class)
+    public void testNull(){
+        new ToStringSerializer().serialize(null);
+    }
     @Test
     public void test(){
         Serializer serializer = new ToStringSerializer();
-        assertEquals("", serializer.serialize(null));
+
         assertEquals("", serializer.serialize(""));
         assertEquals(" ", serializer.serialize(" "));
         assertEquals("1", serializer.serialize(Integer.valueOf(1)));
