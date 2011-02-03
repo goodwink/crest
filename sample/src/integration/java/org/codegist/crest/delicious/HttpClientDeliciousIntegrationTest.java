@@ -27,7 +27,6 @@ import org.junit.Ignore;
 /**
  * @author laurent.gilles@codegist.org
  */
-@Ignore
 public class HttpClientDeliciousIntegrationTest extends AbstractDeliciousIntegrationTest {
 
     public HttpClientDeliciousIntegrationTest() {

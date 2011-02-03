@@ -18,23 +18,25 @@
  *  More information at http://www.codegist.org.
  */
 
-package org.codegist.crest.delicious;
+package org.codegist.crest.flickr;
 
 import org.codegist.crest.CRest;
+import org.codegist.crest.delicious.AbstractDeliciousIntegrationTest;
 import org.codegist.crest.delicious.service.Delicious;
+import org.codegist.crest.flickr.service.Flickr;
 import org.junit.Ignore;
 
 /**
  * @author laurent.gilles@codegist.org
  */
-public class DefaultDeliciousIntegrationTest extends AbstractDeliciousIntegrationTest {
+public class HttpClientFlickrIntegrationTest extends AbstractFlickrIntegrationTest {
 
-    public DefaultDeliciousIntegrationTest() {
-        super(getDelicious());
+    public HttpClientFlickrIntegrationTest() {
+        super(getFickr());
     }
 
-    private static Delicious getDelicious() {
-        CRest crest = getBaseCRestBuilder().build();
-        return crest.build(Delicious.class);
+    private static Flickr getFickr() {
+        CRest crest = getBaseCRestBuilder().useHttpClientRestService().build();
+        return crest.build(Flickr.class);
     }
 }

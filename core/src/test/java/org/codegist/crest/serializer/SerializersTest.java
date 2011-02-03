@@ -52,7 +52,7 @@ public class SerializersTest {
 
         customProperties = new HashMap<String, Object>(){{
             put(SERIALIZER_LIST_SEPARATOR, "-");
-            put(SERIALIZER_DATE_FORMAT, "Second");
+            put(SERIALIZER_DATE_FORMAT, "Seconds");
         }};
         datesSerializer = Serializers.getFor(customProperties, Date[].class);
         dateSerializer = Serializers.getFor(customProperties, Date.class);

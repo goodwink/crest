@@ -71,7 +71,7 @@ public class DateSerializer implements Serializer<Date> {
 
     private enum FormatType {
         Millis(1),
-        Second(1000),
+        Seconds(1000),
         Minutes(1000*60),
         Hours(1000*60*60),
         Days(1000*60*60*24);

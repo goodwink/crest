@@ -41,6 +41,9 @@ public class Gallery implements Payload {
     public String getId() {
         return id;
     }
+    public String getGalleryId() {
+        return id.split("-")[1];
+    }
 
     public String getUrl() {
         return url;

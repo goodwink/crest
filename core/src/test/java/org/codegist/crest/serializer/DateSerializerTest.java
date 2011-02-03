@@ -47,7 +47,7 @@ public class DateSerializerTest {
     }
     @Test
     public void testDateFormatSeconds(){
-        DateSerializer serializer = new DateSerializer("Second");
+        DateSerializer serializer = new DateSerializer("Seconds");
         assertEquals("1290524180", serializer.serialize(new Date(1290524180273l)));
     }
     @Test

@@ -43,11 +43,6 @@ import java.util.Date;
 @POST
 public interface Flickr {
 
-    @GET
-    @Path("/rest")
-    @QueryParam(value = "method", defaultValue = "flickr.blogs.getList")
-    String getList();
-
     @Path("/rest")
     @QueryParam(value = "method", defaultValue = "flickr.galleries.create")
     Gallery newGallery(
@@ -61,12 +56,6 @@ public interface Flickr {
             @FormParam("description") String description,
             @FormParam("primary_photo_id") long primaryPhotoId);
 
-    @Path("/rest")
-    @QueryParam(value = "method", defaultValue = "flickr.galleries.addPhoto")
-    void addPhotoToGallery(
-            @QueryParam("gallery_id") String galleryId,
-            @QueryParam("photo_id") long photoId,
-            @QueryParam("comment") String comment);
 
     @Path("/rest")
     @QueryParam(value = "method", defaultValue = "flickr.photos.comments.addComment")
@@ -145,11 +134,9 @@ public interface Flickr {
     Uploader checkUploads(@QueryParam("tickets") String... tickets);
 
 
-    @Path("/replace")
-    long replacePhoto(
-            @FormParam("photo") InputStream photo,
-            @FormParam("photo_id") long photoId
-    );
+    @Path("/rest")
+    @QueryParam(value = "method", defaultValue = "flickr.photos.delete")
+    void deletePhoto(@FormParam("photo_id") long photoId);
 
 
     enum Visibility {

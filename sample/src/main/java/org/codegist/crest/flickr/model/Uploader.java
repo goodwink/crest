@@ -50,7 +50,7 @@ public class Uploader implements Payload {
         private int complete;
         @XmlAttribute
         private int invalid;
-        @XmlAttribute
+        @XmlAttribute(name="photoid")
         private long photoId;
 
         public String getId() {
@@ -67,6 +67,16 @@ public class Uploader implements Payload {
 
         public long getPhotoId() {
             return photoId;
+        }
+
+        public boolean isComplete(){
+            return complete == 1;
+        }
+        public boolean isProcessing(){
+            return complete == 0;
+        }
+        public boolean hasFailed(){
+            return complete == 2;
         }
 
         @Override
