@@ -25,8 +25,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import static org.codegist.crest.config.Destination.URL;
-
 /**
  * @author laurent.gilles@codegist.org
  */
@@ -38,8 +36,8 @@ import static org.codegist.crest.config.Destination.URL;
 @Target({ElementType.TYPE,ElementType.METHOD, ElementType.PARAMETER})
 public @interface PathParam {
 
-    String name();
+    String value();
 
-    String value() default "";
+    String defaultValue() default "";
 
 }

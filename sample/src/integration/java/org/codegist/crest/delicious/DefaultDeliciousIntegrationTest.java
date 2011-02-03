@@ -18,26 +18,22 @@
  *  More information at http://www.codegist.org.
  */
 
-package org.codegist.crest.annotate;
+package org.codegist.crest.delicious;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import org.codegist.crest.CRest;
+import org.codegist.crest.delicious.service.Delicious;
 
 /**
  * @author laurent.gilles@codegist.org
  */
+public class DefaultDeliciousIntegrationTest extends AbstractDeliciousIntegrationTest {
 
-/**
- * @author laurent.gilles@codegist.org
- */
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE,ElementType.METHOD, ElementType.PARAMETER})
-public @interface HeaderParam {
+    public DefaultDeliciousIntegrationTest() {
+        super(getDelicious());
+    }
 
-    String value();
-
-    String defaultValue() default "";
-
+    private static Delicious getDelicious() {
+        CRest crest = getBaseCRestBuilder().build();
+        return crest.build(Delicious.class);
+    }
 }

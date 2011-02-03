@@ -71,9 +71,11 @@ public class DeliciousSample implements Runnable {
         Delicious delicious = crest.build(Delicious.class);
 
         /* Use it! */
+        boolean postDone = delicious.addPost("http://crest.codegist.org?rdm=" + new Date().getTime(), "that's my site");
         Posts posts = delicious.getAllPosts("opensource", new Range(1, 15), new Date(), new Date(), false);
         boolean done = delicious.renameTag("os", "opensource");
 
+        LOG.info("Add Post=" + postDone);
         LOG.info("Posts=" + posts);
         LOG.info("Rename done=" + done);
     }

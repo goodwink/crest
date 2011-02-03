@@ -30,11 +30,11 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 class ArrayAdapter extends XmlAdapter<String, String[]> {
     @Override
     public String[] unmarshal(String v) throws Exception {
-        return v.split(",");
+        return v.split(" ");
     }
 
     @Override
     public String marshal(String[] v) throws Exception {
-        return v != null ? Arrays.join(",", v) : "";
+        return v != null ? Arrays.join(" ", v) : "";
     }
 }

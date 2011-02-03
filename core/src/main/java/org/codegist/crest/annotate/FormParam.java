@@ -35,8 +35,8 @@ import java.lang.annotation.Target;
 @Target({ElementType.TYPE,ElementType.METHOD, ElementType.PARAMETER})
 public @interface FormParam {
 
-    String name();
+    String value();
 
-    String value() default "";
+    String defaultValue() default "";
 
 }

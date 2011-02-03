@@ -26,7 +26,6 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /**
  * @author Laurent Gilles (laurent.gilles@codegist.org)
@@ -37,22 +36,21 @@ public class Tag {
     @XmlAttribute
     private int count;
     @XmlAttribute(name = "tag")
-    @XmlJavaTypeAdapter(ArrayAdapter.class)
-    private String[] tags;
+    private String tag;
 
     public int getCount() {
         return count;
     }
 
-    public String[] getTags() {
-        return tags;
+    public String getTag() {
+        return tag;
     }
 
     @Override
     public String toString() {
         return new ToStringBuilder(this)
                 .append("count", count)
-                .append("tags", tags)
+                .append("tag", tag)
                 .toString();
     }
 }

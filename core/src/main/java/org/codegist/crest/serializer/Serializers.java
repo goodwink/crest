@@ -21,7 +21,7 @@
 package org.codegist.crest.serializer;
 
 import org.codegist.common.collect.Maps;
-import org.codegist.common.lang.Strings;
+import org.codegist.common.lang.Objects;
 import org.codegist.common.reflect.Types;
 import org.codegist.crest.CRestProperty;
 
@@ -77,7 +77,7 @@ public final class Serializers {
         Serializer s = serializerMap.get(type);
         s = s != null ? s : chooseDefault(customProperties, type);
         if (isCollection) {
-            String separator = Strings.defaultIfBlank((String) customProperties.get(CRestProperty.SERIALIZER_LIST_SEPARATOR), ArraySerializer.DEFAULT_SEPARATOR);
+            String separator = Objects.defaultIfNull((String) customProperties.get(CRestProperty.SERIALIZER_LIST_SEPARATOR), ArraySerializer.DEFAULT_SEPARATOR);
             return new ArraySerializer(s, separator);
         } else {
             return s;

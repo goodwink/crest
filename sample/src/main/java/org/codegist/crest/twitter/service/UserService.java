@@ -29,30 +29,30 @@ import org.codegist.crest.twitter.model.User;
  */
 @EndPoint("http://api.twitter.com")
 @ContextPath("/1/users")
-@HeaderParam(name = "Accept-Encoding", value = "gzip")
+@HeaderParam(value = "Accept-Encoding", defaultValue = "gzip")
 public interface UserService {
 
     @Path("/search.json")
     User[] search(
-            @QueryParam(name = "q") String search);
+            @QueryParam("q") String search);
 
     @Path("/search.json")
     User[] search(
-            @QueryParam(name = "q") String search,
-            @QueryParam(name = "per_page") long count,
-            @QueryParam(name = "page") long page);
+            @QueryParam("q") String search,
+            @QueryParam("per_page") long count,
+            @QueryParam("page") long page);
 
     @Path("/show.json")
-    User get(@QueryParam(name = "user_id") long id);
+    User get(@QueryParam("user_id") long id);
 
     @Path("/show.json")
-    User get(@QueryParam(name = "screen_name") String screenName);
+    User get(@QueryParam("screen_name") String screenName);
 
     @Path("/lookup.json")
     User[] lookup(
-            @QueryParam(name = "user_id") long id,
-            @QueryParam(name = "screen_name") String... screenName);
+            @QueryParam("user_id") long id,
+            @QueryParam("screen_name") String... screenName);
 
     @Path("/lookup.json")
-    User[] lookup(@QueryParam(name = "screen_name") String[] screenName);
+    User[] lookup(@QueryParam("screen_name") String[] screenName);
 }

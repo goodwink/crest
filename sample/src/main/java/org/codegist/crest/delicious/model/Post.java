@@ -20,6 +20,7 @@
 
 package org.codegist.crest.delicious.model;
 
+import org.codegist.common.lang.EqualsBuilder;
 import org.codegist.common.lang.ToStringBuilder;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -50,7 +51,7 @@ public class Post {
     private Date time;
     @XmlAttribute
     private String extended;
-    @XmlJavaTypeAdapter(BooleanAdapter.class)
+    @XmlAttribute
     private Boolean shared;
 
     public String getHref() {
@@ -82,7 +83,23 @@ public class Post {
     }
 
     public boolean isShared() {
-        return shared;
+        return !Boolean.FALSE.equals(shared);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || o.getClass() != Post.class) return false;
+        Post p = (Post) o;
+        return new EqualsBuilder()
+                .append(href, p.href)
+                .append(hash, p.hash)
+                .append(meta, p.meta)
+                .append(description, p.description)
+                .append(tags, p.tags)
+                .append(time, p.time)
+                .append(extended, p.extended)
+                .append(shared, p.shared)
+                .equals();
     }
 
     @Override

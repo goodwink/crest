@@ -35,92 +35,95 @@ import java.util.Date;
 @ResponseHandler(DeliciousResponseHandler.class)
 public interface Delicious {
 
+    @Path("/posts/delete")
+    boolean deletePost(@QueryParam("url") String url);
+
     @Path("/posts/recent")
     Posts getRecentsPosts();
 
     @Path("/posts/recent")
     Posts getRecentsPosts(
-            @QueryParam(name = "tag") String tag,
-            @QueryParam(name = "count") int count);
+            @QueryParam("tag") String tag,
+            @QueryParam("count") int count);
 
     @Path("/posts/dates")
     Dates getPostsPerDate();
 
     @Path("/posts/dates")
-    Dates getPostsPerDate(@QueryParam(name = "tag") String tag);
+    Dates getPostsPerDate(@QueryParam("tag") String tag);
 
     @Path("/posts/update")
     Update getLastUpdatePosts();
 
     @Path("/posts/add")
     boolean addPost(
-            @QueryParam(name = "url") String url,
-            @QueryParam(name = "description") String description);
+            @QueryParam("url") String url,
+            @QueryParam("description") String description);
 
     @Path("/posts/add")
     boolean addPost(
-            @QueryParam(name = "url") String url,
-            @QueryParam(name = "description") String description,
-            @QueryParam(name = "extended") String extended,
-            @QueryParam(name = "tags") String[] tags,
-            @QueryParam(name = "stamp") Date stamp,
-            @QueryParam(name = "replace") boolean replace,
-            @QueryParam(name = "shared") boolean shared);
+            @QueryParam("url") String url,
+            @QueryParam("description") String description,
+            @QueryParam("extended") String extended,
+            @QueryParam("tags") String[] tags,
+            @QueryParam("stamp") Date stamp,
+            @QueryParam("replace") boolean replace,
+            @QueryParam("shared") boolean shared);
 
     @Path("/posts/get")
     Posts getPosts();
 
     @Path("/posts/get")
     Posts getPosts(
-            @QueryParam(name = "url") String url,
-            @QueryParam(name = "dt") Date date,
-            @QueryParam(name = "tag") String[] tags,
-            @QueryParam(name = "hashes") String[] hashes,
-            @QueryParam(name = "meta") Boolean meta);
+            @QueryParam("url") String url,
+            @QueryParam("dt") Date date,
+            @QueryParam("tag") String[] tags,
+            @QueryParam("hashes") String[] hashes,
+            @QueryParam("meta") Boolean meta);
 
     @Path("/posts/all")
     Posts getAllPosts();
 
     @Path("/posts/all")
     Posts getAllPosts(
-            @QueryParam(name = "tag") String tag,
-            @QueryParam(name = "range") Range resultRange,// name doesn't really matter here as it get injected. todo something about ?
-            @QueryParam(name = "fromdt") Date from,
-            @QueryParam(name = "todt") Date to,
-            @QueryParam(name = "meta") Boolean meta);
+            @QueryParam("tag") String tag,
+            @QueryParam("range") Range resultRange,
+            @QueryParam("fromdt") Date from,
+            @QueryParam("todt") Date to,
+            @QueryParam("meta") Boolean meta);
 
-    @QueryParam(name = "hashes")
+    @QueryParam("hashes")
     @Path("/posts/all")
     Posts getAllPostHashes();
 
     @Path("/posts/suggest")
     Suggest getSuggestedPosts(
-            @QueryParam(name = "url") String url);
+            @QueryParam("url") String url);
 
     @Path("/tags/get")
     Tags getTags();
 
     @Path("/tags/delete")
     boolean deleteTag(
-            @QueryParam(name = "tag") String tag);
+            @QueryParam("tag") String tag);
 
     @Path("/tags/rename")
     boolean renameTag(
-            @QueryParam(name = "old") String oldTag,
-            @QueryParam(name = "new") String newTag);
+            @QueryParam("old") String oldTag,
+            @QueryParam("new") String newTag);
 
     @Path("/tags/bundles/all")
     Bundles getTagBundles();
 
     @Path("/tags/bundles/all")
-    Bundles getTagBundle(@QueryParam(name = "bundle") String name);
+    Bundles getTagBundle(@QueryParam("bundle") String name);
 
     @Path("/tags/bundles/set")
     boolean setTagBundle(
-            @QueryParam(name = "bundle") String name,
-            @QueryParam(name = "tags") String... tags);
+            @QueryParam("bundle") String name,
+            @QueryParam("tags") String... tags);
 
     @Path("/tags/bundles/delete")
-    boolean deleteTagBundle(@QueryParam(name = "bundle") String name);
+    boolean deleteTagBundle(@QueryParam("bundle") String name);
 
 }

@@ -183,35 +183,35 @@ public class CRestAnnotationDrivenInterfaceConfigFactory implements InterfaceCon
         for(Annotation a : annotations){
             if(a instanceof FormParam) {
                 FormParam p = (FormParam) a;
-                params.add(new DefaultBasicParamConfig(p.name(), p.value(), org.codegist.crest.config.Destination.FORM));
+                params.add(new DefaultBasicParamConfig(p.value(), p.defaultValue(), org.codegist.crest.config.Destination.FORM));
             }else if(a instanceof FormParams) {
                 FormParams ps = (FormParams) a;
                 for(FormParam p : ps.value()){
-                    params.add(new DefaultBasicParamConfig(p.name(), p.value(), org.codegist.crest.config.Destination.FORM));
+                    params.add(new DefaultBasicParamConfig(p.value(), p.defaultValue(), org.codegist.crest.config.Destination.FORM));
                 }
             }else if(a instanceof PathParam) {
                 PathParam p = (PathParam) a;
-                params.add(new DefaultBasicParamConfig(p.name(), p.value(), org.codegist.crest.config.Destination.PATH));
+                params.add(new DefaultBasicParamConfig(p.value(), p.defaultValue(), org.codegist.crest.config.Destination.PATH));
             }else if(a instanceof PathParams) {
                 PathParams ps = (PathParams) a;
                 for(PathParam p : ps.value()){
-                    params.add(new DefaultBasicParamConfig(p.name(), p.value(), org.codegist.crest.config.Destination.PATH));
+                    params.add(new DefaultBasicParamConfig(p.value(), p.defaultValue(), org.codegist.crest.config.Destination.PATH));
                 }
             }else if(a instanceof QueryParam) {
                 QueryParam p = (QueryParam) a;
-                params.add(new DefaultBasicParamConfig(p.name(), p.value(), org.codegist.crest.config.Destination.QUERY));
+                params.add(new DefaultBasicParamConfig(p.value(), p.defaultValue(), org.codegist.crest.config.Destination.QUERY));
             }else if(a instanceof QueryParams) {
                 QueryParams ps = (QueryParams) a;
                 for(QueryParam p : ps.value()){
-                    params.add(new DefaultBasicParamConfig(p.name(), p.value(), org.codegist.crest.config.Destination.QUERY));
+                    params.add(new DefaultBasicParamConfig(p.value(), p.defaultValue(), org.codegist.crest.config.Destination.QUERY));
                 }
             }else if(a instanceof HeaderParam) {
                 HeaderParam p = (HeaderParam) a;
-                params.add(new DefaultBasicParamConfig(p.name(), p.value(), org.codegist.crest.config.Destination.HEADER));
+                params.add(new DefaultBasicParamConfig(p.value(), p.defaultValue(), org.codegist.crest.config.Destination.HEADER));
             }else if(a instanceof HeaderParams) {
                 HeaderParams ps = (HeaderParams) a;
                 for(HeaderParam p : ps.value()){
-                    params.add(new DefaultBasicParamConfig(p.name(), p.value(), org.codegist.crest.config.Destination.HEADER));
+                    params.add(new DefaultBasicParamConfig(p.value(), p.defaultValue(), org.codegist.crest.config.Destination.HEADER));
                 }
             }
         }

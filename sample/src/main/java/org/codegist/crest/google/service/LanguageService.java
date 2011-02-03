@@ -32,17 +32,17 @@ import org.codegist.crest.google.serializer.LangPairSerializer;
  */
 @EndPoint("http://ajax.googleapis.com")
 @ContextPath("/ajax/services/language")
-@QueryParam(name = "v", value = "1.0")
+@QueryParam(value = "v", defaultValue = "1.0")
 @ResponseHandler(GoogleResponseHandler.class)
 public interface LanguageService {
 
     @Path("/detect")
-    LanguageGuess detectLanguage(@QueryParam(name = "q") String text);
+    LanguageGuess detectLanguage(@QueryParam("q") String text);
 
     @Path("/translate")
     Translation translate(
-            @QueryParam(name = "q") String text,
-            @QueryParam(name = "langpair") @Serializer(LangPairSerializer.class) LangPair langPair);
+            @QueryParam("q") String text,
+            @QueryParam("langpair") @Serializer(LangPairSerializer.class) LangPair langPair);
 
 }
 

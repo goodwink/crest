@@ -33,7 +33,7 @@ import java.util.Map;
  */
 public class DateSerializer implements Serializer<Date> {
 
-    public static final String DEFAULT_DATEFORMAT = "yyyy-MM-dd'T'HH:mm:ssz";
+    public static final String DEFAULT_DATEFORMAT = "yyyy-MM-dd'T'HH:mm:ssZ";
 
     private final DateFormat formatter;
     private final FormatType formatType;

@@ -54,8 +54,70 @@
         </plugins>
     </reporting>
 
+    <properties>
+        <test.src.dir>src/test/java</test.src.dir>
+    </properties>
     <build>
+        <testSourceDirectory>${project.basedir}/${test.src.dir}</testSourceDirectory>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.6</version>
+                <configuration>
+                    <forkMode>never</forkMode>
+                    <systemProperties>
+                        <property>
+                            <name>crest.sample.delicious.consumer-key</name>
+                            <value>${crest.sample.delicious.consumer-key}</value>
+                        </property>
+                        <property>
+                            <name>crest.sample.delicious.consumer-secret</name>
+                            <value>${crest.sample.delicious.consumer-secret}</value>
+                        </property>
+                        <property>
+                            <name>crest.sample.delicious.access-token</name>
+                            <value>${crest.sample.delicious.access-token}</value>
+                        </property>
+                        <property>
+                            <name>crest.sample.delicious.access-token-secret</name>
+                            <value>${crest.sample.delicious.access-token-secret}</value>
+                        </property>
+                        <property>
+                            <name>crest.sample.delicious.session-handle</name>
+                            <value>${crest.sample.delicious.session-handle}</value>
+                        </property>
+                        <property>
+                            <name>crest.sample.twitter.consumer-key</name>
+                            <value>${crest.sample.twitter.consumer-key}</value>
+                        </property>
+                        <property>
+                            <name>crest.sample.twitter.consumer-secret</name>
+                            <value>${crest.sample.twitter.consumer-secret}</value>
+                        </property>
+                        <property>
+                            <name>crest.sample.twitter.access-token</name>
+                            <value>${crest.sample.twitter.access-token}</value>
+                        </property>
+                        <property>
+                            <name>crest.sample.twitter.access-token-secret</name>
+                            <value>${crest.sample.twitter.access-token-secret}</value>
+                        </property>
+                        <property>
+                            <name>crest.sample.flickr.key</name>
+                            <value>${crest.sample.flickr.key}</value>
+                        </property>
+                        <property>
+                            <name>crest.sample.flickr.secret</name>
+                            <value>${crest.sample.flickr.secret}</value>
+                        </property>
+                        <property>
+                            <name>crest.sample.flickr.token</name>
+                            <value>${crest.sample.flickr.token}</value>
+                        </property>
+                    </systemProperties>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
@@ -88,6 +150,14 @@
             </plugin>
         </plugins>
     </build>
+    <profiles>
+        <profile>
+            <id>integration-test</id>
+            <properties>
+                <test.src.dir>src/integration/java</test.src.dir>
+            </properties>
+        </profile>
+    </profiles>
 
     <dependencies>
         <dependency>

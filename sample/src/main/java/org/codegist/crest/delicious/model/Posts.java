@@ -20,6 +20,7 @@
 
 package org.codegist.crest.delicious.model;
 
+import org.codegist.common.lang.EqualsBuilder;
 import org.codegist.common.lang.ToStringBuilder;
 
 import javax.xml.bind.annotation.*;
@@ -50,6 +51,17 @@ public class Posts {
 
     public Post[] getPosts() {
         return posts;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || o.getClass() != Posts.class) return false;
+        Posts p = (Posts) o;
+        return new EqualsBuilder()
+                .append(user, p.user)
+                .append(tags, p.tags)
+                .append(posts, p.posts)
+                .equals();
     }
 
     @Override

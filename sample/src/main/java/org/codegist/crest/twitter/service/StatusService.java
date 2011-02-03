@@ -30,112 +30,112 @@ import org.codegist.crest.twitter.model.User;
  */
 @EndPoint("http://api.twitter.com")
 @ContextPath("/1/statuses")
-@HeaderParam(name = "Accept-Encoding", value = "gzip")
+@HeaderParam(value = "Accept-Encoding", defaultValue = "gzip")
 public interface StatusService {
 
     @POST
     @Path("/update.json")
-    Status updateStatus(@FormParam(name = "status") String status);
+    Status updateStatus(@FormParam("status") String status);
 
     @POST
     @Path("/update.json")
     Status changeStatus(
-            @FormParam(name = "status") String status,
-            @QueryParam(name = "lat") float lat,
-            @QueryParam(name = "long") float longitude);
+            @FormParam("status") String status,
+            @QueryParam("lat") float lat,
+            @QueryParam("long") float longitude);
 
     @POST
     @Path("/destroy/{id}.json")
-    Status removeStatus(@PathParam(name = "id") long id);
+    Status removeStatus(@PathParam("id") long id);
 
     @POST
     @Path("/retweet/{id}.json")
-    Status retweetStatus(@PathParam(name = "id") long id);
+    Status retweetStatus(@PathParam("id") long id);
 
     @Path("/show/{id}.json")
-    Status getStatus(@PathParam(name = "id") long id);
+    Status getStatus(@PathParam("id") long id);
 
     @Path("/retweets/{id}.json")
-    Status[] getRetweets(@PathParam(name = "id") long id);
+    Status[] getRetweets(@PathParam("id") long id);
 
     @Path("/retweets/{id}.json")
     Status[] getRetweets(
-            @PathParam(name = "id") long id,
-            @QueryParam(name = "count") long count);
+            @PathParam("id") long id,
+            @QueryParam("count") long count);
 
 
     @Path("/{id}/retweeted_by.json")
-    User[] getRetweetedBy(@PathParam(name = "id") long id);
+    User[] getRetweetedBy(@PathParam("id") long id);
 
     @Path("/{id}/retweeted_by.json")
     User[] getRetweetedBy(
-            @PathParam(name = "id") long id,
-            @QueryParam(name = "count") long count,
-            @QueryParam(name = "page") long page);
+            @PathParam("id") long id,
+            @QueryParam("count") long count,
+            @QueryParam("page") long page);
 
 
     @Path("/{id}/retweeted_by/ids.json")
-    long[] getRetweetedByIds(@PathParam(name = "id") long id);
+    long[] getRetweetedByIds(@PathParam("id") long id);
 
     @Path("/{id}/retweeted_by/ids.json")
     long[] getRetweetedByIds(
-            @PathParam(name = "id") long id,
-            @QueryParam(name = "count") long count,
-            @QueryParam(name = "page") long page);
+            @PathParam("id") long id,
+            @QueryParam("count") long count,
+            @QueryParam("page") long page);
 
 
     @Path("/friends.json")
     User[] getFriends(
-            @QueryParam(name = "user_id") long userId,
-            @QueryParam(name = "screen_name") String screenName);
+            @QueryParam("user_id") long userId,
+            @QueryParam("screen_name") String screenName);
 
     @Path("/friends.json")
-    User[] getFriends(@QueryParam(name = "user_id") long userId);
+    User[] getFriends(@QueryParam("user_id") long userId);
 
     @Path("/friends.json")
-    User[] getFriends(@QueryParam(name = "screen_name") String screenName);
-
-    @Path("/friends.json")
-    Cursor.User getFriends(
-            @QueryParam(name = "user_id") long userId,
-            @QueryParam(name = "screen_name") String screenName,
-            @QueryParam(name = "cursor") long cursor);
+    User[] getFriends(@QueryParam("screen_name") String screenName);
 
     @Path("/friends.json")
     Cursor.User getFriends(
-            @QueryParam(name = "user_id") long userId,
-            @QueryParam(name = "cursor") long cursor);
+            @QueryParam("user_id") long userId,
+            @QueryParam("screen_name") String screenName,
+            @QueryParam("cursor") long cursor);
 
     @Path("/friends.json")
     Cursor.User getFriends(
-            @QueryParam(name = "screen_name") String screenName,
-            @QueryParam(name = "cursor") long cursor);
+            @QueryParam("user_id") long userId,
+            @QueryParam("cursor") long cursor);
+
+    @Path("/friends.json")
+    Cursor.User getFriends(
+            @QueryParam("screen_name") String screenName,
+            @QueryParam("cursor") long cursor);
 
     @Path("/followers.json")
     User[] getFollowers(
-            @QueryParam(name = "user_id") long userId,
-            @QueryParam(name = "screen_name") String screenName);
+            @QueryParam("user_id") long userId,
+            @QueryParam("screen_name") String screenName);
 
     @Path("/followers.json")
-    User[] getFollowers(@QueryParam(name = "user_id") long userId);
+    User[] getFollowers(@QueryParam("user_id") long userId);
 
     @Path("/followers.json")
-    User[] getFollowers(@QueryParam(name = "screen_name") String screenName);
-
-    @Path("/followers.json")
-    Cursor.User getFollowers(
-            @QueryParam(name = "user_id") long userId,
-            @QueryParam(name = "screen_name") String screenName,
-            @QueryParam(name = "cursor") long cursor);
+    User[] getFollowers(@QueryParam("screen_name") String screenName);
 
     @Path("/followers.json")
     Cursor.User getFollowers(
-            @QueryParam(name = "user_id") long userId,
-            @QueryParam(name = "cursor") long cursor);
+            @QueryParam("user_id") long userId,
+            @QueryParam("screen_name") String screenName,
+            @QueryParam("cursor") long cursor);
 
     @Path("/followers.json")
     Cursor.User getFollowers(
-            @QueryParam(name = "screen_name") String screenName,
-            @QueryParam(name = "cursor") long cursor);
+            @QueryParam("user_id") long userId,
+            @QueryParam("cursor") long cursor);
+
+    @Path("/followers.json")
+    Cursor.User getFollowers(
+            @QueryParam("screen_name") String screenName,
+            @QueryParam("cursor") long cursor);
 
 }

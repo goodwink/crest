@@ -35,11 +35,11 @@ import static org.junit.Assert.assertEquals;
 public class SerializersTest {
 
     @Test
-    public void testDateerialization(){
+    public void testDateSerialization(){
         Serializer datesSerializer = Serializers.getFor(null, Date[].class);
         Serializer dateSerializer = Serializers.getFor(null, Date.class);
-        assertEquals("2010-11-23T14:28:14GMT", dateSerializer.serialize(new Date(1290522494365l)));
-        assertEquals("2010-11-23T14:28:14GMT,2010-12-05T04:14:54GMT", datesSerializer.serialize(new Date[]{new Date(1290522494365l),new Date(1291522494365l)}));
+        assertEquals("2010-11-23T14:28:14+0000", dateSerializer.serialize(new Date(1290522494365l)));
+        assertEquals("2010-11-23T14:28:14+0000,2010-12-05T04:14:54+0000", datesSerializer.serialize(new Date[]{new Date(1290522494365l),new Date(1291522494365l)}));
 
         Map<String,Object> customProperties = new HashMap<String, Object>(){{
             put(SERIALIZER_LIST_SEPARATOR, "-");

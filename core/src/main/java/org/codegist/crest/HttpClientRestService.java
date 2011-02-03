@@ -24,7 +24,6 @@ import org.apache.http.*;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.*;
-import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.params.ConnManagerParams;
 import org.apache.http.conn.params.ConnPerRouteBean;
@@ -46,13 +45,13 @@ import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.codegist.common.lang.Disposable;
-import org.codegist.common.lang.Strings;
 import org.codegist.common.log.Logger;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
 import java.net.ProxySelector;
 import java.util.*;
 
@@ -60,8 +59,8 @@ import java.util.*;
  * RestService implementation based on ASF {@link org.apache.http.client.HttpClient}.
  * <p>This implementation is preferable to the default one {@link org.codegist.crest.DefaultRestService}.
  *
- * @see org.apache.http.client.HttpClient
  * @author Laurent Gilles (laurent.gilles@codegist.org)
+ * @see org.apache.http.client.HttpClient
  */
 public class HttpClientRestService implements RestService, Disposable {
 
@@ -79,10 +78,10 @@ public class HttpClientRestService implements RestService, Disposable {
         this.http = http;
     }
 
-    private static Map<String,List<String>> toHeaders(Header[] headers){
-        if(headers == null) return Collections.emptyMap();
-        Map<String,List<String>> map = new HashMap<String, List<String>>();
-        for(Header h : headers){
+    private static Map<String, List<String>> toHeaders(Header[] headers) {
+        if (headers == null) return Collections.emptyMap();
+        Map<String, List<String>> map = new HashMap<String, List<String>>();
+        for (Header h : headers) {
             map.put(h.getName(), Arrays.asList(h.getValue()));/*is that good enough ?????*/
         }
         return map;
@@ -92,7 +91,9 @@ public class HttpClientRestService implements RestService, Disposable {
         HttpUriRequest request;
         try {
             request = toHttpUriRequest(httpRequest);
-        } catch (UnsupportedEncodingException e) {
+        } catch (RuntimeException e) {
+            throw e;
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
         org.apache.http.HttpResponse response;
@@ -100,7 +101,7 @@ public class HttpClientRestService implements RestService, Disposable {
         boolean inError = false;
         try {
             logger.debug("%4s %s", httpRequest.getMeth(), request.getURI());
-            logger.trace(request);       
+            logger.trace(request);
             response = http.execute(request);
             if (response == null) {
                 throw new HttpException("No Response!", new HttpResponse(httpRequest, -1));
@@ -144,7 +145,7 @@ public class HttpClientRestService implements RestService, Disposable {
         }
     }
 
-    private static final Map<String,Class<? extends HttpUriRequest>> METH_MAP = new HashMap<String, Class<? extends HttpUriRequest>>();{
+    private static final Map<String, Class<? extends HttpUriRequest>> METH_MAP = new HashMap<String, Class<? extends HttpUriRequest>>();{
         METH_MAP.put("GET", HttpGet.class);
         METH_MAP.put("POST", HttpPost.class);
         METH_MAP.put("PUT", HttpPut.class);
@@ -153,25 +154,17 @@ public class HttpClientRestService implements RestService, Disposable {
         METH_MAP.put("OPTIONS", HttpOptions.class);
     }
 
-    private static HttpUriRequest toHttpUriRequest(HttpRequest request) throws UnsupportedEncodingException {
-        String queryString = "";
-        if (request.getQueryParams() != null) {
-            List<NameValuePair> params = new ArrayList<NameValuePair>();
-            for (Map.Entry<String, String> entry : request.getQueryParams().entrySet()) {
-                params.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
-            }
-            String qs = URLEncodedUtils.format(params, request.getEncoding());
-            queryString = Strings.isNotBlank(qs) ? ("?" + qs) : "";
-        }
-        String uri = request.getUri().toString() + queryString;
+    private static HttpUriRequest toHttpUriRequest(HttpRequest request) throws UnsupportedEncodingException, MalformedURLException {
+        String url = request.getUrlString(true);
 
         Class<? extends HttpUriRequest> uriRequestClass = METH_MAP.containsKey(request.getMeth()) ? METH_MAP.get(request.getMeth()) : HttpGet.class;
         HttpUriRequest uriRequest = null;
         try {
-            uriRequest = uriRequestClass.getConstructor(String.class).newInstance(uri);
+            uriRequest = uriRequestClass.getConstructor(String.class).newInstance(url);
         } catch (Exception e) {
             throw new CRestException("Unknown method:" + request.getMeth(), e);
         }
+
 
         if (uriRequest instanceof HttpEntityEnclosingRequestBase) {
             HttpEntityEnclosingRequestBase enclosingRequestBase = ((HttpEntityEnclosingRequestBase) uriRequest);
@@ -262,7 +255,7 @@ public class HttpClientRestService implements RestService, Disposable {
         }
     }
 
-    HttpClient getHttpClient(){
+    HttpClient getHttpClient() {
         return http;
     }
 

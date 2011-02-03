@@ -164,25 +164,25 @@ public class JaxRSAwareAnnotationDrivenInterfaceConfigFactoryTest extends Abstra
     @ConnectionTimeout( 2)
     @Encoding( "utf-8")
 
-    @FormParam(name="form-param",value="form-value")
+    @FormParam(value ="form-param", defaultValue ="form-value")
     @FormParams({
-            @FormParam(name="form-param1",value="form-value1"),
-            @FormParam(name="form-param2",value="form-value2")
+            @FormParam(value ="form-param1", defaultValue ="form-value1"),
+            @FormParam(value ="form-param2", defaultValue ="form-value2")
     })
-    @PathParam(name="path-param",value="path-value")
+    @PathParam(value="path-param",defaultValue="path-value")
     @PathParams({
-            @PathParam(name="path-param1",value="path-value1"),
-            @PathParam(name="path-param2",value="path-value2")
+            @PathParam(value="path-param1",defaultValue="path-value1"),
+            @PathParam(value="path-param2",defaultValue="path-value2")
     })
-    @QueryParam(name="query-param",value="query-value")
+    @QueryParam(value ="query-param", defaultValue ="query-value")
     @QueryParams({
-            @QueryParam(name="query-param1",value="query-value1"),
-            @QueryParam(name="query-param2",value="query-value2")
+            @QueryParam(value ="query-param1", defaultValue ="query-value1"),
+            @QueryParam(value ="query-param2", defaultValue ="query-value2")
     })
-    @HeaderParam(name="header-param",value="header-value")
+    @HeaderParam(value ="header-param", defaultValue ="header-value")
     @HeaderParams({
-            @HeaderParam(name="header-param1",value="header-value1"),
-            @HeaderParam(name="header-param2",value="header-value2")
+            @HeaderParam(value ="header-param1", defaultValue ="header-value1"),
+            @HeaderParam(value ="header-param2", defaultValue ="header-value2")
     })
 
     @GlobalInterceptor(Stubs.RequestInterceptor1.class)
@@ -198,8 +198,8 @@ public class JaxRSAwareAnnotationDrivenInterfaceConfigFactoryTest extends Abstra
         @javax.ws.rs.Path("/m1")
         @javax.ws.rs.PUT
         @FormParams({
-            @FormParam(name="form-param",value="over-value1"),
-            @FormParam(name="form-param3",value="new-value")
+            @FormParam(value ="form-param", defaultValue ="over-value1"),
+            @FormParam(value ="form-param3", defaultValue ="new-value")
         })
         @SocketTimeout(3)
         @ConnectionTimeout(4)
@@ -213,7 +213,7 @@ public class JaxRSAwareAnnotationDrivenInterfaceConfigFactoryTest extends Abstra
 
         @javax.ws.rs.Path("/m1")
         @javax.ws.rs.POST
-        @PathParam(name="form-param",value="over-value1")
+        @PathParam(value="form-param",defaultValue="over-value1")
         @SocketTimeout(5)
         @ConnectionTimeout(6)
         @RequestInterceptor(Stubs.RequestInterceptor2.class)
@@ -293,7 +293,7 @@ public class JaxRSAwareAnnotationDrivenInterfaceConfigFactoryTest extends Abstra
     public static interface Rest {
 
         @javax.ws.rs.Path("/aaa")
-        void aaa(@QueryParam(name="a") int a, @javax.ws.rs.QueryParam("b") String[] b);
+        void aaa(@QueryParam(value ="a") int a, @javax.ws.rs.QueryParam("b") String[] b);
 
         Method AAA = TestUtils.getMethod(Rest.class, "aaa", int.class, String[].class);
 
@@ -317,7 +317,7 @@ public class JaxRSAwareAnnotationDrivenInterfaceConfigFactoryTest extends Abstra
         @javax.ws.rs.Path("/ddd")
         @javax.ws.rs.POST
         Object ddd(
-                @FormParam(name="obj") Object a,
+                @FormParam(value ="obj") Object a,
                 @javax.ws.rs.FormParam("bb") String[] b,
                 @javax.ws.rs.FormParam("cb") String c);
 

@@ -30,12 +30,12 @@ import org.codegist.crest.google.handler.GoogleResponseHandler;
  */
 @EndPoint("http://ajax.googleapis.com")
 @ContextPath("/ajax/services/search")
-@QueryParam(name = "v", value = "1.0")
+@QueryParam(value = "v", defaultValue = "1.0")
 @ResponseHandler(GoogleResponseHandler.class)
 public interface SearchService {
 
     @Path("/web")
-    SearchResult<Address> search(@QueryParam(name = "q") String text);
+    SearchResult<Address> search(@QueryParam("q") String text);
 
 }
 

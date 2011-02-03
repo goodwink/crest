@@ -20,7 +20,10 @@
 
 package org.codegist.crest;
 
-import org.codegist.common.lang.*;
+import org.codegist.common.lang.EqualsBuilder;
+import org.codegist.common.lang.HashCodeBuilder;
+import org.codegist.common.lang.Strings;
+import org.codegist.common.lang.ToStringBuilder;
 import org.codegist.common.net.Urls;
 import org.codegist.crest.config.Destination;
 
@@ -30,7 +33,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
-import java.util.*;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
