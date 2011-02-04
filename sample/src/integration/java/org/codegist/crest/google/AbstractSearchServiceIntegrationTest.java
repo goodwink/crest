@@ -33,7 +33,7 @@ import static org.junit.Assert.assertNotNull;
  * @author laurent.gilles@codegist.org
  */
 @Ignore
-public class AbstractSearchServiceIntegrationTest {
+public abstract class AbstractSearchServiceIntegrationTest {
     private final SearchService searchService;
 
     public AbstractSearchServiceIntegrationTest(SearchService searchService) {
