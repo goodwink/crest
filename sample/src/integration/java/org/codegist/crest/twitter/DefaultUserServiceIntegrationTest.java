@@ -18,22 +18,26 @@
  *  More information at http://www.codegist.org.
  */
 
-package org.codegist.crest.flickr;
+package org.codegist.crest.twitter;
 
-import org.codegist.crest.CRest;
-import org.codegist.crest.flickr.service.Flickr;
+import org.codegist.crest.twitter.service.UserService;
+
+import static org.codegist.crest.twitter.CRestBuilderFactory.ACC_1;
+import static org.codegist.crest.twitter.CRestBuilderFactory.ACC_2;
 
 /**
  * @author laurent.gilles@codegist.org
  */
-public class DefaultFlickrIntegrationTest extends AbstractFlickrIntegrationTest {
-
-    public DefaultFlickrIntegrationTest() {
-        super(getFlickr());
+public class DefaultUserServiceIntegrationTest extends AbstractUserServiceIntegrationTest {
+    public DefaultUserServiceIntegrationTest() {
+        super(getAccountService(ACC_1), getAccountService(ACC_2));
     }
 
-    private static Flickr getFlickr() {
-        CRest crest = getBaseCRestBuilder().build();
-        return crest.build(Flickr.class);
+    private static AccountService<UserService> getAccountService(String account){
+        return new AccountService<UserService>(
+                CRestBuilderFactory.getBaseCRestBuilder(account).build().build(UserService.class),
+                CRestBuilderFactory.getAccountUserId(account),
+                CRestBuilderFactory.getAccountScreenName(account)
+                );
     }
 }

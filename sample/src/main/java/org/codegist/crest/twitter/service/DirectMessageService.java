@@ -33,10 +33,11 @@ public interface DirectMessageService {
 
     @Path(".json")
     Message[] getReceived(
-            @QueryParam("since_id") long sinceId,
-            @QueryParam("max_id") long maxId,
             @QueryParam("count") long count,
-            @QueryParam("page") long page);
+            @QueryParam("page") long page,
+            @QueryParam("since_id") long sinceId,
+            @QueryParam("max_id") long maxId
+            );
 
     @Path(".json")
     Message[] getReceived(
@@ -45,10 +46,10 @@ public interface DirectMessageService {
 
     @Path("/sent.json")
     Message[] getSent(
-            @QueryParam("since_id") long sinceId,
-            @QueryParam("max_id") long maxId,
             @QueryParam("count") long count,
-            @QueryParam("page") long page);
+            @QueryParam("page") long page,
+            @QueryParam("since_id") long sinceId,
+            @QueryParam("max_id") long maxId);
 
     @Path("/sent.json")
     Message[] getSent(
@@ -65,8 +66,8 @@ public interface DirectMessageService {
     @Path("/new.json")
     Message send(
             @QueryParam("user_id") long userId,
-            @QueryParam("screen_name") String screenName,
-            @QueryParam("text") String msg);
+            @QueryParam("text") String msg,
+            @QueryParam("screen_name") String screenName);
 
     @DELETE
     @Path("/destroy/{msgid}.json")

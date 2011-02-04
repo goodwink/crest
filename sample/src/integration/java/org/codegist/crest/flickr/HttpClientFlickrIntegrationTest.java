@@ -21,10 +21,7 @@
 package org.codegist.crest.flickr;
 
 import org.codegist.crest.CRest;
-import org.codegist.crest.delicious.AbstractDeliciousIntegrationTest;
-import org.codegist.crest.delicious.service.Delicious;
 import org.codegist.crest.flickr.service.Flickr;
-import org.junit.Ignore;
 
 /**
  * @author laurent.gilles@codegist.org

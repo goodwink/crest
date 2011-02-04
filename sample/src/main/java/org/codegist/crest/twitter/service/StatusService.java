@@ -39,7 +39,7 @@ public interface StatusService {
 
     @POST
     @Path("/update.json")
-    Status changeStatus(
+    Status updateStatus(
             @FormParam("status") String status,
             @QueryParam("lat") float lat,
             @QueryParam("long") float longitude);

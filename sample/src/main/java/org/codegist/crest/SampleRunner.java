@@ -56,8 +56,8 @@ public class SampleRunner {
         int i = 0;
         Runnable[] samples = {
                 new DeliciousSample(args[i++], args[i++], args[i++], args[i++], args[i++]),
-                new TwitterSample(args[i++], args[i++], args[i++], args[i++]),
                 new FlickrSample(args[i++], args[i++], args[i++]),
+                new TwitterSample(args[i++], args[i++], args[i++], args[i++]),
                 new GoogleServicesSample()
         };
         for (Runnable sample : samples) {

@@ -21,6 +21,7 @@
 package org.codegist.crest.handler;
 
 import org.codegist.common.lang.Numbers;
+import org.codegist.common.log.Logger;
 import org.codegist.crest.CRestProperty;
 import org.codegist.crest.ResponseContext;
 
@@ -29,6 +30,7 @@ import java.util.Map;
 /**
  * Default retry handler always returns true is the given attempt is strictly less than given max value.
  * Defaults configuration always return false. This behavior can be changed
+ *
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
 public class MaxAttemptRetryHandler implements RetryHandler {
@@ -39,6 +41,8 @@ public class MaxAttemptRetryHandler implements RetryHandler {
 
     private final int max;
 
+    private static final Logger LOG = Logger.getLogger(MaxAttemptRetryHandler.class);
+
     public MaxAttemptRetryHandler(int max) {
         this.max = max;
     }
@@ -47,12 +51,14 @@ public class MaxAttemptRetryHandler implements RetryHandler {
         this(DEFAULT_MAX);
     }
 
-    public MaxAttemptRetryHandler(Map<String,Object> customProperties) {
+    public MaxAttemptRetryHandler(Map<String, Object> customProperties) {
         this.max = Numbers.parse((String) customProperties.get(CRestProperty.HANDLER_RETRY_MAX_ATTEMPTS), DEFAULT_MAX);
     }
 
 
     public boolean retry(ResponseContext response, Exception exception, int retryNumber) {
-        return retryNumber < max;
+        boolean retry = retryNumber < max;
+        LOG.debug("Retrying attempt=%d,max=%d,retry=%b,reason=%s", retryNumber, max, retry, exception != null ? exception.getMessage() : "unknown");
+        return retry;
     }
 }

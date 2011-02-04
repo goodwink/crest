@@ -54,6 +54,13 @@
         </plugins>
     </reporting>
 
+    <!--
+    *****************************************************************************************************************************
+    *****************************************************************************************************************************
+    NB: this POM contains some test-account relative properties retrieved from the user's settings.xml for integration tests.
+    *****************************************************************************************************************************
+    *****************************************************************************************************************************
+       -->
     <properties>
         <test.src.dir>src/test/java</test.src.dir>
     </properties>
@@ -88,20 +95,52 @@
                             <value>${crest.sample.delicious.session-handle}</value>
                         </property>
                         <property>
-                            <name>crest.sample.twitter.consumer-key</name>
-                            <value>${crest.sample.twitter.consumer-key}</value>
+                            <name>crest.sample.twitter.account1.consumer-key</name>
+                            <value>${crest.sample.twitter.account1.consumer-key}</value>
                         </property>
                         <property>
-                            <name>crest.sample.twitter.consumer-secret</name>
-                            <value>${crest.sample.twitter.consumer-secret}</value>
+                            <name>crest.sample.twitter.account1.consumer-secret</name>
+                            <value>${crest.sample.twitter.account1.consumer-secret}</value>
                         </property>
                         <property>
-                            <name>crest.sample.twitter.access-token</name>
-                            <value>${crest.sample.twitter.access-token}</value>
+                            <name>crest.sample.twitter.account1.access-token</name>
+                            <value>${crest.sample.twitter.account1.access-token}</value>
                         </property>
                         <property>
-                            <name>crest.sample.twitter.access-token-secret</name>
-                            <value>${crest.sample.twitter.access-token-secret}</value>
+                            <name>crest.sample.twitter.account1.access-token-secret</name>
+                            <value>${crest.sample.twitter.account1.access-token-secret}</value>
+                        </property>
+                        <property>
+                            <name>crest.sample.twitter.account2.consumer-key</name>
+                            <value>${crest.sample.twitter.account2.consumer-key}</value>
+                        </property>
+                        <property>
+                            <name>crest.sample.twitter.account2.consumer-secret</name>
+                            <value>${crest.sample.twitter.account2.consumer-secret}</value>
+                        </property>
+                        <property>
+                            <name>crest.sample.twitter.account2.access-token</name>
+                            <value>${crest.sample.twitter.account2.access-token}</value>
+                        </property>
+                        <property>
+                            <name>crest.sample.twitter.account2.access-token-secret</name>
+                            <value>${crest.sample.twitter.account2.access-token-secret}</value>
+                        </property>
+                        <property>
+                            <name>crest.sample.twitter.account1.user-id</name>
+                            <value>${crest.sample.twitter.account1.user-id}</value>
+                        </property>
+                        <property>
+                            <name>crest.sample.twitter.account2.user-id</name>
+                            <value>${crest.sample.twitter.account2.user-id}</value>
+                        </property>
+                        <property>
+                            <name>crest.sample.twitter.account1.screen-name</name>
+                            <value>${crest.sample.twitter.account1.screen-name}</value>
+                        </property>
+                        <property>
+                            <name>crest.sample.twitter.account2.screen-name</name>
+                            <value>${crest.sample.twitter.account2.screen-name}</value>
                         </property>
                         <property>
                             <name>crest.sample.flickr.key</name>
@@ -137,13 +176,21 @@
                         <argument>${crest.sample.delicious.access-token}</argument>
                         <argument>${crest.sample.delicious.access-token-secret}</argument>
                         <argument>${crest.sample.delicious.session-handle}</argument>
-                        <argument>${crest.sample.twitter.consumer-key}</argument>
-                        <argument>${crest.sample.twitter.consumer-secret}</argument>
-                        <argument>${crest.sample.twitter.access-token}</argument>
-                        <argument>${crest.sample.twitter.access-token-secret}</argument>
                         <argument>${crest.sample.flickr.key}</argument>
                         <argument>${crest.sample.flickr.secret}</argument>
                         <argument>${crest.sample.flickr.token}</argument>
+                        <argument>${crest.sample.twitter.account1.consumer-key}</argument>
+                        <argument>${crest.sample.twitter.account1.consumer-secret}</argument>
+                        <argument>${crest.sample.twitter.account1.access-token}</argument>
+                        <argument>${crest.sample.twitter.account1.access-token-secret}</argument>
+                        <argument>${crest.sample.twitter.account1.user-id}</argument>
+                        <argument>${crest.sample.twitter.account1.screen-name}</argument>
+                        <argument>${crest.sample.twitter.account2.consumer-key}</argument>
+                        <argument>${crest.sample.twitter.account2.consumer-secret}</argument>
+                        <argument>${crest.sample.twitter.account2.access-token}</argument>
+                        <argument>${crest.sample.twitter.account2.access-token-secret}</argument>
+                        <argument>${crest.sample.twitter.account2.user-id}</argument>
+                        <argument>${crest.sample.twitter.account2.screen-name}</argument>
                     </arguments>
                     <classpathScope>compile</classpathScope>
                 </configuration>
@@ -168,7 +215,7 @@
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>4.0.3</version>
+            <version>4.1</version>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>

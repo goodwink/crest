@@ -101,16 +101,21 @@ public abstract class AbstractDeliciousIntegrationTest {
 
         // add test
         assertTrue(delicious.addPost(url, "that' my site"));
+        Thread.sleep(5000);
+
+        assertNotNull(delicious.getPosts());
 
         // get test
-        Post post = getPostByUrl(delicious.getPosts(), url);
+        Post post = delicious.getPosts(url, null,null,null,null).getPosts()[0];
         assertNotNull(post);
         assertEquals("that' my site", post.getDescription());
 
         // add test 2
         url = getRandomUrl();
         assertTrue(delicious.addPost(url, "that' my site2", "extended!", tags, new Date(stamp), false, false));
-        post = getPostByUrl(delicious.getPosts(), url);
+        Thread.sleep(5000);
+
+        post = delicious.getPosts(url, null,null,null,null).getPosts()[0];
         assertNotNull(post);
         assertEquals("that' my site2", post.getDescription());
         assertEquals("extended!", post.getExtended());
@@ -119,10 +124,11 @@ public abstract class AbstractDeliciousIntegrationTest {
 
         // add test 3 same fail
         assertFalse(delicious.addPost(url, "that' my site2", "extended!", tags, new Date(stamp), false, false));
-
         // add test 4 override
         assertTrue(delicious.addPost(url, "that' my site2", "extended2!", tags, new Date(stamp), true, true));
-        post = getPostByUrl(delicious.getPosts(), url);
+        Thread.sleep(5000);
+
+        post = delicious.getPosts(url, null,null,null,null).getPosts()[0];
         assertNotNull(post);
         assertEquals("that' my site2", post.getDescription());
         assertEquals("extended2!", post.getExtended());
@@ -132,7 +138,7 @@ public abstract class AbstractDeliciousIntegrationTest {
         // get test 2
         Posts posts = delicious.getPosts(url, new Date(stamp), tags, new String[]{post.getHash()}, false);
         assertEquals(1, posts.getPosts().length);
-        assertEquals(post, posts.getPosts()[0]);
+        assertEquals(post.getHref(), posts.getPosts()[0].getHref());
 
         // get post per date test 1
         Dates dates = delicious.getPostsPerDate();
@@ -147,12 +153,12 @@ public abstract class AbstractDeliciousIntegrationTest {
         Thread.sleep(10000); // sleep to let it propagate...
         Posts recents = delicious.getRecentsPosts();
         assertTrue(recents.getPosts().length > 0);
-        assertEquals(post, recents.getPosts()[0]);
+        assertEquals(post.getHref(), recents.getPosts()[0].getHref());
 
         // get recents test 2
         recents = delicious.getRecentsPosts(tags[1], 2);
         assertEquals(1, recents.getPosts().length);
-        assertEquals(post, recents.getPosts()[0]);
+        assertEquals(post.getHref(), recents.getPosts()[0].getHref());
 
         // last update test
         Update update = delicious.getLastUpdatePosts();
@@ -229,15 +235,6 @@ public abstract class AbstractDeliciousIntegrationTest {
 
     private static String getRandomUrl(String random) {
         return "http://crest.codegist.org/?rdm=" + random;
-    }
-
-    private static Post getPostByUrl(Posts posts, String url) {
-        for (Post p : posts.getPosts()) {
-            if (p.getHref().equals(url)) {
-                return p;
-            }
-        }
-        return null;
     }
 
     protected static CRestBuilder getBaseCRestBuilder() {

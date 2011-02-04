@@ -18,22 +18,31 @@
  *  More information at http://www.codegist.org.
  */
 
-package org.codegist.crest.flickr;
-
-import org.codegist.crest.CRest;
-import org.codegist.crest.flickr.service.Flickr;
+package org.codegist.crest.twitter;
 
 /**
  * @author laurent.gilles@codegist.org
  */
-public class DefaultFlickrIntegrationTest extends AbstractFlickrIntegrationTest {
+public class AccountService<T> {
+    private final T service;
+    private final long accountId;
+    private final String accountScreenName;
 
-    public DefaultFlickrIntegrationTest() {
-        super(getFlickr());
+    public AccountService(T service, long accountId, String accountScreenName) {
+        this.service = service;
+        this.accountId = accountId;
+        this.accountScreenName = accountScreenName;
     }
 
-    private static Flickr getFlickr() {
-        CRest crest = getBaseCRestBuilder().build();
-        return crest.build(Flickr.class);
+    public T getService() {
+        return service;
+    }
+
+    public long getAccountId() {
+        return accountId;
+    }
+
+    public String getAccountScreenName() {
+        return accountScreenName;
     }
 }
