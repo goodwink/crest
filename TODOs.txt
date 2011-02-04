@@ -32,6 +32,7 @@ CREST
     ******************DONE************************   - cons: wouldn't be possible in a pure JAX-RS style, isn't? (or maybe with toString() on LangPair object,JAX-RS style, but that sucks)
 
 ******************DONE************************    Write run-optional integration test for sample: ensuring that all changes are still compatible with sample apis is a good real-life usecase
+******************DONE************************    Placeholder in annotations
 * Should it fail at Factory time or at runtime when configuration do not contains param name ? Param name are mandatory now... make it fail at factory time!
 
 
