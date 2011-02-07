@@ -78,24 +78,8 @@ public class HttpClientRestService implements RestService, Disposable {
         this.http = http;
     }
 
-    private static Map<String, List<String>> toHeaders(Header[] headers) {
-        if (headers == null) return Collections.emptyMap();
-        Map<String, List<String>> map = new HashMap<String, List<String>>();
-        for (Header h : headers) {
-            map.put(h.getName(), Arrays.asList(h.getValue()));/*is that good enough ?????*/
-        }
-        return map;
-    }
-
     public HttpResponse exec(HttpRequest httpRequest) throws HttpException {
-        HttpUriRequest request;
-        try {
-            request = toHttpUriRequest(httpRequest);
-        } catch (RuntimeException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        HttpUriRequest request = toHttpUriRequest(httpRequest);
         org.apache.http.HttpResponse response;
         HttpEntity entity = null;
         boolean inError = false;
@@ -103,6 +87,7 @@ public class HttpClientRestService implements RestService, Disposable {
             logger.debug("%4s %s", httpRequest.getMeth(), request.getURI());
             logger.trace(request);
             response = http.execute(request);
+
             if (response == null) {
                 throw new HttpException("No Response!", new HttpResponse(httpRequest, -1));
             }
@@ -154,63 +139,72 @@ public class HttpClientRestService implements RestService, Disposable {
         METH_MAP.put("OPTIONS", HttpOptions.class);
     }
 
-    private static HttpUriRequest toHttpUriRequest(HttpRequest request) throws UnsupportedEncodingException, MalformedURLException {
-        String url = request.getUrlString(true);
+    private static Map<String, List<String>> toHeaders(Header[] headers) {
+        if (headers == null) return Collections.emptyMap();
+        Map<String, List<String>> map = new HashMap<String, List<String>>();
+        for (Header h : headers) {
+            map.put(h.getName(), Arrays.asList(h.getValue()));/*is that good enough ?????*/
+        }
+        return map;
+    }
 
-        Class<? extends HttpUriRequest> uriRequestClass = METH_MAP.containsKey(request.getMeth()) ? METH_MAP.get(request.getMeth()) : HttpGet.class;
-        HttpUriRequest uriRequest = null;
+    private static HttpUriRequest toHttpUriRequest(HttpRequest request) {
         try {
-            uriRequest = uriRequestClass.getConstructor(String.class).newInstance(url);
-        } catch (Exception e) {
-            throw new CRestException("Unknown method:" + request.getMeth(), e);
-        }
+            String url = request.getUrlString(true);
 
+            Class<? extends HttpUriRequest> uriRequestClass = METH_MAP.containsKey(request.getMeth()) ? METH_MAP.get(request.getMeth()) : HttpGet.class;
+            HttpUriRequest uriRequest = uriRequestClass.getConstructor(String.class).newInstance(url);
 
-        if (uriRequest instanceof HttpEntityEnclosingRequestBase) {
-            HttpEntityEnclosingRequestBase enclosingRequestBase = ((HttpEntityEnclosingRequestBase) uriRequest);
-            HttpEntity entity;
-            if (Params.isForUpload(request.getFormParams().values())) {
-                MultipartEntity multipartEntity = new MultipartEntity();
-                for (Map.Entry<String, Object> param : request.getFormParams().entrySet()) {
-                    ContentBody body;
-                    if (param.getValue() instanceof InputStream) {
-                        body = new InputStreamBody((InputStream) param.getValue(), param.getKey());
-                    } else if (param.getValue() instanceof File) {
-                        body = new FileBody((File) param.getValue());
-                    } else if (param.getValue() != null) {
-                        body = new StringBody(param.getValue().toString(), request.getEncodingAsCharset());
-                    } else {
-                        body = new StringBody(null);
+            if (uriRequest instanceof HttpEntityEnclosingRequestBase) {
+                HttpEntityEnclosingRequestBase enclosingRequestBase = ((HttpEntityEnclosingRequestBase) uriRequest);
+                HttpEntity entity;
+                if (Params.isForUpload(request.getFormParams().values())) {
+                    MultipartEntity multipartEntity = new MultipartEntity();
+                    for (Map.Entry<String, Object> param : request.getFormParams().entrySet()) {
+                        ContentBody body;
+                        if (param.getValue() instanceof InputStream) {
+                            body = new InputStreamBody((InputStream) param.getValue(), param.getKey());
+                        } else if (param.getValue() instanceof File) {
+                            body = new FileBody((File) param.getValue());
+                        } else if (param.getValue() != null) {
+                            body = new StringBody(param.getValue().toString(), request.getEncodingAsCharset());
+                        } else {
+                            body = new StringBody(null);
+                        }
+                        multipartEntity.addPart(param.getKey(), body);
                     }
-                    multipartEntity.addPart(param.getKey(), body);
+                    entity = multipartEntity;
+                } else {
+                    List<NameValuePair> params = new ArrayList<NameValuePair>(request.getFormParams().size());
+                    for (Map.Entry<String, Object> param : request.getFormParams().entrySet()) {
+                        params.add(new BasicNameValuePair(param.getKey(), param.getValue() != null ? param.getValue().toString() : null));
+                    }
+                    entity = new UrlEncodedFormEntity(params, request.getEncoding());
                 }
-                entity = multipartEntity;
-            } else {
-                List<NameValuePair> params = new ArrayList<NameValuePair>(request.getFormParams().size());
-                for (Map.Entry<String, Object> param : request.getFormParams().entrySet()) {
-                    params.add(new BasicNameValuePair(param.getKey(), param.getValue() != null ? param.getValue().toString() : null));
-                }
-                entity = new UrlEncodedFormEntity(params, request.getEncoding());
+
+                enclosingRequestBase.setEntity(entity);
             }
 
-            enclosingRequestBase.setEntity(entity);
-        }
-
-        if (request.getHeaderParams() != null && !request.getHeaderParams().isEmpty()) {
-            for (Map.Entry<String, String> header : request.getHeaderParams().entrySet()) {
-                uriRequest.setHeader(header.getKey(), header.getValue());
+            if (request.getHeaderParams() != null && !request.getHeaderParams().isEmpty()) {
+                for (Map.Entry<String, String> header : request.getHeaderParams().entrySet()) {
+                    uriRequest.setHeader(header.getKey(), header.getValue());
+                }
             }
-        }
 
-        if (request.getConnectionTimeout() != null && request.getConnectionTimeout() >= 0) {
-            HttpConnectionParams.setConnectionTimeout(uriRequest.getParams(), request.getConnectionTimeout().intValue());
-        }
+            if (request.getConnectionTimeout() != null && request.getConnectionTimeout() >= 0) {
+                HttpConnectionParams.setConnectionTimeout(uriRequest.getParams(), request.getConnectionTimeout().intValue());
+            }
 
-        if (request.getSocketTimeout() != null && request.getSocketTimeout() >= 0) {
-            HttpConnectionParams.setSoTimeout(uriRequest.getParams(), request.getSocketTimeout().intValue());
-        }
+            if (request.getSocketTimeout() != null && request.getSocketTimeout() >= 0) {
+                HttpConnectionParams.setSoTimeout(uriRequest.getParams(), request.getSocketTimeout().intValue());
+            }
 
-        return uriRequest;
+            return uriRequest;
+        } catch (RuntimeException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new HttpException(e);
+        }
     }
 
 

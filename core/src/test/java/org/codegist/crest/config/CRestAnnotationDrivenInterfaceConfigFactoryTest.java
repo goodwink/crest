@@ -42,6 +42,36 @@ public class CRestAnnotationDrivenInterfaceConfigFactoryTest extends AbstractInt
         configFactory.newConfig(String.class, mockContext);
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testConfigMissingParamName() throws ConfigFactoryException {
+        configFactory.newConfig(MissingParamName.class, mockContext);
+    }
+    @Test(expected = IllegalArgumentException.class)
+    public void testConfigMissingEndpoint() throws ConfigFactoryException {
+        configFactory.newConfig(MissingEndPoint.class, mockContext);
+    }
+
+    @EndPoint("http://localhost:8080")
+    @ContextPath("/my-path")
+    interface MissingParamName extends Interface {
+        @Path("/m1")
+        Object m1();
+
+        Object m1(@QueryParam(value ="param") String a);
+
+        Object m1(String a, @QueryParam(value ="param2") int[] b);
+    }
+
+    @ContextPath("/my-path")
+    interface MissingEndPoint extends Interface {
+        @Path("/m1")
+        Object m1();
+
+        Object m1(@QueryParam(value ="param") String a);
+
+        Object m1(@QueryParam(value ="param1") String a, @QueryParam(value ="param2") int[] b);
+    }
+
     @Test
     public void testMinimalConfig() throws ConfigFactoryException {
         assertMinimalExpected(configFactory.newConfig(MinimallyAnnotatedInterface.class, mockContext), MinimallyAnnotatedInterface.class);
@@ -106,6 +136,9 @@ public class CRestAnnotationDrivenInterfaceConfigFactoryTest extends AbstractInt
 
         Method M = TestUtils.getMethod(TypeInjectorInterface.class, "get", Model.class, Model[].class);
     }
+
+
+
 
     @EndPoint("http://localhost:8080")
     @ContextPath("/my-path")

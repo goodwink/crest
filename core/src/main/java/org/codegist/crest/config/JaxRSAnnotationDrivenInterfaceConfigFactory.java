@@ -33,13 +33,13 @@ import java.util.Map;
  */
 public class JaxRSAnnotationDrivenInterfaceConfigFactory implements InterfaceConfigFactory {
 
-    private final boolean useDefaults;
+    private final boolean buildTemplates;
 
-    public JaxRSAnnotationDrivenInterfaceConfigFactory(boolean useDefaults) {
-        this.useDefaults = useDefaults;
+    public JaxRSAnnotationDrivenInterfaceConfigFactory(boolean buildTemplates) {
+        this.buildTemplates = buildTemplates;
     }
     public JaxRSAnnotationDrivenInterfaceConfigFactory() {
-        this(true);
+        this(false);
     }
 
     public InterfaceConfig newConfig(Class<?> interfaze, CRestContext context) throws ConfigFactoryException {
@@ -111,7 +111,7 @@ public class JaxRSAnnotationDrivenInterfaceConfigFactory implements InterfaceCon
                 mcb.endMethodConfig();
             }
 
-            return icb.build(useDefaults);
+            return icb.build(buildTemplates, true);
         } catch (RuntimeException e) {
             throw e;
         } catch (Exception e) {

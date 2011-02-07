@@ -112,15 +112,15 @@ public class PropertiesDrivenInterfaceConfigFactory implements InterfaceConfigFa
 
     //TODO this class would need a nice clean up....
     private final Map<String, String> properties;
-    private final boolean useDefaults;
+    private final boolean buildTemplates;
 
     public PropertiesDrivenInterfaceConfigFactory(Map<String, String> properties) {
-        this(properties, true);
+        this(properties, false);
     }
 
-    public PropertiesDrivenInterfaceConfigFactory(Map<String, String> properties, boolean useDefaults) {
+    public PropertiesDrivenInterfaceConfigFactory(Map<String, String> properties, boolean buildTemplates) {
         this.properties = Maps.unmodifiable(properties);
-        this.useDefaults = useDefaults;
+        this.buildTemplates = buildTemplates;
     }
 
     public InterfaceConfig newConfig(Class<?> interfaze, CRestContext context) throws ConfigFactoryException {
@@ -128,7 +128,6 @@ public class PropertiesDrivenInterfaceConfigFactory implements InterfaceConfigFa
             String globalServer = getServiceGlobalProp("end-point");
             String serviceAlias = getClassAlias(interfaze);
             String endPoint = defaultIfBlank(getServiceProp(serviceAlias, "end-point"), globalServer);
-            if (isBlank(endPoint)) throw new IllegalArgumentException("end-point not found!");
 
             ConfigBuilders.InterfaceConfigBuilder ricb = new ConfigBuilders.InterfaceConfigBuilder(interfaze, context.getProperties()).setIgnoreNullOrEmptyValues(true);
             ricb    .setEndPoint(endPoint)
@@ -209,7 +208,7 @@ public class PropertiesDrivenInterfaceConfigFactory implements InterfaceConfigFa
                 mcb.endMethodConfig();
             }
 
-            return ricb.build(useDefaults);
+            return ricb.build(buildTemplates, true);
         } catch (RuntimeException e) {
             throw e;
         } catch (Exception e) {

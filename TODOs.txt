@@ -33,7 +33,11 @@ CREST
 
 ******************DONE************************    Write run-optional integration test for sample: ensuring that all changes are still compatible with sample apis is a good real-life usecase
 ******************DONE************************    Placeholder in annotations
-* Should it fail at Factory time or at runtime when configuration do not contains param name ? Param name are mandatory now... make it fail at factory time!
+* Should it fail at Factory time or at runtime when configuration do not contains param name ? Param name are mandatory now...
+  -> make it fail at factory time!
+     - Remove Builders.buildTemlate() method, rename useDefaults flag to be buildTemplate, same behavior, but won't throw IllegalArgumentException when Param.name is not provided
+     - All ConfigFactory must have 2 constructors, an empty one that build normal config and another one with the buildTemplate flag.
+* Finish JAX-RS integration
 
 
 

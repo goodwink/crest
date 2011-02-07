@@ -331,7 +331,7 @@ public class ConfigBuildersTest {
                             TestUtils.newInstance(DEFAULT_RETRY_HANDLER),
                             new ParamConfig[]{
                                     new DefaultParamConfig(
-                                            DEFAULT_NAME,
+                                            "n",
                                             DEFAULT_VALUE,
                                             DEFAULT_DESTINATION,
                                             new ToStringSerializer(),
@@ -352,21 +352,21 @@ public class ConfigBuildersTest {
                             TestUtils.newInstance(DEFAULT_RETRY_HANDLER),
                             new ParamConfig[]{
                                     new DefaultParamConfig(
-                                            DEFAULT_NAME,
+                                            "n",
                                             DEFAULT_VALUE,
                                             DEFAULT_DESTINATION,
                                             new ToStringSerializer(),
                                             TestUtils.newInstance(DEFAULT_INJECTOR)
                                     ),
                                     new DefaultParamConfig(
-                                            DEFAULT_NAME,
+                                            "n",
                                             DEFAULT_VALUE,
                                             DEFAULT_DESTINATION,
                                             new ArraySerializer(),
                                             TestUtils.newInstance(DEFAULT_INJECTOR)
                                     ),
                                     new DefaultParamConfig(
-                                            DEFAULT_NAME,
+                                            "n",
                                             DEFAULT_VALUE,
                                             DEFAULT_DESTINATION,
                                             new DateSerializer(),
@@ -377,7 +377,7 @@ public class ConfigBuildersTest {
                     ));
                 }}
         );
-        InterfaceConfig config = new ConfigBuilders.InterfaceConfigBuilder(Interface.class).setEndPoint("http://server:8080").build();
+        InterfaceConfig config = new ConfigBuilders.InterfaceConfigBuilder(Interface.class).setEndPoint("http://server:8080").setParamsName("n").build();
         InterfaceConfigTestHelper.assertExpected(expected, config, Interface.class);
     }
 
@@ -402,7 +402,7 @@ public class ConfigBuildersTest {
                             new Stubs.RetryHandler2(),
                             new ParamConfig[]{
                                     new DefaultParamConfig(
-                                            DEFAULT_NAME,
+                                            "n",
                                             DEFAULT_VALUE,
                                             DEFAULT_DESTINATION,
                                             new Stubs.Serializer2(),
@@ -423,21 +423,21 @@ public class ConfigBuildersTest {
                             new Stubs.RetryHandler2(),
                             new ParamConfig[]{
                                     new DefaultParamConfig(
-                                            DEFAULT_NAME,
+                                            "n",
                                             DEFAULT_VALUE,
                                             DEFAULT_DESTINATION,
                                             new Stubs.Serializer2(),
                                             new Stubs.RequestParameterInjector2()
                                     ),
                                     new DefaultParamConfig(
-                                            DEFAULT_NAME,
+                                            "n",
                                             DEFAULT_VALUE,
                                             DEFAULT_DESTINATION,
                                             new Stubs.Serializer2(),
                                             new Stubs.RequestParameterInjector2()
                                     ),
                                     new DefaultParamConfig(
-                                            DEFAULT_NAME,
+                                            "n",
                                             DEFAULT_VALUE,
                                             DEFAULT_DESTINATION,
                                             new Stubs.Serializer2(),
@@ -450,6 +450,7 @@ public class ConfigBuildersTest {
         );
         InterfaceConfig config = new ConfigBuilders.InterfaceConfigBuilder(Interface.class)
                 .setEndPoint("http://server:8080")
+                .setParamsName("n")
                 .setMethodsPath("/test")
                 .addMethodsExtraParam("1", "2", Destination.FORM)
                 .setMethodsHttpMethod("DELETE")
@@ -486,7 +487,7 @@ public class ConfigBuildersTest {
                             new Stubs.RetryHandler1(),
                             new ParamConfig[]{
                                     new DefaultParamConfig(
-                                            DEFAULT_NAME,
+                                            "n",
                                             DEFAULT_VALUE,
                                             DEFAULT_DESTINATION,
                                             new Stubs.Serializer2(),
@@ -507,21 +508,21 @@ public class ConfigBuildersTest {
                             new Stubs.RetryHandler2(),
                             new ParamConfig[]{
                                     new DefaultParamConfig(
-                                            DEFAULT_NAME,
+                                            "n",
                                             DEFAULT_VALUE,
                                             DEFAULT_DESTINATION,
                                             new Stubs.Serializer3(),
                                             new Stubs.RequestParameterInjector3()
                                     ),
                                     new DefaultParamConfig(
-                                            DEFAULT_NAME,
+                                            "n",
                                             DEFAULT_VALUE,
                                             DEFAULT_DESTINATION,
                                             new Stubs.Serializer3(),
                                             new Stubs.RequestParameterInjector3()
                                     ),
                                     new DefaultParamConfig(
-                                            DEFAULT_NAME,
+                                            "n",
                                             DEFAULT_VALUE,
                                             DEFAULT_DESTINATION,
                                             new Stubs.Serializer3(),
@@ -532,7 +533,7 @@ public class ConfigBuildersTest {
                     ));
                 }}
         );
-        InterfaceConfig config = new ConfigBuilders.InterfaceConfigBuilder(Interface.class).setEndPoint("http://server:8080")
+        InterfaceConfig config = new ConfigBuilders.InterfaceConfigBuilder(Interface.class).setEndPoint("http://server:8080").setParamsName("n")
                 .setMethodsPath("/test")
                 .addMethodsExtraParam("1", "2", Destination.FORM)
                 .setMethodsHttpMethod("DELETE")
@@ -602,21 +603,21 @@ public class ConfigBuildersTest {
                             new Stubs.RetryHandler1(),
                             new ParamConfig[]{
                                     new DefaultParamConfig(
-                                            DEFAULT_NAME,
+                                            "n",
                                             DEFAULT_VALUE,
                                             DEFAULT_DESTINATION,
                                             new Stubs.Serializer1(),
                                             new Stubs.RequestParameterInjector1()
                                     ),
                                     new DefaultParamConfig(
-                                            DEFAULT_NAME,
+                                            "n",
                                             DEFAULT_VALUE,
                                             DEFAULT_DESTINATION,
                                             new Stubs.Serializer3(),
                                             new Stubs.RequestParameterInjector3()
                                     ),
                                     new DefaultParamConfig(
-                                            DEFAULT_NAME,
+                                            "n",
                                             DEFAULT_VALUE,
                                             DEFAULT_DESTINATION,
                                             new Stubs.Serializer3(),
@@ -629,6 +630,7 @@ public class ConfigBuildersTest {
         );
         InterfaceConfig config = new ConfigBuilders.InterfaceConfigBuilder(Interface.class)
                 .setEndPoint("http://server:8080")
+                .setParamsName("n")
                 .setMethodsPath("/test")
                 .addMethodsExtraParam("1", "2", Destination.FORM)
                 .setMethodsHttpMethod("DELETE")
@@ -673,7 +675,7 @@ public class ConfigBuildersTest {
     public void testNoDefaults() throws InstantiationException, IllegalAccessException {
         InterfaceConfig expected = new DefaultInterfaceConfig(
                 Interface.class,
-                "http://server:8080",
+                null,
                 null, null, null,
                 new HashMap<Method, MethodConfig>() {{
                     put(Interface.A, new DefaultMethodConfig(
@@ -694,7 +696,7 @@ public class ConfigBuildersTest {
                     ));
                 }}
         );
-        InterfaceConfig config = new ConfigBuilders.InterfaceConfigBuilder(Interface.class).setEndPoint("http://server:8080").build(false);
+        InterfaceConfig config = new ConfigBuilders.InterfaceConfigBuilder(Interface.class).buildTemplate();
         InterfaceConfigTestHelper.assertExpected(expected, config, Interface.class);
     }
 

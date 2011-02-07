@@ -22,7 +22,11 @@ package org.codegist.crest.config;
 
 import org.codegist.crest.Stubs;
 import org.codegist.crest.TestUtils;
+import org.junit.Test;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.IOException;
 import java.lang.reflect.Method;
 
 /**
@@ -43,6 +47,23 @@ public abstract class AbstractInterfaceConfigFactoryTest {
         InterfaceConfigTestHelper.assertExpected(FULLY_EXPECTED_CONFIG, test, clazz);
     }
 
+    @Test
+    public abstract void testMinimalConfig() throws ConfigFactoryException;
+
+    @Test
+    public abstract void testPartialConfig() throws ConfigFactoryException;
+
+    @Test
+    public abstract void testFullConfig() throws ConfigFactoryException;
+
+    @Test(expected = RuntimeException.class)
+    public abstract void testInvalidConfig() throws Exception;
+
+    @Test(expected = IllegalArgumentException.class)
+    public abstract void testConfigMissingParamName() throws ConfigFactoryException, IOException, SAXException, ParserConfigurationException;
+
+    @Test(expected = IllegalArgumentException.class)
+    public abstract void testConfigMissingEndpoint() throws ConfigFactoryException, IOException, SAXException, ParserConfigurationException;
 
     interface Interface {
 

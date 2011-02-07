@@ -85,7 +85,7 @@ public class OverridingInterfaceConfigFactory implements InterfaceConfigFactory 
      * @see org.codegist.crest.config.OverridingInterfaceConfigFactory#OverridingInterfaceConfigFactory(InterfaceConfigFactory, InterfaceConfigFactory, boolean)
      */
     public OverridingInterfaceConfigFactory(InterfaceConfigFactory baseFactory, InterfaceConfigFactory overriderFactory) {
-        this(baseFactory, overriderFactory, true);
+        this(baseFactory, overriderFactory, false);
     }
 
     public InterfaceConfig newConfig(Class<?> interfaze, CRestContext context) throws ConfigFactoryException {

@@ -21,13 +21,16 @@
 package org.codegist.crest.config;
 
 import org.codegist.crest.CRestContext;
+import org.codegist.crest.CRestProperty;
 import org.codegist.crest.TestUtils;
 import org.junit.Test;
 
 import javax.ws.rs.*;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * @author laurent.gilles@codegist.org
@@ -41,17 +44,25 @@ public class JaxRSAnnotationDrivenInterfaceConfigFactoryTest {
 
     @Test
     public void testNonDefaultFactory1() throws ConfigFactoryException {
-        InterfaceConfigFactory factory = new JaxRSAnnotationDrivenInterfaceConfigFactory(true);
-        InterfaceConfig cfg = factory.newConfig(Interface.class, mock(CRestContext.class));
+        CRestContext ctx = mock(CRestContext.class);
+        when(ctx.getProperties()).thenReturn(new HashMap<String, Object>(){{
+            put(CRestProperty.CONFIG_INTERFACE_DEFAULT_ENDPOINT, "global-endpoint");
+        }});
+        InterfaceConfigFactory factory = new JaxRSAnnotationDrivenInterfaceConfigFactory(false);
+        InterfaceConfig cfg = factory.newConfig(Interface.class, ctx);
 
-        InterfaceConfigTestHelper.assertExpected(BUILDER.build(true), cfg, Interface.class);
+        InterfaceConfigTestHelper.assertExpected(BUILDER.setEndPoint("global-endpoint").build(), cfg, Interface.class);
     }
     @Test
     public void testNonDefaultFactory2() throws ConfigFactoryException {
-        InterfaceConfigFactory factory = new JaxRSAnnotationDrivenInterfaceConfigFactory(false);
-        InterfaceConfig cfg = factory.newConfig(Interface.class, mock(CRestContext.class));
+        CRestContext ctx = mock(CRestContext.class);
+        when(ctx.getProperties()).thenReturn(new HashMap<String, Object>(){{
+            put(CRestProperty.CONFIG_INTERFACE_DEFAULT_ENDPOINT, "global-endpoint");
+        }});
+        InterfaceConfigFactory factory = new JaxRSAnnotationDrivenInterfaceConfigFactory(true);
+        InterfaceConfig cfg = factory.newConfig(Interface.class, ctx);
 
-        InterfaceConfigTestHelper.assertExpected(BUILDER.build(false), cfg, Interface.class);
+        InterfaceConfigTestHelper.assertExpected(BUILDER.setEndPoint(null).buildTemplate(), cfg, Interface.class);
     }
 
 
@@ -115,6 +126,7 @@ public class JaxRSAnnotationDrivenInterfaceConfigFactoryTest {
     }
 
     private static final ConfigBuilders.InterfaceConfigBuilder BUILDER = new ConfigBuilders.InterfaceConfigBuilder(Interface.class)
+
             .setContextPath("/my/path")
             .startMethodConfig(Interface.GET)
             .setHttpMethod("GET")

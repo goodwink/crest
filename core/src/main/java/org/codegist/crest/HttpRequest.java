@@ -475,6 +475,7 @@ public class HttpRequest {
          * Adds a parameter to the given destination in the final http request
          * @param name name of the parameter
          * @param value value of the parameter
+         * @param dest parameter destination
          * @return current builder
          */
         public Builder addParam(String name, Object value, Destination dest) {

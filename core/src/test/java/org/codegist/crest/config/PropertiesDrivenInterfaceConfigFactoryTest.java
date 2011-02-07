@@ -20,12 +20,15 @@
 
 package org.codegist.crest.config;
 
+import org.codegist.common.io.IOs;
 import org.codegist.crest.CRestContext;
 import org.codegist.crest.Stubs;
 import org.codegist.crest.TestUtils;
 import org.codegist.crest.annotate.Injector;
 import org.junit.Test;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
@@ -49,6 +52,7 @@ public class PropertiesDrivenInterfaceConfigFactoryTest extends AbstractInterfac
         p.put("service.test.class", "org.codegist.crest.config.PropertiesDrivenInterfaceConfigFactoryTest$InjectorTestInterface");
         p.put("service.test.end-point", "http://localhost:8080");
         p.put("service.test.method.m.pattern", "get.*");
+        p.put("service.test.method.m.params.0.name", "hello");
         p.put("service.test.method.m.params.0.injector", "org.codegist.crest.Stubs$RequestParameterInjector3");
         PropertiesDrivenInterfaceConfigFactory factory = newFactory(p);
         InterfaceConfig cfg = factory.newConfig(InjectorTestInterface.class, mockContext);
@@ -60,6 +64,8 @@ public class PropertiesDrivenInterfaceConfigFactoryTest extends AbstractInterfac
         Map<String,String> p = new HashMap<String, String>();
         p.put("service.test.class", "org.codegist.crest.config.PropertiesDrivenInterfaceConfigFactoryTest$InjectorTestInterface");
         p.put("service.test.end-point", "http://localhost:8080");
+        p.put("service.test.method.m.pattern", "get.*");
+        p.put("service.test.method.m.params.0.name", "hello");
         PropertiesDrivenInterfaceConfigFactory factory = newFactory(p);
         InterfaceConfig cfg = factory.newConfig(InjectorTestInterface.class, mockContext);
         assertEquals(Stubs.RequestParameterInjector1.class, cfg.getMethodConfig(InjectorTestInterface.M).getParamConfig(0).getInjector().getClass());
@@ -81,20 +87,42 @@ public class PropertiesDrivenInterfaceConfigFactoryTest extends AbstractInterfac
         factory.newConfig(Interface.class, mockContext);
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testConfigMissingParamName() throws ConfigFactoryException, IOException, SAXException, ParserConfigurationException {
+        PropertiesDrivenInterfaceConfigFactory factory = new PropertiesDrivenInterfaceConfigFactory(new HashMap<String, String>(){{
+            put("service.test.class", "org.codegist.crest.config.PropertiesDrivenInterfaceConfigFactoryTest$InjectorTestInterface");
+            put("service.test.end-point","http://localhost:8080");
+            put("service.test.context-path","/my-path");    
+            put("service.test.method.m.pattern", ".*");
+        }});
+        factory.newConfig(InjectorTestInterface.class, mockContext);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testConfigMissingEndpoint() throws ConfigFactoryException, IOException, SAXException, ParserConfigurationException {
+        PropertiesDrivenInterfaceConfigFactory factory = new PropertiesDrivenInterfaceConfigFactory(new HashMap<String, String>(){{
+            put("service.test.class", "org.codegist.crest.config.PropertiesDrivenInterfaceConfigFactoryTest$InjectorTestInterface");
+            put("service.test.context-path","/my-path");    
+            put("service.test.method.m.pattern", ".*");
+            put("service.test.method.m.params.0.name","param");
+        }});
+        factory.newConfig(InjectorTestInterface.class, mockContext);
+    }
+
     @Test
-    public void testMinimalConfig() throws IOException, ConfigFactoryException {
+    public void testMinimalConfig() throws ConfigFactoryException {
         PropertiesDrivenInterfaceConfigFactory factory = newFactory("minimal-config.properties");
         assertMinimalExpected(factory.newConfig(Interface.class, mockContext), Interface.class);
     }
 
     @Test
-    public void testPartialConfig() throws IOException, ConfigFactoryException {
+    public void testPartialConfig() throws  ConfigFactoryException {
         PropertiesDrivenInterfaceConfigFactory factory = newFactory("partial-config.properties");
         assertPartialExpected(factory.newConfig(Interface.class, mockContext), Interface.class);
     }
 
     @Test
-    public void testFullConfig() throws IOException, ConfigFactoryException {
+    public void testFullConfig() throws ConfigFactoryException {
         PropertiesDrivenInterfaceConfigFactory factory = newFactory("full-config.properties");
         assertFullExpected(factory.newConfig(Interface.class, mockContext), Interface.class);
     }
@@ -104,24 +132,26 @@ public class PropertiesDrivenInterfaceConfigFactoryTest extends AbstractInterfac
         return new PropertiesDrivenInterfaceConfigFactory(p);
     }
 
-    public PropertiesDrivenInterfaceConfigFactory newFactory(String n) throws IOException {
+    public PropertiesDrivenInterfaceConfigFactory newFactory(String n) {
         Properties prop = new Properties();
         InputStream is = getClass().getResourceAsStream(n);
         try {
             prop.load(is);
+        } catch(Exception e) {
+            throw new RuntimeException(e);
         } finally {
-            is.close();
+            IOs.close(is);
         }
         return newFactory((Map)prop);
     }
 
     @Test
-    public void testServerConfig() throws IOException, InstantiationException, IllegalAccessException, ConfigFactoryException {
+    public void testServerConfigOverride() throws IOException, InstantiationException, IllegalAccessException, ConfigFactoryException {
         Map<String,String> props = new HashMap<String, String>();
         props.put("service.end-point", "hello");
-        PropertiesDrivenInterfaceConfigFactory factory = new PropertiesDrivenInterfaceConfigFactory(props);
+        PropertiesDrivenInterfaceConfigFactory factory = new PropertiesDrivenInterfaceConfigFactory(props, true);
         InterfaceConfig config = factory.newConfig(Interface.class, mockContext);
-        InterfaceConfig expected = new ConfigBuilders.InterfaceConfigBuilder(Interface.class).setEndPoint("hello").build();
+        InterfaceConfig expected = new ConfigBuilders.InterfaceConfigBuilder(Interface.class).setEndPoint("hello").buildTemplate();
         InterfaceConfigTestHelper.assertExpected(expected, config, Interface.class);
     }
 

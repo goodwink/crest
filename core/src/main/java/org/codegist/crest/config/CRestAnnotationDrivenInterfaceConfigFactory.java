@@ -41,22 +41,19 @@ import java.util.Set;
  */
 public class CRestAnnotationDrivenInterfaceConfigFactory implements InterfaceConfigFactory {
 
-    private final boolean useDefaults;
+    private final boolean buildTemplates;
 
-    public CRestAnnotationDrivenInterfaceConfigFactory(boolean useDefaults) {
-        this.useDefaults = useDefaults;
+    public CRestAnnotationDrivenInterfaceConfigFactory(boolean buildTemplates) {
+        this.buildTemplates = buildTemplates;
     }
     public CRestAnnotationDrivenInterfaceConfigFactory() {
-        this(true);
+        this(false);
     }
 
     public InterfaceConfig newConfig(Class<?> interfaze, CRestContext context) throws ConfigFactoryException {
         try {
             /* Interface specifics */
             EndPoint endPoint = interfaze.getAnnotation(EndPoint.class);
-            if(endPoint == null) {
-                throw new IllegalArgumentException(EndPoint.class + " annotation not fould on + " + interfaze);
-            }
             ContextPath contextPath = interfaze.getAnnotation(ContextPath.class);
             Encoding encoding = interfaze.getAnnotation(Encoding.class);
             GlobalInterceptor globalInterceptor = interfaze.getAnnotation(GlobalInterceptor.class);
@@ -163,7 +160,7 @@ public class CRestAnnotationDrivenInterfaceConfigFactory implements InterfaceCon
                 methodConfigBuilder.endMethodConfig();
             }
 
-            return config.build(useDefaults);
+            return config.build(buildTemplates, true);
         } catch (RuntimeException e) {
             throw e;
         } catch (Exception e) {

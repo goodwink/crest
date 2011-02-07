@@ -27,8 +27,8 @@ import org.codegist.crest.CRestContext;
  */
 public class JaxRSAwareAnnotationDrivenInterfaceConfigFactory implements InterfaceConfigFactory {
 
-    private final InterfaceConfigFactory crestAnnotationFactory = new CRestAnnotationDrivenInterfaceConfigFactory(false);
-    private final InterfaceConfigFactory jaxRsAnnotationFactory = new JaxRSAnnotationDrivenInterfaceConfigFactory(false);
+    private final InterfaceConfigFactory crestAnnotationFactory = new CRestAnnotationDrivenInterfaceConfigFactory(true);
+    private final InterfaceConfigFactory jaxRsAnnotationFactory = new JaxRSAnnotationDrivenInterfaceConfigFactory(true);
     private final boolean crestPriority;
 
     public JaxRSAwareAnnotationDrivenInterfaceConfigFactory(boolean crestPriority) {
@@ -44,7 +44,7 @@ public class JaxRSAwareAnnotationDrivenInterfaceConfigFactory implements Interfa
         InterfaceConfig jaxRsConfig = jaxRsAnnotationFactory.newConfig(interfaze, context);
         InterfaceConfig baseDefaultConfig = new ConfigBuilders.InterfaceConfigBuilder(interfaze, context.getProperties())
                 .setEndPoint(crestConfig.getEndPoint())
-                .build();
+                .buildUnvalidatedConfig();
 
         InterfaceConfig base = crestPriority ? jaxRsConfig : crestConfig;
         InterfaceConfig overrides = crestPriority ? crestConfig : jaxRsConfig;

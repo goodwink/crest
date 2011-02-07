@@ -155,7 +155,7 @@ public class DefaultCRest implements CRest, Disposable {
 
             // Build base request
             String fullpath = requestContext.getConfig().getEndPoint() + Strings.defaultIfBlank(requestContext.getConfig().getContextPath(), "") + requestContext.getMethodConfig().getPath();
-            HttpRequest.Builder builder = new HttpRequest.Builder(fullpath, interfaceContext.getConfig().getEncoding())
+            HttpRequest.Builder builder = new HttpRequest.Builder(fullpath, requestContext.getConfig().getEncoding())
                     .using(requestContext.getMethodConfig().getHttpMethod())
                     .timeoutSocketAfter(requestContext.getMethodConfig().getSocketTimeout())
                     .timeoutConnectionAfter(requestContext.getMethodConfig().getConnectionTimeout());
@@ -166,20 +166,7 @@ public class DefaultCRest implements CRest, Disposable {
 
             // Add default params
             for(BasicParamConfig param : requestContext.getMethodConfig().getExtraParams()){
-                switch(param.getDestination()){
-                    case HEADER:
-                        builder.addHeaderParam(param.getName(), param.getDefaultValue());
-                        break;
-                    case FORM:
-                        builder.addFormParam(param.getName(), param.getDefaultValue());
-                        break;
-                    case PATH:
-                        builder.addPathParam(param.getName(), param.getDefaultValue());
-                        break;
-                    case QUERY:
-                        builder.addQueryParam(param.getName(), param.getDefaultValue());
-                        break;
-                }
+                builder.addParam(param.getName(), param.getDefaultValue(), param.getDestination());
             }
 
             int count = requestContext.getMethodConfig().getParamCount();

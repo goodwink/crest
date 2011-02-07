@@ -66,9 +66,9 @@ public final class Configs {
         }
         return new DefaultInterfaceConfig(
                 Objects.defaultIfNull(overrides.getInterface(), base.getInterface()),
-                Strings.defaultIfBlank(overrides.getEndPoint(), base.getEndPoint()),
-                Strings.defaultIfBlank(overrides.getContextPath(), base.getContextPath()),
-                Strings.defaultIfBlank(overrides.getEncoding(), base.getEncoding()),
+                Objects.defaultIfNull(overrides.getEndPoint(), base.getEndPoint()),
+                Objects.defaultIfNull(overrides.getContextPath(), base.getContextPath()),
+                Objects.defaultIfNull(overrides.getEncoding(), base.getEncoding()),
                 Objects.defaultIfNull(overrides.getGlobalInterceptor(), base.getGlobalInterceptor()),
                 cache
         );
@@ -108,7 +108,7 @@ public final class Configs {
 
         return new DefaultMethodConfig(
                 Objects.defaultIfNull(overrides.getMethod(), base.getMethod()),
-                Strings.defaultIfBlank(overrides.getPath(), base.getPath()),
+                Objects.defaultIfNull(overrides.getPath(), base.getPath()),
                 Objects.defaultIfNull(overrides.getHttpMethod(), base.getHttpMethod()),
                 Objects.defaultIfNull(overrides.getSocketTimeout(), base.getSocketTimeout()),
                 Objects.defaultIfNull(overrides.getConnectionTimeout(), base.getConnectionTimeout()),
@@ -147,8 +147,8 @@ public final class Configs {
         if(dynamic) return new DynamicOverridingParamConfig(base, overrides); // could be done by proxy
 
         return new DefaultParamConfig(
-                Strings.defaultIfBlank(overrides.getName(), base.getName()),
-                Strings.defaultIfBlank(overrides.getDefaultValue(), base.getDefaultValue()),
+                Objects.defaultIfNull(overrides.getName(), base.getName()),
+                Objects.defaultIfNull(overrides.getDefaultValue(), base.getDefaultValue()),
                 Objects.defaultIfNull(overrides.getDestination(), base.getDestination()),
                 Objects.defaultIfNull(overrides.getSerializer(), base.getSerializer()),
                 Objects.defaultIfNull(overrides.getInjector(), base.getInjector())
@@ -197,11 +197,11 @@ public final class Configs {
         }
 
         public String getName() {
-            return Strings.defaultIfBlank(override.getName(), base.getName());
+            return Objects.defaultIfNull(override.getName(), base.getName());
         }
 
         public String getDefaultValue() {
-            return Strings.defaultIfBlank(override.getDefaultValue(), base.getDefaultValue());
+            return Objects.defaultIfNull(override.getDefaultValue(), base.getDefaultValue());
         }
 
         public Injector getInjector() {
@@ -251,7 +251,7 @@ public final class Configs {
         }
 
         public String getPath() {
-            return Strings.defaultIfBlank(override.getPath(), base.getPath());
+            return Objects.defaultIfNull(override.getPath(), base.getPath());
         }
 
         public Method getMethod() {
@@ -259,7 +259,7 @@ public final class Configs {
         }
 
         public String getHttpMethod() {
-            return Strings.defaultIfBlank(override.getHttpMethod(), base.getHttpMethod());
+            return Objects.defaultIfNull(override.getHttpMethod(), base.getHttpMethod());
         }
 
         public ParamConfig getParamConfig(int index) {
@@ -281,7 +281,7 @@ public final class Configs {
         }
 
         public String getEncoding() {
-            return Strings.defaultIfBlank(override.getEncoding(), base.getEncoding());
+            return Objects.defaultIfNull(override.getEncoding(), base.getEncoding());
         }
 
         public Method[] getMethods() {
@@ -289,7 +289,7 @@ public final class Configs {
         }
 
         public String getEndPoint() {
-            return Strings.defaultIfBlank(override.getEndPoint(), base.getEndPoint());
+            return Objects.defaultIfNull(override.getEndPoint(), base.getEndPoint());
         }
 
         public Class<?> getInterface() {
@@ -297,7 +297,7 @@ public final class Configs {
         }
 
         public String getContextPath() {
-            return Strings.defaultIfBlank(override.getContextPath(), base.getContextPath());
+            return Objects.defaultIfNull(override.getContextPath(), base.getContextPath());
         }
 
         public RequestInterceptor getGlobalInterceptor() {

@@ -114,16 +114,16 @@ import static org.codegist.common.lang.Strings.isBlank;
 public class XmlDrivenInterfaceConfigFactory implements InterfaceConfigFactory {
 
     private final Document config;
-    private final boolean useDefaults;
+    private final boolean buildTemplates;
     private static final XPath XPATH = XPathFactory.newInstance().newXPath();
 
-    public XmlDrivenInterfaceConfigFactory(Document config, boolean useDefaults) {
+    public XmlDrivenInterfaceConfigFactory(Document config, boolean buildTemplates) {
         this.config = config;
-        this.useDefaults = useDefaults;
+        this.buildTemplates = buildTemplates;
     }
 
     public XmlDrivenInterfaceConfigFactory(Document config) {
-        this(config, true);
+        this(config, false);
     }
 
     public InterfaceConfig newConfig(Class<?> interfaze, CRestContext context) throws ConfigFactoryException {
@@ -216,7 +216,7 @@ public class XmlDrivenInterfaceConfigFactory implements InterfaceConfigFactory {
                 mcb.endMethodConfig();
             }
 
-            return icb.build(useDefaults);
+            return icb.build(buildTemplates, true);
         } catch (RuntimeException e) {
             throw e;
         } catch (Exception e) {

@@ -43,6 +43,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import static org.codegist.common.lang.Strings.isBlank;
+
 /**
  * Handy builders for {@link org.codegist.crest.config.DefaultInterfaceConfig}.
  * <p>Support auto empty/null ignore and defaults methods and params values at respectively interface and method levels.
@@ -120,18 +122,51 @@ public abstract class ConfigBuilders {
             return (InterfaceConfigBuilder) super.setIgnoreNullOrEmptyValues(ignoreNullOrEmptyValues);
         }
 
-        public DefaultInterfaceConfig build() {
-            return build(true);
+        /**
+         * Validate and build a normal config with defaulted values if necessary
+         * @return config
+         */
+        public InterfaceConfig build() {
+            return build(false, true);
         }
 
-        public DefaultInterfaceConfig buildOverrideTemplate()  {
-            return build(false);
+        /**
+         * Build a template config. No default values used. To be used to override another config
+         * @return config template
+         */
+        public InterfaceConfig buildTemplate() {
+            return build(true, false);
         }
 
-        public DefaultInterfaceConfig build(boolean useDefaults) {
+        /**
+         * Build a normal config with defaulted values if necessary. Validate the config if specified
+         * @param validateConfig flag that indicates if the config should be validated
+         * @return config
+         */
+        public InterfaceConfig buildConfig(boolean validateConfig) {
+            return build(false, validateConfig);
+        }
+
+        /**
+         * Build a normal config with defaulted values if necessary. No validation occurs
+         * @return config
+         */
+        public InterfaceConfig buildUnvalidatedConfig() {
+            return buildConfig(false);
+        }
+
+        /**
+         * Build the config.
+         * <p>If isTemplate is true, the returned config won't have any default value, should be used to override another config.
+         * <p>If validate config is true (and isTemplate is false), the config is validated to ensure required information have been given
+         * @param isTemplate if true, return a config template
+         * @param validateConfig if true, config is validated
+         * @return config
+         */
+        public InterfaceConfig build(boolean isTemplate, boolean validateConfig) {
             Map<Method, MethodConfig> mConfig = new HashMap<Method, MethodConfig>();
             for (Map.Entry<Method, MethodConfigBuilder> entry : builderCache.entrySet()) {
-                mConfig.put(entry.getKey(), entry.getValue().build(useDefaults));
+                mConfig.put(entry.getKey(), entry.getValue().build(isTemplate, validateConfig));
             }
             // make local copies so that we don't mess with builder state to be able to call build multiple times on it
             String contextPath = this.contextPath;
@@ -139,11 +174,16 @@ public abstract class ConfigBuilders {
             String endPoint = this.endPoint;
             RequestInterceptor globalInterceptor = this.globalInterceptor;
 
-            if (useDefaults) {
+            if (!isTemplate) {
                 contextPath = defaultIfUndefined(contextPath, CRestProperty.CONFIG_INTERFACE_DEFAULT_CONTEXT_PATH, InterfaceConfig.DEFAULT_CONTEXT_PATH);
                 encoding = defaultIfUndefined(encoding, CRestProperty.CONFIG_INTERFACE_DEFAULT_ENCODING, InterfaceConfig.DEFAULT_ENCODING);
                 endPoint = defaultIfUndefined(endPoint, CRestProperty.CONFIG_INTERFACE_DEFAULT_ENDPOINT, InterfaceConfig.DEFAULT_ENDPOINT);
                 globalInterceptor = defaultIfUndefined(globalInterceptor, CRestProperty.CONFIG_INTERFACE_DEFAULT_GLOBAL_INTERCEPTOR, newInstance(InterfaceConfig.DEFAULT_GLOBAL_INTERCEPTOR));
+
+                if(validateConfig) {
+                    if (isBlank(endPoint))
+                        throw new IllegalArgumentException("end-point not specified!");
+                }
             }
             return new DefaultInterfaceConfig(
                     interfaze,
@@ -410,6 +450,14 @@ public abstract class ConfigBuilders {
             }
             return this;
         }
+
+        public InterfaceConfigBuilder setParamsName(String name) {
+            if (ignore(name)) return this;
+            for (MethodConfigBuilder b : builderCache.values()) {
+                b.setParamsName(name);
+            }
+            return this;
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -456,23 +504,57 @@ public abstract class ConfigBuilders {
         }
 
 
+        /**
+         * Validate and build a normal config with defaulted values if necessary
+         * @return config
+         */
         public MethodConfig build() {
-            return build(true);
+            return build(false, true);
         }
 
-        public MethodConfig buildOverrideTemplate() {
-            return build(false);
+        /**
+         * Build a template config. No default values used. To be used to override another config
+         * @return config template
+         */
+        public MethodConfig buildTemplate() {
+            return build(true, false);
         }
 
-        public MethodConfig build(boolean useDefaults) {
+        /**
+         * Build a normal config with defaulted values if necessary. Validate the config if specified
+         * @param validateConfig flag that indicates if the config should be validated
+         * @return config
+         */
+        public MethodConfig buildConfig(boolean validateConfig) {
+            return build(false, validateConfig);
+        }
+
+
+        /**
+         * Build a normal config with defaulted values if necessary. No validation occurs
+         * @return config
+         */
+        public MethodConfig buildUnvalidatedConfig() {
+            return buildConfig(false);
+        }
+
+        /**
+         * Build the config.
+         * <p>If isTemplate is true, the returned config won't have any default value, should be used to override another config.
+         * <p>If validate config is true (and isTemplate is false), the config is validated to ensure required information have been given
+         * @param isTemplate if true, return a config template
+         * @param validateConfig if true, config is validated
+         * @return config
+         */
+        public MethodConfig build(boolean isTemplate, boolean validateConfig) {
             ParamConfig[] pConfig = new ParamConfig[paramConfigBuilders.length];
             for (int i = 0; i < paramConfigBuilders.length; i++) {
-                pConfig[i] = this.paramConfigBuilders[i].build(useDefaults);
+                pConfig[i] = this.paramConfigBuilders[i].build(isTemplate, validateConfig);
             }
             BasicParamConfig[] extraParams = new BasicParamConfig[extraParamBuilders.size()];
             int i = 0;
             for (BasicParamConfigBuilder b : extraParamBuilders.values()) {
-                extraParams[i++] = b.build(useDefaults);
+                extraParams[i++] = b.build(isTemplate, validateConfig);
             }
 
             // make local copies so that we don't mess with builder state to be able to call build multiple times on it
@@ -485,7 +567,7 @@ public abstract class ConfigBuilders {
             ErrorHandler errorHandler = this.errorHandler;
             RetryHandler retryHandler = this.retryHandler;
 
-            if (useDefaults) {
+            if (!isTemplate) {
                 path = defaultIfUndefined(path, CRestProperty.CONFIG_METHOD_DEFAULT_PATH, MethodConfig.DEFAULT_PATH);
                 meth = defaultIfUndefined(meth, CRestProperty.CONFIG_METHOD_DEFAULT_HTTP_METHOD, MethodConfig.DEFAULT_HTTP_METHOD);
                 BasicParamConfig[] defs = defaultIfUndefined(null, CRestProperty.CONFIG_METHOD_DEFAULT_EXTRA_PARAMS, MethodConfig.DEFAULT_EXTRA_PARAMS);
@@ -706,6 +788,14 @@ public abstract class ConfigBuilders {
             }
             return this;
         }
+
+        public MethodConfigBuilder setParamsName(String name) {
+            if (ignore(name)) return this;
+            for (ParamConfigBuilder b : paramConfigBuilders) {
+                b.setName(name);
+            }
+            return this;
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -733,26 +823,64 @@ public abstract class ConfigBuilders {
             this.parent = parent;
         }
 
-        public DefaultBasicParamConfig build() {
-            return build(true);
+        /**
+         * Validate and build a normal config with defaulted values if necessary
+         * @return config
+         */
+        public BasicParamConfig build() {
+            return build(false, true);
         }
 
-        public DefaultBasicParamConfig buildOverrideTemplate() {
-            return build(false);
+        /**
+         * Build a template config. No default values used. To be used to override another config
+         * @return config template
+         */
+        public BasicParamConfig buildTemplate() {
+            return build(true, false);
         }
 
-        public DefaultBasicParamConfig build(boolean useDefaults) {
+        /**
+         * Build a normal config with defaulted values if necessary. Validate the config if specified
+         * @param validateConfig flag that indicates if the config should be validated
+         * @return config
+         */
+        public BasicParamConfig buildConfig(boolean validateConfig) {
+            return build(false, validateConfig);
+        }
+
+        /**
+         * Build a normal config with defaulted values if necessary. No validation occurs
+         * @return config
+         */
+        public BasicParamConfig buildUnvalidatedConfig() {
+            return buildConfig(false);
+        }
+
+        /**
+         * Build the config.
+         * <p>If isTemplate is true, the returned config won't have any default value, should be used to override another config.
+         * <p>If validate config is true (and isTemplate is false), the config is validated to ensure required information have been given
+         * @param isTemplate if true, return a config template
+         * @param validateConfig if true, config is validated
+         * @return config
+         */
+        public BasicParamConfig build(boolean isTemplate, boolean validateConfig) {
             // make local copies so that we don't mess with builder state to be able to call build multiple times on it
             String name = this.name;
             String defaultValue = this.defaultValue;
             Destination dest = this.dest;
 
-            if (useDefaults) {
+            if (!isTemplate) {
                 name = defaultIfUndefined(name, CRestProperty.CONFIG_PARAM_DEFAULT_NAME, ParamConfig.DEFAULT_NAME);
                 defaultValue = defaultIfUndefined(defaultValue, CRestProperty.CONFIG_PARAM_DEFAULT_VALUE, ParamConfig.DEFAULT_VALUE);
                 dest = defaultIfUndefined(dest, CRestProperty.CONFIG_PARAM_DEFAULT_DESTINATION, ParamConfig.DEFAULT_DESTINATION);
+
+                if(validateConfig) {
+                    if(Strings.isBlank(name))
+                        throw new IllegalArgumentException("Parameter must have a name");
+                }
             }
-//            if(Strings.isBlank(name)) throw new IllegalStateException("Parameter must have a name");
+
             return new DefaultBasicParamConfig(name, defaultValue, dest);
         }
 
@@ -817,20 +945,53 @@ public abstract class ConfigBuilders {
             this.type = type;
         }
 
-        public DefaultParamConfig build() {
-            return build(true);
+        /**
+         * Validate and build a normal config with defaulted values if necessary
+         * @return config
+         */
+        public ParamConfig build() {
+            return build(false, true);
         }
 
-        public DefaultParamConfig buildOverrideTemplate() {
-            return build(false);
+        /**
+         * Build a template config. No default values used. To be used to override another config
+         * @return config template
+         */
+        public ParamConfig buildTemplate() {
+            return build(true, false);
         }
 
-        public DefaultParamConfig build(boolean useDefaults) {
+        /**
+         * Build a normal config with defaulted values if necessary. Validate the config if specified
+         * @param validateConfig flag that indicates if the config should be validated
+         * @return config
+         */
+        public ParamConfig buildConfig(boolean validateConfig) {
+            return build(false, validateConfig);
+        }
+
+        /**
+         * Build a normal config with defaulted values if necessary. No validation occurs
+         * @return config
+         */
+        public ParamConfig buildUnvalidatedConfig() {
+            return buildConfig(false);
+        }
+
+        /**
+         * Build the config.
+         * <p>If isTemplate is true, the returned config won't have any default value, should be used to override another config.
+         * <p>If validate config is true (and isTemplate is false), the config is validated to ensure required information have been given
+         * @param isTemplate if true, return a config template
+         * @param validateConfig if true, config is validated
+         * @return config
+         */
+        public ParamConfig build(boolean isTemplate, boolean validateConfig) {
             // make local copies so that we don't mess with builder state to be able to call build multiple times on it
             Injector injector = this.injector;
             Serializer serializer = this.serializer;
 
-            if (useDefaults) {
+            if (!isTemplate) {
                 injector = defaultIfUndefined(injector, CRestProperty.CONFIG_PARAM_DEFAULT_INJECTOR, newInstance(ParamConfig.DEFAULT_INJECTOR));
                 serializer = defaultIfUndefined(serializer, CRestProperty.CONFIG_PARAM_DEFAULT_SERIALIZER, newInstance(ParamConfig.DEFAULT_SERIALIZER));
 
@@ -839,8 +1000,9 @@ public abstract class ConfigBuilders {
                     serializer = Serializers.getFor(customProperties, type);
                 }
             }
+
             return new DefaultParamConfig(
-                    super.build(useDefaults),
+                    super.build(isTemplate, validateConfig),
                     serializer,
                     injector
             );

@@ -135,7 +135,7 @@ public class CRestBuilder {
             try {
                 configFactory = new OverridingInterfaceConfigFactory(configFactory, new ConfigBuilders.InterfaceConfigBuilder()
                         .setGlobalInterceptor(authentificationInterceptor)
-                        .buildOverrideTemplate());
+                        .buildTemplate());
             } catch (Exception e) {
                 throw new CRestException(e);
             }
@@ -209,13 +209,11 @@ public class CRestBuilder {
                 if (properties != null) {
                     configFactory = new OverridingInterfaceConfigFactory(
                             baseConfigFactory,
-                            new PropertiesDrivenInterfaceConfigFactory(properties, false)
-                    );
+                            new PropertiesDrivenInterfaceConfigFactory(properties, false));
                 } else if (document != null) {
                     configFactory = new OverridingInterfaceConfigFactory(
                             baseConfigFactory,
-                            new XmlDrivenInterfaceConfigFactory(document, false)
-                    );
+                            new XmlDrivenInterfaceConfigFactory(document, false));
                 }else {
                     configFactory = baseConfigFactory;
                 }

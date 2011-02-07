@@ -26,8 +26,11 @@ import org.codegist.crest.TestUtils;
 import org.codegist.crest.annotate.*;
 import org.codegist.crest.injector.DefaultInjector;
 import org.junit.Test;
+import org.xml.sax.SAXException;
 
 import javax.ws.rs.DefaultValue;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.IOException;
 import java.lang.reflect.Method;
 
 import static org.junit.Assert.assertEquals;
@@ -41,6 +44,37 @@ public class JaxRSAwareAnnotationDrivenInterfaceConfigFactoryTest extends Abstra
     @Test(expected = IllegalArgumentException.class)
     public void testInvalidConfig() throws ConfigFactoryException {
         configFactory.newConfig(String.class, mockContext);
+    }
+
+    @Override
+    public void testConfigMissingParamName() throws ConfigFactoryException, IOException, SAXException, ParserConfigurationException {
+        configFactory.newConfig(MissingParamName.class, mockContext);
+    }
+
+    @Override
+    public void testConfigMissingEndpoint() throws ConfigFactoryException, IOException, SAXException, ParserConfigurationException {
+        configFactory.newConfig(MissingEndPoint.class, mockContext);
+    }
+
+
+    @javax.ws.rs.Path("/my-path")
+    interface MissingParamName extends Interface {
+        @javax.ws.rs.Path("/m1")
+        Object m1();
+
+        Object m1(@javax.ws.rs.QueryParam("param") String a);
+
+        Object m1(String a, @javax.ws.rs.QueryParam("param2") int[] b);
+    }
+
+    @javax.ws.rs.Path("/my-path")
+    interface MissingEndPoint extends Interface {
+        @javax.ws.rs.Path("/m1")
+        Object m1();
+
+        Object m1(@javax.ws.rs.QueryParam("param") String a);
+
+        Object m1(@javax.ws.rs.QueryParam("param1") String a, @javax.ws.rs.QueryParam("param2") int[] b);
     }
 
     @Test

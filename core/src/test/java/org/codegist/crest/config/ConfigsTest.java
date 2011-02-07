@@ -53,7 +53,7 @@ public class ConfigsTest {
         Method T2 = TestUtils.getMethod(TestInterface.class, "test2", int[].class, Object.class);
     }
 
-    static final DefaultInterfaceConfig FULL_CONFIG = new ConfigBuilders.InterfaceConfigBuilder(TestInterface.class)
+    static final InterfaceConfig FULL_CONFIG = new ConfigBuilders.InterfaceConfigBuilder(TestInterface.class)
             .setEndPoint("server")
             .setContextPath("path")
             .setEncoding("iso")
@@ -95,8 +95,8 @@ public class ConfigsTest {
 
     @Test
     public void testNullOverride() throws NoSuchMethodException {
-        DefaultInterfaceConfig override = null;
-        DefaultInterfaceConfig config = new ConfigBuilders.InterfaceConfigBuilder(TestInterface.class, new HashMap<String, Object>(){{put(CRestProperty.CONFIG_PARAM_DEFAULT_NAME, "d");}})
+        InterfaceConfig override = null;
+        InterfaceConfig config = new ConfigBuilders.InterfaceConfigBuilder(TestInterface.class, new HashMap<String, Object>(){{put(CRestProperty.CONFIG_PARAM_DEFAULT_NAME, "d");}})
                 .setEndPoint("server")
                 .build();
         assertEquals(config, Configs.override(config, override));
@@ -104,11 +104,12 @@ public class ConfigsTest {
 
     @Test
     public void testEmptyOverride() throws NoSuchMethodException {
-        DefaultInterfaceConfig config = new ConfigBuilders.InterfaceConfigBuilder(TestInterface.class).setEndPoint("server").build();
-        DefaultInterfaceConfig override = new ConfigBuilders.InterfaceConfigBuilder(TestInterface.class).setEndPoint("server").build();
-        DefaultInterfaceConfig expected = new ConfigBuilders.InterfaceConfigBuilder(TestInterface.class).setEndPoint("server")
+        InterfaceConfig config = new ConfigBuilders.InterfaceConfigBuilder(TestInterface.class).setEndPoint("server").setParamsName("n").build();
+        InterfaceConfig override = new ConfigBuilders.InterfaceConfigBuilder(TestInterface.class).buildTemplate();
+        InterfaceConfig expected = new ConfigBuilders.InterfaceConfigBuilder(TestInterface.class).setEndPoint("server").setParamsName("n")
                 .setGlobalInterceptor(new CompositeRequestInterceptor())
                 .setMethodsRequestInterceptor(new CompositeRequestInterceptor())
+
                 .build();
         InterfaceConfig result = Configs.override(config, override);
         InterfaceConfigTestHelper.assertExpected(expected, result, TestInterface.class);
@@ -116,9 +117,9 @@ public class ConfigsTest {
 
     @Test
     public void testFullOverride() throws NoSuchMethodException, InstantiationException, IllegalAccessException {
-        DefaultInterfaceConfig base = new ConfigBuilders.InterfaceConfigBuilder(TestInterface.class).setEndPoint("server").build();
+        InterfaceConfig base = new ConfigBuilders.InterfaceConfigBuilder(TestInterface.class).setEndPoint("server").buildTemplate();
         InterfaceConfig result = Configs.override(base, FULL_CONFIG);
-        DefaultInterfaceConfig expected = new ConfigBuilders.InterfaceConfigBuilder(TestInterface.class).setEndPoint("server")
+        InterfaceConfig expected = new ConfigBuilders.InterfaceConfigBuilder(TestInterface.class).setEndPoint("server")
                 .setContextPath("path")
                 .setMethodsSocketTimeout(1l)
                 .setMethodsConnectionTimeout(2l)
@@ -137,8 +138,6 @@ public class ConfigsTest {
                 .setRequestInterceptor(new Stubs.RequestInterceptor2())
                 .setResponseHandler(new Stubs.ResponseHandler2())
                 .setParamsSerializer(new Stubs.Serializer2())
-//                .setParamsName("name2")
-//                .setParamsDestination(Destination.URL)
                 .endMethodConfig()
                 .startMethodConfig(TestInterface.T2)
                 .setPath("path2")
@@ -147,8 +146,6 @@ public class ConfigsTest {
                 .setSocketTimeout(6l)
                 .setRequestInterceptor(new Stubs.RequestInterceptor3())
                 .setParamsSerializer(new Stubs.Serializer3())
-//                .setParamsName("name3")
-//                .setParamsDestination(Destination.URL)
                 .startParamConfig(0)
                 .setDestination("PATH")
                 .setName("name4")
@@ -168,7 +165,7 @@ public class ConfigsTest {
     @Test
     public void testPartialOverride() throws NoSuchMethodException, InstantiationException, IllegalAccessException {
 
-        DefaultInterfaceConfig override = new ConfigBuilders.InterfaceConfigBuilder(TestInterface.class)
+        InterfaceConfig override = new ConfigBuilders.InterfaceConfigBuilder(TestInterface.class)
                 .setEndPoint("server2")
 //                .setParamsDestination(Destination.URL)
                 .startMethodConfig(TestInterface.T1)
@@ -186,7 +183,7 @@ public class ConfigsTest {
                 .setName("name6")
                 .endParamConfig()
                 .endMethodConfig()
-                .build(false);
+                .buildTemplate();
         InterfaceConfig expected = new ConfigBuilders.InterfaceConfigBuilder(TestInterface.class)
                 .setEndPoint("server2")
                 .setContextPath("path")
