@@ -21,7 +21,6 @@
 package org.codegist.crest.config;
 
 import org.codegist.common.lang.Objects;
-import org.codegist.common.lang.Strings;
 import org.codegist.crest.handler.ErrorHandler;
 import org.codegist.crest.handler.ResponseHandler;
 import org.codegist.crest.handler.RetryHandler;

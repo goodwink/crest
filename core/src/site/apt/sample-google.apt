@@ -77,7 +77,7 @@ SearchService service = crest.build(SearchService.class);
 
 // use it !
 LanguageGuess guess = service.detectLanguage("Guess it!");
-Translation translation = service.translate("Translate me if you can!", "en", "it");
+Translation translation = service.translate("Translate me if you can!", new LangPair("en", "it"));
 +-----
 
 * Response Handler
@@ -117,6 +117,7 @@ public class GoogleResponseHandler implements ResponseHandler {
 * LangPair serializer
 
     Here is the code needed to write a custom LangPair objects serializer
+    
 +-----
 public class LangPairSerializer implements Serializer<LangPair> {
     private static final String FORMAT = "%s|%s";

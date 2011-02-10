@@ -45,7 +45,7 @@ public @interface HeaderParam {
      * Indicates the parameter default value to use.
      * <p>At method parameter level, this value is used if the parameter is null
      * <p>At interface/method levels, this value is used to specifie the value of the parameter to add for each request
-     * @return
+     * @return parameter default value
      */
     String defaultValue() default "";
 

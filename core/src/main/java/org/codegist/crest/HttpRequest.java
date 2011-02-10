@@ -363,8 +363,8 @@ public class HttpRequest {
 
         /**
          * Adds a parameter to the resulting request's path string
-         *
-         * @param name   path parameter name
+         * <p>Name is the path template placeholder where the given value will be merged.
+         * @param name path parameter name
          * @param value path parameter value
          * @return current builder
          */
@@ -375,7 +375,7 @@ public class HttpRequest {
 
         /**
          * Sets the resulting request's path parameters to the given map
-         *
+         * <p>Keys are the path template placeholders where the given values will be merged.
          * @param params path parameters map
          * @return current builder
          */
@@ -386,7 +386,7 @@ public class HttpRequest {
 
         /**
          * Adds the given map to the resulting request's path parameters
-         *
+         * <p>Keys are the path template placeholders where the given values will be merged.
          * @param params path parameters map
          * @return current builder
          */
@@ -397,14 +397,6 @@ public class HttpRequest {
 
         /**
          * Adds a parameter to the resulting request's query string.
-         * If this parameter name correspond to a placeholder name (cotnained in a query string parameter value), then it will replace the placeholder value without adding a new query string parameter
-         * Placeholder in query string can be set as follow:
-         * <p>eg: ?p={0}-formatted-param-{name}
-         * <p>Can be set with:
-         * <code><pre>
-         * builder.setQueryParamPlaceholder("0", "myValue")
-         *        .setQueryParamPlaceholder("name", "mySecondValue")
-         * </pre></code>
          * @param name query string parameter name or placeholder name
          * @param value query string parameter value or placeholder name
          * @return current builder

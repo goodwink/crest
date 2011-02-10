@@ -26,6 +26,24 @@
         <author email="laurent.gilles@codegist.org">Laurent Gilles</author>
     </properties>
     <body>
+        <release version="2.0.0-RC1" date="2011-02-10" description="Major release">
+            <action dev="lgilles" type="add">
+                String value based annotation can now contain value placeholders that are merged with any given value.
+            </action>
+            <action dev="lgilles" type="update">
+                User interface method arguments must now always be annotated.
+            </action>
+            <action dev="lgilles" type="update">
+                Changed the way @Path value is parsed and how placeholder are handled.
+            </action>
+            <action dev="lgilles" type="add">
+                Added following annotations: @FormParam(s), @QueryParam(s), @PathParam(s), @HeaderParam(s), @GET, @POST, @PUT, @DELETE, @HEAD, @OPTIONS.
+            </action>
+            <action dev="lgilles" type="remove">
+                Removed following annotations: @Param, @Name, @Destination, @HttpMethod.
+            </action>
+        </release>
+
         <release version="1.0.1" date="2011-01-07" description="Compatibility patch">
             <action dev="lgilles" type="remove">
                 Update the code to make it compile with java 1.5. Removed String.isEmpty() call and unnecessary JAXB references in the code (both added in java 1.6).

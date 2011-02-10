@@ -6,7 +6,7 @@ Android
 
     <<CRest>> with defaults parameters works out-of-the-box on Android.
 
-    However if you need to do more fancy stuffs as uploading content, XML response auto-unmarshalling, their are some steps to follow.
+    However if you need to do more fancy stuffs as uploading content or XML response auto-unmarshalling, there are some steps to follow.
 
 * Upload
 

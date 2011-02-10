@@ -21,7 +21,6 @@
 package org.codegist.crest.twitter;
 
 import org.codegist.crest.CRestBuilder;
-import org.codegist.crest.CRestProperty;
 
 /**
  * @author laurent.gilles@codegist.org

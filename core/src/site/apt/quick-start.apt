@@ -30,7 +30,7 @@ CRest crest = new CRestBuilder().build();
 
     This <<<CRest>>> instance is thread-safe, and should be created only once. The builder allows you to easily customize the resulting <<<CRest>>> instance, please refer to its java-doc to see all the possible options available.
 
-    Current implementation requires all method's parameter to be annotated with any of the following:
+    Current implementation requires all user provided interface method's parameter to be annotated with any of the following:
 
        * @FormParam
 
@@ -65,7 +65,7 @@ MyInterface interfaze = crest.build(MyInterface.class);
 @ContextPath("/1/statuses")
 public interface StatusService {
 
-    @Path("/retweets/{d}.json")
+    @Path("/retweets/{id}.json")
     @ConnectionTimeout(10000)
     Status[] getRetweets(@PathParam("id") long id);
 
@@ -92,7 +92,7 @@ public interface StatusService {
 @ContextPath("/1/statuses")
 public interface StatusService {
 
-    @Path("/retweets/{d}.json")
+    @Path("/retweets/{id}.json")
     @ConnectionTimeout(10000)
     Status[] getRetweets(@PathParam("id") long id);
 

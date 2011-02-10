@@ -243,7 +243,7 @@ public interface CRestProperty {
 
     /**
      * override the default http method {@link org.codegist.crest.config.MethodConfig#DEFAULT_HTTP_METHOD}.
-     * <p>Expects a member of {@link org.codegist.crest.HttpMethod}.
+     * <p>Expects a String
      *
      * @see org.codegist.crest.InterfaceContext#getProperties()
      */

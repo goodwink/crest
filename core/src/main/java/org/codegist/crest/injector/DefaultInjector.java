@@ -34,9 +34,8 @@ public class DefaultInjector implements Injector {
 
     /**
      * <p> Serialize the given parameter using its preconfigured serializer and inject the result either :
-     * <p> * as a new query string parameter if no name is provided and the parameter is meant to be used as a {@link org.codegist.crest.config.Destination#URL} parameter
-     * <p> * merged in the request placeholder if a name is provided and the parameter is meant to be used as a {@link org.codegist.crest.config.Destination#URL} parameter
-     * <p> * as a body parameter with or without name. No more than one body parameter can be added without name.
+     * <p> * The parameter is either a {@link java.io.InputStream} or {@link java.io.Reader}, then it is added to the request body
+     * <p> * Otherwise the parameter is serialized with its configured serializer, and the serializer value added to the request. If serialized value is empty, then parameter default value is used.
      * <p> If no serialized has been specified for the current param then see the default serializer documentation {@link org.codegist.crest.config.ParamConfig#DEFAULT_SERIALIZER}
      *
      * @param builder The current request beeing build

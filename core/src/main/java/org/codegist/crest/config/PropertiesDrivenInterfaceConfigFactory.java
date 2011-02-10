@@ -29,7 +29,6 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 import static org.codegist.common.lang.Strings.defaultIfBlank;
-import static org.codegist.common.lang.Strings.isBlank;
 
 
 /**
