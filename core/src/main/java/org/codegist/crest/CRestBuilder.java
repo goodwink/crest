@@ -89,8 +89,6 @@ public class CRestBuilder {
     private Document document = null;
     private InterfaceConfigFactory overridesFactory = null;
     private boolean dynamicOverride = false;
-    private boolean crestPriority = true;
-    private boolean enableJaxRSSupport = false;
     private String modelPackageName = null;
     private Class<?> modelPackageFactory = null;
 
@@ -204,16 +202,16 @@ public class CRestBuilder {
         switch (configType) {
             default:
             case CFG_TYPE_ANNO:
-                InterfaceConfigFactory baseConfigFactory = enableJaxRSSupport ? new JaxRSAwareAnnotationDrivenInterfaceConfigFactory(crestPriority) : new CRestAnnotationDrivenInterfaceConfigFactory();
+                InterfaceConfigFactory baseConfigFactory = new CRestAnnotationDrivenInterfaceConfigFactory();
 
                 if (properties != null) {
                     configFactory = new OverridingInterfaceConfigFactory(
                             baseConfigFactory,
-                            new PropertiesDrivenInterfaceConfigFactory(properties, false));
+                            new PropertiesDrivenInterfaceConfigFactory(properties, true));
                 } else if (document != null) {
                     configFactory = new OverridingInterfaceConfigFactory(
                             baseConfigFactory,
-                            new XmlDrivenInterfaceConfigFactory(document, false));
+                            new XmlDrivenInterfaceConfigFactory(document, true));
                 }else {
                     configFactory = baseConfigFactory;
                 }
@@ -589,37 +587,6 @@ public class CRestBuilder {
     public CRestBuilder setListSerializerSeparator(String sep){
         this.customProperties = Maps.defaultsIfNull(customProperties);
         customProperties.put(SERIALIZER_LIST_SEPARATOR, sep);
-        return this;
-    }
-
-    /**
-     * JAX-RS annotation will take priority over CRest's equivalent annotations
-     * @return current builder
-     */
-    public CRestBuilder prioritiseJaxRSAnnotations(){
-        this.crestPriority = false;
-        return this;
-    }
-
-
-    /**
-     * Enable JAX-RS client annotations support with CRest annotations taking priority over JAX-RS's equivalent annotations
-     * @return current builder
-     */
-    public CRestBuilder enableJaxRSAnnotationsSupport(){
-        return enableJaxRSAnnotationsSupport(false);
-    }
-
-    /**
-     * Enable JAX-RS client annotations support
-     * @param prioritiseJaxRSAnnotations if true, JaxRS annotation will take priority over CRest's equivalent annotations
-     * @return current builder
-     */
-    public CRestBuilder enableJaxRSAnnotationsSupport(boolean prioritiseJaxRSAnnotations){
-        if(prioritiseJaxRSAnnotations) {
-            prioritiseJaxRSAnnotations();
-        }
-        this.enableJaxRSSupport = true;
         return this;
     }
 
