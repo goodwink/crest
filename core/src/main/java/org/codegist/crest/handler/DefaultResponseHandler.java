@@ -47,21 +47,17 @@ public class DefaultResponseHandler implements ResponseHandler {
     }
 
     public final Object handle(ResponseContext context) {
-        try {
-            if (context.getExpectedType().toString().equals("void")) return null;
+        if (context.getExpectedType().toString().equals("void")) return null;
 
-            if (marshaller != null) {
-                return marshaller.marshall(context.getResponse().asReader(), context.getExpectedGenericType());
-            }else{
-                // if no marshaller has been set in the configuration, check that return type is String and return the response as string.
-                if (String.class.equals(context.getExpectedType())) {
-                    return context.getResponse().asString();
-                } else {
-                    throw new IllegalStateException("Marshaller hasn't been set and a method return type different than accepted raw types has been found.");
-                }
+        if (marshaller != null) {
+            return marshaller.marshall(context.getResponse().asReader(), context.getExpectedGenericType());
+        }else{
+            // if no marshaller has been set in the configuration, check that return type is String and return the response as string.
+            if (String.class.equals(context.getExpectedType())) {
+                return context.getResponse().asString();
+            } else {
+                throw new IllegalStateException("Marshaller hasn't been set and a method return type different than accepted raw types has been found.");
             }
-        } finally {
-            context.getResponse().close();
         }
     }
 }

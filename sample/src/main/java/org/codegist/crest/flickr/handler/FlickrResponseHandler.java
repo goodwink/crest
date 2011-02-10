@@ -46,30 +46,26 @@ public class FlickrResponseHandler implements ResponseHandler {
     }
 
     public final Object handle(ResponseContext context) {
-        try {
-            /* Marshall the response */
-            Response res = marshaller.marshall(context.getResponse().asReader(), Types.newType(Response.class, context.getExpectedGenericType()));
-            /* Check for flickr OK status */
-            if ("ok".equals(res.getStatus())) {
-                /* Get the nested payload and returns it */
-                Payload payload = res.getPayload();
-                if (payload instanceof SimplePayload) {
-                    return ((SimplePayload) payload).getValue();
-                } else {
-                    return payload;
-                }
+        /* Marshall the response */
+        Response res = marshaller.marshall(context.getResponse().asReader(), Types.newType(Response.class, context.getExpectedGenericType()));
+        /* Check for flickr OK status */
+        if ("ok".equals(res.getStatus())) {
+            /* Get the nested payload and returns it */
+            Payload payload = res.getPayload();
+            if (payload instanceof SimplePayload) {
+                return ((SimplePayload) payload).getValue();
             } else {
-                if (res.getPayload() instanceof Error) {
-                    /* Status is not OK, try to get the error cause */
-                    Error error = ((Error) res.getPayload());
-                    throw new CRestException(error.getMsg() + " (code=" + error.getCode() + ")");
-                } else {
-                    /* Response format is not the one expected. */
-                    throw new CRestException("Unkown error");
-                }
+                return payload;
             }
-        } finally {
-            context.getResponse().close();
+        } else {
+            if (res.getPayload() instanceof Error) {
+                /* Status is not OK, try to get the error cause */
+                Error error = ((Error) res.getPayload());
+                throw new CRestException(error.getMsg() + " (code=" + error.getCode() + ")");
+            } else {
+                /* Response format is not the one expected. */
+                throw new CRestException("Unkown error");
+            }
         }
     }
 

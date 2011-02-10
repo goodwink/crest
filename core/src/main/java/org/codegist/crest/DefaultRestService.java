@@ -69,11 +69,11 @@ public class DefaultRestService implements RestService {
 
     static HttpURLConnection toHttpURLConnection(HttpRequest request) throws IOException {
         URL url = request.getUrl(true);
-        HttpURLConnection con = newConnection(url);
+        HttpURLConnection con = newConnection(url, request.getMeth());
 
-        con.setRequestMethod(request.getMeth());
         if (request.getConnectionTimeout() != null && request.getConnectionTimeout() >= 0)
             con.setConnectTimeout(request.getConnectionTimeout().intValue());
+
         if (request.getSocketTimeout() != null && request.getSocketTimeout() >= 0)
             con.setReadTimeout(request.getSocketTimeout().intValue());
 
@@ -148,10 +148,11 @@ public class DefaultRestService implements RestService {
         return con;
     }
 
-    protected static HttpURLConnection newConnection(URL url) throws IOException {
+    protected static HttpURLConnection newConnection(URL url, String method) throws IOException {
         HttpURLConnection con;
         con = (HttpURLConnection) url.openConnection();
         con.setRequestProperty("User-Agent", USER_AGENT);
+        con.setRequestMethod(method);
         return con;
     }
 

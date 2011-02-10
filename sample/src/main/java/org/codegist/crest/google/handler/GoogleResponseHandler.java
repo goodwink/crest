@@ -44,18 +44,13 @@ public class GoogleResponseHandler implements ResponseHandler {
     }
 
     public final Object handle(ResponseContext context) {
-        try {
-
-            /* Marshall the response */
-            Response<?> res = marshaller.marshall(context.getResponse().asReader(), Types.newType(Response.class, context.getExpectedGenericType()));
-            /* Check for google OK status */
-            if (res.status == 200) {
-                return res.data; /* Returns the nested payload */
-            } else {
-                throw new CRestException(res.details + " (status=" + res.status + ")"); /* Throw exception with google error details */
-            }
-        } finally {
-            context.getResponse().close();
+        /* Marshall the response */
+        Response<?> res = marshaller.marshall(context.getResponse().asReader(), Types.newType(Response.class, context.getExpectedGenericType()));
+        /* Check for google OK status */
+        if (res.status == 200) {
+            return res.data; /* Returns the nested payload */
+        } else {
+            throw new CRestException(res.details + " (status=" + res.status + ")"); /* Throw exception with google error details */
         }
     }
 
