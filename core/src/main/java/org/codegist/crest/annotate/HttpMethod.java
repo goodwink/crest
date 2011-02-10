@@ -26,10 +26,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 
-
 /**
- * <p>Optional method level annotation, sets the method http method. If not specified, defaults to the method config default value.
- * <p>Can be set at interface level to default all interface method values if not specified at method level.
+ * Associates the name of a HTTP method with an annotation. A Java method annotated with a runtime annotation that is itself annotated with this annotation will be used to handle HTTP requests of the indicated HTTP method. It is an error for a method to be annotated with more than one annotation that is annotated with HttpMethod.
  * @see org.codegist.crest.config.MethodConfig#DEFAULT_HTTP_METHOD
  * @see org.codegist.crest.config.MethodConfig#getHttpMethod()
  * @author Laurent Gilles (laurent.gilles@codegist.org)

@@ -6,9 +6,17 @@ Android
 
     <<CRest>> with defaults parameters works out-of-the-box on Android.
 
-    Android SDK comes with Apache Http Client 4.x, so you can safely configure <<CRest>> to use its support for it.
+    However if you need to do more fancy stuffs as uploading content, XML response auto-unmarshalling, their are some steps to follow.
 
-    However you'll need to choose one of the strategies below if you wish to use a XML response format REST service, since the automarshalling feature offered by <<CRest>> relies today on JAXB which, as of today, is not included in the Android SDK.
+* Upload
+
+    Android SDK comes with Apache Http Client 4.x, so you can safely configure <<CRest>> to use its support for it, but must be aware that <<CRest>> is internally using org.apache.httpcomponents:httpmime to handle multipart requests.
+
+    HttpMime is not part of the Android SDK and will need to be added in the classpath if any multipart request are needed, see {{{http://hc.apache.org/httpcomponents-client-ga/httpmime/index.html}Http Mime}}. An optional dependency has been added to the <<CRest>>'s pom and will need to be activated if needed.
+
+* XML Marshalling
+
+    You'll need to choose one of the strategies below if you wish to use a XML response format REST service, since the automarshalling feature offered by <<CRest>> relies today on JAXB which, as of today, is not included in the Android SDK.
 
     In order to deal with this situation, you can either
 
@@ -18,3 +26,6 @@ Android
 
         * bundle a distribution of JAXB with your app to enable it.
 
+* Notes
+
+    For all the rest, as for JSON unmarshalling, you'll need to follow the same process as for non-android platform, thus look at the <<CRest>> pom and enable any needed optional dependencies.

@@ -26,18 +26,27 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * @author laurent.gilles@codegist.org
- */
-
-/**
+ * <p>If specified at method parameter level, replace any method path template matching its name with it's value.
+ * <p>If specified at interface or method level, replace any method path template matching its name with it's default value.
+ * @see org.codegist.crest.HttpRequest.Builder#addPathParam(String, String)
  * @author laurent.gilles@codegist.org
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE,ElementType.METHOD, ElementType.PARAMETER})
 public @interface PathParam {
 
+    /**
+     * Indicates the template name to use
+     * @return parameter name
+     */
     String value();
 
+    /**
+     * Indicates the parameter default value to use.
+     * <p>At method parameter level, this value is used if the parameter is null
+     * <p>At interface/method levels, this value is used to specifie the value of the parameter to add for each request
+     * @return
+     */
     String defaultValue() default "";
 
 }

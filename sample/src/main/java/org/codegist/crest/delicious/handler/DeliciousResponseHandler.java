@@ -70,6 +70,4 @@ public class DeliciousResponseHandler implements ResponseHandler {
             responseContext.getResponse().close();
         }
     }
-
-
 }

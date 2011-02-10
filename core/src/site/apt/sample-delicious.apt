@@ -31,17 +31,33 @@ public interface Delicious {
     @Path("/posts/recent")
     Posts getRecentsPosts();
 
-    @Path("/posts/recent?tag={0}&count={1}")
-    Posts getRecentsPosts(String tag, int count);
+    @Path("/posts/recent")
+    Posts getRecentsPosts(
+            @QueryParam("tag") String tag,
+            @QueryParam("count") int count);
 
-    @Path("/posts/add?url={0}&description={1}&extended={2}&tags={3}&stamp={4}&replace={5}&shared={6}")
-    boolean addPost(String url, String description, String extended, String[] tags, Date stamp, boolean replace, boolean shared);
+    @Path("/posts/add")
+    boolean addPost(
+            @QueryParam("url") String url,
+            @QueryParam("description") String description,
+            @QueryParam("extended") String extended,
+            @QueryParam("tags") String[] tags,
+            @QueryParam("stamp") Date stamp,
+            @QueryParam("replace") boolean replace,
+            @QueryParam("shared") boolean shared);
 
-    @Path("/posts/all?tag={0}&fromdt={2}&todt={3}&meta={4}")
-    Posts getAllPosts(String tag, Range resultRange, Date from, Date to, Boolean meta);
+    @Path("/posts/all")
+    Posts getAllPosts(
+            @QueryParam("tag") String tag,
+            @QueryParam("range") Range resultRange,
+            @QueryParam("fromdt") Date from,
+            @QueryParam("todt") Date to,
+            @QueryParam("meta") Boolean meta);
 
-    @Path("/tags/bundles/set?bundle={0}&tags={1}")
-    boolean setTagBundle(String name, String... tags);
+    @Path("/tags/bundles/set")
+    boolean setTagBundle(
+            @QueryParam("bundle") String name,
+            @QueryParam("tags") String... tags);
 
     (...)
 
@@ -84,34 +100,33 @@ public class DeliciousResponseHandler implements ResponseHandler {
 
     private final Marshaller marshaller;
 
-    public DeliciousResponseHandler(Map<String,Object> properties) {
+    public DeliciousResponseHandler(Map<String, Object> properties) {
         this.marshaller = (Marshaller) properties.get(Marshaller.class.getName());
         Validate.notNull(this.marshaller, "No marshaller set, please construct CRest using either JSON or XML expected return type.");
     }
 
-    @Override
     public Object handle(ResponseContext responseContext) throws CRestException {
         try {
-            Object response = marshaller.marshall(responseContext.getResponse().asStream(), responseContext.getExpectedGenericType());
-            if(response instanceof Result) {
+            Object response = marshaller.marshall(responseContext.getResponse().asReader(), responseContext.getExpectedGenericType());
+            if (response instanceof Result) {
                 Result result = (Result) response;
                 // Delicious Result response format is not consistent
                 boolean done =
                         "done".equalsIgnoreCase(result.getCode())
-                        || "done".equalsIgnoreCase(result.getValue())
-                        || "ok".equalsIgnoreCase(result.getValue());
+                                || "done".equalsIgnoreCase(result.getValue())
+                                || "ok".equalsIgnoreCase(result.getValue());
                 // If expected return type is boolean, then return either true/false
-                if(boolean.class.equals(responseContext.getExpectedGenericType()) || Boolean.class.equals(responseContext.getExpectedGenericType())) {
+                if (boolean.class.equals(responseContext.getExpectedGenericType()) || Boolean.class.equals(responseContext.getExpectedGenericType())) {
                     return done;
-                }else if(!done){
+                } else if (!done) {
                     // If a response type other than boolean is expected and result is false, then throw an exception.
                     throw new CRestException(Strings.defaultIfBlank(result.getCode(), result.getValue()));
-                }else{
+                } else {
                     // Shouldn't reach here.
                     // Response type is an instance of Result only if an error happened or if the expected return type is either true/false
                     throw new IllegalStateException("Should not reach here");
                 }
-            }else{
+            } else {
                 return response;
             }
         } finally {
@@ -127,19 +142,12 @@ public class DeliciousResponseHandler implements ResponseHandler {
 
 +-----
 public class RangeInjector implements Injector<Range> {
-    @Override
     public void inject(HttpRequest.Builder builder, ParamContext<Range> context) {
-        if(context.getRawValue() == null) return;
+        if (context.getRawValue() == null) return;
         Range r = context.getRawValue();
-        String start = String.valueOf(r.getStart());
-        String results = String.valueOf(r.getResults());
-        if(context.isForUrl()){
-            builder.addQueryParam("start", start);
-            builder.addQueryParam("results", results);
-        }else{
-            builder.addBodyParam("start", start);
-            builder.addBodyParam("results", results);
-        }
+        Destination dest = context.getParamConfig().getDestination();
+        builder.addParam("start", r.getStart(), dest)
+               .addParam("results", r.getResults(), dest);
     }
 }
 +-----

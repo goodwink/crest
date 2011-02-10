@@ -30,7 +30,6 @@ import org.codegist.crest.CRestContext;
  * <p>- All methods in the interface must have it's {@link MethodConfig} configured in the {@link org.codegist.crest.config.InterfaceConfig}.
  * <p>- All parameters of all methods in the interface must have it's {@link org.codegist.crest.config.ParamConfig} configured for each {@link MethodConfig}.
  * <p>- If any method's parameter type is annotated with any parameter specifics annotation, the type specific annotation configs are used unless explicitly specified at the interface or factory configuration level.
- * <p>-
  * @see org.codegist.crest.config.InterfaceConfig
  * @see org.codegist.crest.config.MethodConfig
  * @see org.codegist.crest.config.ParamConfig

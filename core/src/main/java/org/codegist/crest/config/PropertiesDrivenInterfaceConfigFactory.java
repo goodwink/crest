@@ -43,57 +43,73 @@ import static org.codegist.common.lang.Strings.isBlank;
  * class Interface {
  *     String get();
  *     String get(String s);
- *     void push(String s);
  * }
  * -----------------------------------------------
- * service.test.class=my.rest.interface.Interface  #Mandatory if no global server is configured
- * # interface specifics configs
- * service.test.end-point=http://localhost:8080    #Mandatory if no global server is configured
+ * service.test.class=my.rest.interface.Interface
+ * #interface specifics
+ * service.test.end-point=http://localhost:8080  #mandatory
  * service.test.context-path=/my-path
  * service.test.encoding=utf-8
- * service.test.global-interceptor=my.rest.interceptor.MyRequestInterceptor
- * # default interface method configs
+ * service.test.global-interceptor=my.rest.interface.MyRequestInterceptor1
+ * #default methods
  * service.test.path=/hello
- * service.test.static-param.my-param-name.value=value1
- * service.test.static-param.my-param-name.destination=BODY
- * service.test.http-method=DELETE
+ * service.test.params.form.form-param=form-value
+ * service.test.params.form.form-param1=form-value1
+ * service.test.params.form.form-param2=form-value2
+ * service.test.params.header.header-param=header-value
+ * service.test.params.header.header-param1=header-value1
+ * service.test.params.header.header-param2=header-value2
+ * service.test.params.query.query-param=query-value
+ * service.test.params.query.query-param1=query-value1
+ * service.test.params.query.query-param2=query-value2
+ * service.test.params.path.path-param=path-value
+ * service.test.params.path.path-param1=path-value1
+ * service.test.params.path.path-param2=path-value2
  * service.test.socket-timeout=1
  * service.test.connection-timeout=2
- * service.test.request-interceptor=my.rest.MyRequestHandler2
- * service.test.response-handler=my.rest.MyResponseHandler
- * service.test.error-handler=my.rest.MyErrorHandler
- * service.test.retry-handler=my.rest.MyRetryHandler
- * # default method param configs
- * service.test.name=name
- * service.test.destination=BODY
- * service.test.serializer=my.rest.serializer.MyParamSerializer
- * service.test.injector=my.rest.injector.MyRequestInjector
- * <p/>
- * service.test.method.m1.pattern=get\\(.*\\)  #Pattern matching one or more methods. Config will apply to all matched method. Applies to "String get()" amd "String get(String)"
- * # method specifics configs
- * service.test.method.m1.path=/get
- * service.test.method.m1.static-param.my-param-name-2.value=value
- * service.test.method.m1.static-param.my-param-name-2.destination=HEADER
+ * service.test.request-interceptor=my.rest.interface.MyRequestInterceptor1
+ * service.test.response-handler=my.rest.interface.MyResponseHandler1
+ * service.test.error-handler=my.rest.interface.MyErrorHandler1
+ * service.test.retry-handler=my.rest.interface.MyRetryHandler1
+ * service.test.http-method=DELETE
+ * #default params
+ * service.test.serializer=my.rest.interface.MySerializer1
+ * service.test.injector=my.rest.interface.MyRequestParameterInjector1
+ * 
+ * service.test.method.m1.pattern=m1\\(\\)
+ * #methods specifices
+ * service.test.method.m1.path=/m1
+ * service.test.method.m1.params.form.form-param=over-value1
+ * service.test.method.m1.params.form.form-param3=new-value
  * service.test.method.m1.http-method=PUT
  * service.test.method.m1.socket-timeout=3
  * service.test.method.m1.connection-timeout=4
- * service.test.method.m1.request-interceptor=my.rest.interceptor.MyRequestInterceptor2
- * service.test.method.m1.response-handler=my.rest.MyResponseHandler2
- * service.test.method.m1.error-handler=my.rest.MyErrorHandler2
- * # default param configs
- * service.test.method.m1.name=name1
- * service.test.method.m1.destination=URL
- * service.test.method.m1.injector=my.rest.injector.MyRequestInjector2
- * service.test.method.m1.serializer=my.rest.serializer.MyParamSerializer2
- *
- * # param specific configs
- * service.test.method.m1.params.0.name=a     # Param config applies also to all matched method as long as the method as enough param, otherwise is ignored.
- * service.test.method.m1.params.0.destination=URL
- * service.test.method.m1.params.0.serializer=my.rest.serializer.MyParamSerializer3
- * service.test.method.m1.params.0.injector=my.rest.interceptor.MyRequestInterceptor3
- * <p/>
- * service.test.method.m2.pattern=push\\(\\)
- * service.test.method.m2.path=/push
+ * service.test.method.m1.request-interceptor=my.rest.interface.MyRequestInterceptor3
+ * service.test.method.m1.response-handler=my.rest.interface.MyResponseHandler1
+ * service.test.method.m1.error-handler=my.rest.interface.MyErrorHandler2
+ * service.test.method.m1.retry-handler=my.rest.interface.MyRetryHandler2
+ * #default params
+ * service.test.method.m1.serializer=my.rest.interface.MySerializer3
+ * service.test.method.m1.injector=my.rest.interface.MyRequestParameterInjector2
+ * 
+ * service.test.method.m2.pattern=m1\\(java\\.lang\\.String\\)
+ * #methods specifices
+ * service.test.method.m2.path=/m1
+ * service.test.method.m2.params.path.form-param=over-value1
+ * service.test.method.m2.http-method=POST
+ * service.test.method.m2.socket-timeout=5
+ * service.test.method.m2.connection-timeout=6
+ * service.test.method.m2.request-interceptor=my.rest.interface.MyRequestInterceptor2
+ * service.test.method.m2.response-handler=my.rest.interface.MyResponseHandler2
+ * #default params
+ * service.test.method.m2.serializer=my.rest.interface.MySerializer2
+ * service.test.method.m2.injector=my.rest.interface.MyRequestParameterInjector2
+ * 
+ * service.test.method.m2.params.0.name=a  #mandatory
+ * service.test.method.m2.params.0.type=header
+ * service.test.method.m2.params.0.default=deff
+ * service.test.method.m2.params.0.serializer=my.rest.interface.MySerializer3
+ * service.test.method.m2.params.0.injector=my.rest.interface.MyRequestParameterInjector3
  * (...)
  * service.test2.class=my.rest.interface.Interface2
  * (...)

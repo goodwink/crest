@@ -49,62 +49,76 @@ import static org.codegist.common.lang.Strings.isBlank;
  * class Interface {
  *     String get();
  *     String get(String s);
- *     void push(String s);
  * }
  * &lt;?xml version="1.0" encoding="UTF-8"?&gt;
  * 
  * &lt;crest-config&gt;
- *     &lt;service class="my.rest.interface.Interface" encoding="utf-8"&gt;
- *         &lt;end-point&gt;http://localhost:8080&lt;/end-point&gt;
- *         &lt;context-path&gt;/my-path&lt;/context-path&gt;
- *         &lt;global-interceptor&gt;my.rest.interceptor.MyRequestInterceptor&lt;/global-interceptor&gt;
- *         &lt;methods&gt;
- *             &lt;default socket-timeout="1" connection-timeout="2" method="DELETE"&gt;
- *                 &lt;path&gt;/hello&lt;/path&gt;
- *                 &lt;request-interceptor&gt;my.rest.MyRequestHandler2&lt;/request-interceptor&gt;
- *                 &lt;response-handler&gt;my.rest.MyResponseHandler&lt;/response-handler&gt;
- *                 &lt;error-handler&gt;my.rest.MyErrorHandler&lt;/error-handler&gt;
- *                 &lt;retry-handler&gt;my.rest.MyRetryHandler&lt;/retry-handler&gt;
- *                 &lt;params&gt;
- *                     &lt;static-param destination="BODY" name="my-param-name"&gt;value1&lt;/static-param&gt;
- *                     &lt;default destination="BODY" name="name"&gt;
- *                         &lt;serializer&gt;my.rest.serializer.MyParamSerializer&lt;/serializer&gt;
- *                         &lt;injector&gt;my.rest.injector.MyRequestInjector&lt;/injector&gt;
- *                     &lt;/default&gt;
- *                 &lt;/params&gt;
- *             &lt;/default&gt;
- *             &lt;method match="get\(.*\)" socket-timeout="3" connection-timeout="4" method="PUT"&gt;
- *                 &lt;path&gt;/get&lt;/path&gt;
- *                 &lt;request-interceptor&gt;my.rest.interceptor.MyRequestInterceptor2&lt;/request-interceptor&gt;
- *                 &lt;response-handler&gt;my.rest.MyResponseHandler2&lt;/response-handler&gt;
- *                 &lt;error-handler&gt;my.rest.MyErrorHandler2&lt;/error-handler&gt;
- *                 &lt;params&gt;
- *                     &lt;static-param destination="HEADER" name="my-param-name-2"&gt;value&lt;/static-param&gt;
- *                     &lt;static-param destination="BODY" name="body-param-2"&gt;new-value&lt;/static-param&gt;
- *                     &lt;default destination="URL" name="name1"&gt;
- *                         &lt;serializer&gt;my.rest.serializer.MyParamSerializer2&lt;/serializer&gt;
- *                         &lt;injector&gt;my.rest.injector.MyRequestInjector2&lt;/injector&gt;
- *                     &lt;/default&gt;
- *                     &lt;param index="0" destination="URL" name="a"&gt;
- *                         &lt;serializer&gt;my.rest.serializer.MyParamSerializer3&lt;/serializer&gt;
- *                         &lt;injector&gt;my.rest.interceptor.MyRequestInterceptor3&lt;/injector&gt;
- *                     &lt;/param&gt;
- *                 &lt;/params&gt;
- *             &lt;/method&gt;
- *             &lt;method match="push\(\)" &gt;
- *                 &lt;path&gt;/push&lt;/path&gt;
- *             &lt;/method&gt;
- *         &lt;/methods&gt;
- *     &lt;/service&gt;
+    &lt;service class="my.rest.interface.Interface" encoding="utf-8"&gt;
+        &lt;end-point&gt;http://localhost:8080&lt;/end-point&gt; &lt;!--Mandatory--&gt; 
+        &lt;context-path&gt;/my-path&lt;/context-path&gt;
+        &lt;global-interceptor&gt;my.rest.interface.MyRequestInterceptor1&lt;/global-interceptor&gt;
+        &lt;methods&gt;
+            &lt;default socket-timeout="1" connection-timeout="2" method="DELETE"&gt;
+                &lt;path&gt;/hello&lt;/path&gt;
+                &lt;request-interceptor&gt;my.rest.interface.MyRequestInterceptor1&lt;/request-interceptor&gt;
+                &lt;response-handler&gt;my.rest.interface.MyResponseHandler1&lt;/response-handler&gt;
+                &lt;error-handler&gt;my.rest.interface.MyErrorHandler1&lt;/error-handler&gt;
+                &lt;retry-handler&gt;my.rest.interface.MyRetryHandler1&lt;/retry-handler&gt;
+                &lt;params&gt;
+                    &lt;serializer&gt;my.rest.interface.MySerializer1&lt;/serializer&gt;
+                    &lt;injector&gt;my.rest.interface.MyRequestParameterInjector1&lt;/injector&gt;
+                    &lt;form name="form-param"&gt;form-value&lt;/form&gt;
+                    &lt;form name="form-param1"&gt;form-value1&lt;/form&gt;
+                    &lt;form name="form-param2"&gt;form-value2&lt;/form&gt;
+                    &lt;header name="header-param"&gt;header-value&lt;/header&gt;
+                    &lt;header name="header-param1"&gt;header-value1&lt;/header&gt;
+                    &lt;header name="header-param2"&gt;header-value2&lt;/header&gt;
+                    &lt;query name="query-param"&gt;query-value&lt;/query&gt;
+                    &lt;query name="query-param1"&gt;query-value1&lt;/query&gt;
+                    &lt;query name="query-param2"&gt;query-value2&lt;/query&gt;
+                    &lt;path name="path-param"&gt;path-value&lt;/path&gt;
+                    &lt;path name="path-param1"&gt;path-value1&lt;/path&gt;
+                    &lt;path name="path-param2"&gt;path-value2&lt;/path&gt;
+                &lt;/params&gt;
+            &lt;/default&gt;
+            &lt;method match="m1\(\)" socket-timeout="3" connection-timeout="4" method="PUT"&gt;
+                &lt;path&gt;/m1&lt;/path&gt;
+                &lt;request-interceptor&gt;my.rest.interface.MyRequestInterceptor3&lt;/request-interceptor&gt;
+                &lt;response-handler&gt;my.rest.interface.MyResponseHandler1&lt;/response-handler&gt;
+                &lt;error-handler&gt;my.rest.interface.MyErrorHandler2&lt;/error-handler&gt;
+                &lt;retry-handler&gt;my.rest.interface.MyRetryHandler2&lt;/retry-handler&gt;
+                &lt;params&gt;
+                    &lt;serializer&gt;my.rest.interface.MySerializer3&lt;/serializer&gt;
+                    &lt;injector&gt;my.rest.interface.MyRequestParameterInjector2&lt;/injector&gt;
+                    &lt;form name="form-param"&gt;over-value1&lt;/form&gt;
+                    &lt;form name="form-param3"&gt;new-value&lt;/form&gt;
+                &lt;/params&gt;
+            &lt;/method&gt;
+            &lt;method match="m1\(java\.lang\.String\)" socket-timeout="5" connection-timeout="6" method="POST"&gt;
+                &lt;path&gt;/m1&lt;/path&gt;
+                &lt;request-interceptor&gt;my.rest.interface.MyRequestInterceptor2&lt;/request-interceptor&gt;
+                &lt;response-handler&gt;my.rest.interface.MyResponseHandler2&lt;/response-handler&gt;
+                &lt;params&gt;
+                    &lt;serializer&gt;my.rest.interface.MySerializer2&lt;/serializer&gt;
+                    &lt;injector&gt;my.rest.interface.MyRequestParameterInjector2&lt;/injector&gt;
+                    &lt;path name="form-param"&gt;over-value1&lt;/path&gt;
+                    &lt;header index="0" name="a" default="deff"&gt;   &lt;!--mandatory--&gt;
+                        &lt;serializer&gt;my.rest.interface.MySerializer3&lt;/serializer&gt;
+                        &lt;injector&gt;my.rest.interface.MyRequestParameterInjector3&lt;/injector&gt;
+                    &lt;/header&gt;
+                &lt;/params&gt;
+            &lt;/method&gt;
+        &lt;/methods&gt;
+    &lt;/service&gt;
  * 	&lt;service class="my.rest.interface.Interface2" encoding="utf-8"&gt;
  * 	(...)
  * 	&lt;/service&gt;
  * &lt;/crest-config&gt;
  * </pre></code>
- * <p>Can contain as much interface config as needed in a single Properties (or Map) object.
+ * <p>Can contain as much interface config as needed.
  * <p>A shortcut to configure the server for all interfaces is :
  * <code><pre>
- * service.end-point=My server url
+ * &lt;crest-config end-point="hello"&gt;
  * </pre></code>
  * <p>The interface specific end-point if specified override the global one.
  *

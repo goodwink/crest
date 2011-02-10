@@ -6,7 +6,7 @@ Quick Start
 
 * Interface
 
-    <<CRest>> relies on a <<<CRest>>> instance to automatically build instances of any given java interfaces.
+    <<<CRest>>> instance automatically build instances of any given user java interfaces, as long as the interface is properly annotated.
 
     The interface's methods can contains any kind of arguments and any kind of result type, with some specials cases:
 
@@ -18,7 +18,7 @@ Quick Start
 
 * CRest
 
-    <<<CRest>>> interface will return the working instances of any interface to bind to a REST service.
+    <<<CRest>>> will return the working instances of any interface to bind to a REST service.
 
     The <<<CRest>>> default implementation requires a few information reguarding the way the interfaces that will be passed to it should be build, how the mapping is done, the way to handle response data formats etc..
 
@@ -29,6 +29,16 @@ CRest crest = new CRestBuilder().build();
 +-----
 
     This <<<CRest>>> instance is thread-safe, and should be created only once. The builder allows you to easily customize the resulting <<<CRest>>> instance, please refer to its java-doc to see all the possible options available.
+
+    Current implementation requires all method's parameter to be annotated with any of the following:
+
+       * @FormParam
+
+       * @QueryParam
+
+       * @PathParam
+
+       * @HeaderParam
 
     Once you have a <<<CRest>>> instance, you can pass it any java Interface that should be bind to any REST service, as follow:
 
@@ -55,13 +65,16 @@ MyInterface interfaze = crest.build(MyInterface.class);
 @ContextPath("/1/statuses")
 public interface StatusService {
 
-    @Path("/retweets/{0}.json")
+    @Path("/retweets/{d}.json")
     @ConnectionTimeout(10000)
-    Status[] getRetweets(long id);
+    Status[] getRetweets(@PathParam("id") long id);
 
-    @HttpMethod(POST)
-    @Path("/update.json?lat={1}&long={2}")
-    Status changeStatus(@Name("status") @Destination(BODY) String status, float lat, float longitude);
+    @POST
+    @Path("/update.json")
+    Status updateStatus(
+            @FormParam("status") String status,
+            @QueryParam("lat") float lat,
+            @QueryParam("long") float longitude);
 
 }
 +-----
@@ -79,13 +92,16 @@ public interface StatusService {
 @ContextPath("/1/statuses")
 public interface StatusService {
 
-    @Path("/retweets/{0}.json")
+    @Path("/retweets/{d}.json")
     @ConnectionTimeout(10000)
-    Status[] getRetweets(long id);
+    Status[] getRetweets(@PathParam("id") long id);
 
-    @HttpMethod(POST)
-    @Path("/update.json?lat={1}&long={2}")
-    Status changeStatus(@Name("status") @Destination(BODY) String status, float lat, float longitude);
+    @POST
+    @Path("/update.json")
+    Status updateStatus(
+            @FormParam("status") String status,
+            @QueryParam("lat") float lat,
+            @QueryParam("long") float longitude);
 
 }
 +-----
@@ -120,12 +136,17 @@ CRest crest = new CRestBuilder()
         <global-interceptor>org.codegist.crest.Stubs$RequestInterceptor1</global-interceptor>
         <methods>
             <method match="getRetweets\(.*\)" connection-timeout="10000">
-                <path>/retweets/{0}.json</path>
+                <path>/retweets/{id}.json</path>
+                <params>
+                    <path index="0" name="id"/>
+                </params>
             </method>
             <method match="changeStatus\(.*\)">
-                <path>/update.json?lat={1}&long={2}</path>
+                <path>/update.json</path>
                 <params>
-                    <param index="0" name="status" destination="BODY"/>
+                    <form index="0" name="status"/>
+                    <query index="1" name="lat"/>
+                    <query index="2" name="long"/>
                 </params>
             </method>
         </methods>
@@ -168,12 +189,17 @@ service.langservice.context-path=/1/statuses
 
 service.langservice.method.m1.pattern=getRetweets\\(.*\\)
 service.langservice.method.m1.connection-timeout=10000
-service.langservice.method.m1.path=/retweets/{0}.json
+service.langservice.method.m1.path=/retweets/{id}.json
+service.langservice.method.m1.params.0.name=id
 
 service.langservice.method.m2.pattern=changeStatus\\(.*\\)
-service.langservice.method.m2.path=/update.json?lat={1}&long={2}
+service.langservice.method.m2.path=/update.json
 service.langservice.method.m2.params.0.name=status
-service.langservice.method.m2.params.0.destination=BODY
+service.langservice.method.m2.params.0.type=form
+service.langservice.method.m2.params.1.name=lat
+service.langservice.method.m2.params.1.type=query
+service.langservice.method.m2.params.2.name=long
+service.langservice.method.m2.params.2.type=query
 +-----
 
     Be aware that by prefering the properties driven configuration over the annotation one, the <<<CRest>>> will need to have a preconfigured properties set able to configure any possible interface given to it.

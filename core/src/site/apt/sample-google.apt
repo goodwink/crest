@@ -19,11 +19,12 @@ Google Samples
 +-----
 @EndPoint("http://ajax.googleapis.com")
 @ContextPath("/ajax/services/search")
+@QueryParam(value = "v", defaultValue = "1.0")
 @ResponseHandler(GoogleResponseHandler.class)
 public interface SearchService {
 
-    @Path("/web?v=1.0&q={0}")
-    SearchResult<Address> search(String text);
+    @Path("/web")
+    SearchResult<Address> search(@QueryParam("q") String text);
 
 }
 +-----
@@ -50,14 +51,17 @@ SearchResult<Address> results = service.search("codegist crest");
 +-----
 @EndPoint("http://ajax.googleapis.com")
 @ContextPath("/ajax/services/language")
+@QueryParam(value = "v", defaultValue = "1.0")
 @ResponseHandler(GoogleResponseHandler.class)
 public interface LanguageService {
 
-    @Path("/detect?v=1.0&q={0}")
-    LanguageGuess detectLanguage(String text);
+    @Path("/detect")
+    LanguageGuess detectLanguage(@QueryParam("q") String text);
 
-    @Path("/translate?v=1.0&q={0}&langpair={1}%7C{2}")
-    Translation translate(String text, String from, String to);
+    @Path("/translate")
+    Translation translate(
+            @QueryParam("q") String text,
+            @QueryParam("langpair") @Serializer(LangPairSerializer.class) LangPair langPair);
 
 }
 +-----
@@ -85,7 +89,7 @@ public class GoogleResponseHandler implements ResponseHandler {
 
     private final Marshaller marshaller;
 
-    public GoogleResponseHandler(Map<String,Object> parameters) {
+    public GoogleResponseHandler(Map<String, Object> parameters) {
         this.marshaller = (Marshaller) parameters.get(Marshaller.class.getName());
         Validate.notNull(this.marshaller, "No marshaller set, please construct CRest using either JSON or XML expected return type.");
     }
@@ -94,7 +98,7 @@ public class GoogleResponseHandler implements ResponseHandler {
         try {
 
             /* Marshall the response */
-            Response<?> res = marshaller.marshall(context.getResponse().asStream(), Types.newType(Response.class, context.getExpectedGenericType()));
+            Response<?> res = marshaller.marshall(context.getResponse().asReader(), Types.newType(Response.class, context.getExpectedGenericType()));
             /* Check for google OK status */
             if (res.status == 200) {
                 return res.data; /* Returns the nested payload */
@@ -109,6 +113,20 @@ public class GoogleResponseHandler implements ResponseHandler {
     /* ... Response inner-class declaration ... */
 }
 +-----
+
+* LangPair serializer
+
+    Here is the code needed to write a custom LangPair objects serializer
++-----
+public class LangPairSerializer implements Serializer<LangPair> {
+    private static final String FORMAT = "%s|%s";
+
+    public String serialize(LangPair value) {
+        return String.format(FORMAT, value.getFrom(), value.getTo());
+    }
+}
++-----
+
 
 * Model & Sources
 

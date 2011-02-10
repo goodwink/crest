@@ -29,7 +29,7 @@ import org.codegist.crest.interceptor.RequestInterceptor;
 import java.lang.reflect.Method;
 
 /**
- * Default immutable in-memory implementation of {@link org.codegist.crest.config.DefaultMethodConfig}
+ * Default immutable in-memory implementation of {@link org.codegist.crest.config.MethodConfig}
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
 class DefaultMethodConfig implements MethodConfig {

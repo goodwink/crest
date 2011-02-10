@@ -26,18 +26,27 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * @author laurent.gilles@codegist.org
- */
-
-/**
+ * If specified at method parameter level, indicates to inject it into the HTTP header.
+ * <p>If specified at interface or method level, indicates to inject a default parameter into the HTTP header for all requests.
+ * @see org.codegist.crest.HttpRequest.Builder#addHeaderParam(String, Object)  
  * @author laurent.gilles@codegist.org
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE,ElementType.METHOD, ElementType.PARAMETER})
 public @interface HeaderParam {
 
+    /**
+     * Indicates the parameter name to use
+     * @return parameter name
+     */
     String value();
 
+    /**
+     * Indicates the parameter default value to use.
+     * <p>At method parameter level, this value is used if the parameter is null
+     * <p>At interface/method levels, this value is used to specifie the value of the parameter to add for each request
+     * @return
+     */
     String defaultValue() default "";
 
 }

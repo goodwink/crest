@@ -17,38 +17,46 @@ Twitter Samples
 +-----
 @EndPoint("http://api.twitter.com")
 @ContextPath("/1/statuses")
-@Param(name = "Accept-Encoding", value = "gzip", dest = HEADER)
+@HeaderParam(value = "Accept-Encoding", defaultValue = "gzip")
 public interface StatusService {
 
-    @HttpMethod(POST)
+    @POST
     @Path("/update.json")
-    @Destination(BODY)
-    Status updateStatus(@Name("status") String status);
+    Status updateStatus(@FormParam("status") String status);
 
-    @HttpMethod(POST) @Path("/update.json?lat={1}&long={2}")
-    Status changeStatus(
-            @Name("status") @Destination(BODY) String status,
-            float lat, float longitude);
+    @POST
+    @Path("/update.json")
+    Status updateStatus(
+            @FormParam("status") String status,
+            @QueryParam("lat") float lat,
+            @QueryParam("long") float longitude);
 
-    @HttpMethod(POST) @Path("/destroy/{0}.json")
-    Status removeStatus(long id);
+    @POST
+    @Path("/destroy/{id}.json")
+    Status removeStatus(@PathParam("id") long id);
 
-    @HttpMethod(POST) @Path("/retweet/{0}.json")
-    Status retweetStatus(long id);
+    @POST
+    @Path("/retweet/{id}.json")
+    Status retweetStatus(@PathParam("id") long id);
 
-    @Path("/show/{0}.json")
-    Status getStatus(long id);
+    @Path("/show/{id}.json")
+    Status getStatus(@PathParam("id") long id);
 
-    @Path("/retweets/{0}.json")
-    Status[] getRetweets(long id);
+    @Path("/retweets/{id}.json")
+    Status[] getRetweets(@PathParam("id") long id);
 
     (...)
 
-    @Path("/friends.json?user_id={0}&screen_name={1}")
-    User[] getFriends(long userId, String screenName);
+    @Path("/friends.json")
+    User[] getFriends(
+            @QueryParam("user_id") long userId,
+            @QueryParam("screen_name") String screenName);
 
-    @Path("/friends.json?user_id={0}&screen_name={1}&cursor={2}")
-    Cursor.User getFriends(long userId, String screenName, long cursor);
+    @Path("/friends.json")
+    Cursor.User getFriends(
+            @QueryParam("user_id") long userId,
+            @QueryParam("screen_name") String screenName,
+            @QueryParam("cursor") long cursor);
 
     (...)
 
@@ -81,32 +89,50 @@ Status status = service.updateStatus("Status updated!");
 +-----
 @EndPoint("http://api.twitter.com")
 @ContextPath("/1/direct_messages")
-@Param(name = "Accept-Encoding", value = "gzip", dest = HEADER)
+@HeaderParam(value = "Accept-Encoding", defaultValue = "gzip")
 public interface DirectMessageService {
 
-    @Path(".json?since_id={0}&max_id={1}&count={2}&page={3}")
-    Message[] getReceived(long sinceId, long maxId, long count, long page);
+    @Path(".json")
+    Message[] getReceived(
+            @QueryParam("count") long count,
+            @QueryParam("page") long page,
+            @QueryParam("since_id") long sinceId,
+            @QueryParam("max_id") long maxId
+            );
 
-    @Path(".json?count={0}&page={1}")
-    Message[] getReceived(long count, long page);
+    @Path(".json")
+    Message[] getReceived(
+            @QueryParam("count") long count,
+            @QueryParam("page") long page);
 
-    @Path("/sent.json?since_id={0}&max_id={1}&count={2}&page={3}")
-    Message[] getSent(long sinceId, long maxId, long count, long page);
+    @Path("/sent.json")
+    Message[] getSent(
+            @QueryParam("count") long count,
+            @QueryParam("page") long page,
+            @QueryParam("since_id") long sinceId,
+            @QueryParam("max_id") long maxId);
 
-    @Path("/sent.json?count={0}&page={1}")
-    Message[] getSent(long count, long page);
+    @Path("/sent.json")
+    Message[] getSent(
+            @QueryParam("count") long count,
+            @QueryParam("page") long page);
 
-    @HttpMethod(POST)
-    @Path("/new.json?user_id={0}&text={1}")
-    Message send(long userId, String msg);
+    @POST
+    @Path("/new.json")
+    Message send(
+            @QueryParam("user_id") long userId,
+            @QueryParam("text") String msg);
 
-    @HttpMethod(POST)
-    @Path("/new.json?user_id={0}&screen_name={1}&text={2}")
-    Message send(long userId, String screenName, String msg);
+    @POST
+    @Path("/new.json")
+    Message send(
+            @QueryParam("user_id") long userId,
+            @QueryParam("text") String msg,
+            @QueryParam("screen_name") String screenName);
 
-    @HttpMethod(DELETE)
-    @Path("/destroy/{0}.json")
-    Message destroy(long msgId);
+    @DELETE
+    @Path("/destroy/{msgid}.json")
+    Message destroy(@PathParam("msgid") long msgId);
 
 }
 +-----
@@ -137,27 +163,34 @@ Message msg = service.send(userId, "Hi mate, what's up!");
 +-----
 @EndPoint("http://api.twitter.com")
 @ContextPath("/1/users")
-@Param(name = "Accept-Encoding", value = "gzip", dest = HEADER)
+@HeaderParam(value = "Accept-Encoding", defaultValue = "gzip")
 public interface UserService {
 
-    @Path("/search.json?q={0}")
-    User[] search(String search);
+    @Path("/search.json")
+    User[] search(
+            @QueryParam("q") String search);
 
-    @Path("/search.json?q={0}&per_page={1}&page={2}")
-    User[] search(String search, long count, long page);
+    @Path("/search.json")
+    User[] search(
+            @QueryParam("q") String search,
+            @QueryParam("per_page") long count,
+            @QueryParam("page") long page);
 
-    @Path("/show.json?user_id={0}")
-    User get(long id);
+    @Path("/show.json")
+    User get(@QueryParam("user_id") long id);
 
-    @Path("/show.json?screen_name={0}")
-    User get(String screenName);
+    @Path("/show.json")
+    User get(@QueryParam("screen_name") String screenName);
 
-    @Path("/lookup.json?user_id={0}&screen_name={1}")
-    User[] lookup(long id, String... screenName);
+    @Path("/lookup.json")
+    User[] lookup(
+            @QueryParam("user_id") long id,
+            @QueryParam("screen_name") String... screenName);
 
-    @Path("/lookup.json?screen_name={0}")
-    User[] lookup(String[] screenName);
+    @Path("/lookup.json")
+    User[] lookup(@QueryParam("screen_name") String[] screenName);
 }
+
 +-----
 
     And here's how to get an instance of the <<<DirectMessageService>>>:

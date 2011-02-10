@@ -25,7 +25,7 @@ import org.codegist.common.lang.HashCodeBuilder;
 import org.codegist.common.lang.ToStringBuilder;
 
 /**
- * Default immutable in-memory implementation of {@link org.codegist.crest.config.DefaultBasicParamConfig}
+ * Default immutable in-memory implementation of {@link org.codegist.crest.config.BasicParamConfig}
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
 class DefaultBasicParamConfig implements BasicParamConfig {

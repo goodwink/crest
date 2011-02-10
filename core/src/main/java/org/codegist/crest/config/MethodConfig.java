@@ -136,6 +136,10 @@ public interface MethodConfig {
 
     String getHttpMethod();
 
+    /**
+     * Return the method's extra static parameter list
+     * @return method's extra parameters
+     */
     BasicParamConfig[] getExtraParams();
 
     /**

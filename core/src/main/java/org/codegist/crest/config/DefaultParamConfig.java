@@ -27,7 +27,7 @@ import org.codegist.crest.injector.Injector;
 import org.codegist.crest.serializer.Serializer;
 
 /**
- * Default immutable in-memory implementation of {@link org.codegist.crest.config.DefaultParamConfig}
+ * Default immutable in-memory implementation of {@link org.codegist.crest.config.ParamConfig}
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
 class DefaultParamConfig extends DefaultBasicParamConfig implements ParamConfig {

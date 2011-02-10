@@ -26,10 +26,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * @author laurent.gilles@codegist.org
- */
-
-/**
+ * {@link HeaderParam} aggregator for interface and method levels, to be used when more than one default header need to be added.
  * @author laurent.gilles@codegist.org
  */
 @Retention(RetentionPolicy.RUNTIME)

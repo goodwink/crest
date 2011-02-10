@@ -164,8 +164,7 @@ public class HttpRequest {
      * <p>Will create an GET utf-8 HttpRequest object.
      */
     public static class Builder {
-        private static final Pattern PLACEHOLDER_CONTENT_PATTERN = Pattern.compile("[^\\s\\}]+");
-        private static final Pattern SINGLE_PLACEHOLDER_PATTERN = Pattern.compile("[\\{\\(](" + PLACEHOLDER_CONTENT_PATTERN.pattern() + ")[\\}\\)]");
+        private static final Pattern SINGLE_PLACEHOLDER_PATTERN = Pattern.compile("[\\{\\(]([^/]+)[\\}\\)]");
         private static final Pattern CONTAINS_PLACEHOLDER_PATTERN = Pattern.compile(".*" + SINGLE_PLACEHOLDER_PATTERN + ".*");
         static final String ENCODING = "utf-8";
         static final String METH = "GET";

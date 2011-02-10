@@ -21,9 +21,9 @@
 package org.codegist.crest.config;
 
 /**
- * Method's argument configuration holder object.
+ * Basic parameter configuration holder object for interface/method extra parameters. Extra parameters are added on top of the method arguments.
  * <p>Implementors must respect the following contract :
- * <p>- No method return null except for the ones documented or when used as an override template (see {@link org.codegist.crest.config.Configs#override(org.codegist.crest.config.BasicParamConfig , org.codegist.crest.config.BasicParamConfig)})
+ * <p>- No method return null
  * <p>- Defaults values must either be taken from interface's defaults constant or from {@link org.codegist.crest.InterfaceContext#getProperties()}'s defaults overrides.
  *
  * @see MethodConfig
@@ -55,26 +55,16 @@ public interface BasicParamConfig {
     String DEFAULT_NAME = "";
 
     /**
-     * <p>For parameters with {@link Destination#URL} destination :
-     * <p>- if not blank, is used to add a new queryString parameter not specified in the {@link org.codegist.crest.config.MethodConfig#getPath()}.
-     * <p>- otherwise ignored and the parameter will be merged in the relative {@link org.codegist.crest.config.MethodConfig#getPath()} placeholders.
-     * <br/><br/>
-     * <p>For parameters with {@link Destination#BODY} destination :
-     * <p>- as a body key, if empty the body will just contains the parameter value.
-     *
      * @return Parameter name to be used.
      */
     String getName();
 
     /**
-     * <p> Param default value if not specified
      * @return param default value
      */
     String getDefaultValue();
 
     /**
-     * <p>Defines where the parameter value should used, either in the query string or in the request body.
-     *
      * @return Destination of the argument value.
      */
     Destination getDestination();

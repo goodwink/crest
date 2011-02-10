@@ -26,6 +26,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * Indicates that the annotated method responds to HTTP PUT requests
+ * <p>Can be set at interface level to default all interface method values if not specified at method level.
+ * @see org.codegist.crest.annotate.HttpMethod
  * @author laurent.gilles@codegist.org
  */
 @Retention(RetentionPolicy.RUNTIME)
