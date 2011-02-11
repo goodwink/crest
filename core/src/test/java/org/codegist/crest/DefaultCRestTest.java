@@ -28,6 +28,9 @@ import org.codegist.common.lang.Strings;
 import org.codegist.common.marshal.Marshaller;
 import org.codegist.common.reflect.JdkProxyFactory;
 import org.codegist.common.reflect.ProxyFactory;
+import org.codegist.crest.annotate.EndPoint;
+import org.codegist.crest.annotate.HeaderParam;
+import org.codegist.crest.annotate.QueryParam;
 import org.codegist.crest.config.ConfigBuilders;
 import org.codegist.crest.config.InterfaceConfig;
 import org.codegist.crest.config.InterfaceConfigFactory;
@@ -250,6 +253,65 @@ public class DefaultCRestTest {
         Reader testReader();
 
         Model testModel();
+    }
+
+    @Test
+    public void testAcceptHeader(){
+        RestService mockRestService = mock(RestService.class);
+        when(mockRestService.exec(argThat(new ArgumentMatcher<HttpRequest>() {
+
+            public boolean matches(Object o) {
+                HttpRequest r = (HttpRequest) o;
+                assertNotNull(r);
+                String expectedHeader = r.getQueryParams().get("expected-header");
+                String header = Strings.defaultIfBlank(r.getHeaderParams().get("Accept"), "");
+                assertEquals(expectedHeader,header );
+                return true;
+            }
+        }))).thenAnswer(new Answer<Object>() {
+
+            public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
+                return new HttpResponse(null, 200, null, (new HttpResource() {
+                    final InputStream stream = new ByteArrayInputStream("".getBytes());
+                    public InputStream getContent() throws HttpException {
+                        return stream;
+                    }
+
+                    public void release() throws HttpException {
+                        try {
+                            stream.close();
+                        } catch (IOException e) {
+                            throw new HttpException(e);
+                        }
+                    }
+                }));
+            }
+        });
+
+        CRest crest = new CRestBuilder().expectsJson().setRestService(mockRestService).build();
+        Int instance = crest.build(Int.class);
+        instance.test("application/json");
+        instance.test();
+
+        crest = new CRestBuilder().expectsJson(false).setRestService(mockRestService).build();
+        instance = crest.build(Int.class);
+        instance.test(null);
+        instance.test();
+
+        crest = new CRestBuilder().expectsJson("text/json").setRestService(mockRestService).build();
+        instance = crest.build(Int.class);
+        instance.test("text/json");
+        instance.test();
+
+    }
+
+    @EndPoint("http://hello")
+    public static interface Int {
+        public void test(@QueryParam("expected-header") String expectedHeader);
+
+        @QueryParam(value="expected-header", defaultValue = "overridden")
+        @HeaderParam(value="Accept", defaultValue = "overridden")
+        public void test();
     }
 
 

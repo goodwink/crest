@@ -251,7 +251,7 @@ public interface CRestProperty {
 
     /**
      * override the default method extra params {@link org.codegist.crest.config.MethodConfig#DEFAULT_EXTRA_PARAMS}.
-     * <p>Expects an array of {@link org.codegist.crest.config.ParamConfig}
+     * <p>Expects an array of {@link org.codegist.crest.config.BasicParamConfig}
      *
      * @see org.codegist.crest.InterfaceContext#getProperties()
      */

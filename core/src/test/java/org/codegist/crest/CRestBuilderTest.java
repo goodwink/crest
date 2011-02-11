@@ -263,6 +263,65 @@ public class CRestBuilderTest {
                 return new HashMap<String, Object>() {{
                     put(Marshaller.class.getName(), new JacksonMarshaller());
                     put(Unmarshaller.class.getName(), new JacksonMarshaller());
+                    put(CRestProperty.CONFIG_METHOD_DEFAULT_EXTRA_PARAMS, new BasicParamConfig[]{
+                            new ConfigBuilders.BasicParamConfigBuilder(null)
+                            .setName("Accept")
+                            .setDefaultValue("application/json")
+                            .setDestination(Destination.HEADER)
+                            .build()
+                    });
+                }};
+            }
+        }, context);
+    }
+    @Test
+    public void testExpectsJson2() {
+        final CRestContext context = builder
+                .expectsJson(false)
+                .buildContext();
+        assertContext(new ContextAdapter() {
+            @Override
+            public Map<String, Object> getProperties() {
+                return new HashMap<String, Object>() {{
+                    put(Marshaller.class.getName(), new JacksonMarshaller());
+                    put(Unmarshaller.class.getName(), new JacksonMarshaller());
+                }};
+            }
+        }, context);
+    }
+    @Test
+    public void testExpectsJson3() {
+        final CRestContext context = builder
+                .expectsJson(null)
+                .buildContext();
+        assertContext(new ContextAdapter() {
+            @Override
+            public Map<String, Object> getProperties() {
+                return new HashMap<String, Object>() {{
+                    put(Marshaller.class.getName(), new JacksonMarshaller());
+                    put(Unmarshaller.class.getName(), new JacksonMarshaller());
+                }};
+            }
+        }, context);
+    }
+    @Test
+    public void testExpectsJson4() {
+        final CRestContext context = builder
+                .expectsJson("fff")
+                .buildContext();
+        assertContext(new ContextAdapter() {
+            @Override
+            public Map<String, Object> getProperties() {
+                return new HashMap<String, Object>() {{
+                    put(Marshaller.class.getName(), new JacksonMarshaller());
+                    put(Unmarshaller.class.getName(), new JacksonMarshaller());
+                    put(CRestProperty.CONFIG_METHOD_DEFAULT_EXTRA_PARAMS, new BasicParamConfig[]{
+                            new ConfigBuilders.BasicParamConfigBuilder(null)
+                            .setName("Accept")
+                            .setDefaultValue("fff")
+                            .setDestination(Destination.HEADER)
+                            .build()
+                    });
                 }};
             }
         }, context);
@@ -279,6 +338,13 @@ public class CRestBuilderTest {
                 return new HashMap<String, Object>() {{
                     put(Marshaller.class.getName(), new JaxbMarshaller(Object.class));
                     put(Unmarshaller.class.getName(), new JaxbMarshaller(Object.class));
+                    put(CRestProperty.CONFIG_METHOD_DEFAULT_EXTRA_PARAMS, new BasicParamConfig[]{
+                            new ConfigBuilders.BasicParamConfigBuilder(null)
+                            .setName("Accept")
+                            .setDefaultValue("application/xml")
+                            .setDestination(Destination.HEADER)
+                            .build()
+                    });
                 }};
             }
         }, context);
@@ -295,10 +361,72 @@ public class CRestBuilderTest {
                 return new HashMap<String, Object>() {{
                     put(Marshaller.class.getName(), new JaxbMarshaller(Object.class));
                     put(Unmarshaller.class.getName(), new JaxbMarshaller(Object.class));
+                    put(CRestProperty.CONFIG_METHOD_DEFAULT_EXTRA_PARAMS, new BasicParamConfig[]{
+                            new ConfigBuilders.BasicParamConfigBuilder(null)
+                            .setName("Accept")
+                            .setDefaultValue("application/xml")
+                            .setDestination(Destination.HEADER)
+                            .build()
+                    });
                 }};
             }
         }, context);
     }
+    @Test
+    public void testExpectsXml3() {
+        final CRestContext context = builder
+                .expectsXml("org.codegist.crest", false)
+                .buildContext();
+        assertContext(new ContextAdapter() {
+            @Override
+            public Map<String, Object> getProperties() {
+                return new HashMap<String, Object>() {{
+                    put(Marshaller.class.getName(), new JaxbMarshaller(Object.class));
+                    put(Unmarshaller.class.getName(), new JaxbMarshaller(Object.class));
+                }};
+            }
+        }, context);
+    }
+
+    @Test
+    public void testExpectsXml4() {
+        final CRestContext context = builder
+                .expectsXml("org.codegist.crest", null)
+                .buildContext();
+        assertContext(new ContextAdapter() {
+            @Override
+            public Map<String, Object> getProperties() {
+                return new HashMap<String, Object>() {{
+                    put(Marshaller.class.getName(), new JaxbMarshaller(Object.class));
+                    put(Unmarshaller.class.getName(), new JaxbMarshaller(Object.class));
+                }};
+            }
+        }, context);
+    }
+
+    @Test
+    public void testExpectsXml5() {
+        final CRestContext context = builder
+                .expectsXml("org.codegist.crest", "ddd")
+                .buildContext();
+        assertContext(new ContextAdapter() {
+            @Override
+            public Map<String, Object> getProperties() {
+                return new HashMap<String, Object>() {{
+                    put(Marshaller.class.getName(), new JaxbMarshaller(Object.class));
+                    put(Unmarshaller.class.getName(), new JaxbMarshaller(Object.class));
+                    put(CRestProperty.CONFIG_METHOD_DEFAULT_EXTRA_PARAMS, new BasicParamConfig[]{
+                            new ConfigBuilders.BasicParamConfigBuilder(null)
+                            .setName("Accept")
+                            .setDefaultValue("ddd")
+                            .setDestination(Destination.HEADER)
+                            .build()
+                    });
+                }};
+            }
+        }, context);
+    }
+
 
     @Test
     public void testExpectsRaw() {
@@ -400,6 +528,7 @@ public class CRestBuilderTest {
             put(AuthentificationManager.class.getName(), null);
             put(Marshaller.class.getName(), null);
             put(Unmarshaller.class.getName(), null);
+            put(CRestProperty.CONFIG_METHOD_DEFAULT_EXTRA_PARAMS, new BasicParamConfig[0]);
         }};
         if (expected != null && expected.getProperties() != null) {
             expectedProps.putAll(expected.getProperties());
@@ -418,6 +547,11 @@ public class CRestBuilderTest {
                 assertMapEquals((Map) val, (Map) test.get(entry.getKey()));
             } else if (val instanceof String || val instanceof Number || val instanceof Boolean) {
                 assertEquals(val, test.get(entry.getKey()));
+            } else if(val instanceof BasicParamConfig[]){
+                BasicParamConfig[] valv = (BasicParamConfig[]) val;
+                BasicParamConfig[] testv = (BasicParamConfig[]) test.get(entry.getKey());
+
+                assertArrayEquals(valv, testv);
             } else {
                 assertEquals(val.getClass(), test.get(entry.getKey()).getClass());
             }

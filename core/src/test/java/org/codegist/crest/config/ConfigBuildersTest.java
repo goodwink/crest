@@ -43,6 +43,7 @@ import static org.codegist.crest.CRestProperty.*;
 import static org.codegist.crest.config.InterfaceConfig.DEFAULT_ENCODING;
 import static org.codegist.crest.config.MethodConfig.*;
 import static org.codegist.crest.config.ParamConfig.*;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -84,6 +85,61 @@ public class ConfigBuildersTest {
 
     }
 
+    @Test
+    public void testParamsNameKey() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+        InterfaceConfig b = new ConfigBuilders.InterfaceConfigBuilder(Interface.class)
+                .setEndPoint("d")
+                .addMethodsExtraFormParam("ddd", "aaa")
+                .addMethodsExtraFormParam("ddd", "bbb")
+                .startMethodConfig(Interface.B)
+                .startParamConfig(0).setName("a").endParamConfig()
+                .startParamConfig(1).setName("a").endParamConfig()
+                .startParamConfig(2).setName("a").endParamConfig()
+                .endMethodConfig()
+                .startMethodConfig(Interface.A)
+                .startParamConfig(0).setName("a").endParamConfig()
+                .addExtraHeaderParam("aaa", "bbb")
+                .addExtraHeaderParam("aaa", "ccc")
+                .endMethodConfig()
+                .build();
+        assertArrayEquals(
+                new BasicParamConfig[]{new DefaultBasicParamConfig("ddd", "bbb", Destination.FORM)},
+                b.getMethodConfig(Interface.B).getExtraParams()
+        );
+        assertArrayEquals(
+                new BasicParamConfig[]{new DefaultBasicParamConfig("ddd", "bbb", Destination.FORM), new DefaultBasicParamConfig("aaa", "ccc", Destination.HEADER)},
+                b.getMethodConfig(Interface.A).getExtraParams()
+        );
+    }
+    @Test
+    public void testParamsNameKey2() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+        InterfaceConfig b = new ConfigBuilders.InterfaceConfigBuilder(Interface.class, new HashMap<String, Object>(){{
+            put(CRestProperty.CONFIG_METHOD_DEFAULT_EXTRA_PARAMS, new BasicParamConfig[]{
+                    new DefaultBasicParamConfig("ddd", "aaa", Destination.FORM),
+
+            });
+        }})
+                .setEndPoint("d")
+                .addMethodsExtraFormParam("ddd", "bbb")
+                .startMethodConfig(Interface.B)
+                .startParamConfig(0).setName("a").endParamConfig()
+                .startParamConfig(1).setName("a").endParamConfig()
+                .startParamConfig(2).setName("a").endParamConfig()
+                .endMethodConfig()
+                .startMethodConfig(Interface.A)
+                .startParamConfig(0).setName("a").endParamConfig()
+                .addExtraHeaderParam("aaa", "ccc")
+                .endMethodConfig()
+                .build();
+        assertArrayEquals(
+                new BasicParamConfig[]{new DefaultBasicParamConfig("ddd", "bbb", Destination.FORM)},
+                b.getMethodConfig(Interface.B).getExtraParams()
+        );
+        assertArrayEquals(
+                new BasicParamConfig[]{new DefaultBasicParamConfig("ddd", "bbb", Destination.FORM), new DefaultBasicParamConfig("aaa", "ccc", Destination.HEADER)},
+                b.getMethodConfig(Interface.A).getExtraParams()
+        );
+    }
 
 
     @Test

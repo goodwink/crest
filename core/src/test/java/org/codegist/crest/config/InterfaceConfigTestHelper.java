@@ -26,6 +26,7 @@ import org.codegist.crest.interceptor.RequestInterceptor;
 
 import java.lang.reflect.Method;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -69,9 +70,16 @@ public class InterfaceConfigTestHelper {
             assertEquals(testMsg, TestUtils.getClass(expMethCfg.getErrorHandler()), TestUtils.getClass(testMethCfg.getErrorHandler()));
             assertEquals(testMsg, TestUtils.getClass(expMethCfg.getRetryHandler()), TestUtils.getClass(testMethCfg.getRetryHandler()));
             assertEquals(testMsg, TestUtils.getClass(expMethCfg.getResponseHandler()), TestUtils.getClass(testMethCfg.getResponseHandler()));
-            assertTrue((expMethCfg.getExtraParams() == null && testMethCfg.getExtraParams() == null) || (expMethCfg.getExtraParams() != null && testMethCfg.getExtraParams() != null));
+
+            int expSize = expMethCfg.getExtraParams() == null ? 0 : expMethCfg.getExtraParams().length;
+            int testSize = testMethCfg.getExtraParams() == null ? 0 : testMethCfg.getExtraParams().length;
+            assertTrue(
+                    (expMethCfg.getExtraParams() == null && testMethCfg.getExtraParams() == null)
+                            || (expMethCfg.getExtraParams() != null && testMethCfg.getExtraParams() != null)
+                            ||  (expSize == testSize)
+            );
             if(expMethCfg.getExtraParams() != null && testMethCfg.getExtraParams() != null) {
-                assertEquals(testMsg, new HashSet<BasicParamConfig>(java.util.Arrays.asList(expMethCfg.getExtraParams())), new HashSet<BasicParamConfig>(java.util.Arrays.asList(testMethCfg.getExtraParams())));
+                assertEquals(testMsg, Configs.toMap(expMethCfg.getExtraParams()), Configs.toMap(testMethCfg.getExtraParams()));
             }
 
             if (expMethCfg.getRequestInterceptor() instanceof CompositeRequestInterceptor) {

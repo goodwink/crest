@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.codegist</groupId>
         <artifactId>codegist-parent</artifactId>
-        <version>1.0.1</version>
+        <version>1.0.2-SNAPSHOT</version>
         <relativePath>..</relativePath>
     </parent>
 
@@ -56,8 +56,8 @@
     </licenses>
 
     <issueManagement>
-        <system>Github Issue Tracker</system>
-        <url>https://github.com/codegist/crest/issues</url>
+        <system>GITHUB</system>
+        <url>https://github.com/codegist/crest/issues/</url>
     </issueManagement>
 
     <modules>

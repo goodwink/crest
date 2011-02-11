@@ -34,32 +34,18 @@ public class OverridingInterfaceConfigFactory implements InterfaceConfigFactory 
 
     private final InterfaceConfigFactory overriderFactory;
     private final InterfaceConfig override;
-    private final boolean dynamicOverride;
 
     /**
      * Build a factory that will override any result from baseFactory with the given config template
      *
      * @param baseFactory     Factory from which results will be overridden by override
      * @param override        InterfaceConfig override template.
-     * @param dynamicOverride Whether or not the override should be dynamic (meaning base and/or override can change their values over time)
      * @see org.codegist.crest.config.Configs#override(InterfaceConfig, InterfaceConfig)
      */
-    public OverridingInterfaceConfigFactory(InterfaceConfigFactory baseFactory, InterfaceConfig override, boolean dynamicOverride) {
+    public OverridingInterfaceConfigFactory(InterfaceConfigFactory baseFactory, InterfaceConfig override) {
         this.baseFactory = baseFactory;
         this.override = override;
         this.overriderFactory = null;
-        this.dynamicOverride = dynamicOverride;
-    }
-
-    /**
-     * Uses static overrides by default
-     *
-     * @param baseFactory Factory from which results will be overridden by override
-     * @param override    InterfaceConfig override template.
-     * @see org.codegist.crest.config.OverridingInterfaceConfigFactory#OverridingInterfaceConfigFactory(InterfaceConfigFactory, InterfaceConfig, boolean)
-     */
-    public OverridingInterfaceConfigFactory(InterfaceConfigFactory baseFactory, InterfaceConfig override) {
-        this(baseFactory, override, false);
     }
 
     /**
@@ -67,25 +53,12 @@ public class OverridingInterfaceConfigFactory implements InterfaceConfigFactory 
      *
      * @param baseFactory      Factory from which results will be overridden by overriderFactory
      * @param overriderFactory Config override factory
-     * @param dynamicOverride  Whether or not the override should be dynamic (meaning base and/or override can change their values over time
      * @see org.codegist.crest.config.Configs#override(InterfaceConfig, InterfaceConfig)
      */
-    public OverridingInterfaceConfigFactory(InterfaceConfigFactory baseFactory, InterfaceConfigFactory overriderFactory, boolean dynamicOverride) {
+    public OverridingInterfaceConfigFactory(InterfaceConfigFactory baseFactory, InterfaceConfigFactory overriderFactory) {
         this.baseFactory = baseFactory;
         this.overriderFactory = overriderFactory;
         this.override = null;
-        this.dynamicOverride = dynamicOverride;
-    }
-
-    /**
-     * Uses dynamic overrides by default
-     *
-     * @param baseFactory      Factory from which results will be overridden by overriderFactory
-     * @param overriderFactory Config override factory
-     * @see org.codegist.crest.config.OverridingInterfaceConfigFactory#OverridingInterfaceConfigFactory(InterfaceConfigFactory, InterfaceConfigFactory, boolean)
-     */
-    public OverridingInterfaceConfigFactory(InterfaceConfigFactory baseFactory, InterfaceConfigFactory overriderFactory) {
-        this(baseFactory, overriderFactory, false);
     }
 
     public InterfaceConfig newConfig(Class<?> interfaze, CRestContext context) throws ConfigFactoryException {
@@ -94,6 +67,6 @@ public class OverridingInterfaceConfigFactory implements InterfaceConfigFactory 
         if (overriderFactory != null) {
             override = overriderFactory.newConfig(interfaze, context);
         }
-        return Configs.override(configBase, override, dynamicOverride);
+        return Configs.override(configBase, override);
     }
 }

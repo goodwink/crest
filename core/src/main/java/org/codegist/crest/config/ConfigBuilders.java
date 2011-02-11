@@ -38,9 +38,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Pattern;
 
 import static org.codegist.common.lang.Strings.isBlank;
@@ -551,10 +549,10 @@ public abstract class ConfigBuilders {
             for (int i = 0; i < paramConfigBuilders.length; i++) {
                 pConfig[i] = this.paramConfigBuilders[i].build(isTemplate, validateConfig);
             }
-            BasicParamConfig[] extraParams = new BasicParamConfig[extraParamBuilders.size()];
-            int i = 0;
+            Map<String, BasicParamConfig> extraParams = new LinkedHashMap<String, BasicParamConfig>();
             for (BasicParamConfigBuilder b : extraParamBuilders.values()) {
-                extraParams[i++] = b.build(isTemplate, validateConfig);
+                BasicParamConfig bpc = b.build(isTemplate, validateConfig);
+                extraParams.put(bpc.getName(), bpc);
             }
 
             // make local copies so that we don't mess with builder state to be able to call build multiple times on it
@@ -571,7 +569,10 @@ public abstract class ConfigBuilders {
                 path = defaultIfUndefined(path, CRestProperty.CONFIG_METHOD_DEFAULT_PATH, MethodConfig.DEFAULT_PATH);
                 meth = defaultIfUndefined(meth, CRestProperty.CONFIG_METHOD_DEFAULT_HTTP_METHOD, MethodConfig.DEFAULT_HTTP_METHOD);
                 BasicParamConfig[] defs = defaultIfUndefined(null, CRestProperty.CONFIG_METHOD_DEFAULT_EXTRA_PARAMS, MethodConfig.DEFAULT_EXTRA_PARAMS);
-                extraParams = Arrays.merge(BasicParamConfig.class, extraParams, defs);
+                for(BasicParamConfig def : defs){
+                    if(extraParams.containsKey(def.getName())) continue;
+                    extraParams.put(def.getName(), def);
+                }
                 socketTimeout = defaultIfUndefined(socketTimeout, CRestProperty.CONFIG_METHOD_DEFAULT_SO_TIMEOUT, MethodConfig.DEFAULT_SO_TIMEOUT);
                 connectionTimeout = defaultIfUndefined(connectionTimeout, CRestProperty.CONFIG_METHOD_DEFAULT_CO_TIMEOUT, MethodConfig.DEFAULT_CO_TIMEOUT);
                 requestInterceptor = defaultIfUndefined(requestInterceptor, CRestProperty.CONFIG_METHOD_DEFAULT_REQUEST_INTERCEPTOR, newInstance(MethodConfig.DEFAULT_REQUEST_INTERCEPTOR));
@@ -590,7 +591,7 @@ public abstract class ConfigBuilders {
                     errorHandler,
                     retryHandler,
                     pConfig,
-                    extraParams
+                    extraParams.values().toArray(new BasicParamConfig[extraParams.size()])
             );
         }
 

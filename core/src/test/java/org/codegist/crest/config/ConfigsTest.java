@@ -95,11 +95,10 @@ public class ConfigsTest {
 
     @Test
     public void testNullOverride() throws NoSuchMethodException {
-        InterfaceConfig override = null;
         InterfaceConfig config = new ConfigBuilders.InterfaceConfigBuilder(TestInterface.class, new HashMap<String, Object>(){{put(CRestProperty.CONFIG_PARAM_DEFAULT_NAME, "d");}})
                 .setEndPoint("server")
                 .build();
-        assertEquals(config, Configs.override(config, override));
+        assertEquals(config, Configs.override(config, null));
     }
 
     @Test
@@ -232,10 +231,10 @@ public class ConfigsTest {
     public void testStaticOverrideWithCustomMutableConfigs() throws NoSuchMethodException, InstantiationException, IllegalAccessException {
         testOverrideWithMutableConfig(false);
     }
-    @Test
-    public void testDynamicOverrideWithCustomMutableConfigs() throws NoSuchMethodException, InstantiationException, IllegalAccessException {
-        testOverrideWithMutableConfig(true);
-    }
+//    @Test
+//    public void testDynamicOverrideWithCustomMutableConfigs() throws NoSuchMethodException, InstantiationException, IllegalAccessException {
+//        testOverrideWithMutableConfig(true);
+//    }
 
     private static void testOverrideWithMutableConfig(boolean dynamic){
         MutableInterfaceConfig mutableBase = new MutableInterfaceConfig();
@@ -283,7 +282,7 @@ public class ConfigsTest {
             }
         }});
 
-        InterfaceConfig result = Configs.override(mutableBase, mutableOverride, dynamic);
+        InterfaceConfig result = Configs.override(mutableBase, mutableOverride);
         InterfaceConfigTestHelper.assertExpected(mutableBase, result, TestInterface.class);
 
 

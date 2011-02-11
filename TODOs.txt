@@ -39,6 +39,12 @@ CREST
      - All ConfigFactory must have 2 constructors, an empty one that build normal config and another one with the buildTemplate flag.
 * Finish JAX-RS integration
 
+* @Consume, @ConsumeJson, @ConsumeXml annotations ? 
+@ConsumeJson(contentType="application/json") contentType would be optional and ends up in the Accept Header.
+---> Marshaller per Method
+---> builder.expects[Json|Xml]() should have an optional default Accept Header value as well and specify
+
+--> Config overrides should merge extra params instead of picking them all at once!
 
 
 
