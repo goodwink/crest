@@ -28,13 +28,13 @@
     <body>
         <release version="2.0.0-RC1" date="2011-02-10" description="Major release">
             <action dev="lgilles" type="add">
-                Added few methods to CRestBuilder in order to add default parameter to all requests fired by any interface build with it.
+                Added few methods to CRestBuilder in order to add default parameter to all requests fired by any interface build with it, and to set a user custom response marshaller.
             </action>
             <action dev="lgilles" type="fix" issue="3">
                 CRestBuilder.expectsJson() and expectsXml() now add a Accept=application/json or Accept=application/xml header to all request fired.
                 This behavior can be customized with their relative method overload
             </action>
-            <action dev="lgilles" type="fix">
+            <action dev="lgilles" type="update">
                 String value based annotation can now contain value placeholders that are merged with any given value. See CRestBuilder.setConfigPlaceholder
             </action>
             <action dev="lgilles" type="update">

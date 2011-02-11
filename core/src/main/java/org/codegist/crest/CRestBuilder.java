@@ -94,6 +94,7 @@ public class CRestBuilder {
     private InterfaceConfigFactory overridesFactory = null;
     private String modelPackageName = null;
     private Class<?> modelPackageFactory = null;
+    private Marshaller marshaller = null;
 
     private Map<String, Object> customProperties = new HashMap<String, Object>();
     private Map<String, String> placeholders = new HashMap<String, String>();
@@ -121,7 +122,7 @@ public class CRestBuilder {
         ProxyFactory proxyFactory = buildProxyFactory();
         Maps.putIfNotPresent(customProperties, ProxyFactory.class.getName(), proxyFactory);
 
-        Marshaller marshaller = buildMarshaller();
+        Marshaller marshaller = this.marshaller != null ? this.marshaller : buildMarshaller();
         Maps.putIfNotPresent(customProperties, Marshaller.class.getName(), marshaller);
 
         Unmarshaller unmarshaller = buildUnmarshaller();
@@ -755,5 +756,16 @@ public class CRestBuilder {
 
         return this;
     }
+
+    /**
+     * User specific marshaller implementation, if set, {@link CRestBuilder#expectsJson()}, {@link CRestBuilder#expectsXml(Class)} and {@link org.codegist.crest.CRestBuilder#returnRawResults()} are ignored.
+     * @param marshaller marshaller to use to marshall the response
+     * @return current builder
+     */
+    public CRestBuilder withMarshaller(Marshaller marshaller){
+        this.marshaller = marshaller;
+        return this;
+    }
+
 
 }
