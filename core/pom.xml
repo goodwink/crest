@@ -107,16 +107,24 @@
             <version>2.1</version>
             <optional>true</optional>
         </dependency>
+        <!--Alternative to JAXB-->
         <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>1.2.16</version>
-            <scope>test</scope>
+            <groupId>org.simpleframework</groupId>
+            <artifactId>simple-xml</artifactId>
+            <version>2.4.1</version>
+            <optional>true</optional>
         </dependency>
+        <!--Declared as optional, only needed when org.codegist.common.marshall.JacksonMarshaller is used -->
         <dependency>
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>jackson-mapper-asl</artifactId>
             <version>1.6.0</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.16</version>
             <scope>test</scope>
         </dependency>
         <dependency>

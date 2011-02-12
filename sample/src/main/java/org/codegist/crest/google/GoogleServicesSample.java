@@ -40,7 +40,7 @@ public class GoogleServicesSample implements Runnable {
     public void run() {
         /* Get the factory */
         CRest crest = new CRestBuilder()
-                .expectsJson()
+                .expectsJson().handledByJackson()
                 .build();
 
         /* Build services instances */

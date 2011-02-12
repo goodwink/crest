@@ -54,10 +54,9 @@ public class DeliciousSample implements Runnable {
     }
 
     public void run() {
-        /* Get the factory */
         CRest crest = new CRestBuilder()
                 .useHttpClientRestService()
-                .expectsXml(DeliciousModelFactory.class)
+                .expectsXml().handledByJaxB(DeliciousModelFactory.class)
                 .setListSerializerSeparator(" ")
                 .setBooleanSerializer("yes", "no")
                 .usePreauthentifiedOAuth(consumerKey, consumerSecret, accessToken, accessTokenSecret)

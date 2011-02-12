@@ -22,10 +22,7 @@ package org.codegist.crest;
 
 import org.codegist.common.collect.Maps;
 import org.codegist.common.lang.Strings;
-import org.codegist.common.marshal.JacksonMarshaller;
-import org.codegist.common.marshal.JaxbMarshaller;
-import org.codegist.common.marshal.Marshaller;
-import org.codegist.common.marshal.Unmarshaller;
+import org.codegist.common.marshal.*;
 import org.codegist.common.reflect.CglibProxyFactory;
 import org.codegist.common.reflect.JdkProxyFactory;
 import org.codegist.common.reflect.ProxyFactory;
@@ -41,6 +38,7 @@ import org.codegist.crest.serializer.Serializer;
 import org.w3c.dom.Document;
 
 import java.lang.reflect.Type;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -89,17 +87,19 @@ public class CRestBuilder {
     private int proxyType = PROXY_TYPE_JDK;
 
 
-    private Map<String,String> properties = null;
+    private JsonMarshallerChooser jsonChooser = new JsonMarshallerChooser();
+    private XmlMarshallerChooser xmlChooser = new XmlMarshallerChooser();
+
+    private Map<String, String> properties = null;
     private Document document = null;
     private InterfaceConfigFactory overridesFactory = null;
     private String modelPackageName = null;
     private Class<?> modelPackageFactory = null;
-    private Marshaller marshaller = null;
 
     private Map<String, Object> customProperties = new HashMap<String, Object>();
     private Map<String, String> placeholders = new HashMap<String, String>();
     private Map<Type, Serializer> serializersMap = new HashMap<Type, Serializer>();
-    private final Map<String,BasicParamConfig> extraParams = new HashMap<String,BasicParamConfig>();
+    private final Map<String, BasicParamConfig> extraParams = new HashMap<String, BasicParamConfig>();
 
     private RestService restService;
 
@@ -112,7 +112,7 @@ public class CRestBuilder {
         CRestContext context = buildContext();
         return new DefaultCRest(context);
     }
-    
+
     CRestContext buildContext() {
         customProperties = Maps.defaultsIfNull(customProperties);
 
@@ -122,7 +122,7 @@ public class CRestBuilder {
         ProxyFactory proxyFactory = buildProxyFactory();
         Maps.putIfNotPresent(customProperties, ProxyFactory.class.getName(), proxyFactory);
 
-        Marshaller marshaller = this.marshaller != null ? this.marshaller : buildMarshaller();
+        Marshaller marshaller = buildMarshaller();
         Maps.putIfNotPresent(customProperties, Marshaller.class.getName(), marshaller);
 
         Unmarshaller unmarshaller = buildUnmarshaller();
@@ -133,7 +133,7 @@ public class CRestBuilder {
 
         InterfaceConfigFactory configFactory = buildInterfaceConfigFactory();
 
-        if(authentificationManager != null) {
+        if (authentificationManager != null) {
             RequestInterceptor authentificationInterceptor = new AuthentificationInterceptor(authentificationManager);
             try {
                 configFactory = new OverridingInterfaceConfigFactory(configFactory, new ConfigBuilders.InterfaceConfigBuilder()
@@ -176,30 +176,26 @@ public class CRestBuilder {
     }
 
     private Unmarshaller buildUnmarshaller() {
-        return (Unmarshaller) buildMarshaller();
+        switch (retType) {
+            case RET_TYPE_JSON:
+                return jsonChooser.getUmarshaller();
+            case RET_TYPE_XML:
+                return xmlChooser.getUmarshaller();
+            default:
+            case RET_TYPE_RAW:
+                return null;
+        }
     }
 
     private Marshaller buildMarshaller() {
         switch (retType) {
             case RET_TYPE_JSON:
-                return new JacksonMarshaller();
+                return jsonChooser.getMarshaller();
+            case RET_TYPE_XML:
+                return xmlChooser.getMarshaller();
             default:
             case RET_TYPE_RAW:
                 return null;
-            case RET_TYPE_XML:
-                try {
-                    if (modelPackageFactory != null) {
-                        return new JaxbMarshaller(modelPackageFactory);
-                    } else if (Strings.isNotBlank(modelPackageName)) {
-                        return new JaxbMarshaller(modelPackageName);
-                    } else {
-                        throw new IllegalArgumentException("You must specify the package name or factory class of the target object model when using xml responses.");
-                    }
-                } catch (RuntimeException e) {
-                    throw e;
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
         }
     }
 
@@ -218,7 +214,7 @@ public class CRestBuilder {
                     configFactory = new OverridingInterfaceConfigFactory(
                             baseConfigFactory,
                             new XmlDrivenInterfaceConfigFactory(document, true));
-                }else {
+                } else {
                     configFactory = baseConfigFactory;
                 }
                 break;
@@ -234,7 +230,6 @@ public class CRestBuilder {
         }
         return configFactory;
     }
-
 
 
     private AuthentificationManager buildAuthentificationManager(RestService restService) {
@@ -373,7 +368,7 @@ public class CRestBuilder {
      * @param props configuration properties
      * @return current builder
      */
-    public CRestBuilder withPropertiesConfig(Map<String,String> props) {
+    public CRestBuilder withPropertiesConfig(Map<String, String> props) {
         this.configType = CFG_TYPE_PROP;
         this.properties = props;
         return this;
@@ -401,7 +396,7 @@ public class CRestBuilder {
      * @return current builder
      * @see org.codegist.crest.config.PropertiesDrivenInterfaceConfigFactory
      */
-    public CRestBuilder overrideDefaultConfigWith(Map<String,String> props) {
+    public CRestBuilder overrideDefaultConfigWith(Map<String, String> props) {
         this.properties = props;
         return this;
     }
@@ -436,38 +431,44 @@ public class CRestBuilder {
      * Resulting CRest instance will create interface instances that will auto marshall the response from JSON to user object model.
      * <p>Interfaces given to the CRest instance can return any object type as long as the marshaller can unmarshall them. (requires jackson available in the classpath)
      * <p>Adds a default Accept={@value CRestBuilder#DEFAULT_JSON_ACCEPT_HEADER} Header to all request
+     *
      * @return current builder
      * @see org.codegist.common.marshal.JacksonMarshaller
      */
-    public CRestBuilder expectsJson() {
+    public JsonMarshallerChooser expectsJson() {
         return expectsJson(true);
     }
+
     /**
      * Resulting CRest instance will create interface instances that will auto marshall the response from JSON to user object model.
      * <p>Interfaces given to the CRest instance can return any object type as long as the marshaller can unmarshall them. (requires jackson available in the classpath)
      * <p>If withAcceptHeader  is true, a default Accept={@value CRestBuilder#DEFAULT_JSON_ACCEPT_HEADER} Header will be added to all request
+     *
      * @param withAcceptHeader indicate to wether add or not the default accept header to all requests
      * @return current builder
      * @see org.codegist.common.marshal.JacksonMarshaller
      */
-    public CRestBuilder expectsJson(boolean withAcceptHeader) {
-        if(withAcceptHeader) {
+    public JsonMarshallerChooser expectsJson(boolean withAcceptHeader) {
+        if (withAcceptHeader) {
             return expectsJson(DEFAULT_JSON_ACCEPT_HEADER);
-        }else{
+        } else {
             return expectsJson(null);
         }
     }
+
     /**
      * Resulting CRest instance will create interface instances that will auto marshall the response from JSON to user object model.
      * <p>Interfaces given to the CRest instance can return any object type as long as the marshaller can unmarshall them. (requires jackson available in the classpath)
      * <p>The given accept header will be used for all requests.
+     *
      * @param acceptHeader accept header to add to all requests
      * @return current builder
      * @see org.codegist.common.marshal.JacksonMarshaller
      */
-    public CRestBuilder expectsJson(String acceptHeader) {
+    public JsonMarshallerChooser expectsJson(String acceptHeader) {
         this.retType = RET_TYPE_JSON;
-        return addGlobalParam("Accept", acceptHeader, Destination.HEADER, false);
+        addGlobalParam("Accept", acceptHeader, Destination.HEADER, false);
+        return jsonChooser;
     }
 
 
@@ -475,15 +476,18 @@ public class CRestBuilder {
      * Resulting CRest instance will create interface instances that will return raw response.
      * <p>Given interface methods return types must be either java.lang.String, java.io.Reader or java.io.InputStream
      * <p>No Accept header is used
+     *
      * @return current builder
      */
     public CRestBuilder returnRawResults() {
         return returnRawResults(null);
     }
+
     /**
      * Resulting CRest instance will create interface instances that will return raw response.
      * <p>Given interface methods return types must be either java.lang.String, java.io.Reader or java.io.InputStream
      * <p>The given accept header will be used for all requests.
+     *
      * @param acceptHeader accept header to add to all requests
      * @return current builder
      */
@@ -496,85 +500,44 @@ public class CRestBuilder {
      * Resulting CRest instance will create interface instances that will auto marshall the response from XML to user object model.
      * <p>Interface given to the CRest instance can return any object type as long as the marshaller can unmarshall them.
      * <p>Adds a default Accept={@value CRestBuilder#DEFAULT_XML_ACCEPT_HEADER} Header to all request
-     * @param factory The JAXb user object model factory class
-     * @return current builder
-     * @see org.codegist.common.marshal.JaxbMarshaller
-     */
-    public CRestBuilder expectsXml(Class<?> factory) {
-        return expectsXml(factory, true);
-    }
-    /**
-     * Resulting CRest instance will create interface instances that will auto marshall the response from XML to user object model.
-     * <p>Interface given to the CRest instance can return any object type as long as the marshaller can unmarshall them.
-     * <p>If withAcceptHeader  is true, a default Accept={@value CRestBuilder#DEFAULT_XML_ACCEPT_HEADER} Header will be added to all request
-     * @param factory The JAXb user object model factory class
-     * @param withAcceptHeader indicate to wether add or not the default accept header to all requests
-     * @return current builder
-     * @see org.codegist.common.marshal.JaxbMarshaller
-     */
-    public CRestBuilder expectsXml(Class<?> factory, boolean withAcceptHeader) {
-        if(withAcceptHeader) {
-            return expectsXml(factory, DEFAULT_XML_ACCEPT_HEADER);
-        }else{
-            return expectsXml(factory, null);
-        }
-    }
-    /**
-     * Resulting CRest instance will create interface instances that will auto marshall the response from XML to user object model.
-     * <p>Interface given to the CRest instance can return any object type as long as the marshaller can unmarshall them.
-     * <p>The given accept header will be used for all requests.
      *
-     * @param factory The JAXb user object model factory class
-     * @param acceptHeader accept header to add to all requests
      * @return current builder
      * @see org.codegist.common.marshal.JaxbMarshaller
      */
-    public CRestBuilder expectsXml(Class<?> factory, String acceptHeader) {
-        retType = RET_TYPE_XML;
-        this.modelPackageFactory = factory;
-        return addGlobalParam("Accept", acceptHeader, Destination.HEADER, false);
+    public XmlMarshallerChooser expectsXml() {
+        return expectsXml(true);
     }
 
     /**
      * Resulting CRest instance will create interface instances that will auto marshall the response from XML to user object model.
      * <p>Interface given to the CRest instance can return any object type as long as the marshaller can unmarshall them.
-     * <p>Adds a default Accept={@value CRestBuilder#DEFAULT_XML_ACCEPT_HEADER} Header to all request
-     * @param modelPackageName The package name where the user object model is located
-     * @return current builder
-     * @see org.codegist.common.marshal.JaxbMarshaller
-     */
-    public CRestBuilder expectsXml(String modelPackageName) {
-        return expectsXml(modelPackageName, true);
-    }
-    /**
-     * Resulting CRest instance will create interface instances that will auto marshall the response from XML to user object model.
-     * <p>Interface given to the CRest instance can return any object type as long as the marshaller can unmarshall them.
      * <p>If withAcceptHeader  is true, a default Accept={@value CRestBuilder#DEFAULT_XML_ACCEPT_HEADER} Header will be added to all request
-     * @param modelPackageName The package name where the user object model is located
+     *
      * @param withAcceptHeader indicate to wether add or not the default accept header to all requests
      * @return current builder
      * @see org.codegist.common.marshal.JaxbMarshaller
      */
-    public CRestBuilder expectsXml(String modelPackageName, boolean withAcceptHeader) {
-        if(withAcceptHeader) {
-            return expectsXml(modelPackageName, DEFAULT_XML_ACCEPT_HEADER);
-        }else{
-            return expectsXml(modelPackageName, null);
+    public XmlMarshallerChooser expectsXml(boolean withAcceptHeader) {
+        if (withAcceptHeader) {
+            return expectsXml(DEFAULT_XML_ACCEPT_HEADER);
+        } else {
+            return expectsXml(null);
         }
     }
+
     /**
      * Resulting CRest instance will create interface instances that will auto marshall the response from XML to user object model.
      * <p>Interface given to the CRest instance can return any object type as long as the marshaller can unmarshall them.
-     * <p>The given accept header will be used for all requests
-     * @param modelPackageName The package name where the user object model is located.
-     * @param acceptHeader accept header to add to all requests.
+     * <p>The given accept header will be used for all requests.
+     *
+     * @param acceptHeader accept header to add to all requests
      * @return current builder
      * @see org.codegist.common.marshal.JaxbMarshaller
      */
-    public CRestBuilder expectsXml(String modelPackageName, String acceptHeader) {
+    public XmlMarshallerChooser expectsXml(String acceptHeader) {
         retType = RET_TYPE_XML;
-        this.modelPackageName = modelPackageName;
-        return addGlobalParam("Accept", acceptHeader, Destination.HEADER, false);
+        addGlobalParam("Accept", acceptHeader, Destination.HEADER, false);
+        return xmlChooser;
     }
 
 
@@ -638,11 +601,12 @@ public class CRestBuilder {
     /**
      * Sets date serializer format to the given format.
      * <p>Shortcut to builder.setProperty(CRestProperty.SERIALIZER_DATE_FORMAT, format)
+     *
      * @param format Date format to use
-     * @see CRestProperty#SERIALIZER_DATE_FORMAT
      * @return current builder
+     * @see CRestProperty#SERIALIZER_DATE_FORMAT
      */
-    public CRestBuilder setDateSerializerFormat(String format){
+    public CRestBuilder setDateSerializerFormat(String format) {
         this.customProperties = Maps.defaultsIfNull(customProperties);
         customProperties.put(SERIALIZER_DATE_FORMAT, format);
         return this;
@@ -653,13 +617,14 @@ public class CRestBuilder {
      * <p>Shortcut to:
      * <p>builder.setProperty(CRestProperty.SERIALIZER_BOOLEAN_TRUE, trueSerialized)
      * <p>builder.setProperty(CRestProperty.SERIALIZER_BOOLEAN_FALSE, falseSerialized)
-     * @param trueSerialized String representing serialized form of TRUE
+     *
+     * @param trueSerialized  String representing serialized form of TRUE
      * @param falseSerialized String representing serialized form of FALSE
+     * @return current builder
      * @see CRestProperty#SERIALIZER_BOOLEAN_TRUE
      * @see CRestProperty#SERIALIZER_BOOLEAN_FALSE
-     * @return current builder
      */
-    public CRestBuilder setBooleanSerializer(String trueSerialized, String falseSerialized){
+    public CRestBuilder setBooleanSerializer(String trueSerialized, String falseSerialized) {
         this.customProperties = Maps.defaultsIfNull(customProperties);
         customProperties.put(SERIALIZER_BOOLEAN_TRUE, trueSerialized);
         customProperties.put(SERIALIZER_BOOLEAN_FALSE, falseSerialized);
@@ -669,11 +634,12 @@ public class CRestBuilder {
     /**
      * Sets the list separator for the list serializer
      * <p>Shortcut to builder.setProperty(CRestProperty.SERIALIZER_LIST_SEPARATOR, sep)
+     *
      * @param sep Separator string
-     * @see CRestProperty#SERIALIZER_LIST_SEPARATOR
      * @return current builder
+     * @see CRestProperty#SERIALIZER_LIST_SEPARATOR
      */
-    public CRestBuilder setListSerializerSeparator(String sep){
+    public CRestBuilder setListSerializerSeparator(String sep) {
         this.customProperties = Maps.defaultsIfNull(customProperties);
         customProperties.put(SERIALIZER_LIST_SEPARATOR, sep);
         return this;
@@ -691,12 +657,13 @@ public class CRestBuilder {
      * <code>@EndPoint("http://{my.server}:{my.port}")</code>
      * <br>or
      * <p>for properties files: <code>service.test.end-point=http://{my.server}:{my.port}</code>
+     *
      * @param placeholder Placeholder key
-     * @param value Placeholder value
-     * @see CRestProperty#CONFIG_PLACEHOLDERS_MAP
+     * @param value       Placeholder value
      * @return current builder
+     * @see CRestProperty#CONFIG_PLACEHOLDERS_MAP
      */
-    public CRestBuilder setConfigPlaceholder(String placeholder, String value){
+    public CRestBuilder setConfigPlaceholder(String placeholder, String value) {
         placeholders.put(placeholder, value);
         return this;
     }
@@ -704,48 +671,56 @@ public class CRestBuilder {
 
     /**
      * Adds a global form param every services build with the resulting CRest instance will have.
-     * @param name Param name
+     *
+     * @param name  Param name
      * @param value Param value
      * @return current builder
      */
-    public CRestBuilder addGlobalFormParam(String name, String value){
+    public CRestBuilder addGlobalFormParam(String name, String value) {
         return addGlobalParam(name, value, Destination.FORM);
     }
+
     /**
      * Adds a global header param every services build with the resulting CRest instance will have.
-     * @param name Param name
+     *
+     * @param name  Param name
      * @param value Param value
      * @return current builder
      */
-    public CRestBuilder addGlobalHeaderParam(String name, String value){
+    public CRestBuilder addGlobalHeaderParam(String name, String value) {
         return addGlobalParam(name, value, Destination.HEADER);
     }
+
     /**
      * Adds a global query param every services build with the resulting CRest instance will have.
-     * @param name Param name
+     *
+     * @param name  Param name
      * @param value Param value
      * @return current builder
      */
-    public CRestBuilder addGlobalQueryParam(String name, String value){
+    public CRestBuilder addGlobalQueryParam(String name, String value) {
         return addGlobalParam(name, value, Destination.QUERY);
     }
+
     /**
      * Adds a global path param every services build with the resulting CRest instance will have.
-     * @param name Param name
+     *
+     * @param name  Param name
      * @param value Param value
      * @return current builder
      */
-    public CRestBuilder addGlobalPathParam(String name, String value){
+    public CRestBuilder addGlobalPathParam(String name, String value) {
         return addGlobalParam(name, value, Destination.PATH);
     }
 
-    private CRestBuilder addGlobalParam(String name, String value, Destination destination){
+    private CRestBuilder addGlobalParam(String name, String value, Destination destination) {
         return addGlobalParam(name, value, destination, true);
     }
-    private CRestBuilder addGlobalParam(String name, String value, Destination destination, boolean addIfEmptyValue){
-        if(Strings.isBlank(value) && !addIfEmptyValue) {
+
+    private CRestBuilder addGlobalParam(String name, String value, Destination destination, boolean addIfEmptyValue) {
+        if (Strings.isBlank(value) && !addIfEmptyValue) {
             extraParams.remove(name);
-        }else{
+        } else {
             BasicParamConfig param = new ConfigBuilders.BasicParamConfigBuilder(customProperties)
                     .setName(name)
                     .setDefaultValue(value)
@@ -757,15 +732,118 @@ public class CRestBuilder {
         return this;
     }
 
-    /**
-     * User specific marshaller implementation, if set, {@link CRestBuilder#expectsJson()}, {@link CRestBuilder#expectsXml(Class)} and {@link org.codegist.crest.CRestBuilder#returnRawResults()} are ignored.
-     * @param marshaller marshaller to use to marshall the response
-     * @return current builder
-     */
-    public CRestBuilder withMarshaller(Marshaller marshaller){
-        this.marshaller = marshaller;
-        return this;
+    public class XmlMarshallerChooser {
+
+        private Marshaller marshaller;
+        private Unmarshaller unmarshaller;
+
+        public CRestBuilder handledByJaxB(String packageName) {
+            this.marshaller = new JaxbMarshaller(packageName);
+            this.unmarshaller = (JaxbMarshaller) marshaller;
+            return CRestBuilder.this;
+        }
+
+        public CRestBuilder handledByJaxB(Class<?> factoryClass) {
+            this.marshaller = new JaxbMarshaller(factoryClass);
+            this.unmarshaller = (JaxbMarshaller) marshaller;
+            return CRestBuilder.this;
+        }
+
+        public CRestBuilder handledByJaxB(Map<String, Object> config) {
+            this.marshaller = new JaxbMarshaller(config);
+            this.unmarshaller = (JaxbMarshaller) marshaller;
+            return CRestBuilder.this;
+        }
+
+        public CRestBuilder handledBySimpleXml() {
+            this.marshaller = new SimpleXmlMarshaller();
+            this.unmarshaller = (SimpleXmlMarshaller) marshaller;
+            return CRestBuilder.this;
+        }
+
+        public CRestBuilder handledBySimpleXml(String dateFormat) {
+            return handledBySimpleXml(dateFormat, null, null, SimpleXmlMarshaller.DEFAULT_STRICT);
+        }
+
+        public CRestBuilder handledBySimpleXml(String trueVal, String falseVal) {
+            return handledBySimpleXml(null, trueVal, falseVal, SimpleXmlMarshaller.DEFAULT_STRICT);
+        }
+
+        public CRestBuilder handledBySimpleXml(String dateFormat, String trueVal, String falseVal, boolean strict) {
+            Map<String, Object> config = new HashMap<String, Object>();
+            if (Strings.isNotBlank(trueVal) && Strings.isNotBlank(falseVal)) {
+                config.put(SimpleXmlMarshaller.BOOLEAN_FORMAT_PROP, trueVal + ":" + falseVal);
+            }
+            if (Strings.isNotBlank(dateFormat)) {
+                config.put(SimpleXmlMarshaller.DATE_FORMAT_PROP, dateFormat);
+            }
+            config.put(SimpleXmlMarshaller.STRICT_PROP, strict);
+            return handledBySimpleXml(config);
+        }
+
+        public CRestBuilder handledBySimpleXml(Map<String, Object> config) {
+            this.marshaller = new SimpleXmlMarshaller(config);
+            this.unmarshaller = (SimpleXmlMarshaller) marshaller;
+            return CRestBuilder.this;
+        }
+
+        public CRestBuilder handledBy(Marshaller marshaller) {
+            this.marshaller = marshaller;
+            return CRestBuilder.this;
+        }
+
+        Marshaller getMarshaller() {
+            return marshaller;
+        }
+
+        Unmarshaller getUmarshaller() {
+            return unmarshaller;
+        }
     }
 
+    public class JsonMarshallerChooser {
+
+        private Marshaller marshaller;
+        private Unmarshaller unmarshaller;
+
+        /**
+         * Json deserialization will be handled by Jackson
+         *
+         * @return current builder
+         */
+        public CRestBuilder handledByJackson() {
+            return handledByJackson(Collections.<String, Object>emptyMap());
+        }
+
+        /**
+         * Json deserialization will be handled by Jackson
+         *
+         * @return current builder
+         */
+        public CRestBuilder handledByJackson(Map<String, Object> config) {
+            this.marshaller = new JacksonMarshaller(config);
+            this.unmarshaller = (JacksonMarshaller) this.marshaller;
+            return CRestBuilder.this;
+        }
+
+        /**
+         * Json deserialization will be handled by the given marshaller
+         *
+         * @param marshaller marshaller to use for json deserialization
+         * @return current builder
+         */
+        public CRestBuilder handledBy(Marshaller marshaller) {
+            this.marshaller = marshaller;
+            return CRestBuilder.this;
+        }
+
+        Marshaller getMarshaller() {
+            return marshaller;
+        }
+
+        Unmarshaller getUmarshaller() {
+            return unmarshaller;
+        }
+    }
 
 }

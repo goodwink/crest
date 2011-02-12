@@ -255,7 +255,7 @@ public class CRestBuilderTest {
     @Test
     public void testExpectsJson() {
         final CRestContext context = builder
-                .expectsJson()
+                .expectsJson().handledByJackson()
                 .buildContext();
         assertContext(new ContextAdapter() {
             @Override
@@ -277,7 +277,7 @@ public class CRestBuilderTest {
     @Test
     public void testExpectsJson2() {
         final CRestContext context = builder
-                .expectsJson(false)
+                .expectsJson(false).handledByJackson()
                 .buildContext();
         assertContext(new ContextAdapter() {
             @Override
@@ -292,7 +292,7 @@ public class CRestBuilderTest {
     @Test
     public void testExpectsJson3() {
         final CRestContext context = builder
-                .expectsJson(null)
+                .expectsJson(null).handledByJackson()
                 .buildContext();
         assertContext(new ContextAdapter() {
             @Override
@@ -307,7 +307,7 @@ public class CRestBuilderTest {
     @Test
     public void testExpectsJson4() {
         final CRestContext context = builder
-                .expectsJson("fff")
+                .expectsJson("fff").handledByJackson()
                 .buildContext();
         assertContext(new ContextAdapter() {
             @Override
@@ -330,7 +330,7 @@ public class CRestBuilderTest {
     @Test
     public void testExpectsXml1() {
         final CRestContext context = builder
-                .expectsXml(Object.class)
+                .expectsXml().handledByJaxB(Object.class)
                 .buildContext();
         assertContext(new ContextAdapter() {
             @Override
@@ -353,7 +353,7 @@ public class CRestBuilderTest {
     @Test
     public void testExpectsXml2() {
         final CRestContext context = builder
-                .expectsXml("org.codegist.crest")
+                .expectsXml().handledByJaxB("org.codegist.crest")
                 .buildContext();
         assertContext(new ContextAdapter() {
             @Override
@@ -375,7 +375,7 @@ public class CRestBuilderTest {
     @Test
     public void testExpectsXml3() {
         final CRestContext context = builder
-                .expectsXml("org.codegist.crest", false)
+                .expectsXml(false).handledByJaxB("org.codegist.crest")
                 .buildContext();
         assertContext(new ContextAdapter() {
             @Override
@@ -391,7 +391,7 @@ public class CRestBuilderTest {
     @Test
     public void testExpectsXml4() {
         final CRestContext context = builder
-                .expectsXml("org.codegist.crest", null)
+                .expectsXml(null).handledByJaxB("org.codegist.crest")
                 .buildContext();
         assertContext(new ContextAdapter() {
             @Override
@@ -407,7 +407,7 @@ public class CRestBuilderTest {
     @Test
     public void testExpectsXml5() {
         final CRestContext context = builder
-                .expectsXml("org.codegist.crest", "ddd")
+                .expectsXml("ddd").handledByJaxB("org.codegist.crest")
                 .buildContext();
         assertContext(new ContextAdapter() {
             @Override

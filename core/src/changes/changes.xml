@@ -28,6 +28,9 @@
     <body>
         <release version="2.0.0-RC1" date="2011-02-10" description="Major release">
             <action dev="lgilles" type="add">
+                Added SimpleXml (http://simple.sourceforge.net) support.
+            </action>
+            <action dev="lgilles" type="add">
                 Added few methods to CRestBuilder in order to add default parameter to all requests fired by any interface build with it, and to set a user custom response marshaller.
             </action>
             <action dev="lgilles" type="fix" issue="3">
