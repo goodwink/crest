@@ -22,7 +22,6 @@ package org.codegist.crest;
 
 import org.codegist.common.collect.Maps;
 import org.codegist.common.lang.Strings;
-import org.codegist.common.marshal.*;
 import org.codegist.common.reflect.CglibProxyFactory;
 import org.codegist.common.reflect.JdkProxyFactory;
 import org.codegist.common.reflect.ProxyFactory;
@@ -34,7 +33,7 @@ import org.codegist.crest.oauth.Token;
 import org.codegist.crest.security.AuthentificationManager;
 import org.codegist.crest.security.OAuthentificationManager;
 import org.codegist.crest.security.interceptor.AuthentificationInterceptor;
-import org.codegist.crest.serializer.Serializer;
+import org.codegist.crest.serializer.*;
 import org.w3c.dom.Document;
 
 import java.lang.reflect.Type;
@@ -87,8 +86,8 @@ public class CRestBuilder {
     private int proxyType = PROXY_TYPE_JDK;
 
 
-    private JsonMarshallerChooser jsonChooser = new JsonMarshallerChooser();
-    private XmlMarshallerChooser xmlChooser = new XmlMarshallerChooser();
+    private JsonDeserializerChooser jsonChooser = new JsonDeserializerChooser();
+    private XmlDeserializerChooser xmlChooser = new XmlDeserializerChooser();
 
     private Map<String, String> properties = null;
     private Document document = null;
@@ -122,11 +121,8 @@ public class CRestBuilder {
         ProxyFactory proxyFactory = buildProxyFactory();
         Maps.putIfNotPresent(customProperties, ProxyFactory.class.getName(), proxyFactory);
 
-        Marshaller marshaller = buildMarshaller();
-        Maps.putIfNotPresent(customProperties, Marshaller.class.getName(), marshaller);
-
-        Unmarshaller unmarshaller = buildUnmarshaller();
-        Maps.putIfNotPresent(customProperties, Unmarshaller.class.getName(), unmarshaller);
+        Deserializer deserializer = buildDeserializer();
+        Maps.putIfNotPresent(customProperties, Deserializer.class.getName(), deserializer);
 
         AuthentificationManager authentificationManager = buildAuthentificationManager(restService);
         Maps.putIfNotPresent(customProperties, AuthentificationManager.class.getName(), authentificationManager);
@@ -175,24 +171,12 @@ public class CRestBuilder {
         }
     }
 
-    private Unmarshaller buildUnmarshaller() {
+    private Deserializer buildDeserializer() {
         switch (retType) {
             case RET_TYPE_JSON:
-                return jsonChooser.getUmarshaller();
+                return jsonChooser.getDeserializer();
             case RET_TYPE_XML:
-                return xmlChooser.getUmarshaller();
-            default:
-            case RET_TYPE_RAW:
-                return null;
-        }
-    }
-
-    private Marshaller buildMarshaller() {
-        switch (retType) {
-            case RET_TYPE_JSON:
-                return jsonChooser.getMarshaller();
-            case RET_TYPE_XML:
-                return xmlChooser.getMarshaller();
+                return xmlChooser.getDeserializer();
             default:
             case RET_TYPE_RAW:
                 return null;
@@ -433,9 +417,8 @@ public class CRestBuilder {
      * <p>Adds a default Accept={@value CRestBuilder#DEFAULT_JSON_ACCEPT_HEADER} Header to all request
      *
      * @return current builder
-     * @see org.codegist.common.marshal.JacksonMarshaller
      */
-    public JsonMarshallerChooser expectsJson() {
+    public JsonDeserializerChooser expectsJson() {
         return expectsJson(true);
     }
 
@@ -446,9 +429,8 @@ public class CRestBuilder {
      *
      * @param withAcceptHeader indicate to wether add or not the default accept header to all requests
      * @return current builder
-     * @see org.codegist.common.marshal.JacksonMarshaller
      */
-    public JsonMarshallerChooser expectsJson(boolean withAcceptHeader) {
+    public JsonDeserializerChooser expectsJson(boolean withAcceptHeader) {
         if (withAcceptHeader) {
             return expectsJson(DEFAULT_JSON_ACCEPT_HEADER);
         } else {
@@ -463,9 +445,8 @@ public class CRestBuilder {
      *
      * @param acceptHeader accept header to add to all requests
      * @return current builder
-     * @see org.codegist.common.marshal.JacksonMarshaller
      */
-    public JsonMarshallerChooser expectsJson(String acceptHeader) {
+    public JsonDeserializerChooser expectsJson(String acceptHeader) {
         this.retType = RET_TYPE_JSON;
         addGlobalParam("Accept", acceptHeader, Destination.HEADER, false);
         return jsonChooser;
@@ -502,9 +483,8 @@ public class CRestBuilder {
      * <p>Adds a default Accept={@value CRestBuilder#DEFAULT_XML_ACCEPT_HEADER} Header to all request
      *
      * @return current builder
-     * @see org.codegist.common.marshal.JaxbMarshaller
      */
-    public XmlMarshallerChooser expectsXml() {
+    public XmlDeserializerChooser expectsXml() {
         return expectsXml(true);
     }
 
@@ -515,9 +495,8 @@ public class CRestBuilder {
      *
      * @param withAcceptHeader indicate to wether add or not the default accept header to all requests
      * @return current builder
-     * @see org.codegist.common.marshal.JaxbMarshaller
      */
-    public XmlMarshallerChooser expectsXml(boolean withAcceptHeader) {
+    public XmlDeserializerChooser expectsXml(boolean withAcceptHeader) {
         if (withAcceptHeader) {
             return expectsXml(DEFAULT_XML_ACCEPT_HEADER);
         } else {
@@ -532,9 +511,8 @@ public class CRestBuilder {
      *
      * @param acceptHeader accept header to add to all requests
      * @return current builder
-     * @see org.codegist.common.marshal.JaxbMarshaller
      */
-    public XmlMarshallerChooser expectsXml(String acceptHeader) {
+    public XmlDeserializerChooser expectsXml(String acceptHeader) {
         retType = RET_TYPE_XML;
         addGlobalParam("Accept", acceptHeader, Destination.HEADER, false);
         return xmlChooser;
@@ -732,79 +710,69 @@ public class CRestBuilder {
         return this;
     }
 
-    public class XmlMarshallerChooser {
+    public class XmlDeserializerChooser {
 
-        private Marshaller marshaller;
-        private Unmarshaller unmarshaller;
+        private Deserializer deserializer;
 
         public CRestBuilder handledByJaxB(String packageName) {
-            this.marshaller = new JaxbMarshaller(packageName);
-            this.unmarshaller = (JaxbMarshaller) marshaller;
+            this.deserializer = new JaxbDeserializer(packageName);
             return CRestBuilder.this;
         }
 
         public CRestBuilder handledByJaxB(Class<?> factoryClass) {
-            this.marshaller = new JaxbMarshaller(factoryClass);
-            this.unmarshaller = (JaxbMarshaller) marshaller;
+            this.deserializer = new JaxbDeserializer(factoryClass);
             return CRestBuilder.this;
         }
 
         public CRestBuilder handledByJaxB(Map<String, Object> config) {
-            this.marshaller = new JaxbMarshaller(config);
-            this.unmarshaller = (JaxbMarshaller) marshaller;
+            this.deserializer = new JaxbDeserializer(config);
             return CRestBuilder.this;
         }
 
         public CRestBuilder handledBySimpleXml() {
-            this.marshaller = new SimpleXmlMarshaller();
-            this.unmarshaller = (SimpleXmlMarshaller) marshaller;
+            this.deserializer = new SimpleXmlDeserializer();
             return CRestBuilder.this;
         }
 
         public CRestBuilder handledBySimpleXml(String dateFormat) {
-            return handledBySimpleXml(dateFormat, null, null, SimpleXmlMarshaller.DEFAULT_STRICT);
+            return handledBySimpleXml(dateFormat, null, null, SimpleXmlDeserializer.DEFAULT_STRICT);
         }
 
         public CRestBuilder handledBySimpleXml(String trueVal, String falseVal) {
-            return handledBySimpleXml(null, trueVal, falseVal, SimpleXmlMarshaller.DEFAULT_STRICT);
+            return handledBySimpleXml(null, trueVal, falseVal, SimpleXmlDeserializer.DEFAULT_STRICT);
         }
 
         public CRestBuilder handledBySimpleXml(String dateFormat, String trueVal, String falseVal, boolean strict) {
             Map<String, Object> config = new HashMap<String, Object>();
             if (Strings.isNotBlank(trueVal) && Strings.isNotBlank(falseVal)) {
-                config.put(SimpleXmlMarshaller.BOOLEAN_FORMAT_PROP, trueVal + ":" + falseVal);
+                config.put(SimpleXmlDeserializer.BOOLEAN_FORMAT_PROP, trueVal + ":" + falseVal);
             }
             if (Strings.isNotBlank(dateFormat)) {
-                config.put(SimpleXmlMarshaller.DATE_FORMAT_PROP, dateFormat);
+                config.put(SimpleXmlDeserializer.DATE_FORMAT_PROP, dateFormat);
             }
-            config.put(SimpleXmlMarshaller.STRICT_PROP, strict);
+            config.put(SimpleXmlDeserializer.STRICT_PROP, strict);
             return handledBySimpleXml(config);
         }
 
         public CRestBuilder handledBySimpleXml(Map<String, Object> config) {
-            this.marshaller = new SimpleXmlMarshaller(config);
-            this.unmarshaller = (SimpleXmlMarshaller) marshaller;
+            this.deserializer = new SimpleXmlDeserializer(config);
             return CRestBuilder.this;
         }
 
-        public CRestBuilder handledBy(Marshaller marshaller) {
-            this.marshaller = marshaller;
+        public CRestBuilder handledBy(Deserializer deserializer) {
+            this.deserializer = deserializer;
             return CRestBuilder.this;
         }
 
-        Marshaller getMarshaller() {
-            return marshaller;
+        Deserializer getDeserializer() {
+            return deserializer;
         }
 
-        Unmarshaller getUmarshaller() {
-            return unmarshaller;
-        }
     }
 
-    public class JsonMarshallerChooser {
+    public class JsonDeserializerChooser {
 
-        private Marshaller marshaller;
-        private Unmarshaller unmarshaller;
+        private Deserializer deserializer;
 
         /**
          * Json deserialization will be handled by Jackson
@@ -821,28 +789,23 @@ public class CRestBuilder {
          * @return current builder
          */
         public CRestBuilder handledByJackson(Map<String, Object> config) {
-            this.marshaller = new JacksonMarshaller(config);
-            this.unmarshaller = (JacksonMarshaller) this.marshaller;
+            this.deserializer = new JacksonDeserializer(config);
             return CRestBuilder.this;
         }
 
         /**
-         * Json deserialization will be handled by the given marshaller
+         * Json deserialization will be handled by the given deserializer
          *
-         * @param marshaller marshaller to use for json deserialization
+         * @param deserializer deserializer to use for json deserialization
          * @return current builder
          */
-        public CRestBuilder handledBy(Marshaller marshaller) {
-            this.marshaller = marshaller;
+        public CRestBuilder handledBy(Deserializer deserializer) {
+            this.deserializer = deserializer;
             return CRestBuilder.this;
         }
 
-        Marshaller getMarshaller() {
-            return marshaller;
-        }
-
-        Unmarshaller getUmarshaller() {
-            return unmarshaller;
+        Deserializer getDeserializer() {
+            return deserializer;
         }
     }
 

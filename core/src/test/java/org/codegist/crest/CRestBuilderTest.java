@@ -25,10 +25,6 @@ import org.apache.http.conn.params.ConnManagerParams;
 import org.apache.http.conn.routing.HttpRoute;
 import org.apache.http.impl.conn.SingleClientConnManager;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
-import org.codegist.common.marshal.JacksonMarshaller;
-import org.codegist.common.marshal.JaxbMarshaller;
-import org.codegist.common.marshal.Marshaller;
-import org.codegist.common.marshal.Unmarshaller;
 import org.codegist.common.reflect.CglibProxyFactory;
 import org.codegist.common.reflect.JdkProxyFactory;
 import org.codegist.common.reflect.ProxyFactory;
@@ -38,6 +34,9 @@ import org.codegist.crest.oauth.OAuthenticator;
 import org.codegist.crest.oauth.Token;
 import org.codegist.crest.security.AuthentificationManager;
 import org.codegist.crest.security.OAuthentificationManager;
+import org.codegist.crest.serializer.Deserializer;
+import org.codegist.crest.serializer.JacksonDeserializer;
+import org.codegist.crest.serializer.JaxbDeserializer;
 import org.codegist.crest.serializer.Serializer;
 import org.junit.Before;
 import org.junit.Test;
@@ -261,8 +260,7 @@ public class CRestBuilderTest {
             @Override
             public Map<String, Object> getProperties() {
                 return new HashMap<String, Object>() {{
-                    put(Marshaller.class.getName(), new JacksonMarshaller());
-                    put(Unmarshaller.class.getName(), new JacksonMarshaller());
+                    put(Deserializer.class.getName(), new JacksonDeserializer());
                     put(CRestProperty.CONFIG_METHOD_DEFAULT_EXTRA_PARAMS, new BasicParamConfig[]{
                             new ConfigBuilders.BasicParamConfigBuilder(null)
                             .setName("Accept")
@@ -283,8 +281,7 @@ public class CRestBuilderTest {
             @Override
             public Map<String, Object> getProperties() {
                 return new HashMap<String, Object>() {{
-                    put(Marshaller.class.getName(), new JacksonMarshaller());
-                    put(Unmarshaller.class.getName(), new JacksonMarshaller());
+                    put(Deserializer.class.getName(), new JacksonDeserializer());
                 }};
             }
         }, context);
@@ -298,8 +295,7 @@ public class CRestBuilderTest {
             @Override
             public Map<String, Object> getProperties() {
                 return new HashMap<String, Object>() {{
-                    put(Marshaller.class.getName(), new JacksonMarshaller());
-                    put(Unmarshaller.class.getName(), new JacksonMarshaller());
+                    put(Deserializer.class.getName(), new JacksonDeserializer());
                 }};
             }
         }, context);
@@ -313,8 +309,7 @@ public class CRestBuilderTest {
             @Override
             public Map<String, Object> getProperties() {
                 return new HashMap<String, Object>() {{
-                    put(Marshaller.class.getName(), new JacksonMarshaller());
-                    put(Unmarshaller.class.getName(), new JacksonMarshaller());
+                    put(Deserializer.class.getName(), new JacksonDeserializer());
                     put(CRestProperty.CONFIG_METHOD_DEFAULT_EXTRA_PARAMS, new BasicParamConfig[]{
                             new ConfigBuilders.BasicParamConfigBuilder(null)
                             .setName("Accept")
@@ -336,8 +331,7 @@ public class CRestBuilderTest {
             @Override
             public Map<String, Object> getProperties() {
                 return new HashMap<String, Object>() {{
-                    put(Marshaller.class.getName(), new JaxbMarshaller(Object.class));
-                    put(Unmarshaller.class.getName(), new JaxbMarshaller(Object.class));
+                    put(Deserializer.class.getName(), new JaxbDeserializer());
                     put(CRestProperty.CONFIG_METHOD_DEFAULT_EXTRA_PARAMS, new BasicParamConfig[]{
                             new ConfigBuilders.BasicParamConfigBuilder(null)
                             .setName("Accept")
@@ -359,8 +353,7 @@ public class CRestBuilderTest {
             @Override
             public Map<String, Object> getProperties() {
                 return new HashMap<String, Object>() {{
-                    put(Marshaller.class.getName(), new JaxbMarshaller(Object.class));
-                    put(Unmarshaller.class.getName(), new JaxbMarshaller(Object.class));
+                    put(Deserializer.class.getName(), new JaxbDeserializer());
                     put(CRestProperty.CONFIG_METHOD_DEFAULT_EXTRA_PARAMS, new BasicParamConfig[]{
                             new ConfigBuilders.BasicParamConfigBuilder(null)
                             .setName("Accept")
@@ -381,8 +374,7 @@ public class CRestBuilderTest {
             @Override
             public Map<String, Object> getProperties() {
                 return new HashMap<String, Object>() {{
-                    put(Marshaller.class.getName(), new JaxbMarshaller(Object.class));
-                    put(Unmarshaller.class.getName(), new JaxbMarshaller(Object.class));
+                    put(Deserializer.class.getName(), new JaxbDeserializer());
                 }};
             }
         }, context);
@@ -397,8 +389,7 @@ public class CRestBuilderTest {
             @Override
             public Map<String, Object> getProperties() {
                 return new HashMap<String, Object>() {{
-                    put(Marshaller.class.getName(), new JaxbMarshaller(Object.class));
-                    put(Unmarshaller.class.getName(), new JaxbMarshaller(Object.class));
+                    put(Deserializer.class.getName(), new JaxbDeserializer());
                 }};
             }
         }, context);
@@ -413,8 +404,7 @@ public class CRestBuilderTest {
             @Override
             public Map<String, Object> getProperties() {
                 return new HashMap<String, Object>() {{
-                    put(Marshaller.class.getName(), new JaxbMarshaller(Object.class));
-                    put(Unmarshaller.class.getName(), new JaxbMarshaller(Object.class));
+                    put(Deserializer.class.getName(), new JaxbDeserializer());
                     put(CRestProperty.CONFIG_METHOD_DEFAULT_EXTRA_PARAMS, new BasicParamConfig[]{
                             new ConfigBuilders.BasicParamConfigBuilder(null)
                             .setName("Accept")
@@ -526,8 +516,7 @@ public class CRestBuilderTest {
             put(CRestProperty.SERIALIZER_CUSTOM_SERIALIZER_MAP, Collections.emptyMap());
             put(CRestProperty.CONFIG_PLACEHOLDERS_MAP, Collections.emptyMap());
             put(AuthentificationManager.class.getName(), null);
-            put(Marshaller.class.getName(), null);
-            put(Unmarshaller.class.getName(), null);
+            put(Deserializer.class.getName(), null);
             put(CRestProperty.CONFIG_METHOD_DEFAULT_EXTRA_PARAMS, new BasicParamConfig[0]);
         }};
         if (expected != null && expected.getProperties() != null) {

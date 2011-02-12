@@ -20,8 +20,8 @@
 
 package org.codegist.crest.handler;
 
-import org.codegist.common.marshal.Marshaller;
 import org.codegist.crest.ResponseContext;
+import org.codegist.crest.serializer.Deserializer;
 
 import java.util.Map;
 
@@ -31,26 +31,25 @@ import java.util.Map;
  * <p>- Marshalling occurs only when a marshaller have been set in the custom properties (key="org.codegist.common.marshal.Marshaller")
  * <p>- Response is just ignored for voids methods.
  *
- * @see org.codegist.common.marshal.Marshaller
  * @see org.codegist.crest.InterfaceContext#getProperties()
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
 public class DefaultResponseHandler implements ResponseHandler {
 
-    private final Marshaller marshaller;
+    private final Deserializer deserializer;
 
     public DefaultResponseHandler() {
-        this.marshaller = null;
+        this.deserializer = null;
     }
     public DefaultResponseHandler(Map<String,Object> customProperties) {
-        this.marshaller = (Marshaller) customProperties.get(Marshaller.class.getName());
+        this.deserializer = (Deserializer) customProperties.get(Deserializer.class.getName());
     }
 
     public final Object handle(ResponseContext context) {
         if (context.getExpectedType().toString().equals("void")) return null;
 
-        if (marshaller != null) {
-            return marshaller.marshall(context.getResponse().asReader(), context.getExpectedGenericType());
+        if (deserializer != null) {
+            return deserializer.deserialize(context.getResponse().asReader(), context.getExpectedGenericType());
         }else{
             // if no marshaller has been set in the configuration, check that return type is String and return the response as string.
             if (String.class.equals(context.getExpectedType())) {

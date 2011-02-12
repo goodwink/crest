@@ -25,7 +25,6 @@ import org.apache.http.conn.ClientConnectionManager;
 import org.codegist.common.io.IOs;
 import org.codegist.common.lang.Disposables;
 import org.codegist.common.lang.Strings;
-import org.codegist.common.marshal.Marshaller;
 import org.codegist.common.reflect.JdkProxyFactory;
 import org.codegist.common.reflect.ProxyFactory;
 import org.codegist.crest.annotate.EndPoint;
@@ -38,6 +37,7 @@ import org.codegist.crest.config.PreconfiguredInterfaceConfigFactory;
 import org.codegist.crest.handler.MaxAttemptRetryHandler;
 import org.codegist.crest.handler.RetryHandler;
 import org.codegist.crest.injector.Injector;
+import org.codegist.crest.serializer.Deserializer;
 import org.codegist.crest.serializer.Serializer;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -77,12 +77,12 @@ public class DefaultCRestTest {
     final String c = "cc";
     final String c2 = "c/c";
 
-    private static final Marshaller mockMarshaller = mock(Marshaller.class);
+    private static final Deserializer mockDeserializer = mock(Deserializer.class);
     private ProxyFactory mockProxyFactory = TestUtils.mockProxyFactory();
 
     @BeforeClass
     public static void setup() {   
-        when(mockMarshaller.<Object>marshall(any(Reader.class), any(Type.class))).thenReturn(MODEL_RESPONSE);
+        when(mockDeserializer.<Object>deserialize(any(Reader.class), any(Type.class))).thenReturn(MODEL_RESPONSE);
     }
 
     @Test
@@ -209,7 +209,7 @@ public class DefaultCRestTest {
         assertEquals(MODEL_RESPONSE_JSON, raw.testString());
 
         Map<String,Object> customProperties = new HashMap<String, Object>() {{
-            put(Marshaller.class.getName(), mockMarshaller);
+            put(Deserializer.class.getName(), mockDeserializer);
         }};
         DefaultCRest jsonConfiguredFactory = new DefaultCRest(new DefaultCRestContext(
                 mockRestService,
@@ -386,7 +386,7 @@ public class DefaultCRestTest {
         });
 
         Map<String,Object> customProperties = new HashMap<String, Object>() {{
-            put(Marshaller.class.getName(), mockMarshaller);
+            put(Deserializer.class.getName(), mockDeserializer);
         }};
         InterfaceConfig CONFIG = new ConfigBuilders.InterfaceConfigBuilder(Rest.class, customProperties)
                 .setEndPoint("http://test-server:8080")
