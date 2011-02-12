@@ -21,7 +21,6 @@
 package org.codegist.crest.flickr.handler;
 
 import org.codegist.common.lang.Validate;
-import org.codegist.common.marshal.Marshaller;
 import org.codegist.common.reflect.Types;
 import org.codegist.crest.CRestException;
 import org.codegist.crest.ResponseContext;
@@ -30,6 +29,7 @@ import org.codegist.crest.flickr.model.Payload;
 import org.codegist.crest.flickr.model.Response;
 import org.codegist.crest.flickr.model.SimplePayload;
 import org.codegist.crest.handler.ResponseHandler;
+import org.codegist.crest.serializer.Deserializer;
 
 import java.util.Map;
 
@@ -38,16 +38,16 @@ import java.util.Map;
  */
 public class FlickrResponseHandler implements ResponseHandler {
 
-    private final Marshaller marshaller;
+    private final Deserializer deserializer;
 
     public FlickrResponseHandler(Map<String, Object> properties) {
-        this.marshaller = (Marshaller) properties.get(Marshaller.class.getName());
-        Validate.notNull(this.marshaller, "No marshaller set, please construct CRest using either JSON or XML expected return type.");
+        this.deserializer = (Deserializer) properties.get(Deserializer.class.getName());
+        Validate.notNull(this.deserializer, "No deserializer set, please construct CRest using either JSON or XML expected return type.");
     }
 
     public final Object handle(ResponseContext context) {
         /* Marshall the response */
-        Response res = marshaller.marshall(context.getResponse().asReader(), Types.newType(Response.class, context.getExpectedGenericType()));
+        Response res = deserializer.deserialize(context.getResponse().asReader(), Types.newType(Response.class, context.getExpectedGenericType()));
         /* Check for flickr OK status */
         if ("ok".equals(res.getStatus())) {
             /* Get the nested payload and returns it */

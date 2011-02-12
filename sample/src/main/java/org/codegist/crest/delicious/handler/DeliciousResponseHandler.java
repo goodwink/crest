@@ -22,11 +22,11 @@ package org.codegist.crest.delicious.handler;
 
 import org.codegist.common.lang.Strings;
 import org.codegist.common.lang.Validate;
-import org.codegist.common.marshal.Marshaller;
 import org.codegist.crest.CRestException;
 import org.codegist.crest.ResponseContext;
 import org.codegist.crest.delicious.model.Result;
 import org.codegist.crest.handler.ResponseHandler;
+import org.codegist.crest.serializer.Deserializer;
 
 import java.lang.reflect.Type;
 import java.util.Map;
@@ -36,16 +36,16 @@ import java.util.Map;
  */
 public class DeliciousResponseHandler implements ResponseHandler {
 
-    private final Marshaller marshaller;
+    private final Deserializer deserializer;
 
     public DeliciousResponseHandler(Map<String, Object> properties) {
-        this.marshaller = (Marshaller) properties.get(Marshaller.class.getName());
-        Validate.notNull(this.marshaller, "No marshaller set, please construct CRest using either JSON or XML expected return type.");
+        this.deserializer = (Deserializer) properties.get(Deserializer.class.getName());
+        Validate.notNull(this.deserializer, "No deserializer set, please construct CRest using either JSON or XML expected return type.");
     }
 
     public Object handle(ResponseContext responseContext) throws CRestException {
         Type expectedType = responseContext.getExpectedGenericType();
-        Object response = marshaller.marshall(responseContext.getResponse().asReader(), expectedType);
+        Object response = deserializer.deserialize(responseContext.getResponse().asReader(), expectedType);
         if (response instanceof Result) {
             Result result = (Result) response;
             // Delicious Result response format is not consistent
