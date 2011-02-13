@@ -254,8 +254,8 @@ public class HttpRequest {
          */
         public Builder pointsTo(String uriString, String encoding) throws URISyntaxException {
             String fixed = SINGLE_PLACEHOLDER_PATTERN.matcher(uriString).replaceAll("\\($1\\)");
-            URI uri = new URI(fixed);
-            String baseUri = new URI(uri.getScheme() + "://" + uri.getAuthority() + uri.getPath()).normalize().toString();
+            URI uri = new URI(fixed).normalize();
+            String baseUri = uri.getScheme() + "://" + uri.getAuthority() + uri.getPath();
             this.encoding = encoding;
             this.baseUri = baseUri;
             if(Strings.isNotBlank(uri.getRawQuery())) {
