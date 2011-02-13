@@ -98,7 +98,7 @@ public class CRestBuilder {
     private Map<String, Object> customProperties = new HashMap<String, Object>();
     private Map<String, String> placeholders = new HashMap<String, String>();
     private Map<Type, Serializer> serializersMap = new HashMap<Type, Serializer>();
-    private final Map<String, BasicParamConfig> extraParams = new HashMap<String, BasicParamConfig>();
+    private final Map<String, ParamConfig> extraParams = new HashMap<String, ParamConfig>();
 
     private RestService restService;
 
@@ -144,7 +144,7 @@ public class CRestBuilder {
         /* Put then in the properties. These are not part of the API */
         Maps.putIfNotPresent(customProperties, CRestProperty.SERIALIZER_CUSTOM_SERIALIZER_MAP, Maps.unmodifiable(serializersMap));
         Maps.putIfNotPresent(customProperties, CRestProperty.CONFIG_PLACEHOLDERS_MAP, Maps.unmodifiable(placeholders));
-        Maps.putIfNotPresent(customProperties, CRestProperty.CONFIG_METHOD_DEFAULT_EXTRA_PARAMS, this.extraParams.values().toArray(new BasicParamConfig[this.extraParams.size()]));
+        Maps.putIfNotPresent(customProperties, CRestProperty.CONFIG_METHOD_DEFAULT_EXTRA_PARAMS, this.extraParams.values().toArray(new ParamConfig[this.extraParams.size()]));
 
         return new DefaultCRestContext(restService, proxyFactory, configFactory, customProperties);
     }
@@ -699,7 +699,7 @@ public class CRestBuilder {
         if (Strings.isBlank(value) && !addIfEmptyValue) {
             extraParams.remove(name);
         } else {
-            BasicParamConfig param = new ConfigBuilders.BasicParamConfigBuilder(customProperties)
+            ParamConfig param = new ConfigBuilders.ParamConfigBuilder(customProperties)
                     .setName(name)
                     .setDefaultValue(value)
                     .setDestination(destination)

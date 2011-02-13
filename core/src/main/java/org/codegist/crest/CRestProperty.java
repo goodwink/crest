@@ -257,8 +257,8 @@ public interface CRestProperty {
     String CONFIG_METHOD_DEFAULT_HTTP_METHOD = "config.method.default.http-method";
 
     /**
-     * override the default method extra params {@link org.codegist.crest.config.MethodConfig#DEFAULT_EXTRA_PARAMS}.
-     * <p>Expects an array of {@link org.codegist.crest.config.BasicParamConfig}
+     * override the default method extra params {@link org.codegist.crest.config.MethodConfig#DEFAULT_EXTRA_PARAMs}.
+     * <p>Expects an array of {@link org.codegist.crest.config.ParamConfig}
      *
      * @see org.codegist.crest.InterfaceContext#getProperties()
      */
@@ -296,12 +296,12 @@ public interface CRestProperty {
 
     /*********************************************************
      *********************************************************
-     ****** ParamConfig default values override properties 
+     ****** MethodParamConfig default values override properties
      *********************************************************
      *********************************************************/
 
     /**
-     * override the default destination {@link org.codegist.crest.config.ParamConfig#DEFAULT_DESTINATION}.
+     * override the default destination {@link org.codegist.crest.config.MethodParamConfig#DEFAULT_DESTINATION}.
      * <p>Expects a member of {@link org.codegist.crest.config.Destination}.
      *
      * @see org.codegist.crest.config.Destination
@@ -310,7 +310,7 @@ public interface CRestProperty {
     String CONFIG_PARAM_DEFAULT_DESTINATION = "config.param.default.destination";
 
     /**
-     * override the default param value {@link org.codegist.crest.config.ParamConfig#DEFAULT_VALUE}.
+     * override the default param value {@link org.codegist.crest.config.MethodParamConfig#DEFAULT_VALUE}.
      * <p>Expects a String.
      *
      * @see org.codegist.crest.InterfaceContext#getProperties()
@@ -318,7 +318,7 @@ public interface CRestProperty {
     String CONFIG_PARAM_DEFAULT_VALUE = "config.param.default.value";
 
     /**
-     * override the default injector {@link org.codegist.crest.config.ParamConfig#DEFAULT_INJECTOR}.
+     * override the default injector {@link org.codegist.crest.config.MethodParamConfig#DEFAULT_INJECTOR}.
      * <p>Expects an instance of {@link org.codegist.crest.injector.Injector}.
      *
      * @see org.codegist.crest.injector.Injector
@@ -327,7 +327,7 @@ public interface CRestProperty {
     String CONFIG_PARAM_DEFAULT_INJECTOR = "config.param.default.injector";
 
     /**
-     * override the default serializer {@link org.codegist.crest.config.ParamConfig#DEFAULT_SERIALIZER}.
+     * override the default serializer {@link org.codegist.crest.config.MethodParamConfig#DEFAULT_SERIALIZER}.
      * <p>Expects an instance of {@link org.codegist.crest.serializer.Serializer}.
      *
      * @see org.codegist.crest.serializer.Serializer
@@ -336,7 +336,7 @@ public interface CRestProperty {
     String CONFIG_PARAM_DEFAULT_SERIALIZER = "config.param.default.serializer";
 
     /**
-     * override the default name {@link org.codegist.crest.config.ParamConfig#DEFAULT_NAME}.
+     * override the default name {@link org.codegist.crest.config.MethodParamConfig#DEFAULT_NAME}.
      * <p>Expects a string.
      *
      * @see org.codegist.crest.InterfaceContext#getProperties()

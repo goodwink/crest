@@ -20,7 +20,7 @@
 
 package org.codegist.crest;
 
-import org.codegist.crest.config.ParamConfig;
+import org.codegist.crest.config.MethodParamConfig;
 
 /**
  * Context object passed during the parameter injection process
@@ -38,7 +38,7 @@ public interface ParamContext<V> extends RequestContext {
      */
     boolean isForUrl();
 
-    ParamConfig getParamConfig();
+    MethodParamConfig getParamConfig();
 
     V getRawValue();
 

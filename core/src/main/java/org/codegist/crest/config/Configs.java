@@ -81,23 +81,23 @@ public final class Configs {
      */
     public static MethodConfig override(MethodConfig base, MethodConfig overrides) {
         if(overrides == null) return base;
-        ParamConfig[] pl = new ParamConfig[Objects.defaultIfNull(overrides.getParamCount(), base.getParamCount())];
+        MethodParamConfig[] pl = new MethodParamConfig[Objects.defaultIfNull(overrides.getParamCount(), base.getParamCount())];
         for (int i = 0; i < pl.length; i++) {
             pl[i] = override(base.getParamConfig(i), overrides.getParamConfig(i));
         }
-        Map<String,BasicParamConfig> baseExtraParams = toMap(base.getExtraParams());
-        Map<String,BasicParamConfig> overridesExtraParams = toMap(overrides.getExtraParams());
-        List<BasicParamConfig> overridden = new ArrayList<BasicParamConfig>();
+        Map<String, ParamConfig> baseExtraParams = toMap(base.getExtraParams());
+        Map<String, ParamConfig> overridesExtraParams = toMap(overrides.getExtraParams());
+        List<ParamConfig> overridden = new ArrayList<ParamConfig>();
 
-        for(Map.Entry<String,BasicParamConfig> baseP : baseExtraParams.entrySet()){
-            BasicParamConfig overP = overridesExtraParams.get(baseP.getKey());
+        for(Map.Entry<String, ParamConfig> baseP : baseExtraParams.entrySet()){
+            ParamConfig overP = overridesExtraParams.get(baseP.getKey());
             if(overP == null) {
                 overridden.add(baseP.getValue());
             }else{
                 overridden.add(override(baseP.getValue(), overP));
             }
         }
-        for(Map.Entry<String,BasicParamConfig> overP : overridesExtraParams.entrySet()){
+        for(Map.Entry<String, ParamConfig> overP : overridesExtraParams.entrySet()){
             if(!baseExtraParams.containsKey(overP.getKey())) {
                 if(overP.getValue().getDefaultValue() == null || overP.getValue().getName() == null || overP.getValue().getDestination() == null) {
                     throw new IllegalArgumentException("an extra param found in overrides but not in the base config has an illegal configuration");
@@ -106,7 +106,7 @@ public final class Configs {
             }
         }
 
-        BasicParamConfig[] extras = overridden.toArray(new BasicParamConfig[overridden.size()]);
+        ParamConfig[] extras = overridden.toArray(new ParamConfig[overridden.size()]);
 
         return new DefaultMethodConfig(
                 Objects.defaultIfNull(overrides.getMethod(), base.getMethod()),
@@ -123,10 +123,10 @@ public final class Configs {
         );
     }
 
-    public static Map<String, BasicParamConfig> toMap(BasicParamConfig[] params){
-        Map<String, BasicParamConfig> map = new LinkedHashMap<String, BasicParamConfig>();
+    public static Map<String, ParamConfig> toMap(ParamConfig[] params){
+        Map<String, ParamConfig> map = new LinkedHashMap<String, ParamConfig>();
         if(params == null) return map;
-        for(BasicParamConfig e : params){
+        for(ParamConfig e : params){
             map.put(e.getName(), e);
         }
         return map;
@@ -134,20 +134,20 @@ public final class Configs {
 
     /**
      * Overrides a config (overrides) with another one (base).
-     * <p>The override is a config template where nulls values are legals and will fallback to the base config. Base config must apply to the general contract of {@link org.codegist.crest.config.ParamConfig}.
+     * <p>The override is a config template where nulls values are legals and will fallback to the base config. Base config must apply to the general contract of {@link MethodParamConfig}.
      * <p>Any non-null values in override config will take priority over base config.
      * <p>If dynamic flag is true, the returned config is a dynamic view over the two given config, thus the two configs can change over time and the resulting config will reflect the changes.
      *
-     * @param base      Normal full configured config, respect the general contract of ParamConfig object
+     * @param base      Normal full configured config, respect the general contract of MethodParamConfig object
      * @param overrides Config template, can hold null values, that plays as flag to indicate a fallback to the base config
      * @return A view that gives priority of "overrides" non-null values object upon "base" object. Any changes at runtime will be reflected.
-     * @see org.codegist.crest.config.ParamConfig
+     * @see MethodParamConfig
      * @throws NullPointerException if any of the two configs are null
      */
-    public static ParamConfig override(ParamConfig base, ParamConfig overrides) {
+    public static MethodParamConfig override(MethodParamConfig base, MethodParamConfig overrides) {
         if(overrides == null) return base;
-        return new DefaultParamConfig(
-                override((BasicParamConfig) base, (BasicParamConfig) overrides),
+        return new DefaultMethodParamConfig(
+                override((ParamConfig) base, (ParamConfig) overrides),
                 Objects.defaultIfNull(overrides.getSerializer(), base.getSerializer()),
                 Objects.defaultIfNull(overrides.getInjector(), base.getInjector())
         );
@@ -155,19 +155,19 @@ public final class Configs {
 
     /**
      * Overrides a config (overrides) with another one (base).
-     * <p>The override is a config template where nulls values are legals and will fallback to the base config. Base config must apply to the general contract of {@link org.codegist.crest.config.BasicParamConfig}.
+     * <p>The override is a config template where nulls values are legals and will fallback to the base config. Base config must apply to the general contract of {@link ParamConfig}.
      * <p>Any non-null values in override config will take priority over base config.
      * <p>If dynamic flag is true, the returned config is a dynamic view over the two given config, thus the two configs can change over time and the resulting config will reflect the changes.
      *
-     * @param base      Normal full configured config, respect the general contract of BasicParamConfig object
+     * @param base      Normal full configured config, respect the general contract of ParamConfig object
      * @param overrides Config template, can hold null values, that plays as flag to indicate a fallback to the base config
      * @return A view that gives priority of "overrides" non-null values object upon "base" object. Any changes at runtime will be reflected.
-     * @see org.codegist.crest.config.BasicParamConfig
+     * @see ParamConfig
      * @throws NullPointerException if any of the two configs are null
      */
-    public static BasicParamConfig override(BasicParamConfig base, BasicParamConfig overrides) {
+    public static ParamConfig override(ParamConfig base, ParamConfig overrides) {
         if(overrides == null) return base;
-        return new DefaultBasicParamConfig(
+        return new DefaultParamConfig(
                 Objects.defaultIfNull(overrides.getName(), base.getName()),
                 Objects.defaultIfNull(overrides.getDefaultValue(), base.getDefaultValue()),
                 Objects.defaultIfNull(overrides.getDestination(), base.getDestination())
@@ -175,15 +175,15 @@ public final class Configs {
     }
 
     @SuppressWarnings("unchecked")
-    static ConfigBuilders.ParamConfigBuilder injectAnnotatedConfig(ConfigBuilders.ParamConfigBuilder config, Class<?> paramType) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+    static ConfigBuilders.MethodParamConfigBuilder injectAnnotatedConfig(ConfigBuilders.MethodParamConfigBuilder configMethod, Class<?> paramType) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
         /* Params type specifics */
         org.codegist.crest.annotate.Serializer serializer = paramType.getAnnotation(org.codegist.crest.annotate.Serializer.class);
         org.codegist.crest.annotate.Injector injector = paramType.getAnnotation(org.codegist.crest.annotate.Injector.class);
 
-        if (serializer != null) config.setSerializer(serializer.value());
-        if (injector != null) config.setInjector(injector.value());
+        if (serializer != null) configMethod.setSerializer(serializer.value());
+        if (injector != null) configMethod.setInjector(injector.value());
 
-        return config;
+        return configMethod;
     }
 }
 

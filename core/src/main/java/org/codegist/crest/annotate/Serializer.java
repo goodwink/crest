@@ -41,8 +41,8 @@ import java.lang.annotation.Target;
  * </pre>
  * </code>
  * <p>For any call to FooInterface.getModel(long,MyBean), MyBean will be serialized using MyBeanSerializer class.
- * @see org.codegist.crest.config.ParamConfig#DEFAULT_SERIALIZER
- * @see org.codegist.crest.config.ParamConfig#getSerializer()
+ * @see org.codegist.crest.config.MethodParamConfig#DEFAULT_SERIALIZER
+ * @see org.codegist.crest.config.MethodParamConfig#getSerializer()
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
 @Retention(RetentionPolicy.RUNTIME)

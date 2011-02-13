@@ -41,8 +41,8 @@ import java.lang.annotation.Target;
  * </pre>
  * </code>
  * <p>For any call to FooInterface.getModel(long,MyBean), MyBean will get injected using MyBeanInjector class
- * @see org.codegist.crest.config.ParamConfig#DEFAULT_INJECTOR
- * @see org.codegist.crest.config.ParamConfig#getInjector()
+ * @see org.codegist.crest.config.MethodParamConfig#DEFAULT_INJECTOR
+ * @see org.codegist.crest.config.MethodParamConfig#getInjector()
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
 @Retention(RetentionPolicy.RUNTIME)

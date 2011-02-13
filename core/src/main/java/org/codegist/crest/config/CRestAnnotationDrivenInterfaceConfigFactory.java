@@ -66,7 +66,7 @@ public class CRestAnnotationDrivenInterfaceConfigFactory implements InterfaceCon
             ErrorHandler errorHandler = interfaze.getAnnotation(ErrorHandler.class);
             RetryHandler retryHandler = interfaze.getAnnotation(RetryHandler.class);
             HttpMethod httpMethod = getHttpMethod(interfaze.getAnnotations(), interfaze.getAnnotation(HttpMethod.class));
-            Set<BasicParamConfig> extraParams = getExtraParamConfigs(interfaze.getAnnotations());
+            Set<ParamConfig> extraParams = getExtraParamConfigs(interfaze.getAnnotations());
 
             /* Params defaults */
             Serializer serializer = interfaze.getAnnotation(Serializer.class);
@@ -78,7 +78,7 @@ public class CRestAnnotationDrivenInterfaceConfigFactory implements InterfaceCon
             if(encoding != null) config.setEncoding(encoding.value());
             if(globalInterceptor != null) config.setGlobalInterceptor(globalInterceptor.value());
             if(extraParams != null) {
-                for(BasicParamConfig c : extraParams){
+                for(ParamConfig c : extraParams){
                     config.addMethodsExtraParam(c.getName(), c.getDefaultValue(),c.getDestination());
                 }
             }
@@ -113,7 +113,7 @@ public class CRestAnnotationDrivenInterfaceConfigFactory implements InterfaceCon
                 ConfigBuilders.MethodConfigBuilder methodConfigBuilder = config.startMethodConfig(meth);
 
                 if(extraParams != null) {
-                    for(BasicParamConfig c : extraParams){
+                    for(ParamConfig c : extraParams){
                         methodConfigBuilder.startExtraParamConfig(c.getName())
                                 .setDefaultValue(c.getDefaultValue())
                                 .setDestination(c.getDestination())
@@ -135,24 +135,24 @@ public class CRestAnnotationDrivenInterfaceConfigFactory implements InterfaceCon
                 for(int i = 0, max = meth.getParameterTypes().length; i < max ; i++){
                     Map<Class<? extends Annotation>,Annotation> paramAnnotations = Methods.getParamsAnnotation(meth, i);
                     //Class<? extends RequestInjector> typeInjector = RequestInjectors.getAnnotatedInjectorFor(meth.getParameterTypes()[i]);
-                    ConfigBuilders.ParamConfigBuilder paramConfigBuilder = methodConfigBuilder.startParamConfig(i);
+                    ConfigBuilders.MethodParamConfigBuilder methodParamConfigBuilder = methodConfigBuilder.startParamConfig(i);
 
                     // Injects user type annotated config.
-                    Configs.injectAnnotatedConfig(paramConfigBuilder, meth.getParameterTypes()[i]);
+                    Configs.injectAnnotatedConfig(methodParamConfigBuilder, meth.getParameterTypes()[i]);
 
                     /* Params specifics - Override user annotated config */
                     serializer = (Serializer) paramAnnotations.get(Serializer.class);
                     injector = (Injector) paramAnnotations.get(Injector.class);
 
-                    if(serializer != null) paramConfigBuilder.setSerializer(serializer.value());
-                    if(injector != null) paramConfigBuilder.setInjector(injector.value());
+                    if(serializer != null) methodParamConfigBuilder.setSerializer(serializer.value());
+                    if(injector != null) methodParamConfigBuilder.setInjector(injector.value());
 
-                    BasicParamConfig pconfig = getFirstExtraParamConfig(paramAnnotations.values().toArray(new Annotation[paramAnnotations.size()]));
-                    paramConfigBuilder.setName(pconfig.getName());
-                    paramConfigBuilder.setDestination(pconfig.getDestination());
-                    paramConfigBuilder.setDefaultValue(pconfig.getDefaultValue());
+                    ParamConfig pconfig = getFirstExtraParamConfig(paramAnnotations.values().toArray(new Annotation[paramAnnotations.size()]));
+                    methodParamConfigBuilder.setName(pconfig.getName());
+                    methodParamConfigBuilder.setDestination(pconfig.getDestination());
+                    methodParamConfigBuilder.setDefaultValue(pconfig.getDefaultValue());
 
-                    paramConfigBuilder.endParamConfig();
+                    methodParamConfigBuilder.endParamConfig();
                 }
 
                 methodConfigBuilder.endMethodConfig();
@@ -167,46 +167,46 @@ public class CRestAnnotationDrivenInterfaceConfigFactory implements InterfaceCon
     }
 
     
-    private static BasicParamConfig getFirstExtraParamConfig(Annotation[] annotations){
-        Set<BasicParamConfig> config = getExtraParamConfigs(annotations);
-        if(config.isEmpty()) return new DefaultBasicParamConfig(null,null,null);
+    private static ParamConfig getFirstExtraParamConfig(Annotation[] annotations){
+        Set<ParamConfig> config = getExtraParamConfigs(annotations);
+        if(config.isEmpty()) return new DefaultParamConfig(null,null,null);
         return config.iterator().next();// get the first
     }
-    private static Set<BasicParamConfig> getExtraParamConfigs(Annotation[] annotations){
-        Set<BasicParamConfig> params = new LinkedHashSet<BasicParamConfig>();
+    private static Set<ParamConfig> getExtraParamConfigs(Annotation[] annotations){
+        Set<ParamConfig> params = new LinkedHashSet<ParamConfig>();
 
         for(Annotation a : annotations){
             if(a instanceof FormParam) {
                 FormParam p = (FormParam) a;
-                params.add(new DefaultBasicParamConfig(p.value(), p.defaultValue(), org.codegist.crest.config.Destination.FORM));
+                params.add(new DefaultParamConfig(p.value(), p.defaultValue(), org.codegist.crest.config.Destination.FORM));
             }else if(a instanceof FormParams) {
                 FormParams ps = (FormParams) a;
                 for(FormParam p : ps.value()){
-                    params.add(new DefaultBasicParamConfig(p.value(), p.defaultValue(), org.codegist.crest.config.Destination.FORM));
+                    params.add(new DefaultParamConfig(p.value(), p.defaultValue(), org.codegist.crest.config.Destination.FORM));
                 }
             }else if(a instanceof PathParam) {
                 PathParam p = (PathParam) a;
-                params.add(new DefaultBasicParamConfig(p.value(), p.defaultValue(), org.codegist.crest.config.Destination.PATH));
+                params.add(new DefaultParamConfig(p.value(), p.defaultValue(), org.codegist.crest.config.Destination.PATH));
             }else if(a instanceof PathParams) {
                 PathParams ps = (PathParams) a;
                 for(PathParam p : ps.value()){
-                    params.add(new DefaultBasicParamConfig(p.value(), p.defaultValue(), org.codegist.crest.config.Destination.PATH));
+                    params.add(new DefaultParamConfig(p.value(), p.defaultValue(), org.codegist.crest.config.Destination.PATH));
                 }
             }else if(a instanceof QueryParam) {
                 QueryParam p = (QueryParam) a;
-                params.add(new DefaultBasicParamConfig(p.value(), p.defaultValue(), org.codegist.crest.config.Destination.QUERY));
+                params.add(new DefaultParamConfig(p.value(), p.defaultValue(), org.codegist.crest.config.Destination.QUERY));
             }else if(a instanceof QueryParams) {
                 QueryParams ps = (QueryParams) a;
                 for(QueryParam p : ps.value()){
-                    params.add(new DefaultBasicParamConfig(p.value(), p.defaultValue(), org.codegist.crest.config.Destination.QUERY));
+                    params.add(new DefaultParamConfig(p.value(), p.defaultValue(), org.codegist.crest.config.Destination.QUERY));
                 }
             }else if(a instanceof HeaderParam) {
                 HeaderParam p = (HeaderParam) a;
-                params.add(new DefaultBasicParamConfig(p.value(), p.defaultValue(), org.codegist.crest.config.Destination.HEADER));
+                params.add(new DefaultParamConfig(p.value(), p.defaultValue(), org.codegist.crest.config.Destination.HEADER));
             }else if(a instanceof HeaderParams) {
                 HeaderParams ps = (HeaderParams) a;
                 for(HeaderParam p : ps.value()){
-                    params.add(new DefaultBasicParamConfig(p.value(), p.defaultValue(), org.codegist.crest.config.Destination.HEADER));
+                    params.add(new DefaultParamConfig(p.value(), p.defaultValue(), org.codegist.crest.config.Destination.HEADER));
                 }
             }
         }

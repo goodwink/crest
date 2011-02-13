@@ -254,9 +254,9 @@ public class ConfigsTest {
                 mutableMethodConfig.setResponseHandler(new Stubs.ResponseHandler1());
                 mutableMethodConfig.setErrorHandler(new Stubs.ErrorHandler1());
 
-                MutableParamConfig[] paramConfigs = new MutableParamConfig[meth.getParameterTypes().length];
+                MutableMethodParamConfig[] paramConfigs = new MutableMethodParamConfig[meth.getParameterTypes().length];
                 for (int i = 0; i < paramConfigs.length; i++) {
-                    paramConfigs[i] = new MutableParamConfig();
+                    paramConfigs[i] = new MutableMethodParamConfig();
                     paramConfigs[i].setDestination(Destination.FORM);
                     paramConfigs[i].setInjector(new Stubs.RequestParameterInjector3());
                     paramConfigs[i].setName("name" + i);
@@ -273,9 +273,9 @@ public class ConfigsTest {
         mutableOverride.setCache(new HashMap<Method, MethodConfig>() {{
             for (Method meth : TestInterface.class.getDeclaredMethods()) {
                 MutableMethodConfig mutableMethodConfig = new MutableMethodConfig();
-                MutableParamConfig[] paramConfigs = new MutableParamConfig[meth.getParameterTypes().length];
+                MutableMethodParamConfig[] paramConfigs = new MutableMethodParamConfig[meth.getParameterTypes().length];
                 for (int i = 0; i < paramConfigs.length; i++) {
-                    paramConfigs[i] = new MutableParamConfig();
+                    paramConfigs[i] = new MutableMethodParamConfig();
                 }
                 mutableMethodConfig.setParamsConfigs(paramConfigs);
                 put(meth, mutableMethodConfig);
@@ -304,7 +304,7 @@ public class ConfigsTest {
         }
 
 
-        MutableParamConfig p = (MutableParamConfig) ((MutableMethodConfig) mutableBase.getMethodConfig(TestInterface.T2)).getParamConfig(0);
+        MutableMethodParamConfig p = (MutableMethodParamConfig) ((MutableMethodConfig) mutableBase.getMethodConfig(TestInterface.T2)).getParamConfig(0);
         assertEquals("name0", result.getMethodConfig(TestInterface.T2).getParamConfig(0).getName());
         p.setName("hhhhhh");
         if(dynamic) {
@@ -399,26 +399,26 @@ public class ConfigsTest {
         private ErrorHandler errorHandler;
         private RetryHandler retryHandler;
 
-        private ParamConfig[] paramConfigs;
-        private BasicParamConfig[] extraParams;
+        private MethodParamConfig[] methodParamConfigs;
+        private ParamConfig[] extraParams;
 
         
-        public ParamConfig getParamConfig(int index) {
-            return paramConfigs != null && index < paramConfigs.length ? paramConfigs[index] : null;
+        public MethodParamConfig getParamConfig(int index) {
+            return methodParamConfigs != null && index < methodParamConfigs.length ? methodParamConfigs[index] : null;
         }
 
         
-        public BasicParamConfig[] getExtraParams() {
+        public ParamConfig[] getExtraParams() {
             return extraParams;
         }
 
-        public void setExtraParams(BasicParamConfig[] extraParams) {
+        public void setExtraParams(ParamConfig[] extraParams) {
             this.extraParams = extraParams;
         }
 
         
         public Integer getParamCount() {
-            return paramConfigs.length;
+            return methodParamConfigs.length;
         }
 
         
@@ -501,16 +501,16 @@ public class ConfigsTest {
             this.retryHandler = retryHandler;
         }
 
-        public ParamConfig[] getParamConfigs() {
-            return paramConfigs;
+        public MethodParamConfig[] getParamConfigs() {
+            return methodParamConfigs;
         }
 
-        public void setParamsConfigs(ParamConfig[] paramConfigs) {
-            this.paramConfigs = paramConfigs;
+        public void setParamsConfigs(MethodParamConfig[] methodParamConfigs) {
+            this.methodParamConfigs = methodParamConfigs;
         }
     }
 
-    private static class MutableParamConfig implements ParamConfig {
+    private static class MutableMethodParamConfig implements MethodParamConfig {
         private String name;
         private String defaultValue;
         private Destination dest;

@@ -31,10 +31,10 @@ import java.lang.reflect.Method;
  * <p>Implementors must respect the following contract :
  * <p>- No method return null except for the ones documented or when used as an override template (see {@link Configs#override(MethodConfig, MethodConfig)})
  * <p>- Defaults values must either be taken from interface's defaults constant or from {@link org.codegist.crest.InterfaceContext#getProperties()}'s defaults overrides.
- * <p>- Every arguments of every methods in the interface must have it's respective {@link org.codegist.crest.config.ParamConfig} configured in its respective {@link MethodConfig} object.
+ * <p>- Every arguments of every methods in the interface must have it's respective {@link MethodParamConfig} configured in its respective {@link MethodConfig} object.
  *
  * @see org.codegist.crest.config.MethodConfig
- * @see org.codegist.crest.config.ParamConfig
+ * @see MethodParamConfig
  * @see org.codegist.crest.config.InterfaceConfigFactory
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
@@ -66,7 +66,7 @@ public interface MethodConfig {
      *
      * @see org.codegist.crest.config.MethodConfig#getExtraParams()
      */
-    BasicParamConfig[] DEFAULT_EXTRA_PARAMS = new BasicParamConfig[0];
+    ParamConfig[] DEFAULT_EXTRA_PARAMs = new ParamConfig[0];
 
     /**
      * Default http method applied when non specified.
@@ -140,15 +140,15 @@ public interface MethodConfig {
      * Return the method's extra static parameter list
      * @return method's extra parameters
      */
-    BasicParamConfig[] getExtraParams();
+    ParamConfig[] getExtraParams();
 
     /**
-     * Get the ParamConfig object holding the configuration of the method's arguments at the requested index.
+     * Get the MethodParamConfig object holding the configuration of the method's arguments at the requested index.
      *
      * @param index
      * @return The param config object at the specified index, null if not found.
      */
-    ParamConfig getParamConfig(int index);
+    MethodParamConfig getParamConfig(int index);
 
     /**
      * @return The param count.

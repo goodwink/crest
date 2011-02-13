@@ -44,10 +44,10 @@ class DefaultMethodConfig implements MethodConfig {
     private final ErrorHandler errorHandler;
     private final RetryHandler retryHandler;
 
-    private final BasicParamConfig[] extraParams;
-    private final ParamConfig[] paramConfigs;
+    private final ParamConfig[] extraParams;
+    private final MethodParamConfig[] methodParamConfigs;
 
-    DefaultMethodConfig(Method method, String path, String httpMethod, Long socketTimeout, Long connectionTimeout, RequestInterceptor requestInterceptor, ResponseHandler responseHandler, ErrorHandler errorHandler, RetryHandler retryHandler, ParamConfig[] paramConfigs, BasicParamConfig[] extraParams) {
+    DefaultMethodConfig(Method method, String path, String httpMethod, Long socketTimeout, Long connectionTimeout, RequestInterceptor requestInterceptor, ResponseHandler responseHandler, ErrorHandler errorHandler, RetryHandler retryHandler, MethodParamConfig[] methodParamConfigs, ParamConfig[] extraParams) {
         this.method = method;
         this.path = path;
         this.httpMethod = httpMethod;
@@ -57,7 +57,7 @@ class DefaultMethodConfig implements MethodConfig {
         this.responseHandler = responseHandler;
         this.errorHandler = errorHandler;
         this.retryHandler = retryHandler;
-        this.paramConfigs = paramConfigs != null ? paramConfigs.clone() : null;
+        this.methodParamConfigs = methodParamConfigs != null ? methodParamConfigs.clone() : null;
         this.extraParams = extraParams != null ? extraParams.clone() : null;
     }
     public String getPath() {
@@ -96,15 +96,15 @@ class DefaultMethodConfig implements MethodConfig {
         return retryHandler;
     }
 
-    public ParamConfig getParamConfig(int index) {
-        return paramConfigs != null && index < paramConfigs.length ? paramConfigs[index] : null;
+    public MethodParamConfig getParamConfig(int index) {
+        return methodParamConfigs != null && index < methodParamConfigs.length ? methodParamConfigs[index] : null;
     }
 
     public Integer getParamCount() {
-        return paramConfigs != null ? paramConfigs.length : null;
+        return methodParamConfigs != null ? methodParamConfigs.length : null;
     }
 
-    public BasicParamConfig[] getExtraParams() {
+    public ParamConfig[] getExtraParams() {
         return extraParams != null ? extraParams.clone() : null;
     }
 
@@ -119,7 +119,7 @@ class DefaultMethodConfig implements MethodConfig {
                 .append("responseHandler", responseHandler)
                 .append("errorHandler", errorHandler)
                 .append("retryHandler", retryHandler)
-                .append("paramConfigs", paramConfigs)
+                .append("methodParamConfigs", methodParamConfigs)
                 .toString();
     }
 }

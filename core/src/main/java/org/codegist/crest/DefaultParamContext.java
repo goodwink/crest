@@ -21,7 +21,7 @@
 package org.codegist.crest;
 
 import org.codegist.crest.config.Destination;
-import org.codegist.crest.config.ParamConfig;
+import org.codegist.crest.config.MethodParamConfig;
 
 /**
  * Default internal immutable implementation of ParamContext
@@ -42,7 +42,7 @@ class DefaultParamContext<V> extends DefaultRequestContext implements ParamConte
                 || Destination.QUERY.equals(getParamConfig().getDestination());
     }
 
-    public ParamConfig getParamConfig() {
+    public MethodParamConfig getParamConfig() {
         return getParamConfig(index);
     }
 

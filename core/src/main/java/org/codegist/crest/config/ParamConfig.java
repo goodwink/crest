@@ -1,72 +1,71 @@
 /*
  * Copyright 2010 CodeGist.org
  *
- *    Licensed under the Apache License, Version 2.0 (the "License");
- *    you may not use this file except in compliance with the License.
- *    You may obtain a copy of the License at
+ *     Licensed under the Apache License, Version 2.0 (the "License");
+ *     you may not use this file except in compliance with the License.
+ *     You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *         http://www.apache.org/licenses/LICENSE-2.0
  *
- *    Unless required by applicable law or agreed to in writing, software
- *    distributed under the License is distributed on an "AS IS" BASIS,
- *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and
- *    limitations under the License.
+ *     Unless required by applicable law or agreed to in writing, software
+ *     distributed under the License is distributed on an "AS IS" BASIS,
+ *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *     See the License for the specific language governing permissions and
+ *     limitations under the License.
  *
- * ===================================================================
+ *  ==================================================================
  *
- * More information at http://www.codegist.org.
+ *  More information at http://www.codegist.org.
  */
 
 package org.codegist.crest.config;
 
-import org.codegist.crest.injector.DefaultInjector;
-import org.codegist.crest.injector.Injector;
-import org.codegist.crest.serializer.Serializer;
-
 /**
- * Method's argument configuration holder object.
+ * Basic parameter configuration holder object for interface/method extra parameters. Extra parameters are added on top of the method arguments.
  * <p>Implementors must respect the following contract :
- * <p>- No method return null except for the ones documented or when used as an override template (see {@link Configs#override(ParamConfig, ParamConfig)})
+ * <p>- No method return null
  * <p>- Defaults values must either be taken from interface's defaults constant or from {@link org.codegist.crest.InterfaceContext#getProperties()}'s defaults overrides.
  *
- * @see org.codegist.crest.config.MethodConfig
- * @see org.codegist.crest.config.ParamConfig
- * @see org.codegist.crest.config.InterfaceConfigFactory
+ * @see MethodConfig
+ * @see ParamConfig
+ * @see InterfaceConfigFactory
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
-public interface ParamConfig extends BasicParamConfig {
+public interface ParamConfig {
 
     /**
-     * Default injector applied when non specified.
+     * Default destination applied when non specified.
      *
-     * @see org.codegist.crest.config.ParamConfig#getInjector()
+     * @see ParamConfig#getDestination()
      */
-    Class<? extends Injector> DEFAULT_INJECTOR = DefaultInjector.class;
+    Destination DEFAULT_DESTINATION = Destination.QUERY;
 
     /**
-     * Default serializer applied when non specified.
+     * Default parameter value if not specified.
      *
-     * @see org.codegist.crest.config.ParamConfig#getSerializer()
+     * @see ParamConfig#getDefaultValue()
      */
-    Class<? extends Serializer> DEFAULT_SERIALIZER = null;
+    String DEFAULT_VALUE = "";
 
     /**
-     * The serializer used to transform this argument value in a string.
-     * <p>This serializer is meant to be used by the {@link org.codegist.crest.injector.Injector} set for this parameter.
-     * <p>{@link org.codegist.crest.injector.DefaultInjector} will merge the serialized value in the URL or Body.
-     * <p>If the object could not be serialized to a String, then a custom {@link org.codegist.crest.injector.Injector} can be specified.
+     * Default name applied when non specified.
      *
-     * @return The serializer used to transform this argument value in a string
-     * @see org.codegist.crest.serializer.Serializer
-     * @see org.codegist.crest.injector.Injector
+     * @see ParamConfig#getName()
      */
-    Serializer getSerializer();
+    String DEFAULT_NAME = "";
 
     /**
-     * <p>Should be used when the user wish to inject a parameter that is not serializable to a single String or when user specific rules applies (eg: parameter must be exploded in multiple values accross the request queryString and/or body content).
-     *
-     * @return The parameter request injector.
+     * @return Parameter name to be used.
      */
-    Injector getInjector();
+    String getName();
+
+    /**
+     * @return param default value
+     */
+    String getDefaultValue();
+
+    /**
+     * @return Destination of the argument value.
+     */
+    Destination getDestination();
 }

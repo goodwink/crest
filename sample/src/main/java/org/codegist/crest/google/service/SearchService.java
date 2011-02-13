@@ -20,10 +20,13 @@
 
 package org.codegist.crest.google.service;
 
-import org.codegist.crest.annotate.*;
+import org.codegist.crest.annotate.EndPoint;
+import org.codegist.crest.annotate.Path;
+import org.codegist.crest.annotate.QueryParam;
+import org.codegist.crest.annotate.ResponseHandler;
+import org.codegist.crest.google.handler.GoogleResponseHandler;
 import org.codegist.crest.google.model.Address;
 import org.codegist.crest.google.model.SearchResult;
-import org.codegist.crest.google.handler.GoogleResponseHandler;
 
 /**
  * @author Laurent Gilles (laurent.gilles@codegist.org)

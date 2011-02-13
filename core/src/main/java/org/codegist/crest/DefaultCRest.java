@@ -24,10 +24,10 @@ import org.codegist.common.lang.Disposable;
 import org.codegist.common.lang.Disposables;
 import org.codegist.common.lang.Strings;
 import org.codegist.common.reflect.ObjectMethodsAwareInvocationHandler;
-import org.codegist.crest.config.BasicParamConfig;
 import org.codegist.crest.config.ConfigFactoryException;
 import org.codegist.crest.config.InterfaceConfig;
 import org.codegist.crest.config.MethodConfig;
+import org.codegist.crest.config.ParamConfig;
 import org.codegist.crest.handler.RetryHandler;
 import org.codegist.crest.interceptor.RequestInterceptor;
 
@@ -179,7 +179,7 @@ public class DefaultCRest implements CRest, Disposable {
             ri.beforeParamsInjectionHandle(builder, requestContext);
 
             // Add default params
-            for(BasicParamConfig p : mc.getExtraParams()){
+            for(ParamConfig p : mc.getExtraParams()){
                 builder.addParam(
                         p.getName(),
                         p.getDefaultValue(),

@@ -42,7 +42,7 @@ import java.util.Map;
 import static org.codegist.crest.CRestProperty.*;
 import static org.codegist.crest.config.InterfaceConfig.DEFAULT_ENCODING;
 import static org.codegist.crest.config.MethodConfig.*;
-import static org.codegist.crest.config.ParamConfig.*;
+import static org.codegist.crest.config.MethodParamConfig.*;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
@@ -51,7 +51,7 @@ import static org.junit.Assert.assertEquals;
  */
 public class ConfigBuildersTest {
 
-    private static final BasicParamConfig[] PARAMS = new BasicParamConfig[]{new DefaultBasicParamConfig("1","2", Destination.FORM)};
+    private static final ParamConfig[] PARAMs = new ParamConfig[]{new DefaultParamConfig("1","2", Destination.FORM)};
 
     @Test
     public void testConfigBuildersPlaceholdersEmpty(){
@@ -103,19 +103,19 @@ public class ConfigBuildersTest {
                 .endMethodConfig()
                 .build();
         assertArrayEquals(
-                new BasicParamConfig[]{new DefaultBasicParamConfig("ddd", "bbb", Destination.FORM)},
+                new ParamConfig[]{new DefaultParamConfig("ddd", "bbb", Destination.FORM)},
                 b.getMethodConfig(Interface.B).getExtraParams()
         );
         assertArrayEquals(
-                new BasicParamConfig[]{new DefaultBasicParamConfig("ddd", "bbb", Destination.FORM), new DefaultBasicParamConfig("aaa", "ccc", Destination.HEADER)},
+                new ParamConfig[]{new DefaultParamConfig("ddd", "bbb", Destination.FORM), new DefaultParamConfig("aaa", "ccc", Destination.HEADER)},
                 b.getMethodConfig(Interface.A).getExtraParams()
         );
     }
     @Test
     public void testParamsNameKey2() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
         InterfaceConfig b = new ConfigBuilders.InterfaceConfigBuilder(Interface.class, new HashMap<String, Object>(){{
-            put(CRestProperty.CONFIG_METHOD_DEFAULT_EXTRA_PARAMS, new BasicParamConfig[]{
-                    new DefaultBasicParamConfig("ddd", "aaa", Destination.FORM),
+            put(CRestProperty.CONFIG_METHOD_DEFAULT_EXTRA_PARAMS, new ParamConfig[]{
+                    new DefaultParamConfig("ddd", "aaa", Destination.FORM),
 
             });
         }})
@@ -132,11 +132,11 @@ public class ConfigBuildersTest {
                 .endMethodConfig()
                 .build();
         assertArrayEquals(
-                new BasicParamConfig[]{new DefaultBasicParamConfig("ddd", "bbb", Destination.FORM)},
+                new ParamConfig[]{new DefaultParamConfig("ddd", "bbb", Destination.FORM)},
                 b.getMethodConfig(Interface.B).getExtraParams()
         );
         assertArrayEquals(
-                new BasicParamConfig[]{new DefaultBasicParamConfig("ddd", "bbb", Destination.FORM), new DefaultBasicParamConfig("aaa", "ccc", Destination.HEADER)},
+                new ParamConfig[]{new DefaultParamConfig("ddd", "bbb", Destination.FORM), new DefaultParamConfig("aaa", "ccc", Destination.HEADER)},
                 b.getMethodConfig(Interface.A).getExtraParams()
         );
     }
@@ -184,8 +184,8 @@ public class ConfigBuildersTest {
                             (ResponseHandler) Class.forName(placeholders.get("my.place.holder.meth-resp")).newInstance(),
                             (ErrorHandler) Class.forName(placeholders.get("my.place.holder.meth-error")).newInstance(),
                             (RetryHandler) Class.forName(placeholders.get("my.place.holder.meth-retry")).newInstance(),
-                            new ParamConfig[]{
-                                    new DefaultParamConfig(
+                            new MethodParamConfig[]{
+                                    new DefaultMethodParamConfig(
                                             placeholders.get("my.place.holder.param-name"),
                                             placeholders.get("my.place.holder.param-def"),
                                             Destination.valueOf(placeholders.get("my.place.holder.param-dest")),
@@ -193,7 +193,7 @@ public class ConfigBuildersTest {
                                             (Injector) Class.forName(placeholders.get("my.place.holder.param-req-inject")).newInstance()
                                     )
                             },
-                            new BasicParamConfig[0]
+                            new ParamConfig[0]
                     ));
                     put(Interface.B, new DefaultMethodConfig(
                             Interface.B,
@@ -205,22 +205,22 @@ public class ConfigBuildersTest {
                             (ResponseHandler) Class.forName(placeholders.get("my.place.holder.meth-resp")).newInstance(),
                             (ErrorHandler) Class.forName(placeholders.get("my.place.holder.meth-error")).newInstance(),
                             (RetryHandler) Class.forName(placeholders.get("my.place.holder.meth-retry")).newInstance(),
-                            new ParamConfig[]{
-                                    new DefaultParamConfig(
+                            new MethodParamConfig[]{
+                                    new DefaultMethodParamConfig(
                                             placeholders.get("my.place.holder.param-name"),
                                             placeholders.get("my.place.holder.param-def"),
                                             Destination.valueOf(placeholders.get("my.place.holder.param-dest")),
                                             (Serializer) Class.forName(placeholders.get("my.place.holder.param-seri")).newInstance(),
                                             (Injector) Class.forName(placeholders.get("my.place.holder.param-req-inject")).newInstance()
                                     ),
-                                    new DefaultParamConfig(
+                                    new DefaultMethodParamConfig(
                                             placeholders.get("my.place.holder.param-name"),
                                             placeholders.get("my.place.holder.param-def"),
                                             Destination.valueOf(placeholders.get("my.place.holder.param-dest")),
                                             (Serializer) Class.forName(placeholders.get("my.place.holder.param-seri")).newInstance(),
                                             (Injector) Class.forName(placeholders.get("my.place.holder.param-req-inject")).newInstance()
                                     ),
-                                    new DefaultParamConfig(
+                                    new DefaultMethodParamConfig(
                                             placeholders.get("my.place.holder.param-name"),
                                             placeholders.get("my.place.holder.param-def"),
                                             Destination.valueOf(placeholders.get("my.place.holder.param-dest")),
@@ -228,7 +228,7 @@ public class ConfigBuildersTest {
                                             (Injector) Class.forName(placeholders.get("my.place.holder.param-req-inject")).newInstance()
                                     )
                             },
-                            new BasicParamConfig[0]
+                            new ParamConfig[0]
                     ));
                 }}
         );
@@ -291,7 +291,7 @@ public class ConfigBuildersTest {
         defaultOverrides.put(CONFIG_METHOD_DEFAULT_RETRY_HANDLER, new Stubs.RetryHandler1());
         defaultOverrides.put(CONFIG_METHOD_DEFAULT_HTTP_METHOD, "HEAD");
         defaultOverrides.put(CONFIG_METHOD_DEFAULT_RESPONSE_HANDLER, new Stubs.ResponseHandler1());
-        defaultOverrides.put(CONFIG_METHOD_DEFAULT_EXTRA_PARAMS, PARAMS);
+        defaultOverrides.put(CONFIG_METHOD_DEFAULT_EXTRA_PARAMS, PARAMs);
         defaultOverrides.put(CONFIG_PARAM_DEFAULT_DESTINATION, Destination.FORM);
         defaultOverrides.put(CONFIG_PARAM_DEFAULT_INJECTOR, new Stubs.RequestParameterInjector1());
         defaultOverrides.put(CONFIG_PARAM_DEFAULT_SERIALIZER, new Stubs.Serializer1());
@@ -314,8 +314,8 @@ public class ConfigBuildersTest {
                             (ResponseHandler) defaultOverrides.get(CONFIG_METHOD_DEFAULT_RESPONSE_HANDLER),
                             (ErrorHandler) defaultOverrides.get(CONFIG_METHOD_DEFAULT_ERROR_HANDLER),
                             (RetryHandler) defaultOverrides.get(CONFIG_METHOD_DEFAULT_RETRY_HANDLER),
-                            new ParamConfig[]{
-                                    new DefaultParamConfig(
+                            new MethodParamConfig[]{
+                                    new DefaultMethodParamConfig(
                                             (String) defaultOverrides.get(CONFIG_PARAM_DEFAULT_NAME),
                                             (String) defaultOverrides.get(CONFIG_PARAM_DEFAULT_VALUE),
                                             (Destination) defaultOverrides.get(CONFIG_PARAM_DEFAULT_DESTINATION),
@@ -323,7 +323,7 @@ public class ConfigBuildersTest {
                                             (Injector) defaultOverrides.get(CONFIG_PARAM_DEFAULT_INJECTOR)
                                     )
                             },
-                            (BasicParamConfig[]) defaultOverrides.get(CONFIG_METHOD_DEFAULT_EXTRA_PARAMS)
+                            (ParamConfig[]) defaultOverrides.get(CONFIG_METHOD_DEFAULT_EXTRA_PARAMS)
                     ));
                     put(Interface.B, new DefaultMethodConfig(
                             Interface.B,
@@ -335,22 +335,22 @@ public class ConfigBuildersTest {
                             (ResponseHandler) defaultOverrides.get(CONFIG_METHOD_DEFAULT_RESPONSE_HANDLER),
                             (ErrorHandler) defaultOverrides.get(CONFIG_METHOD_DEFAULT_ERROR_HANDLER),
                             (RetryHandler) defaultOverrides.get(CONFIG_METHOD_DEFAULT_RETRY_HANDLER),
-                            new ParamConfig[]{
-                                    new DefaultParamConfig(
+                            new MethodParamConfig[]{
+                                    new DefaultMethodParamConfig(
                                             (String) defaultOverrides.get(CONFIG_PARAM_DEFAULT_NAME),
                                             (String) defaultOverrides.get(CONFIG_PARAM_DEFAULT_VALUE),
                                             (Destination) defaultOverrides.get(CONFIG_PARAM_DEFAULT_DESTINATION),
                                             (Serializer) defaultOverrides.get(CONFIG_PARAM_DEFAULT_SERIALIZER),
                                             (Injector) defaultOverrides.get(CONFIG_PARAM_DEFAULT_INJECTOR)
                                     ),
-                                    new DefaultParamConfig(
+                                    new DefaultMethodParamConfig(
                                             (String) defaultOverrides.get(CONFIG_PARAM_DEFAULT_NAME),
                                             (String) defaultOverrides.get(CONFIG_PARAM_DEFAULT_VALUE),
                                             (Destination) defaultOverrides.get(CONFIG_PARAM_DEFAULT_DESTINATION),
                                             (Serializer) defaultOverrides.get(CONFIG_PARAM_DEFAULT_SERIALIZER),
                                             (Injector) defaultOverrides.get(CONFIG_PARAM_DEFAULT_INJECTOR)
                                     ),
-                                    new DefaultParamConfig(
+                                    new DefaultMethodParamConfig(
                                             (String) defaultOverrides.get(CONFIG_PARAM_DEFAULT_NAME),
                                             (String) defaultOverrides.get(CONFIG_PARAM_DEFAULT_VALUE),
                                             (Destination) defaultOverrides.get(CONFIG_PARAM_DEFAULT_DESTINATION),
@@ -358,7 +358,7 @@ public class ConfigBuildersTest {
                                             (Injector) defaultOverrides.get(CONFIG_PARAM_DEFAULT_INJECTOR)
                                     )
                             },
-                            (BasicParamConfig[]) defaultOverrides.get(CONFIG_METHOD_DEFAULT_EXTRA_PARAMS)
+                            (ParamConfig[]) defaultOverrides.get(CONFIG_METHOD_DEFAULT_EXTRA_PARAMS)
                     ));
                 }}
         );
@@ -385,8 +385,8 @@ public class ConfigBuildersTest {
                             TestUtils.newInstance(DEFAULT_RESPONSE_HANDLER),
                             TestUtils.newInstance(DEFAULT_ERROR_HANDLER),
                             TestUtils.newInstance(DEFAULT_RETRY_HANDLER),
-                            new ParamConfig[]{
-                                    new DefaultParamConfig(
+                            new MethodParamConfig[]{
+                                    new DefaultMethodParamConfig(
                                             "n",
                                             DEFAULT_VALUE,
                                             DEFAULT_DESTINATION,
@@ -394,7 +394,7 @@ public class ConfigBuildersTest {
                                             TestUtils.newInstance(DEFAULT_INJECTOR)
                                     )
                             },
-                            DEFAULT_EXTRA_PARAMS
+                            DEFAULT_EXTRA_PARAMs
                     ));
                     put(Interface.B, new DefaultMethodConfig(
                             Interface.B,
@@ -406,22 +406,22 @@ public class ConfigBuildersTest {
                             TestUtils.newInstance(DEFAULT_RESPONSE_HANDLER),
                             TestUtils.newInstance(DEFAULT_ERROR_HANDLER),
                             TestUtils.newInstance(DEFAULT_RETRY_HANDLER),
-                            new ParamConfig[]{
-                                    new DefaultParamConfig(
+                            new MethodParamConfig[]{
+                                    new DefaultMethodParamConfig(
                                             "n",
                                             DEFAULT_VALUE,
                                             DEFAULT_DESTINATION,
                                             new ToStringSerializer(),
                                             TestUtils.newInstance(DEFAULT_INJECTOR)
                                     ),
-                                    new DefaultParamConfig(
+                                    new DefaultMethodParamConfig(
                                             "n",
                                             DEFAULT_VALUE,
                                             DEFAULT_DESTINATION,
                                             new ArraySerializer(),
                                             TestUtils.newInstance(DEFAULT_INJECTOR)
                                     ),
-                                    new DefaultParamConfig(
+                                    new DefaultMethodParamConfig(
                                             "n",
                                             DEFAULT_VALUE,
                                             DEFAULT_DESTINATION,
@@ -429,7 +429,7 @@ public class ConfigBuildersTest {
                                             TestUtils.newInstance(DEFAULT_INJECTOR)
                                     )
                             },
-                            DEFAULT_EXTRA_PARAMS
+                            DEFAULT_EXTRA_PARAMs
                     ));
                 }}
         );
@@ -456,8 +456,8 @@ public class ConfigBuildersTest {
                             new Stubs.ResponseHandler2(),
                             new Stubs.ErrorHandler2(),
                             new Stubs.RetryHandler2(),
-                            new ParamConfig[]{
-                                    new DefaultParamConfig(
+                            new MethodParamConfig[]{
+                                    new DefaultMethodParamConfig(
                                             "n",
                                             DEFAULT_VALUE,
                                             DEFAULT_DESTINATION,
@@ -465,7 +465,7 @@ public class ConfigBuildersTest {
                                             new Stubs.RequestParameterInjector2()
                                     )
                             },
-                            PARAMS
+                            PARAMs
                     ));
                     put(Interface.B, new DefaultMethodConfig(
                             Interface.B,
@@ -477,22 +477,22 @@ public class ConfigBuildersTest {
                             new Stubs.ResponseHandler2(),
                             new Stubs.ErrorHandler2(),
                             new Stubs.RetryHandler2(),
-                            new ParamConfig[]{
-                                    new DefaultParamConfig(
+                            new MethodParamConfig[]{
+                                    new DefaultMethodParamConfig(
                                             "n",
                                             DEFAULT_VALUE,
                                             DEFAULT_DESTINATION,
                                             new Stubs.Serializer2(),
                                             new Stubs.RequestParameterInjector2()
                                     ),
-                                    new DefaultParamConfig(
+                                    new DefaultMethodParamConfig(
                                             "n",
                                             DEFAULT_VALUE,
                                             DEFAULT_DESTINATION,
                                             new Stubs.Serializer2(),
                                             new Stubs.RequestParameterInjector2()
                                     ),
-                                    new DefaultParamConfig(
+                                    new DefaultMethodParamConfig(
                                             "n",
                                             DEFAULT_VALUE,
                                             DEFAULT_DESTINATION,
@@ -500,7 +500,7 @@ public class ConfigBuildersTest {
                                             new Stubs.RequestParameterInjector2()
                                     )
                             },
-                            PARAMS
+                            PARAMs
                     ));
                 }}
         );
@@ -541,8 +541,8 @@ public class ConfigBuildersTest {
                             new Stubs.ResponseHandler2(),
                             new Stubs.ErrorHandler2(),
                             new Stubs.RetryHandler1(),
-                            new ParamConfig[]{
-                                    new DefaultParamConfig(
+                            new MethodParamConfig[]{
+                                    new DefaultMethodParamConfig(
                                             "n",
                                             DEFAULT_VALUE,
                                             DEFAULT_DESTINATION,
@@ -550,7 +550,7 @@ public class ConfigBuildersTest {
                                             new Stubs.RequestParameterInjector2()
                                     )
                             },
-                            PARAMS
+                            PARAMs
                     ));
                     put(Interface.B, new DefaultMethodConfig(
                             Interface.B,
@@ -562,22 +562,22 @@ public class ConfigBuildersTest {
                             new Stubs.ResponseHandler3(),
                             new Stubs.ErrorHandler3(),
                             new Stubs.RetryHandler2(),
-                            new ParamConfig[]{
-                                    new DefaultParamConfig(
+                            new MethodParamConfig[]{
+                                    new DefaultMethodParamConfig(
                                             "n",
                                             DEFAULT_VALUE,
                                             DEFAULT_DESTINATION,
                                             new Stubs.Serializer3(),
                                             new Stubs.RequestParameterInjector3()
                                     ),
-                                    new DefaultParamConfig(
+                                    new DefaultMethodParamConfig(
                                             "n",
                                             DEFAULT_VALUE,
                                             DEFAULT_DESTINATION,
                                             new Stubs.Serializer3(),
                                             new Stubs.RequestParameterInjector3()
                                     ),
-                                    new DefaultParamConfig(
+                                    new DefaultMethodParamConfig(
                                             "n",
                                             DEFAULT_VALUE,
                                             DEFAULT_DESTINATION,
@@ -585,7 +585,7 @@ public class ConfigBuildersTest {
                                             new Stubs.RequestParameterInjector3()
                                     )
                             },
-                            PARAMS
+                            PARAMs
                     ));
                 }}
         );
@@ -636,8 +636,8 @@ public class ConfigBuildersTest {
                             new Stubs.ResponseHandler2(),
                             new Stubs.ErrorHandler2(),
                             new Stubs.RetryHandler2(),
-                            new ParamConfig[]{
-                                    new DefaultParamConfig(
+                            new MethodParamConfig[]{
+                                    new DefaultMethodParamConfig(
                                             "name4",
                                             "def",
                                             Destination.QUERY,
@@ -645,7 +645,7 @@ public class ConfigBuildersTest {
                                             new Stubs.RequestParameterInjector1()
                                     )
                             },
-                            PARAMS
+                            PARAMs
                     ));
                     put(Interface.B, new DefaultMethodConfig(
                             Interface.B,
@@ -657,22 +657,22 @@ public class ConfigBuildersTest {
                             new Stubs.ResponseHandler3(),
                             new Stubs.ErrorHandler3(),
                             new Stubs.RetryHandler1(),
-                            new ParamConfig[]{
-                                    new DefaultParamConfig(
+                            new MethodParamConfig[]{
+                                    new DefaultMethodParamConfig(
                                             "n",
                                             DEFAULT_VALUE,
                                             DEFAULT_DESTINATION,
                                             new Stubs.Serializer1(),
                                             new Stubs.RequestParameterInjector1()
                                     ),
-                                    new DefaultParamConfig(
+                                    new DefaultMethodParamConfig(
                                             "n",
                                             DEFAULT_VALUE,
                                             DEFAULT_DESTINATION,
                                             new Stubs.Serializer3(),
                                             new Stubs.RequestParameterInjector3()
                                     ),
-                                    new DefaultParamConfig(
+                                    new DefaultMethodParamConfig(
                                             "n",
                                             DEFAULT_VALUE,
                                             DEFAULT_DESTINATION,
@@ -680,7 +680,7 @@ public class ConfigBuildersTest {
                                             new Stubs.RequestParameterInjector3()
                                     )
                             },
-                            PARAMS
+                            PARAMs
                     ));
                 }}
         );
@@ -737,18 +737,18 @@ public class ConfigBuildersTest {
                     put(Interface.A, new DefaultMethodConfig(
                             Interface.A,
                             null, null, null, null, null, null, null, null,
-                            new ParamConfig[]{
-                                    new DefaultParamConfig(null, null, null, null, null)
-                            },new BasicParamConfig[0]
+                            new MethodParamConfig[]{
+                                    new DefaultMethodParamConfig(null, null, null, null, null)
+                            },new ParamConfig[0]
                     ));
                     put(Interface.B, new DefaultMethodConfig(
                             Interface.B,
                             null, null, null, null, null, null, null, null,
-                            new ParamConfig[]{
-                                    new DefaultParamConfig(null, null, null, null, null),
-                                    new DefaultParamConfig(null, null, null, null, null),
-                                    new DefaultParamConfig(null, null, null, null, null)
-                            },new BasicParamConfig[0]
+                            new MethodParamConfig[]{
+                                    new DefaultMethodParamConfig(null, null, null, null, null),
+                                    new DefaultMethodParamConfig(null, null, null, null, null),
+                                    new DefaultMethodParamConfig(null, null, null, null, null)
+                            },new ParamConfig[0]
                     ));
                 }}
         );

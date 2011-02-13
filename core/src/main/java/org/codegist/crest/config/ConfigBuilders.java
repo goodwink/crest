@@ -62,12 +62,12 @@ import static org.codegist.common.lang.Strings.isBlank;
  *                                           .endParamConfig()
  *                                       .endMethodConfig()
  *                                       .build();
- * // Any non specified property will be defaulted to the respective default value taken from {@link org.codegist.crest.config.InterfaceConfig},{@link MethodConfig},{@link ParamConfig}
+ * // Any non specified property will be defaulted to the respective default value taken from {@link org.codegist.crest.config.InterfaceConfig},{@link MethodConfig},{@link MethodParamConfig}
  * </pre></code>
  *
  * @see org.codegist.crest.config.DefaultInterfaceConfig
  * @see org.codegist.crest.config.DefaultMethodConfig
- * @see org.codegist.crest.config.DefaultParamConfig
+ * @see DefaultMethodParamConfig
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
 public abstract class ConfigBuilders {
@@ -463,8 +463,8 @@ public abstract class ConfigBuilders {
     public static class MethodConfigBuilder extends ConfigBuilders {
         private final Method method;
         private final InterfaceConfigBuilder parent;
-        private final Map<String, BasicParamConfigBuilder> extraParamBuilders = new LinkedHashMap<String, BasicParamConfigBuilder>();
-        private final ParamConfigBuilder[] paramConfigBuilders;
+        private final Map<String, ParamConfigBuilder> extraParamBuilders = new LinkedHashMap<String, ParamConfigBuilder>();
+        private final MethodParamConfigBuilder[] methodParamConfigBuilders;
 
         private String path;
         private String meth;
@@ -496,9 +496,9 @@ public abstract class ConfigBuilders {
             super(customProperties);
             this.parent = parent;
             this.method = method;
-            this.paramConfigBuilders = new ParamConfigBuilder[method.getParameterTypes().length];
-            for (int i = 0; i < this.paramConfigBuilders.length; i++) {
-                this.paramConfigBuilders[i] = new ParamConfigBuilder(this, method.getGenericParameterTypes()[i], customProperties);
+            this.methodParamConfigBuilders = new MethodParamConfigBuilder[method.getParameterTypes().length];
+            for (int i = 0; i < this.methodParamConfigBuilders.length; i++) {
+                this.methodParamConfigBuilders[i] = new MethodParamConfigBuilder(this, method.getGenericParameterTypes()[i], customProperties);
             }
         }
 
@@ -546,13 +546,13 @@ public abstract class ConfigBuilders {
          * @return config
          */
         public MethodConfig build(boolean isTemplate, boolean validateConfig) {
-            ParamConfig[] pConfig = new ParamConfig[paramConfigBuilders.length];
-            for (int i = 0; i < paramConfigBuilders.length; i++) {
-                pConfig[i] = this.paramConfigBuilders[i].build(isTemplate, validateConfig);
+            MethodParamConfig[] pConfigMethod = new MethodParamConfig[methodParamConfigBuilders.length];
+            for (int i = 0; i < methodParamConfigBuilders.length; i++) {
+                pConfigMethod[i] = this.methodParamConfigBuilders[i].build(isTemplate, validateConfig);
             }
-            Map<String, BasicParamConfig> extraParams = new LinkedHashMap<String, BasicParamConfig>();
-            for (BasicParamConfigBuilder b : extraParamBuilders.values()) {
-                BasicParamConfig bpc = b.build(isTemplate, validateConfig);
+            Map<String, ParamConfig> extraParams = new LinkedHashMap<String, ParamConfig>();
+            for (ParamConfigBuilder b : extraParamBuilders.values()) {
+                ParamConfig bpc = b.build(isTemplate, validateConfig);
                 extraParams.put(bpc.getName(), bpc);
             }
 
@@ -569,8 +569,8 @@ public abstract class ConfigBuilders {
             if (!isTemplate) {
                 path = defaultIfUndefined(path, CRestProperty.CONFIG_METHOD_DEFAULT_PATH, MethodConfig.DEFAULT_PATH);
                 meth = defaultIfUndefined(meth, CRestProperty.CONFIG_METHOD_DEFAULT_HTTP_METHOD, MethodConfig.DEFAULT_HTTP_METHOD);
-                BasicParamConfig[] defs = defaultIfUndefined(null, CRestProperty.CONFIG_METHOD_DEFAULT_EXTRA_PARAMS, MethodConfig.DEFAULT_EXTRA_PARAMS);
-                for(BasicParamConfig def : defs){
+                ParamConfig[] defs = defaultIfUndefined(null, CRestProperty.CONFIG_METHOD_DEFAULT_EXTRA_PARAMS, MethodConfig.DEFAULT_EXTRA_PARAMs);
+                for(ParamConfig def : defs){
                     if(extraParams.containsKey(def.getName())) continue;
                     extraParams.put(def.getName(), def);
                 }
@@ -591,8 +591,8 @@ public abstract class ConfigBuilders {
                     responseHandler,
                     errorHandler,
                     retryHandler,
-                    pConfig,
-                    extraParams.values().toArray(new BasicParamConfig[extraParams.size()])
+                    pConfigMethod,
+                    extraParams.values().toArray(new ParamConfig[extraParams.size()])
             );
         }
 
@@ -605,8 +605,8 @@ public abstract class ConfigBuilders {
             return (MethodConfigBuilder) super.setIgnoreNullOrEmptyValues(ignoreNullOrEmptyValues);
         }
 
-        public ParamConfigBuilder startParamConfig(int index) {
-            return paramConfigBuilders[index];
+        public MethodParamConfigBuilder startParamConfig(int index) {
+            return methodParamConfigBuilders[index];
         }
 
         public MethodConfigBuilder setPath(String path) {
@@ -641,10 +641,10 @@ public abstract class ConfigBuilders {
                     .endParamConfig();
         }
 
-        public BasicParamConfigBuilder startExtraParamConfig(String name){
-            BasicParamConfigBuilder builder = extraParamBuilders.get(name);
+        public ParamConfigBuilder startExtraParamConfig(String name){
+            ParamConfigBuilder builder = extraParamBuilders.get(name);
             if(builder == null) {
-                extraParamBuilders.put(name, builder = new BasicParamConfigBuilder(this, customProperties).setName(replacePlaceholders(name)));
+                extraParamBuilders.put(name, builder = new ParamConfigBuilder(this, customProperties).setName(replacePlaceholders(name)));
             }
             return builder;
         }
@@ -745,7 +745,7 @@ public abstract class ConfigBuilders {
 
         public MethodConfigBuilder setParamsSerializer(Serializer paramSerializer) {
             if (ignore(paramSerializer)) return this;
-            for (ParamConfigBuilder b : paramConfigBuilders) {
+            for (MethodParamConfigBuilder b : methodParamConfigBuilders) {
                 b.setSerializer(paramSerializer);
             }
             return this;
@@ -753,7 +753,7 @@ public abstract class ConfigBuilders {
 
         public MethodConfigBuilder setParamsSerializer(String paramSerializerClassName) throws IllegalAccessException, InstantiationException, ClassNotFoundException {
             if (ignore(paramSerializerClassName)) return this;
-            for (ParamConfigBuilder b : paramConfigBuilders) {
+            for (MethodParamConfigBuilder b : methodParamConfigBuilders) {
                 b.setSerializer(paramSerializerClassName);
             }
             return this;
@@ -761,7 +761,7 @@ public abstract class ConfigBuilders {
 
         public MethodConfigBuilder setParamsSerializer(Class<? extends Serializer> paramSerializer) throws IllegalAccessException, InstantiationException {
             if (ignore(paramSerializer)) return this;
-            for (ParamConfigBuilder b : paramConfigBuilders) {
+            for (MethodParamConfigBuilder b : methodParamConfigBuilders) {
                 b.setSerializer(paramSerializer);
             }
             return this;
@@ -769,7 +769,7 @@ public abstract class ConfigBuilders {
 
         public MethodConfigBuilder setParamsInjector(Injector injector) {
             if (ignore(injector)) return this;
-            for (ParamConfigBuilder b : paramConfigBuilders) {
+            for (MethodParamConfigBuilder b : methodParamConfigBuilders) {
                 b.setInjector(injector);
             }
             return this;
@@ -777,7 +777,7 @@ public abstract class ConfigBuilders {
 
         public MethodConfigBuilder setParamsInjector(String injectorClassName) throws IllegalAccessException, InstantiationException, ClassNotFoundException {
             if (ignore(injectorClassName)) return this;
-            for (ParamConfigBuilder b : paramConfigBuilders) {
+            for (MethodParamConfigBuilder b : methodParamConfigBuilders) {
                 b.setInjector(injectorClassName);
             }
             return this;
@@ -785,7 +785,7 @@ public abstract class ConfigBuilders {
 
         public MethodConfigBuilder setParamsInjector(Class<? extends Injector> injectorCls) throws IllegalAccessException, InstantiationException {
             if (ignore(injectorCls)) return this;
-            for (ParamConfigBuilder b : paramConfigBuilders) {
+            for (MethodParamConfigBuilder b : methodParamConfigBuilders) {
                 b.setInjector(injectorCls);
             }
             return this;
@@ -793,7 +793,7 @@ public abstract class ConfigBuilders {
 
         public MethodConfigBuilder setParamsName(String name) {
             if (ignore(name)) return this;
-            for (ParamConfigBuilder b : paramConfigBuilders) {
+            for (MethodParamConfigBuilder b : methodParamConfigBuilders) {
                 b.setName(name);
             }
             return this;
@@ -801,7 +801,7 @@ public abstract class ConfigBuilders {
     }
 
     @SuppressWarnings("unchecked")
-    public static class BasicParamConfigBuilder extends ConfigBuilders {
+    public static class ParamConfigBuilder extends ConfigBuilders {
         private final MethodConfigBuilder parent;
         private String name;
         private String defaultValue;
@@ -812,139 +812,17 @@ public abstract class ConfigBuilders {
          * Given properties map can contains user-defined default values, that override interface predefined defauts.
          * @param customProperties default values holder
          */
-        public BasicParamConfigBuilder(Map<String, Object> customProperties) {
+        public ParamConfigBuilder(Map<String, Object> customProperties) {
             this(null, customProperties);
         }
 
-        private BasicParamConfigBuilder(MethodConfigBuilder parent) {
+        private ParamConfigBuilder(MethodConfigBuilder parent) {
             this(parent, null);
         }
 
-        private BasicParamConfigBuilder(MethodConfigBuilder parent, Map<String, Object> customProperties) {
+        private ParamConfigBuilder(MethodConfigBuilder parent, Map<String, Object> customProperties) {
             super(customProperties);
             this.parent = parent;
-        }
-
-        /**
-         * Validate and build a normal config with defaulted values if necessary
-         * @return config
-         */
-        public BasicParamConfig build() {
-            return build(false, true);
-        }
-
-        /**
-         * Build a template config. No default values used. To be used to override another config
-         * @return config template
-         */
-        public BasicParamConfig buildTemplate() {
-            return build(true, false);
-        }
-
-        /**
-         * Build a normal config with defaulted values if necessary. Validate the config if specified
-         * @param validateConfig flag that indicates if the config should be validated
-         * @return config
-         */
-        public BasicParamConfig buildConfig(boolean validateConfig) {
-            return build(false, validateConfig);
-        }
-
-        /**
-         * Build a normal config with defaulted values if necessary. No validation occurs
-         * @return config
-         */
-        public BasicParamConfig buildUnvalidatedConfig() {
-            return buildConfig(false);
-        }
-
-        /**
-         * Build the config.
-         * <p>If isTemplate is true, the returned config won't have any default value, should be used to override another config.
-         * <p>If validate config is true (and isTemplate is false), the config is validated to ensure required information have been given
-         * @param isTemplate if true, return a config template
-         * @param validateConfig if true, config is validated
-         * @return config
-         */
-        public BasicParamConfig build(boolean isTemplate, boolean validateConfig) {
-            // make local copies so that we don't mess with builder state to be able to call build multiple times on it
-            String name = this.name;
-            String defaultValue = this.defaultValue;
-            Destination dest = this.dest;
-
-            if (!isTemplate) {
-                name = defaultIfUndefined(name, CRestProperty.CONFIG_PARAM_DEFAULT_NAME, ParamConfig.DEFAULT_NAME);
-                defaultValue = defaultIfUndefined(defaultValue, CRestProperty.CONFIG_PARAM_DEFAULT_VALUE, ParamConfig.DEFAULT_VALUE);
-                dest = defaultIfUndefined(dest, CRestProperty.CONFIG_PARAM_DEFAULT_DESTINATION, ParamConfig.DEFAULT_DESTINATION);
-
-                if(validateConfig) {
-                    if(Strings.isBlank(name))
-                        throw new IllegalArgumentException("Parameter must have a name");
-                }
-            }
-
-            return new DefaultBasicParamConfig(name, defaultValue, dest);
-        }
-
-        public MethodConfigBuilder endParamConfig() {
-            return parent;
-        }
-
-        @Override
-        public BasicParamConfigBuilder setIgnoreNullOrEmptyValues(boolean ignoreNullOrEmptyValues) {
-            return (BasicParamConfigBuilder) super.setIgnoreNullOrEmptyValues(ignoreNullOrEmptyValues);
-        }
-
-        public BasicParamConfigBuilder setName(String name) {
-            if (ignore(name)) return this;
-            this.name = replacePlaceholders(name);
-            return this;
-        }
-
-
-        public BasicParamConfigBuilder setDefaultValue(String defaultValue) {
-            if (ignore(defaultValue)) return this;
-            this.defaultValue = replacePlaceholders(defaultValue);
-            return this;
-        }
-
-        public BasicParamConfigBuilder setDestination(String dest) {
-            if (ignore(dest)) return this;
-            return setDestination(Destination.valueOf(replacePlaceholders(dest).toUpperCase()));
-        }
-
-        public BasicParamConfigBuilder setDestination(Destination dest) {
-            if (ignore(dest)) return this;
-            this.dest = dest;
-            return this;
-        }
-
-
-    }
-
-    @SuppressWarnings("unchecked")
-    public static class ParamConfigBuilder extends BasicParamConfigBuilder {
-        private final Type type;
-        private Serializer serializer;
-        private Injector injector;
-
-        /**
-         * Given properties map can contains user-defined default values, that override interface predefined defauts.
-         * @param customProperties default values holder
-         */
-        public ParamConfigBuilder(Type type, Map<String, Object> customProperties) {
-            super(null, customProperties);
-            this.type = type;
-        }
-
-        private ParamConfigBuilder(MethodConfigBuilder parent, Type type) {
-            super(parent, null);
-            this.type = type;
-        }
-
-        private ParamConfigBuilder(MethodConfigBuilder parent, Type type, Map<String, Object> customProperties) {
-            super(parent, customProperties);
-            this.type = type;
         }
 
         /**
@@ -990,12 +868,134 @@ public abstract class ConfigBuilders {
          */
         public ParamConfig build(boolean isTemplate, boolean validateConfig) {
             // make local copies so that we don't mess with builder state to be able to call build multiple times on it
+            String name = this.name;
+            String defaultValue = this.defaultValue;
+            Destination dest = this.dest;
+
+            if (!isTemplate) {
+                name = defaultIfUndefined(name, CRestProperty.CONFIG_PARAM_DEFAULT_NAME, MethodParamConfig.DEFAULT_NAME);
+                defaultValue = defaultIfUndefined(defaultValue, CRestProperty.CONFIG_PARAM_DEFAULT_VALUE, MethodParamConfig.DEFAULT_VALUE);
+                dest = defaultIfUndefined(dest, CRestProperty.CONFIG_PARAM_DEFAULT_DESTINATION, MethodParamConfig.DEFAULT_DESTINATION);
+
+                if(validateConfig) {
+                    if(Strings.isBlank(name))
+                        throw new IllegalArgumentException("Parameter must have a name");
+                }
+            }
+
+            return new DefaultParamConfig(name, defaultValue, dest);
+        }
+
+        public MethodConfigBuilder endParamConfig() {
+            return parent;
+        }
+
+        @Override
+        public ParamConfigBuilder setIgnoreNullOrEmptyValues(boolean ignoreNullOrEmptyValues) {
+            return (ParamConfigBuilder) super.setIgnoreNullOrEmptyValues(ignoreNullOrEmptyValues);
+        }
+
+        public ParamConfigBuilder setName(String name) {
+            if (ignore(name)) return this;
+            this.name = replacePlaceholders(name);
+            return this;
+        }
+
+
+        public ParamConfigBuilder setDefaultValue(String defaultValue) {
+            if (ignore(defaultValue)) return this;
+            this.defaultValue = replacePlaceholders(defaultValue);
+            return this;
+        }
+
+        public ParamConfigBuilder setDestination(String dest) {
+            if (ignore(dest)) return this;
+            return setDestination(Destination.valueOf(replacePlaceholders(dest).toUpperCase()));
+        }
+
+        public ParamConfigBuilder setDestination(Destination dest) {
+            if (ignore(dest)) return this;
+            this.dest = dest;
+            return this;
+        }
+
+
+    }
+
+    @SuppressWarnings("unchecked")
+    public static class MethodParamConfigBuilder extends ParamConfigBuilder {
+        private final Type type;
+        private Serializer serializer;
+        private Injector injector;
+
+        /**
+         * Given properties map can contains user-defined default values, that override interface predefined defauts.
+         * @param customProperties default values holder
+         */
+        public MethodParamConfigBuilder(Type type, Map<String, Object> customProperties) {
+            super(null, customProperties);
+            this.type = type;
+        }
+
+        private MethodParamConfigBuilder(MethodConfigBuilder parent, Type type) {
+            super(parent, null);
+            this.type = type;
+        }
+
+        private MethodParamConfigBuilder(MethodConfigBuilder parent, Type type, Map<String, Object> customProperties) {
+            super(parent, customProperties);
+            this.type = type;
+        }
+
+        /**
+         * Validate and build a normal config with defaulted values if necessary
+         * @return config
+         */
+        public MethodParamConfig build() {
+            return build(false, true);
+        }
+
+        /**
+         * Build a template config. No default values used. To be used to override another config
+         * @return config template
+         */
+        public MethodParamConfig buildTemplate() {
+            return build(true, false);
+        }
+
+        /**
+         * Build a normal config with defaulted values if necessary. Validate the config if specified
+         * @param validateConfig flag that indicates if the config should be validated
+         * @return config
+         */
+        public MethodParamConfig buildConfig(boolean validateConfig) {
+            return build(false, validateConfig);
+        }
+
+        /**
+         * Build a normal config with defaulted values if necessary. No validation occurs
+         * @return config
+         */
+        public MethodParamConfig buildUnvalidatedConfig() {
+            return buildConfig(false);
+        }
+
+        /**
+         * Build the config.
+         * <p>If isTemplate is true, the returned config won't have any default value, should be used to override another config.
+         * <p>If validate config is true (and isTemplate is false), the config is validated to ensure required information have been given
+         * @param isTemplate if true, return a config template
+         * @param validateConfig if true, config is validated
+         * @return config
+         */
+        public MethodParamConfig build(boolean isTemplate, boolean validateConfig) {
+            // make local copies so that we don't mess with builder state to be able to call build multiple times on it
             Injector injector = this.injector;
             Serializer serializer = this.serializer;
 
             if (!isTemplate) {
-                injector = defaultIfUndefined(injector, CRestProperty.CONFIG_PARAM_DEFAULT_INJECTOR, newInstance(ParamConfig.DEFAULT_INJECTOR));
-                serializer = defaultIfUndefined(serializer, CRestProperty.CONFIG_PARAM_DEFAULT_SERIALIZER, newInstance(ParamConfig.DEFAULT_SERIALIZER));
+                injector = defaultIfUndefined(injector, CRestProperty.CONFIG_PARAM_DEFAULT_INJECTOR, newInstance(MethodParamConfig.DEFAULT_INJECTOR));
+                serializer = defaultIfUndefined(serializer, CRestProperty.CONFIG_PARAM_DEFAULT_SERIALIZER, newInstance(MethodParamConfig.DEFAULT_SERIALIZER));
 
                 if(serializer == null) {
                     // if null, then choose which serializer to apply using default rules
@@ -1003,7 +1003,7 @@ public abstract class ConfigBuilders {
                 }
             }
 
-            return new DefaultParamConfig(
+            return new DefaultMethodParamConfig(
                     super.build(isTemplate, validateConfig),
                     serializer,
                     injector
@@ -1015,7 +1015,7 @@ public abstract class ConfigBuilders {
          * @param serializer the serializer to use for this argument
          * @return current builder
          */
-        public ParamConfigBuilder setSerializer(Serializer serializer) {
+        public MethodParamConfigBuilder setSerializer(Serializer serializer) {
             if (ignore(serializer)) return this;
             this.serializer = serializer;
             return this;
@@ -1026,7 +1026,7 @@ public abstract class ConfigBuilders {
          * @param serializerClassName the serializer classname to use for this argument
          * @return current builder
          */
-        public ParamConfigBuilder setSerializer(String serializerClassName) throws IllegalAccessException, InstantiationException, ClassNotFoundException {
+        public MethodParamConfigBuilder setSerializer(String serializerClassName) throws IllegalAccessException, InstantiationException, ClassNotFoundException {
             if (ignore(serializerClassName)) return this;
             return setSerializer((Class<? extends Serializer>) Class.forName(replacePlaceholders(serializerClassName)));
         }
@@ -1036,62 +1036,62 @@ public abstract class ConfigBuilders {
          * @param serializer the serializer to use for this argument
          * @return current builder
          */
-        public ParamConfigBuilder setSerializer(Class<? extends Serializer> serializer) throws IllegalAccessException, InstantiationException {
+        public MethodParamConfigBuilder setSerializer(Class<? extends Serializer> serializer) throws IllegalAccessException, InstantiationException {
             if (ignore(serializer)) return this;
             return setSerializer(newInstance(serializer));
         }
 
-        public ParamConfigBuilder setInjector(Injector injector) {
+        public MethodParamConfigBuilder setInjector(Injector injector) {
             if (ignore(injector)) return this;
             this.injector = injector;
             return this;
         }
 
-        public ParamConfigBuilder setInjector(String injectorClassName) throws IllegalAccessException, InstantiationException, ClassNotFoundException {
+        public MethodParamConfigBuilder setInjector(String injectorClassName) throws IllegalAccessException, InstantiationException, ClassNotFoundException {
             if (ignore(injectorClassName)) return this;
             return setInjector((Class<? extends Injector>) Class.forName(replacePlaceholders(injectorClassName)));
         }
 
-        public ParamConfigBuilder setInjector(Class<? extends Injector> injector) throws IllegalAccessException, InstantiationException {
+        public MethodParamConfigBuilder setInjector(Class<? extends Injector> injector) throws IllegalAccessException, InstantiationException {
             if (ignore(injector)) return this;
             return setInjector(newInstance(injector));
         }
 
 
         @Override
-        public ParamConfigBuilder setIgnoreNullOrEmptyValues(boolean ignoreNullOrEmptyValues) {
-            return (ParamConfigBuilder) super.setIgnoreNullOrEmptyValues(ignoreNullOrEmptyValues);
+        public MethodParamConfigBuilder setIgnoreNullOrEmptyValues(boolean ignoreNullOrEmptyValues) {
+            return (MethodParamConfigBuilder) super.setIgnoreNullOrEmptyValues(ignoreNullOrEmptyValues);
         }
 
         @Override
-        public ParamConfigBuilder setName(String name) {
-            return (ParamConfigBuilder) super.setName(name);
+        public MethodParamConfigBuilder setName(String name) {
+            return (MethodParamConfigBuilder) super.setName(name);
         }
 
         @Override
-        public ParamConfigBuilder setDefaultValue(String defaultValue) {
-            return (ParamConfigBuilder) super.setDefaultValue(defaultValue);
+        public MethodParamConfigBuilder setDefaultValue(String defaultValue) {
+            return (MethodParamConfigBuilder) super.setDefaultValue(defaultValue);
         }
 
-        public ParamConfigBuilder forPath(){
+        public MethodParamConfigBuilder forPath(){
             return setDestination(Destination.PATH);
         }
-        public ParamConfigBuilder forQuery(){
+        public MethodParamConfigBuilder forQuery(){
             return setDestination(Destination.QUERY);
         }
-        public ParamConfigBuilder forForm(){
+        public MethodParamConfigBuilder forForm(){
             return setDestination(Destination.FORM);
         }
-        public ParamConfigBuilder forHeader(){
+        public MethodParamConfigBuilder forHeader(){
             return setDestination(Destination.HEADER);
         }
         @Override
-        public ParamConfigBuilder setDestination(String dest) {
-            return (ParamConfigBuilder) super.setDestination(dest);
+        public MethodParamConfigBuilder setDestination(String dest) {
+            return (MethodParamConfigBuilder) super.setDestination(dest);
         }
         @Override
-        public ParamConfigBuilder setDestination(Destination dest) {
-            return (ParamConfigBuilder) super.setDestination(dest);
+        public MethodParamConfigBuilder setDestination(Destination dest) {
+            return (MethodParamConfigBuilder) super.setDestination(dest);
         }
     }
 

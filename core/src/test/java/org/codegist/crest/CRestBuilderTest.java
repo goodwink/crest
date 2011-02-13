@@ -261,8 +261,8 @@ public class CRestBuilderTest {
             public Map<String, Object> getProperties() {
                 return new HashMap<String, Object>() {{
                     put(Deserializer.class.getName(), new JacksonDeserializer());
-                    put(CRestProperty.CONFIG_METHOD_DEFAULT_EXTRA_PARAMS, new BasicParamConfig[]{
-                            new ConfigBuilders.BasicParamConfigBuilder(null)
+                    put(CRestProperty.CONFIG_METHOD_DEFAULT_EXTRA_PARAMS, new ParamConfig[]{
+                            new ConfigBuilders.ParamConfigBuilder(null)
                             .setName("Accept")
                             .setDefaultValue("application/json")
                             .setDestination(Destination.HEADER)
@@ -310,8 +310,8 @@ public class CRestBuilderTest {
             public Map<String, Object> getProperties() {
                 return new HashMap<String, Object>() {{
                     put(Deserializer.class.getName(), new JacksonDeserializer());
-                    put(CRestProperty.CONFIG_METHOD_DEFAULT_EXTRA_PARAMS, new BasicParamConfig[]{
-                            new ConfigBuilders.BasicParamConfigBuilder(null)
+                    put(CRestProperty.CONFIG_METHOD_DEFAULT_EXTRA_PARAMS, new ParamConfig[]{
+                            new ConfigBuilders.ParamConfigBuilder(null)
                             .setName("Accept")
                             .setDefaultValue("fff")
                             .setDestination(Destination.HEADER)
@@ -332,8 +332,8 @@ public class CRestBuilderTest {
             public Map<String, Object> getProperties() {
                 return new HashMap<String, Object>() {{
                     put(Deserializer.class.getName(), new JaxbDeserializer());
-                    put(CRestProperty.CONFIG_METHOD_DEFAULT_EXTRA_PARAMS, new BasicParamConfig[]{
-                            new ConfigBuilders.BasicParamConfigBuilder(null)
+                    put(CRestProperty.CONFIG_METHOD_DEFAULT_EXTRA_PARAMS, new ParamConfig[]{
+                            new ConfigBuilders.ParamConfigBuilder(null)
                             .setName("Accept")
                             .setDefaultValue("application/xml")
                             .setDestination(Destination.HEADER)
@@ -354,8 +354,8 @@ public class CRestBuilderTest {
             public Map<String, Object> getProperties() {
                 return new HashMap<String, Object>() {{
                     put(Deserializer.class.getName(), new JaxbDeserializer());
-                    put(CRestProperty.CONFIG_METHOD_DEFAULT_EXTRA_PARAMS, new BasicParamConfig[]{
-                            new ConfigBuilders.BasicParamConfigBuilder(null)
+                    put(CRestProperty.CONFIG_METHOD_DEFAULT_EXTRA_PARAMS, new ParamConfig[]{
+                            new ConfigBuilders.ParamConfigBuilder(null)
                             .setName("Accept")
                             .setDefaultValue("application/xml")
                             .setDestination(Destination.HEADER)
@@ -405,8 +405,8 @@ public class CRestBuilderTest {
             public Map<String, Object> getProperties() {
                 return new HashMap<String, Object>() {{
                     put(Deserializer.class.getName(), new JaxbDeserializer());
-                    put(CRestProperty.CONFIG_METHOD_DEFAULT_EXTRA_PARAMS, new BasicParamConfig[]{
-                            new ConfigBuilders.BasicParamConfigBuilder(null)
+                    put(CRestProperty.CONFIG_METHOD_DEFAULT_EXTRA_PARAMS, new ParamConfig[]{
+                            new ConfigBuilders.ParamConfigBuilder(null)
                             .setName("Accept")
                             .setDefaultValue("ddd")
                             .setDestination(Destination.HEADER)
@@ -517,7 +517,7 @@ public class CRestBuilderTest {
             put(CRestProperty.CONFIG_PLACEHOLDERS_MAP, Collections.emptyMap());
             put(AuthentificationManager.class.getName(), null);
             put(Deserializer.class.getName(), null);
-            put(CRestProperty.CONFIG_METHOD_DEFAULT_EXTRA_PARAMS, new BasicParamConfig[0]);
+            put(CRestProperty.CONFIG_METHOD_DEFAULT_EXTRA_PARAMS, new ParamConfig[0]);
         }};
         if (expected != null && expected.getProperties() != null) {
             expectedProps.putAll(expected.getProperties());
@@ -536,9 +536,9 @@ public class CRestBuilderTest {
                 assertMapEquals((Map) val, (Map) test.get(entry.getKey()));
             } else if (val instanceof String || val instanceof Number || val instanceof Boolean) {
                 assertEquals(val, test.get(entry.getKey()));
-            } else if(val instanceof BasicParamConfig[]){
-                BasicParamConfig[] valv = (BasicParamConfig[]) val;
-                BasicParamConfig[] testv = (BasicParamConfig[]) test.get(entry.getKey());
+            } else if(val instanceof ParamConfig[]){
+                ParamConfig[] valv = (ParamConfig[]) val;
+                ParamConfig[] testv = (ParamConfig[]) test.get(entry.getKey());
 
                 assertArrayEquals(valv, testv);
             } else {

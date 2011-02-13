@@ -21,10 +21,10 @@
 package org.codegist.crest.google.service;
 
 import org.codegist.crest.annotate.*;
+import org.codegist.crest.google.handler.GoogleResponseHandler;
 import org.codegist.crest.google.model.LangPair;
 import org.codegist.crest.google.model.LanguageGuess;
 import org.codegist.crest.google.model.Translation;
-import org.codegist.crest.google.handler.GoogleResponseHandler;
 import org.codegist.crest.google.serializer.LangPairSerializer;
 
 /**

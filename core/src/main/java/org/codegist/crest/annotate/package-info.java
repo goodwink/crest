@@ -38,7 +38,7 @@
  * </pre>
  * </code>
  * <br/>
- * <p>For more information on how these values are used, please consult {@link org.codegist.crest.config.InterfaceConfig}, {@link org.codegist.crest.config.MethodConfig}, {@link org.codegist.crest.config.ParamConfig} documentation.
+ * <p>For more information on how these values are used, please consult {@link org.codegist.crest.config.InterfaceConfig}, {@link org.codegist.crest.config.MethodConfig}, {@link org.codegist.crest.config.MethodParamConfig} documentation.
  *
  * @see org.codegist.crest.CRest
  * @see org.codegist.crest.CRestBuilder

@@ -36,7 +36,7 @@ import static org.codegist.common.lang.Strings.defaultIfBlank;
  * <p>Usefull when the end-point should be read externally instead, eg for profil (dev,integration,prod)
  * <p>Expected format for a single Interface config is of the following :
  * <p>- Any property not specified as mandatory is optional.
- * <p>- The same logic as the annotation config applies here, config fallbacks from param to method to interface until one config is found, otherwise defaults to any respective default value ({@link org.codegist.crest.config.InterfaceConfig}, {@link MethodConfig}, {@link ParamConfig}).
+ * <p>- The same logic as the annotation config applies here, config fallbacks from param to method to interface until one config is found, otherwise defaults to any respective default value ({@link org.codegist.crest.config.InterfaceConfig}, {@link MethodConfig}, {@link MethodParamConfig}).
  * <code><pre>
  * package my.rest.interface;
  * class Interface {
@@ -207,7 +207,7 @@ public class PropertiesDrivenInterfaceConfigFactory implements InterfaceConfigFa
                     }
                 }
                 for (int i = 0; i < method.getParameterTypes().length; i++) {
-                    ConfigBuilders.ParamConfigBuilder pcb = mcb.startParamConfig(i).setIgnoreNullOrEmptyValues(true);
+                    ConfigBuilders.MethodParamConfigBuilder pcb = mcb.startParamConfig(i).setIgnoreNullOrEmptyValues(true);
                     // Injects user type annotated config.
                     Configs.injectAnnotatedConfig(pcb, method.getParameterTypes()[i]);
 
