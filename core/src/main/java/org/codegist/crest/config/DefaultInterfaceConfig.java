@@ -35,16 +35,16 @@ class DefaultInterfaceConfig implements InterfaceConfig {
 
     private final Class<?> interfaze;
     private final String endPoint;
-    private final String contextPath;
+    private final String path;
     private final String encoding;
     private final RequestInterceptor globalInterceptor;
 
     private final Map<Method, MethodConfig> cache;
 
-    DefaultInterfaceConfig(Class<?> interfaze, String endPoint, String contextPath, String encoding, RequestInterceptor globalInterceptor, Map<Method, MethodConfig> cache) {
+    DefaultInterfaceConfig(Class<?> interfaze, String endPoint, String path, String encoding, RequestInterceptor globalInterceptor, Map<Method, MethodConfig> cache) {
         this.interfaze = interfaze;
         this.endPoint = endPoint;
-        this.contextPath = contextPath;
+        this.path = path;
         this.encoding = encoding;
         this.globalInterceptor = globalInterceptor;
         this.cache = Maps.unmodifiable(cache);
@@ -58,8 +58,8 @@ class DefaultInterfaceConfig implements InterfaceConfig {
         return endPoint;
     }
 
-    public String getContextPath() {
-        return contextPath;
+    public String getPath() {
+        return path;
     }
 
     public String getEncoding() {
@@ -82,7 +82,7 @@ class DefaultInterfaceConfig implements InterfaceConfig {
         return new ToStringBuilder(this)
                 .append("interface", interfaze)
                 .append("server", endPoint)
-                .append("contextPath", contextPath)
+                .append("path", path)
                 .append("encoding", encoding)
                 .append("globalInterceptor", globalInterceptor)
                 .append("cache", cache)

@@ -18,7 +18,7 @@
  * More information at http://www.codegist.org.
  */
 
-package org.codegist.crest.google.domain;
+package org.codegist.crest.google.model;
 
 import org.codegist.common.lang.ToStringBuilder;
 import org.codehaus.jackson.annotate.JsonCreator;

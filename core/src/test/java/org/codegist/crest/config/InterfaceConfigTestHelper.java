@@ -36,7 +36,7 @@ public class InterfaceConfigTestHelper {
 
 
     public static void assertExpected(InterfaceConfig expected, InterfaceConfig test, Class<?> clazz) {
-        assertEquals(clazz.toString(), expected.getContextPath(), test.getContextPath());
+        assertEquals(clazz.toString(), expected.getPath(), test.getPath());
         assertEquals(clazz.toString(), expected.getEndPoint(), test.getEndPoint());
         assertEquals(clazz.toString(), expected.getEncoding(), test.getEncoding());
 

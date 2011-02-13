@@ -21,9 +21,9 @@
 package org.codegist.crest.google;
 
 import org.codegist.crest.CRestBuilder;
-import org.codegist.crest.google.domain.LangPair;
-import org.codegist.crest.google.domain.LanguageGuess;
-import org.codegist.crest.google.domain.Translation;
+import org.codegist.crest.google.model.LangPair;
+import org.codegist.crest.google.model.LanguageGuess;
+import org.codegist.crest.google.model.Translation;
 import org.codegist.crest.google.service.LanguageService;
 import org.junit.Ignore;
 import org.junit.Test;

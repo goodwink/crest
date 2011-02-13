@@ -57,7 +57,7 @@ public final class Configs {
         return new DefaultInterfaceConfig(
                 Objects.defaultIfNull(overrides.getInterface(), base.getInterface()),
                 Objects.defaultIfNull(overrides.getEndPoint(), base.getEndPoint()),
-                Objects.defaultIfNull(overrides.getContextPath(), base.getContextPath()),
+                Objects.defaultIfNull(overrides.getPath(), base.getPath()),
                 Objects.defaultIfNull(overrides.getEncoding(), base.getEncoding()),
                 Objects.defaultIfNull(overrides.getGlobalInterceptor(), base.getGlobalInterceptor()),
                 cache

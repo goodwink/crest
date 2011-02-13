@@ -21,8 +21,8 @@
 package org.codegist.crest.google;
 
 import org.codegist.crest.CRestBuilder;
-import org.codegist.crest.google.domain.Address;
-import org.codegist.crest.google.domain.SearchResult;
+import org.codegist.crest.google.model.Address;
+import org.codegist.crest.google.model.SearchResult;
 import org.codegist.crest.google.service.SearchService;
 import org.junit.Ignore;
 import org.junit.Test;

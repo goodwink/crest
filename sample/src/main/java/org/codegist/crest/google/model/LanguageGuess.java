@@ -18,7 +18,7 @@
  * More information at http://www.codegist.org.
  */
 
-package org.codegist.crest.google.domain;
+package org.codegist.crest.google.model;
 
 import org.codegist.common.lang.ToStringBuilder;
 import org.codehaus.jackson.annotate.JsonCreator;
@@ -27,21 +27,38 @@ import org.codehaus.jackson.annotate.JsonProperty;
 /**
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
-public class Translation {
-    private final String text;
+public class LanguageGuess {
+    private final String language;
+    private final boolean isReliable;
+    private final float confidence;
 
     @JsonCreator
-    public Translation(@JsonProperty("translatedText") String text) {
-        this.text = text;
+    public LanguageGuess(
+            @JsonProperty("language") String language,
+            @JsonProperty("isReliable") boolean reliable,
+            @JsonProperty("confidence") float confidence) {
+        this.language = language;
+        isReliable = reliable;
+        this.confidence = confidence;
     }
 
-    public String getText() {
-        return text;
+    public String getLanguage() {
+        return language;
+    }
+
+    public boolean isReliable() {
+        return isReliable;
+    }
+
+    public float getConfidence() {
+        return confidence;
     }
 
     public String toString() {
         return new ToStringBuilder(this)
-                .append("text", text)
+                .append("language", language)
+                .append("isReliable", isReliable)
+                .append("confidence", confidence)
                 .toString();
     }
 }

@@ -125,12 +125,12 @@ public interface MethodConfig {
     /**
      * URL fragment specific to this methods.
      * <p> Doesn't contains the server part.
-     * <p> Full url is {@link InterfaceConfig#getEndPoint()} + {@link InterfaceConfig#getContextPath()} + {@link MethodConfig#getPath()}
+     * <p> Full url is {@link InterfaceConfig#getEndPoint()} + {@link InterfaceConfig#getPath()} + {@link MethodConfig#getPath()}
      * <p>This value can contain placeholders that points to method arguments. For a path as /my-path/{2}/{0}/{2}.json?my-param={1}, any {n} placeholder will be replaced with the serialized parameter found at the respective method argument index when using the default parameter injector.
      *
      * @return the method url fragment
      * @see InterfaceConfig#getEndPoint()
-     * @see InterfaceConfig#getContextPath()
+     * @see InterfaceConfig#getPath()
      */
     String getPath();
 

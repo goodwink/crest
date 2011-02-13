@@ -55,11 +55,11 @@ public interface InterfaceConfig {
     String DEFAULT_ENCODING = "UTF-8";
 
     /**
-     * Default service url fragment applied when non specified.
+     * Bse service url fragment applied when non specified.
      *
-     * @see org.codegist.crest.config.InterfaceConfig#getContextPath()
+     * @see org.codegist.crest.config.InterfaceConfig#getPath()
      */
-    String DEFAULT_CONTEXT_PATH = "";
+    String DEFAULT_PATH = "";
 
 
     /**
@@ -90,7 +90,7 @@ public interface InterfaceConfig {
      *
      * @return server's path
      */
-    String getContextPath();
+    String getPath();
 
     /**
      * Global service request interceptor.

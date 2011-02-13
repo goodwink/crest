@@ -20,7 +20,7 @@
 
 package org.codegist.crest.google.serializer;
 
-import org.codegist.crest.google.domain.LangPair;
+import org.codegist.crest.google.model.LangPair;
 import org.codegist.crest.serializer.Serializer;
 
 /**

@@ -55,11 +55,10 @@ import static org.codegist.common.lang.Strings.isBlank;
  * &lt;crest-config&gt;
     &lt;service class="my.rest.interface.Interface" encoding="utf-8"&gt;
         &lt;end-point&gt;http://localhost:8080&lt;/end-point&gt; &lt;!--Mandatory--&gt; 
-        &lt;context-path&gt;/my-path&lt;/context-path&gt;
+        &lt;path&gt;/my-path/hello&lt;/path&gt;
         &lt;global-interceptor&gt;my.rest.interface.MyRequestInterceptor1&lt;/global-interceptor&gt;
         &lt;methods&gt;
             &lt;default socket-timeout="1" connection-timeout="2" method="DELETE"&gt;
-                &lt;path&gt;/hello&lt;/path&gt;
                 &lt;request-interceptor&gt;my.rest.interface.MyRequestInterceptor1&lt;/request-interceptor&gt;
                 &lt;response-handler&gt;my.rest.interface.MyResponseHandler1&lt;/response-handler&gt;
                 &lt;error-handler&gt;my.rest.interface.MyErrorHandler1&lt;/error-handler&gt;
@@ -151,7 +150,7 @@ public class XmlDrivenInterfaceConfigFactory implements InterfaceConfigFactory {
             Node interfaceConfig = getNode(config, "/crest-config/service[@class=\"%s\"]", interfaze.getName());
             ConfigBuilders.InterfaceConfigBuilder icb = new ConfigBuilders.InterfaceConfigBuilder(interfaze, context.getProperties()).setIgnoreNullOrEmptyValues(true)
                     .setEndPoint(endPoint)
-                    .setContextPath(getString(interfaceConfig, "context-path"))
+                    .setPath(getString(interfaceConfig, "path"))
                     .setGlobalInterceptor(getString(interfaceConfig, "global-interceptor"))
                     .setEncoding(getString(interfaceConfig, "@encoding"))
 
@@ -162,7 +161,6 @@ public class XmlDrivenInterfaceConfigFactory implements InterfaceConfigFactory {
                     .setMethodsErrorHandler(getString(interfaceConfig, "methods/default/error-handler"))
                     .setMethodsRetryHandler(getString(interfaceConfig, "methods/default/retry-handler"))
                     .setMethodsRequestInterceptor(getString(interfaceConfig, "methods/default/request-interceptor"))
-                    .setMethodsPath(getString(interfaceConfig, "methods/default/path"))
 
                     .setParamsSerializer(getString(interfaceConfig, "methods/default/params/serializer"))
                     .setParamsInjector(getString(interfaceConfig, "methods/default/params/injector"));

@@ -52,7 +52,7 @@ public class CRestAnnotationDrivenInterfaceConfigFactoryTest extends AbstractInt
     }
 
     @EndPoint("http://localhost:8080")
-    @ContextPath("/my-path")
+    @Path("/my-path")
     interface MissingParamName extends Interface {
         @Path("/m1")
         Object m1();
@@ -62,7 +62,7 @@ public class CRestAnnotationDrivenInterfaceConfigFactoryTest extends AbstractInt
         Object m1(String a, @QueryParam(value ="param2") int[] b);
     }
 
-    @ContextPath("/my-path")
+    @Path("/my-path")
     interface MissingEndPoint extends Interface {
         @Path("/m1")
         Object m1();
@@ -141,7 +141,7 @@ public class CRestAnnotationDrivenInterfaceConfigFactoryTest extends AbstractInt
 
 
     @EndPoint("http://localhost:8080")
-    @ContextPath("/my-path")
+    @Path("/my-path")
     interface MinimallyAnnotatedInterface extends Interface {
         @Path("/m1")
         Object m1();
@@ -160,7 +160,7 @@ public class CRestAnnotationDrivenInterfaceConfigFactoryTest extends AbstractInt
     }
 
     @EndPoint("http://localhost:8080")
-    @ContextPath("/my-path")
+    @Path("/my-path")
     @Serializer(Stubs.Serializer1.class)
     @Injector(Stubs.RequestParameterInjector1.class)
     interface PartiallyAnnotatedInterface extends Interface {
@@ -191,11 +191,10 @@ public class CRestAnnotationDrivenInterfaceConfigFactoryTest extends AbstractInt
     }
 
     @EndPoint("http://localhost:8080")
-    @ContextPath("/my-path")
+    @Path("/my-path")
     @SocketTimeout( 1)
     @ConnectionTimeout( 2)
     @Encoding( "utf-8")
-    @Path( "/hello")
     @FormParam(value ="form-param", defaultValue ="form-value")
     @FormParams({
             @FormParam(value ="form-param1", defaultValue ="form-value1"),
@@ -318,7 +317,7 @@ public class CRestAnnotationDrivenInterfaceConfigFactoryTest extends AbstractInt
 
 
     @EndPoint("http://test-server:8080")
-    @ContextPath("/path")
+    @Path("/path")
     @SocketTimeout(15)
     @ConnectionTimeout(10)
     @Encoding("utf-8")
@@ -355,7 +354,7 @@ public class CRestAnnotationDrivenInterfaceConfigFactoryTest extends AbstractInt
 
         InterfaceConfig CONFIG = new ConfigBuilders.InterfaceConfigBuilder(Rest.class)
                 .setEndPoint("http://test-server:8080")
-                .setContextPath("/path")
+                .setPath("/path")
                 .setMethodsSocketTimeout(15l)
                 .setMethodsConnectionTimeout(10l)
                 .setEncoding("utf-8")

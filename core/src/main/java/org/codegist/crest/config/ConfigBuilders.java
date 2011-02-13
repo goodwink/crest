@@ -77,7 +77,7 @@ public abstract class ConfigBuilders {
         private final Class interfaze;
         private final Map<Method, MethodConfigBuilder> builderCache;
         private String endPoint;
-        private String contextPath;
+        private String path;
         private String encoding;
         private RequestInterceptor globalInterceptor;
 
@@ -168,13 +168,13 @@ public abstract class ConfigBuilders {
                 mConfig.put(entry.getKey(), entry.getValue().build(isTemplate, validateConfig));
             }
             // make local copies so that we don't mess with builder state to be able to call build multiple times on it
-            String contextPath = this.contextPath;
+            String path = this.path;
             String encoding = this.encoding;
             String endPoint = this.endPoint;
             RequestInterceptor globalInterceptor = this.globalInterceptor;
 
             if (!isTemplate) {
-                contextPath = defaultIfUndefined(contextPath, CRestProperty.CONFIG_INTERFACE_DEFAULT_CONTEXT_PATH, InterfaceConfig.DEFAULT_CONTEXT_PATH);
+                path = defaultIfUndefined(path, CRestProperty.CONFIG_INTERFACE_DEFAULT_PATH, InterfaceConfig.DEFAULT_PATH);
                 encoding = defaultIfUndefined(encoding, CRestProperty.CONFIG_INTERFACE_DEFAULT_ENCODING, InterfaceConfig.DEFAULT_ENCODING);
                 endPoint = defaultIfUndefined(endPoint, CRestProperty.CONFIG_INTERFACE_DEFAULT_ENDPOINT, InterfaceConfig.DEFAULT_ENDPOINT);
                 globalInterceptor = defaultIfUndefined(globalInterceptor, CRestProperty.CONFIG_INTERFACE_DEFAULT_GLOBAL_INTERCEPTOR, newInstance(InterfaceConfig.DEFAULT_GLOBAL_INTERCEPTOR));
@@ -187,7 +187,7 @@ public abstract class ConfigBuilders {
             return new DefaultInterfaceConfig(
                     interfaze,
                     endPoint,
-                    contextPath,
+                    path,
                     encoding,
                     globalInterceptor,
                     mConfig
@@ -205,9 +205,9 @@ public abstract class ConfigBuilders {
             return this;
         }
 
-        public InterfaceConfigBuilder setContextPath(String contextPath) {
-            if (ignore(contextPath)) return this;
-            this.contextPath = replacePlaceholders(contextPath);
+        public InterfaceConfigBuilder setPath(String path) {
+            if (ignore(path)) return this;
+            this.path = replacePlaceholders(path);
             return this;
         }
 

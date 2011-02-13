@@ -26,8 +26,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * <p>Optional method level annotation, sets the method path. If not specified, defaults to the method config default value.
- * <p>Can be set at interface level to default all interface method values if not specified at method level.
+ * <p>Optional method level annotation, sets the method specific path. If not specified, defaults to the method config default value.
+ * <p>Can be set at interface level to define the service base path used by all methods (method's specific paths gets concatenated to it).
  * <p>Can also contain placeholder that will be replace by any value found in the given placeholder config, see {@link org.codegist.crest.CRestBuilder#setConfigPlaceholder(String, String)}
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  * @see org.codegist.crest.CRestBuilder#setConfigPlaceholder(String, String)
@@ -39,7 +39,8 @@ import java.lang.annotation.Target;
 public @interface Path {
 
     /**
-     * Path fragment, can't contains any query string.
+     * Final path is the result of the concatenation of Interface.{@link EndPoint#value()} + Interface.{@link Path#value()} + Method.{@link Path#value()}
+     * <p>Path fragment, can't contains any query string.
      * <p>A path can contains placeholder templates that will be merged with their relative {@link org.codegist.crest.annotate.PathParam}.
      * <p>A simple use case:
      * <code><pre>

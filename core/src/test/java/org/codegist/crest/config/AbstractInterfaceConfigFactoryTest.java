@@ -93,7 +93,7 @@ public abstract class AbstractInterfaceConfigFactoryTest {
         try {
             MINIMAL_EXPECTED_CONFIG = new ConfigBuilders.InterfaceConfigBuilder(Interface.class)
                     .setEndPoint("http://localhost:8080")
-                    .setContextPath("/my-path")
+                    .setPath("/my-path")
                     .startMethodConfig(Interface.METH_m1).setPath("/m1").endMethodConfig()
                     .startMethodConfig(Interface.METH_m1S)
                     .startParamConfig(0).setName("param").endParamConfig()
@@ -124,7 +124,7 @@ public abstract class AbstractInterfaceConfigFactoryTest {
         try {
             PARTIAL_EXPECTED_CONFIG = new ConfigBuilders.InterfaceConfigBuilder(Interface.class)
                     .setEndPoint("http://localhost:8080")
-                    .setContextPath("/my-path")
+                    .setPath("/my-path")
                     .setParamsSerializer(new Stubs.Serializer1())
                     .setParamsInjector(new Stubs.RequestParameterInjector1())
                     .startMethodConfig(Interface.METH_m1).setPath("/m1").setResponseHandler(new Stubs.ResponseHandler1()).endMethodConfig()
@@ -167,7 +167,7 @@ public abstract class AbstractInterfaceConfigFactoryTest {
         try {
             FULLY_EXPECTED_CONFIG = new ConfigBuilders.InterfaceConfigBuilder(Interface.class)
                     .setEndPoint("http://localhost:8080")
-                    .setContextPath("/my-path")
+                    .setPath("/my-path")
                     .addMethodsExtraFormParam("form-param", "form-value")
                     .addMethodsExtraFormParam("form-param1", "form-value1")
                     .addMethodsExtraFormParam("form-param2", "form-value2")

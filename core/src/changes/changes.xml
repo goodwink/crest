@@ -37,6 +37,11 @@
                 CRestBuilder.expectsJson() and expectsXml() now add a Accept=application/json or Accept=application/xml header to all request fired.
                 This behavior can be customized with their relative method overload
             </action>
+            <action dev="lgilles" type="fix" issue="4">
+                @ContextPath annotation has been removed and @Path annotation now partially behaves as JAX-RS one:
+                Full service path is now the concatenation of Interface.endpoint + / + Interface.path + / + Method.path.
+                CRest add by default the slashes in-between, this behavior can be changed with a new CRest property, CRestProperty.CREST_URL_ADD_SLASHES.
+            </action>
             <action dev="lgilles" type="update">
                 String value based annotation can now contain value placeholders that are merged with any given value. See CRestBuilder.setConfigPlaceholder
             </action>
@@ -50,7 +55,7 @@
                 Added following annotations: @FormParam(s), @QueryParam(s), @PathParam(s), @HeaderParam(s), @GET, @POST, @PUT, @DELETE, @HEAD, @OPTIONS.
             </action>
             <action dev="lgilles" type="remove">
-                Removed following annotations: @Param, @Name, @Destination, @HttpMethod.
+                Removed following annotations: @ContextPath, @Param, @Name, @Destination, @HttpMethod.
             </action>
         </release>
 

@@ -28,7 +28,7 @@ import org.codegist.crest.twitter.model.User;
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
 @EndPoint("http://api.twitter.com")
-@ContextPath("/1/users")
+@Path("/1/users")
 @HeaderParam(value = "Accept-Encoding", defaultValue = "gzip")
 public interface UserService {
 

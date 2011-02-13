@@ -32,6 +32,13 @@ package org.codegist.crest;
 public interface CRestProperty {
 
 
+    /**
+     * Indicates to CRest whether to add or not slashes when concatenating Interface.EndPoint + Interface.Path + Method.Path.
+     * <p>Expects a Boolean value
+     * <p>Default to true
+     */
+    String CREST_URL_ADD_SLASHES = "crest.config.url.add-slashes";
+
     /*********************************************************
      *********************************************************
      ****** Serializer properties 
@@ -194,12 +201,12 @@ public interface CRestProperty {
     String CONFIG_INTERFACE_DEFAULT_ENDPOINT = "config.interface.default.end-point";
 
     /**
-     * override the default path {@link org.codegist.crest.config.InterfaceConfig#DEFAULT_CONTEXT_PATH}.
+     * override the default path {@link org.codegist.crest.config.InterfaceConfig#DEFAULT_PATH}.
      * <p>Expects a string.
      *
      * @see org.codegist.crest.InterfaceContext#getProperties()
      */
-    String CONFIG_INTERFACE_DEFAULT_CONTEXT_PATH = "config.interface.default.path";
+    String CONFIG_INTERFACE_DEFAULT_PATH = "config.interface.default.path";
 
     /**
      * override the default global request interceptor {@link org.codegist.crest.config.InterfaceConfig#DEFAULT_GLOBAL_INTERCEPTOR}.

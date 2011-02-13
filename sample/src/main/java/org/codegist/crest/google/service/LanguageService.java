@@ -21,9 +21,9 @@
 package org.codegist.crest.google.service;
 
 import org.codegist.crest.annotate.*;
-import org.codegist.crest.google.domain.LangPair;
-import org.codegist.crest.google.domain.LanguageGuess;
-import org.codegist.crest.google.domain.Translation;
+import org.codegist.crest.google.model.LangPair;
+import org.codegist.crest.google.model.LanguageGuess;
+import org.codegist.crest.google.model.Translation;
 import org.codegist.crest.google.handler.GoogleResponseHandler;
 import org.codegist.crest.google.serializer.LangPairSerializer;
 
@@ -31,7 +31,7 @@ import org.codegist.crest.google.serializer.LangPairSerializer;
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
 @EndPoint("http://ajax.googleapis.com")
-@ContextPath("/ajax/services/language")
+@Path("/ajax/services/language")
 @QueryParam(value = "v", defaultValue = "1.0")
 @ResponseHandler(GoogleResponseHandler.class)
 public interface LanguageService {

@@ -235,7 +235,7 @@ public class ConfigBuildersTest {
 
         InterfaceConfig config = new ConfigBuilders.InterfaceConfigBuilder(Interface.class, props)
                 .setEndPoint("http://{my.place.holder.server}:{my.place.holder.port}")
-                .setContextPath("{my.place.holder.path}/cpath")
+                .setPath("{my.place.holder.path}/cpath")
                 .setEncoding("{my.place.holder.enc}")
                 .setGlobalInterceptor("{my.place.holder.glob-inter}")
                 .setMethodsPath("{my.place.holder.meth-path}/path")
@@ -280,7 +280,7 @@ public class ConfigBuildersTest {
     @Test
     public void testDefaultOverrides() throws InstantiationException, IllegalAccessException {
         final Map<String, Object> defaultOverrides = new HashMap<String, Object>();
-        defaultOverrides.put(CONFIG_INTERFACE_DEFAULT_CONTEXT_PATH, "/path");
+        defaultOverrides.put(CONFIG_INTERFACE_DEFAULT_PATH, "/path");
         defaultOverrides.put(CONFIG_INTERFACE_DEFAULT_ENCODING, "ISO-8859-1");
         defaultOverrides.put(CONFIG_INTERFACE_DEFAULT_GLOBAL_INTERCEPTOR, new Stubs.RequestInterceptor1());
         defaultOverrides.put(CONFIG_METHOD_DEFAULT_PATH, "/meth-path");
@@ -300,7 +300,7 @@ public class ConfigBuildersTest {
         InterfaceConfig expected = new DefaultInterfaceConfig(
                 Interface.class,
                 "http://server:8080",
-                (String) defaultOverrides.get(CONFIG_INTERFACE_DEFAULT_CONTEXT_PATH),
+                (String) defaultOverrides.get(CONFIG_INTERFACE_DEFAULT_PATH),
                 (String) defaultOverrides.get(CONFIG_INTERFACE_DEFAULT_ENCODING),
                 (RequestInterceptor) defaultOverrides.get(CONFIG_INTERFACE_DEFAULT_GLOBAL_INTERCEPTOR),
                 new HashMap<Method, MethodConfig>() {{
@@ -371,7 +371,7 @@ public class ConfigBuildersTest {
         InterfaceConfig expected = new DefaultInterfaceConfig(
                 Interface.class,
                 "http://server:8080",
-                InterfaceConfig.DEFAULT_CONTEXT_PATH,
+                InterfaceConfig.DEFAULT_PATH,
                 DEFAULT_ENCODING,
                 TestUtils.newInstance(DEFAULT_REQUEST_INTERCEPTOR),
                 new HashMap<Method, MethodConfig>() {{
@@ -442,7 +442,7 @@ public class ConfigBuildersTest {
         InterfaceConfig expected = new DefaultInterfaceConfig(
                 Interface.class,
                 "http://server:8080",
-                InterfaceConfig.DEFAULT_CONTEXT_PATH,
+                InterfaceConfig.DEFAULT_PATH,
                 DEFAULT_ENCODING,
                 TestUtils.newInstance(DEFAULT_REQUEST_INTERCEPTOR),
                 new HashMap<Method, MethodConfig>() {{
@@ -527,7 +527,7 @@ public class ConfigBuildersTest {
         InterfaceConfig expected = new DefaultInterfaceConfig(
                 Interface.class,
                 "http://server:8080",
-                InterfaceConfig.DEFAULT_CONTEXT_PATH,
+                InterfaceConfig.DEFAULT_PATH,
                 DEFAULT_ENCODING,
                 TestUtils.newInstance(DEFAULT_REQUEST_INTERCEPTOR),
                 new HashMap<Method, MethodConfig>() {{
@@ -622,7 +622,7 @@ public class ConfigBuildersTest {
         InterfaceConfig expected = new DefaultInterfaceConfig(
                 Interface.class,
                 "http://server:8080",
-                InterfaceConfig.DEFAULT_CONTEXT_PATH,
+                InterfaceConfig.DEFAULT_PATH,
                 DEFAULT_ENCODING,
                 TestUtils.newInstance(DEFAULT_REQUEST_INTERCEPTOR),
                 new HashMap<Method, MethodConfig>() {{

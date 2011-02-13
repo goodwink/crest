@@ -55,7 +55,7 @@ public class ConfigsTest {
 
     static final InterfaceConfig FULL_CONFIG = new ConfigBuilders.InterfaceConfigBuilder(TestInterface.class)
             .setEndPoint("server")
-            .setContextPath("path")
+            .setPath("path")
             .setEncoding("iso")
             .setGlobalInterceptor(new Stubs.RequestInterceptor1())
             .setMethodsSocketTimeout(1l)
@@ -119,7 +119,7 @@ public class ConfigsTest {
         InterfaceConfig base = new ConfigBuilders.InterfaceConfigBuilder(TestInterface.class).setEndPoint("server").buildTemplate();
         InterfaceConfig result = Configs.override(base, FULL_CONFIG);
         InterfaceConfig expected = new ConfigBuilders.InterfaceConfigBuilder(TestInterface.class).setEndPoint("server")
-                .setContextPath("path")
+                .setPath("path")
                 .setMethodsSocketTimeout(1l)
                 .setMethodsConnectionTimeout(2l)
                 .setEncoding("iso")
@@ -185,7 +185,7 @@ public class ConfigsTest {
                 .buildTemplate();
         InterfaceConfig expected = new ConfigBuilders.InterfaceConfigBuilder(TestInterface.class)
                 .setEndPoint("server2")
-                .setContextPath("path")
+                .setPath("path")
                 .setEncoding("iso")
                 .setGlobalInterceptor(new Stubs.RequestInterceptor1())
                 .setMethodsSocketTimeout(1l)
@@ -286,12 +286,12 @@ public class ConfigsTest {
         InterfaceConfigTestHelper.assertExpected(mutableBase, result, TestInterface.class);
 
 
-        assertEquals("/path", result.getContextPath());
+        assertEquals("/path", result.getPath());
         mutableOverride.setPath("hello");
         if(dynamic) {
-            assertEquals("hello", result.getContextPath());
+            assertEquals("hello", result.getPath());
         }else{
-            assertEquals("/path", result.getContextPath());
+            assertEquals("/path", result.getPath());
         }
 
         MutableMethodConfig m = ((MutableMethodConfig) mutableBase.getMethodConfig(TestInterface.T1));
@@ -343,7 +343,7 @@ public class ConfigsTest {
         }
 
         
-        public String getContextPath() {
+        public String getPath() {
             return path;
         }
 

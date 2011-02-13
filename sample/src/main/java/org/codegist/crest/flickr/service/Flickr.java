@@ -37,7 +37,7 @@ import java.util.Date;
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
 @EndPoint("http://flickr.com")
-@ContextPath("/services")
+@Path("/services")
 @GlobalInterceptor(FlickrAuthInterceptor.class)
 @ResponseHandler(FlickrResponseHandler.class)
 @POST

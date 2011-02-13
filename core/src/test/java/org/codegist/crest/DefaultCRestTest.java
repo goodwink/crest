@@ -29,11 +29,9 @@ import org.codegist.common.reflect.JdkProxyFactory;
 import org.codegist.common.reflect.ProxyFactory;
 import org.codegist.crest.annotate.EndPoint;
 import org.codegist.crest.annotate.HeaderParam;
+import org.codegist.crest.annotate.Path;
 import org.codegist.crest.annotate.QueryParam;
-import org.codegist.crest.config.ConfigBuilders;
-import org.codegist.crest.config.InterfaceConfig;
-import org.codegist.crest.config.InterfaceConfigFactory;
-import org.codegist.crest.config.PreconfiguredInterfaceConfigFactory;
+import org.codegist.crest.config.*;
 import org.codegist.crest.handler.MaxAttemptRetryHandler;
 import org.codegist.crest.handler.RetryHandler;
 import org.codegist.crest.injector.Injector;
@@ -83,6 +81,63 @@ public class DefaultCRestTest {
     @BeforeClass
     public static void setup() {   
         when(mockDeserializer.<Object>deserialize(any(Reader.class), any(Type.class))).thenReturn(MODEL_RESPONSE);
+    }
+
+    @Test
+    public void testPath(){
+        RestService service = mock(RestService.class);
+        when(service.exec(argThat(new ArgumentMatcher<HttpRequest>() {
+
+            public boolean matches(Object o) {
+                HttpRequest r = (HttpRequest) o;
+                String expected = r.getQueryParams().get("expected");
+                assertEquals(expected, r.getUri().toString());
+                return true;
+            }
+        }))).thenAnswer(new Answer<Object>() {
+
+            public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
+                return new HttpResponse(null, 200, null, (new HttpResource() {
+                    final InputStream stream = new ByteArrayInputStream("".getBytes());
+                    public InputStream getContent() throws HttpException {
+                        return stream;
+                    }
+
+                    public void release() throws HttpException {
+                        try {
+                            stream.close();
+                        } catch (IOException e) {
+                            throw new HttpException(e);
+                        }
+                    }
+                }));
+            }
+        });
+        CRest crest = new DefaultCRest(new DefaultCRestContext(service, mockProxyFactory, new CRestAnnotationDrivenInterfaceConfigFactory(), Collections.<String, Object>emptyMap()));
+        I1 i1 = crest.build(I1.class);
+        I2 i2 = crest.build(I2.class);
+        i1.m("http://localhost/service/path/meth/path");
+        i2.m("http://localhost/service/path/meth/path");
+        Map<String,Object> properties = new HashMap<String, Object>();
+        properties.put(CRestProperty.CREST_URL_ADD_SLASHES, false);
+        crest = new DefaultCRest(new DefaultCRestContext(service, mockProxyFactory, new CRestAnnotationDrivenInterfaceConfigFactory(), properties));
+        i1 = crest.build(I1.class);
+        i2 = crest.build(I2.class);
+        i1.m("http://localhostservice/pathmeth/path");
+        i2.m("http://localhost/service/path/meth/path");
+
+    }
+    @EndPoint("http://localhost")
+    @Path("service/path")
+    public static interface I1 {
+        @Path("meth/path")
+        void m(@QueryParam("expected") String path);
+    }
+    @EndPoint("http://localhost")
+    @Path("/service/path")
+    public static interface I2 {
+        @Path("/meth/path")
+        void m(@QueryParam("expected") String path);
     }
 
     @Test
@@ -390,7 +445,7 @@ public class DefaultCRestTest {
         }};
         InterfaceConfig CONFIG = new ConfigBuilders.InterfaceConfigBuilder(Rest.class, customProperties)
                 .setEndPoint("http://test-server:8080")
-                .setContextPath("/path")
+                .setPath("/path")
                 .setMethodsSocketTimeout(15l)
                 .setMethodsConnectionTimeout(10l)
                 .setEncoding("utf-8")

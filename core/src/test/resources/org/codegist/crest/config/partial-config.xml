@@ -24,7 +24,7 @@
 <crest-config>
     <service class="org.codegist.crest.config.AbstractInterfaceConfigFactoryTest$Interface" encoding="UTF-8">
         <end-point>http://localhost:8080</end-point>
-        <context-path>/my-path</context-path>
+        <path>/my-path</path>
         <methods>
             <default>
                 <params>

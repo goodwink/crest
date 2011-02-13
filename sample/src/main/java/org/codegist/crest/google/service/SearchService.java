@@ -21,15 +21,15 @@
 package org.codegist.crest.google.service;
 
 import org.codegist.crest.annotate.*;
-import org.codegist.crest.google.domain.Address;
-import org.codegist.crest.google.domain.SearchResult;
+import org.codegist.crest.google.model.Address;
+import org.codegist.crest.google.model.SearchResult;
 import org.codegist.crest.google.handler.GoogleResponseHandler;
 
 /**
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
 @EndPoint("http://ajax.googleapis.com")
-@ContextPath("/ajax/services/search")
+@Path("/ajax/services/search")
 @QueryParam(value = "v", defaultValue = "1.0")
 @ResponseHandler(GoogleResponseHandler.class)
 public interface SearchService {

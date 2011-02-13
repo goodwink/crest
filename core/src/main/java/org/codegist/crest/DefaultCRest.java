@@ -71,11 +71,14 @@ public class DefaultCRest implements CRest, Disposable {
 
     class RestInterfacer<T> extends ObjectMethodsAwareInvocationHandler {
 
+        private final String pathFormat;
         private final InterfaceContext interfaceContext;
 
         private RestInterfacer(Class<T> interfaze) throws ConfigFactoryException {
             InterfaceConfig config = context.getConfigFactory().newConfig(interfaze, context);
             this.interfaceContext = new DefaultInterfaceContext(config, context.getProperties());
+            boolean addSlashes = !Boolean.FALSE.equals(context.getProperties().get(CRestProperty.CREST_URL_ADD_SLASHES));
+            pathFormat = addSlashes ? "%s/%s/%s" : "%s%s%s";
         }
 
         @Override
@@ -164,7 +167,8 @@ public class DefaultCRest implements CRest, Disposable {
             RequestInterceptor ri = mc.getRequestInterceptor();
 
             // Build base request
-            String fullpath = ic.getEndPoint() + Strings.defaultIfBlank(ic.getContextPath(), "") + mc.getPath();
+
+            String fullpath = String.format(pathFormat, ic.getEndPoint(), Strings.defaultIfBlank(ic.getPath(), ""), mc.getPath());
             HttpRequest.Builder builder = new HttpRequest.Builder(fullpath, ic.getEncoding())
                     .using(mc.getHttpMethod())
                     .timeoutSocketAfter(mc.getSocketTimeout())

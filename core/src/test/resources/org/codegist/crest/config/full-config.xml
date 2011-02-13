@@ -21,11 +21,10 @@
 <crest-config>
     <service class="org.codegist.crest.config.AbstractInterfaceConfigFactoryTest$Interface" encoding="utf-8">
         <end-point>http://localhost:8080</end-point>
-        <context-path>/my-path</context-path>
+        <path>/my-path</path>
         <global-interceptor>org.codegist.crest.Stubs$RequestInterceptor1</global-interceptor>
         <methods>
             <default socket-timeout="1" connection-timeout="2" method="DELETE">
-                <path>/hello</path>
                 <request-interceptor>org.codegist.crest.Stubs$RequestInterceptor1</request-interceptor>
                 <response-handler>org.codegist.crest.Stubs$ResponseHandler1</response-handler>
                 <error-handler>org.codegist.crest.Stubs$ErrorHandler1</error-handler>

@@ -23,7 +23,7 @@ package org.codegist.crest.google;
 import org.codegist.common.log.Logger;
 import org.codegist.crest.CRest;
 import org.codegist.crest.CRestBuilder;
-import org.codegist.crest.google.domain.*;
+import org.codegist.crest.google.model.*;
 import org.codegist.crest.google.service.LanguageService;
 import org.codegist.crest.google.service.SearchService;
 

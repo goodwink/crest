@@ -47,11 +47,10 @@ import static org.codegist.common.lang.Strings.defaultIfBlank;
  * service.test.class=my.rest.interface.Interface
  * #interface specifics
  * service.test.end-point=http://localhost:8080  #mandatory
- * service.test.context-path=/my-path
+ * service.test.path=/my-path/hello
  * service.test.encoding=utf-8
  * service.test.global-interceptor=my.rest.interface.MyRequestInterceptor1
  * #default methods
- * service.test.path=/hello
  * service.test.params.form.form-param=form-value
  * service.test.params.form.form-param1=form-value1
  * service.test.params.form.form-param2=form-value2
@@ -146,7 +145,7 @@ public class PropertiesDrivenInterfaceConfigFactory implements InterfaceConfigFa
 
             ConfigBuilders.InterfaceConfigBuilder ricb = new ConfigBuilders.InterfaceConfigBuilder(interfaze, context.getProperties()).setIgnoreNullOrEmptyValues(true);
             ricb    .setEndPoint(endPoint)
-                    .setContextPath(getServiceProp(serviceAlias, "context-path"))
+                    .setPath(getServiceProp(serviceAlias, "path"))
                     .setEncoding(getServiceProp(serviceAlias, "encoding"))
                     .setGlobalInterceptor(getServiceProp(serviceAlias, "global-interceptor"))
                     .setMethodsConnectionTimeout(getServiceProp(serviceAlias, "connection-timeout"))
@@ -155,7 +154,6 @@ public class PropertiesDrivenInterfaceConfigFactory implements InterfaceConfigFa
                     .setMethodsErrorHandler(getServiceProp(serviceAlias, "error-handler"))
                     .setMethodsRetryHandler(getServiceProp(serviceAlias, "retry-handler"))
                     .setMethodsRequestInterceptor(getServiceProp(serviceAlias, "request-interceptor"))
-                    .setMethodsPath(getServiceProp(serviceAlias, "path"))
                     .setMethodsHttpMethod(getServiceProp(serviceAlias, "http-method"))
                     .setParamsSerializer(getServiceProp(serviceAlias, "serializer"))
                     .setParamsInjector(getServiceProp(serviceAlias, "injector"));

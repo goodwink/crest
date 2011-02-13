@@ -29,7 +29,7 @@ import org.codegist.crest.twitter.model.User;
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
 @EndPoint("http://api.twitter.com")
-@ContextPath("/1/statuses")
+@Path("/1/statuses")
 @HeaderParam(value = "Accept-Encoding", defaultValue = "gzip")
 public interface StatusService {
 

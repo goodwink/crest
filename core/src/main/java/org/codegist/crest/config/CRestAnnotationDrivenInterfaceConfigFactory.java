@@ -54,12 +54,11 @@ public class CRestAnnotationDrivenInterfaceConfigFactory implements InterfaceCon
         try {
             /* Interface specifics */
             EndPoint endPoint = interfaze.getAnnotation(EndPoint.class);
-            ContextPath contextPath = interfaze.getAnnotation(ContextPath.class);
+            Path path = interfaze.getAnnotation(Path.class);
             Encoding encoding = interfaze.getAnnotation(Encoding.class);
             GlobalInterceptor globalInterceptor = interfaze.getAnnotation(GlobalInterceptor.class);
 
             /* Methods defaults */
-            Path path = interfaze.getAnnotation(Path.class);
             SocketTimeout socketTimeout = interfaze.getAnnotation(SocketTimeout.class);
             ConnectionTimeout connectionTimeout = interfaze.getAnnotation(ConnectionTimeout.class);
             RequestInterceptor interceptor = interfaze.getAnnotation(RequestInterceptor.class);
@@ -75,7 +74,7 @@ public class CRestAnnotationDrivenInterfaceConfigFactory implements InterfaceCon
 
             ConfigBuilders.InterfaceConfigBuilder config = new ConfigBuilders.InterfaceConfigBuilder(interfaze, context.getProperties());
             if(endPoint != null) config.setEndPoint(endPoint.value());
-            if(contextPath != null) config.setContextPath(contextPath.value());
+            if(path != null) config.setPath(path.value());
             if(encoding != null) config.setEncoding(encoding.value());
             if(globalInterceptor != null) config.setGlobalInterceptor(globalInterceptor.value());
             if(extraParams != null) {
@@ -83,7 +82,6 @@ public class CRestAnnotationDrivenInterfaceConfigFactory implements InterfaceCon
                     config.addMethodsExtraParam(c.getName(), c.getDefaultValue(),c.getDestination());
                 }
             }
-            if(path != null) config.setMethodsPath(path.value());
             if(socketTimeout != null) config.setMethodsSocketTimeout(socketTimeout.value());
             if(connectionTimeout != null) config.setMethodsConnectionTimeout(connectionTimeout.value());
             if(interceptor != null) config.setMethodsRequestInterceptor(interceptor.value());

@@ -36,6 +36,7 @@ import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -165,7 +166,6 @@ public class HttpRequest {
      */
     public static class Builder {
         private static final Pattern SINGLE_PLACEHOLDER_PATTERN = Pattern.compile("[\\{\\(]([^/]+)[\\}\\)]");
-        private static final Pattern CONTAINS_PLACEHOLDER_PATTERN = Pattern.compile(".*" + SINGLE_PLACEHOLDER_PATTERN + ".*");
         static final String ENCODING = "utf-8";
         static final String METH = "GET";
         private String meth = METH;
@@ -214,21 +214,19 @@ public class HttpRequest {
             );
         }
 
-        private static boolean hasUnresolvedPlaceholders(String value){
-            return CONTAINS_PLACEHOLDER_PATTERN.matcher(value).matches();
-        }
-
         private String buildBaseUriString(){
-            String baseUri = this.baseUri;
-            for(Map.Entry<String, String> param : pathParams.entrySet()){
-                String name = param.getKey();
-                String value = param.getValue();
-                baseUri = baseUri.replaceAll("\\(" + Pattern.quote(name) + "\\)", value);
+            StringBuffer baseUri = new StringBuffer();
+            Matcher m = SINGLE_PLACEHOLDER_PATTERN.matcher(this.baseUri);
+            while(m.find()){
+                String placeHolder = m.group(1);
+                if(!pathParams.containsKey(placeHolder)){
+                    throw new IllegalStateException("Not all path parameters have been provided for base uri '" + this.baseUri + "'! Missing param: " + placeHolder);
+                }
+                String value = pathParams.get(placeHolder);
+                m.appendReplacement(baseUri, value);
             }
-            if(hasUnresolvedPlaceholders(baseUri)) {
-                throw new IllegalStateException("Not all path parameters have been provided for base uri '" + this.baseUri + "'! (current built baseUri='" + baseUri + "')");
-            }
-            return baseUri;
+            m.appendTail(baseUri);
+            return baseUri.toString();
         }
 
         /**
@@ -257,7 +255,7 @@ public class HttpRequest {
         public Builder pointsTo(String uriString, String encoding) throws URISyntaxException {
             String fixed = SINGLE_PLACEHOLDER_PATTERN.matcher(uriString).replaceAll("\\($1\\)");
             URI uri = new URI(fixed);
-            String baseUri = uri.getScheme() + "://" + uri.getAuthority() + uri.getPath();
+            String baseUri = new URI(uri.getScheme() + "://" + uri.getAuthority() + uri.getPath()).normalize().toString();
             this.encoding = encoding;
             this.baseUri = baseUri;
             if(Strings.isNotBlank(uri.getRawQuery())) {
