@@ -44,12 +44,6 @@ public class HttpRequestTest {
         assertEquals(("http://127.0.0.1:8080/test"), request.getUrlString(true));
         assertEquals(new URL("http://127.0.0.1:8080/test"), request.getUrl(false));
         assertEquals(("http://127.0.0.1:8080/test"), request.getUrlString(false));
-        request = new HttpRequest.Builder("http://127.0.0.1:8080/test?").build();
-        assertEquals(new URI("http://127.0.0.1:8080/test"), request.getUri());
-        assertEquals(new URL("http://127.0.0.1:8080/test"), request.getUrl(true));
-        assertEquals(("http://127.0.0.1:8080/test"), request.getUrlString(true));
-        assertEquals(new URL("http://127.0.0.1:8080/test"), request.getUrl(false));
-        assertEquals(("http://127.0.0.1:8080/test"), request.getUrlString(false));
     }
     @Test
     public void testHttpRequestUriWithParams() throws URISyntaxException, MalformedURLException, UnsupportedEncodingException {
@@ -71,6 +65,21 @@ public class HttpRequestTest {
                 .addQueryParam("q3", "qv3")
                 .build();
     }
+
+    @Test
+    public void testHttpRequestPath() throws URISyntaxException, MalformedURLException, UnsupportedEncodingException {
+        HttpRequest req = new HttpRequest.Builder("http://127.0.0.1:8080/{p1}///{p2}/{p1}////test///")
+                .addPathParam("p1", "pv1")
+                .addPathParam("p2", "pv2")
+                .addQueryParam("q1", "qv1")
+                .addQueryParam("q2", "qv2")
+                .addQueryParam("q3", "")
+                .addQueryParam("q4", "qv4")
+                .build();
+        assertEquals("http://127.0.0.1:8080/pv1/pv2/pv1/test/?q1=qv1&q2=qv2&q3=&q4=qv4", req.getUrlString(true));
+    }
+
+
     @Test
     public void testHttpRequestWithPlaceholders() throws URISyntaxException, MalformedURLException, UnsupportedEncodingException {
         HttpRequest req = new HttpRequest.Builder(PLACEHOLDERS_URI)

@@ -20,10 +20,7 @@
 
 package org.codegist.crest;
 
-import org.codegist.common.lang.EqualsBuilder;
-import org.codegist.common.lang.HashCodeBuilder;
-import org.codegist.common.lang.Strings;
-import org.codegist.common.lang.ToStringBuilder;
+import org.codegist.common.lang.*;
 import org.codegist.common.net.Urls;
 import org.codegist.crest.config.Destination;
 
@@ -242,7 +239,7 @@ public class HttpRequest {
             return pointsTo(uriString, encoding);
         }
 
-        /**
+        /**                                                                                                  ²
          * Sets the url the request will point to.
          * <p>Can contains a predefined query string
          * <p>This value can contain placeholders that points to method arguments. eg http://localhost:8080/my-path/{my-param-name}/{p2}.json
@@ -253,14 +250,10 @@ public class HttpRequest {
          * @throws URISyntaxException If the uriString is not a valid URL
          */
         public Builder pointsTo(String uriString, String encoding) throws URISyntaxException {
+            Validate.isTrue(!Urls.hasQueryString(uriString), "Given uri contains a query string:" + uriString);
             String fixed = SINGLE_PLACEHOLDER_PATTERN.matcher(uriString).replaceAll("\\($1\\)");
-            URI uri = new URI(fixed).normalize();
-            String baseUri = uri.getScheme() + "://" + uri.getAuthority() + uri.getPath();
             this.encoding = encoding;
-            this.baseUri = baseUri;
-            if(Strings.isNotBlank(uri.getRawQuery())) {
-                throw new IllegalArgumentException("Given uri contains a query string:" + uriString);
-            }
+            this.baseUri = Urls.normalizeSlashes(fixed);
             return this;
         }
 

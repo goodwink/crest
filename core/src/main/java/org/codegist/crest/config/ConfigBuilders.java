@@ -23,6 +23,7 @@ package org.codegist.crest.config;
 import org.codegist.common.collect.Maps;
 import org.codegist.common.lang.Objects;
 import org.codegist.common.lang.Strings;
+import org.codegist.common.net.Urls;
 import org.codegist.crest.CRestException;
 import org.codegist.crest.CRestProperty;
 import org.codegist.crest.handler.ErrorHandler;
@@ -180,8 +181,8 @@ public abstract class ConfigBuilders {
                 globalInterceptor = defaultIfUndefined(globalInterceptor, CRestProperty.CONFIG_INTERFACE_DEFAULT_GLOBAL_INTERCEPTOR, newInstance(InterfaceConfig.DEFAULT_GLOBAL_INTERCEPTOR));
 
                 if(validateConfig) {
-                    if (isBlank(endPoint))
-                        throw new IllegalArgumentException("end-point not specified!");
+                    if (isBlank(endPoint)) throw new IllegalArgumentException("end-point not specified!");
+                    if(Urls.hasQueryString(path))  throw new IllegalArgumentException("Path can't contain a query string! (path=" + path +")");
                 }
             }
             return new DefaultInterfaceConfig(
@@ -580,6 +581,10 @@ public abstract class ConfigBuilders {
                 responseHandler = defaultIfUndefined(responseHandler, CRestProperty.CONFIG_METHOD_DEFAULT_RESPONSE_HANDLER, newInstance(MethodConfig.DEFAULT_RESPONSE_HANDLER));
                 errorHandler = defaultIfUndefined(errorHandler, CRestProperty.CONFIG_METHOD_DEFAULT_ERROR_HANDLER, newInstance(MethodConfig.DEFAULT_ERROR_HANDLER));
                 retryHandler = defaultIfUndefined(retryHandler, CRestProperty.CONFIG_METHOD_DEFAULT_RETRY_HANDLER, newInstance(MethodConfig.DEFAULT_RETRY_HANDLER));
+
+                if(validateConfig) {
+                    if(Urls.hasQueryString(path))  throw new IllegalArgumentException("Path can't contain a query string! (path=" + path +")");
+                }
             }
             return new DefaultMethodConfig(
                     method,

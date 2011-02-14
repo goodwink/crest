@@ -45,6 +45,7 @@ import static org.codegist.crest.config.MethodConfig.*;
 import static org.codegist.crest.config.MethodParamConfig.*;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 /**
  * @author Laurent Gilles (laurent.gilles@codegist.org)
@@ -52,6 +53,31 @@ import static org.junit.Assert.assertEquals;
 public class ConfigBuildersTest {
 
     private static final ParamConfig[] PARAMs = new ParamConfig[]{new DefaultParamConfig("1","2", Destination.FORM)};
+
+    @Test
+    public void testConfigBuildersInvalidPath(){
+        try {
+            new ConfigBuilders.InterfaceConfigBuilder(Interface.class).setEndPoint("d").setPath("/fdf?dd").setParamsName("q").build();
+            fail("shoud have failed");
+        } catch (Exception e) {
+        }
+        try {
+            new ConfigBuilders.InterfaceConfigBuilder(Interface.class).setEndPoint("d").setPath("/fdf?").setParamsName("q").build();
+            fail("shoud have failed");
+        } catch (Exception e) {
+        }
+        try {
+            new ConfigBuilders.InterfaceConfigBuilder(Interface.class).setEndPoint("d").setPath("/fdf").setMethodsPath("/sd/sd?").setParamsName("q").build();
+            fail("shoud have failed");
+        } catch (Exception e) {
+        }
+        try {
+            new ConfigBuilders.InterfaceConfigBuilder(Interface.class).setEndPoint("d").setPath("/fdf").setMethodsPath("/sd/sd?df").setParamsName("q").build();
+            fail("shoud have failed");
+        } catch (Exception e) {
+        }
+        new ConfigBuilders.InterfaceConfigBuilder(Interface.class).setEndPoint("d").setPath("/fdf").setMethodsPath("/sd/sd").setParamsName("q").build();
+    }
 
     @Test
     public void testConfigBuildersPlaceholdersEmpty(){
