@@ -52,7 +52,7 @@
                 Changed the way @Path value is parsed and how placeholder are handled.
             </action>
             <action dev="lgilles" type="add">
-                Added following annotations: @FormParam(s), @QueryParam(s), @PathParam(s), @HeaderParam(s), @GET, @POST, @PUT, @DELETE, @HEAD, @OPTIONS.
+                Added following annotations: @Param, @FormParam(s), @QueryParam(s), @PathParam(s), @HeaderParam(s), @GET, @POST, @PUT, @DELETE, @HEAD, @OPTIONS.
             </action>
             <action dev="lgilles" type="remove">
                 Removed following annotations: @ContextPath, @Param, @Name, @Destination, @HttpMethod.

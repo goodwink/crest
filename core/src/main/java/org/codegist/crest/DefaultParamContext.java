@@ -20,7 +20,6 @@
 
 package org.codegist.crest;
 
-import org.codegist.crest.config.Destination;
 import org.codegist.crest.config.MethodParamConfig;
 
 /**
@@ -38,8 +37,8 @@ class DefaultParamContext<V> extends DefaultRequestContext implements ParamConte
 
     public boolean isForUrl() {
         return "GET".equals(getMethodConfig().getHttpMethod())
-                || Destination.PATH.equals(getParamConfig().getDestination())
-                || Destination.QUERY.equals(getParamConfig().getDestination());
+                || HttpRequest.DEST_PATH.equals(getParamConfig().getDestination())
+                || HttpRequest.DEST_QUERY.equals(getParamConfig().getDestination());
     }
 
     public MethodParamConfig getParamConfig() {

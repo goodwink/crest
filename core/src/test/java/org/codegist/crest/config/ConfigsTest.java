@@ -21,6 +21,7 @@
 package org.codegist.crest.config;
 
 import org.codegist.crest.CRestProperty;
+import org.codegist.crest.HttpRequest;
 import org.codegist.crest.Stubs;
 import org.codegist.crest.TestUtils;
 import org.codegist.crest.handler.ErrorHandler;
@@ -80,12 +81,12 @@ public class ConfigsTest {
             .setRequestInterceptor(new Stubs.RequestInterceptor3())
             .setParamsSerializer(new Stubs.Serializer3())
             .startParamConfig(0)
-            .setDestination("PATH")
+            .setDestination("path")
             .setName("name4")
             .setSerializer(new Stubs.Serializer3())
             .endParamConfig()
             .startParamConfig(1)
-            .setDestination("FORM")
+            .setDestination("form")
             .setName("name5")
             .setSerializer(new Stubs.Serializer2())
             .endParamConfig()
@@ -146,12 +147,12 @@ public class ConfigsTest {
                 .setRequestInterceptor(new Stubs.RequestInterceptor3())
                 .setParamsSerializer(new Stubs.Serializer3())
                 .startParamConfig(0)
-                .setDestination("PATH")
+                .setDestination("path")
                 .setName("name4")
                 .setSerializer(new Stubs.Serializer3())
                 .endParamConfig()
                 .startParamConfig(1)
-                .setDestination("FORM")
+                .setDestination("form")
                 .setName("name5")
                 .setSerializer(new Stubs.Serializer2())
                 .endParamConfig()
@@ -178,7 +179,7 @@ public class ConfigsTest {
                 .setName("name3bis")
                 .endParamConfig()
                 .startParamConfig(1)
-                .setDestination("PATH")
+                .setDestination("path")
                 .setName("name6")
                 .endParamConfig()
                 .endMethodConfig()
@@ -257,7 +258,7 @@ public class ConfigsTest {
                 MutableMethodParamConfig[] paramConfigs = new MutableMethodParamConfig[meth.getParameterTypes().length];
                 for (int i = 0; i < paramConfigs.length; i++) {
                     paramConfigs[i] = new MutableMethodParamConfig();
-                    paramConfigs[i].setDestination(Destination.FORM);
+                    paramConfigs[i].setDestination(HttpRequest.DEST_FORM);
                     paramConfigs[i].setInjector(new Stubs.RequestParameterInjector3());
                     paramConfigs[i].setName("name" + i);
                     paramConfigs[i].setSerializer(new Stubs.Serializer3());
@@ -513,7 +514,7 @@ public class ConfigsTest {
     private static class MutableMethodParamConfig implements MethodParamConfig {
         private String name;
         private String defaultValue;
-        private Destination dest;
+        private String dest;
         private Serializer serializer;
         private Injector injector;
 
@@ -535,11 +536,11 @@ public class ConfigsTest {
             this.defaultValue = defaultValue;
         }
 
-        public Destination getDestination() {
+        public String getDestination() {
             return dest;
         }
 
-        public void setDestination(Destination dest) {
+        public void setDestination(String dest) {
             this.dest = dest;
         }
 

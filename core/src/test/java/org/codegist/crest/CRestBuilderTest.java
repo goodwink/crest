@@ -265,7 +265,7 @@ public class CRestBuilderTest {
                             new ConfigBuilders.ParamConfigBuilder(null)
                             .setName("Accept")
                             .setDefaultValue("application/json")
-                            .setDestination(Destination.HEADER)
+                            .setDestination(HttpRequest.DEST_HEADER)
                             .build()
                     });
                 }};
@@ -314,7 +314,7 @@ public class CRestBuilderTest {
                             new ConfigBuilders.ParamConfigBuilder(null)
                             .setName("Accept")
                             .setDefaultValue("fff")
-                            .setDestination(Destination.HEADER)
+                            .setDestination(HttpRequest.DEST_HEADER)
                             .build()
                     });
                 }};
@@ -336,7 +336,7 @@ public class CRestBuilderTest {
                             new ConfigBuilders.ParamConfigBuilder(null)
                             .setName("Accept")
                             .setDefaultValue("application/xml")
-                            .setDestination(Destination.HEADER)
+                            .setDestination(HttpRequest.DEST_HEADER)
                             .build()
                     });
                 }};
@@ -358,7 +358,7 @@ public class CRestBuilderTest {
                             new ConfigBuilders.ParamConfigBuilder(null)
                             .setName("Accept")
                             .setDefaultValue("application/xml")
-                            .setDestination(Destination.HEADER)
+                            .setDestination(HttpRequest.DEST_HEADER)
                             .build()
                     });
                 }};
@@ -409,7 +409,7 @@ public class CRestBuilderTest {
                             new ConfigBuilders.ParamConfigBuilder(null)
                             .setName("Accept")
                             .setDefaultValue("ddd")
-                            .setDestination(Destination.HEADER)
+                            .setDestination(HttpRequest.DEST_HEADER)
                             .build()
                     });
                 }};

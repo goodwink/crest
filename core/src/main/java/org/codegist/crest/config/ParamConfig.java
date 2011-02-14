@@ -20,6 +20,8 @@
 
 package org.codegist.crest.config;
 
+import org.codegist.crest.HttpRequest;
+
 /**
  * Basic parameter configuration holder object for interface/method extra parameters. Extra parameters are added on top of the method arguments.
  * <p>Implementors must respect the following contract :
@@ -38,7 +40,7 @@ public interface ParamConfig {
      *
      * @see ParamConfig#getDestination()
      */
-    Destination DEFAULT_DESTINATION = Destination.QUERY;
+    String DEFAULT_DESTINATION = HttpRequest.DEST_QUERY;
 
     /**
      * Default parameter value if not specified.
@@ -67,5 +69,5 @@ public interface ParamConfig {
     /**
      * @return Destination of the argument value.
      */
-    Destination getDestination();
+    String getDestination();
 }

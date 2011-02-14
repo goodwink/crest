@@ -448,7 +448,7 @@ public class CRestBuilder {
      */
     public JsonDeserializerChooser expectsJson(String acceptHeader) {
         this.retType = RET_TYPE_JSON;
-        addGlobalParam("Accept", acceptHeader, Destination.HEADER, false);
+        addGlobalParam("Accept", acceptHeader, HttpRequest.DEST_HEADER, false);
         return jsonChooser;
     }
 
@@ -474,7 +474,7 @@ public class CRestBuilder {
      */
     public CRestBuilder returnRawResults(String acceptHeader) {
         this.retType = RET_TYPE_RAW;
-        return addGlobalParam("Accept", acceptHeader, Destination.HEADER, false);
+        return addGlobalParam("Accept", acceptHeader, HttpRequest.DEST_HEADER, false);
     }
 
     /**
@@ -514,7 +514,7 @@ public class CRestBuilder {
      */
     public XmlDeserializerChooser expectsXml(String acceptHeader) {
         retType = RET_TYPE_XML;
-        addGlobalParam("Accept", acceptHeader, Destination.HEADER, false);
+        addGlobalParam("Accept", acceptHeader, HttpRequest.DEST_HEADER, false);
         return xmlChooser;
     }
 
@@ -655,7 +655,7 @@ public class CRestBuilder {
      * @return current builder
      */
     public CRestBuilder addGlobalFormParam(String name, String value) {
-        return addGlobalParam(name, value, Destination.FORM);
+        return addGlobalParam(name, value, HttpRequest.DEST_FORM);
     }
 
     /**
@@ -666,7 +666,7 @@ public class CRestBuilder {
      * @return current builder
      */
     public CRestBuilder addGlobalHeaderParam(String name, String value) {
-        return addGlobalParam(name, value, Destination.HEADER);
+        return addGlobalParam(name, value, HttpRequest.DEST_HEADER);
     }
 
     /**
@@ -677,7 +677,7 @@ public class CRestBuilder {
      * @return current builder
      */
     public CRestBuilder addGlobalQueryParam(String name, String value) {
-        return addGlobalParam(name, value, Destination.QUERY);
+        return addGlobalParam(name, value, HttpRequest.DEST_QUERY);
     }
 
     /**
@@ -688,14 +688,14 @@ public class CRestBuilder {
      * @return current builder
      */
     public CRestBuilder addGlobalPathParam(String name, String value) {
-        return addGlobalParam(name, value, Destination.PATH);
+        return addGlobalParam(name, value, HttpRequest.DEST_PATH);
     }
 
-    private CRestBuilder addGlobalParam(String name, String value, Destination destination) {
+    private CRestBuilder addGlobalParam(String name, String value, String destination) {
         return addGlobalParam(name, value, destination, true);
     }
 
-    private CRestBuilder addGlobalParam(String name, String value, Destination destination, boolean addIfEmptyValue) {
+    private CRestBuilder addGlobalParam(String name, String value, String destination, boolean addIfEmptyValue) {
         if (Strings.isBlank(value) && !addIfEmptyValue) {
             extraParams.remove(name);
         } else {

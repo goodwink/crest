@@ -26,6 +26,7 @@ import org.codegist.common.lang.Strings;
 import org.codegist.common.net.Urls;
 import org.codegist.crest.CRestException;
 import org.codegist.crest.CRestProperty;
+import org.codegist.crest.HttpRequest;
 import org.codegist.crest.handler.ErrorHandler;
 import org.codegist.crest.handler.ResponseHandler;
 import org.codegist.crest.handler.RetryHandler;
@@ -267,22 +268,16 @@ public abstract class ConfigBuilders {
         }     
 
         public InterfaceConfigBuilder addMethodsExtraFormParam(String name, String value){
-            return addMethodsExtraParam(name, value, Destination.FORM);
+            return addMethodsExtraParam(name, value, HttpRequest.DEST_FORM);
         }
         public InterfaceConfigBuilder addMethodsExtraHeaderParam(String name, String value){
-            return addMethodsExtraParam(name, value, Destination.HEADER);
+            return addMethodsExtraParam(name, value, HttpRequest.DEST_HEADER);
         }
         public InterfaceConfigBuilder addMethodsExtraPathParam(String name, String value){
-            return addMethodsExtraParam(name, value, Destination.PATH);
+            return addMethodsExtraParam(name, value, HttpRequest.DEST_PATH);
         }
         public InterfaceConfigBuilder addMethodsExtraQueryParam(String name, String value){
-            return addMethodsExtraParam(name, value, Destination.QUERY);
-        }
-        public InterfaceConfigBuilder addMethodsExtraParam(String name, String value, Destination destination){
-            for (MethodConfigBuilder b : builderCache.values()) {
-                b.addExtraParam(name, value, destination);
-            }
-            return this;
+            return addMethodsExtraParam(name, value, HttpRequest.DEST_QUERY);
         }
         public InterfaceConfigBuilder addMethodsExtraParam(String name, String value, String destination){
             for (MethodConfigBuilder b : builderCache.values()) {
@@ -621,25 +616,18 @@ public abstract class ConfigBuilders {
         }
 
         public MethodConfigBuilder addExtraFormParam(String name, String defaultValue){
-            return addExtraParam(name, defaultValue, Destination.FORM);
+            return addExtraParam(name, defaultValue, HttpRequest.DEST_FORM);
         }
         public MethodConfigBuilder addExtraHeaderParam(String name, String defaultValue){
-            return addExtraParam(name, defaultValue, Destination.HEADER);
+            return addExtraParam(name, defaultValue, HttpRequest.DEST_HEADER);
         }
         public MethodConfigBuilder addExtraQueryParam(String name, String defaultValue){
-            return addExtraParam(name, defaultValue, Destination.QUERY);
+            return addExtraParam(name, defaultValue, HttpRequest.DEST_QUERY);
         }
         public MethodConfigBuilder addExtraPathParam(String name, String defaultValue){
-            return addExtraParam(name, defaultValue, Destination.PATH);
+            return addExtraParam(name, defaultValue, HttpRequest.DEST_PATH);
         }
         public MethodConfigBuilder addExtraParam(String name, String defaultValue, String dest){
-            return startExtraParamConfig(name)
-                    .setDefaultValue(defaultValue)
-                    .setDestination(dest)
-                    .endParamConfig();
-        }
-
-        public MethodConfigBuilder addExtraParam(String name, String defaultValue, Destination dest){
             return startExtraParamConfig(name)
                     .setDefaultValue(defaultValue)
                     .setDestination(dest)
@@ -810,7 +798,7 @@ public abstract class ConfigBuilders {
         private final MethodConfigBuilder parent;
         private String name;
         private String defaultValue;
-        private Destination dest;
+        private String dest;
 
 
         /**
@@ -875,7 +863,7 @@ public abstract class ConfigBuilders {
             // make local copies so that we don't mess with builder state to be able to call build multiple times on it
             String name = this.name;
             String defaultValue = this.defaultValue;
-            Destination dest = this.dest;
+            String dest = this.dest;
 
             if (!isTemplate) {
                 name = defaultIfUndefined(name, CRestProperty.CONFIG_PARAM_DEFAULT_NAME, MethodParamConfig.DEFAULT_NAME);
@@ -915,15 +903,9 @@ public abstract class ConfigBuilders {
 
         public ParamConfigBuilder setDestination(String dest) {
             if (ignore(dest)) return this;
-            return setDestination(Destination.valueOf(replacePlaceholders(dest).toUpperCase()));
-        }
-
-        public ParamConfigBuilder setDestination(Destination dest) {
-            if (ignore(dest)) return this;
-            this.dest = dest;
+            this.dest = replacePlaceholders(dest);
             return this;
         }
-
 
     }
 
@@ -1079,23 +1061,19 @@ public abstract class ConfigBuilders {
         }
 
         public MethodParamConfigBuilder forPath(){
-            return setDestination(Destination.PATH);
+            return setDestination(HttpRequest.DEST_PATH);
         }
         public MethodParamConfigBuilder forQuery(){
-            return setDestination(Destination.QUERY);
+            return setDestination(HttpRequest.DEST_QUERY);
         }
         public MethodParamConfigBuilder forForm(){
-            return setDestination(Destination.FORM);
+            return setDestination(HttpRequest.DEST_FORM);
         }
         public MethodParamConfigBuilder forHeader(){
-            return setDestination(Destination.HEADER);
+            return setDestination(HttpRequest.DEST_HEADER);
         }
         @Override
         public MethodParamConfigBuilder setDestination(String dest) {
-            return (MethodParamConfigBuilder) super.setDestination(dest);
-        }
-        @Override
-        public MethodParamConfigBuilder setDestination(Destination dest) {
             return (MethodParamConfigBuilder) super.setDestination(dest);
         }
     }

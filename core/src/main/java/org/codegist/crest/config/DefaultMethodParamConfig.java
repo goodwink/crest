@@ -38,7 +38,7 @@ class DefaultMethodParamConfig extends DefaultParamConfig implements MethodParam
     DefaultMethodParamConfig(ParamConfig base, Serializer serializer, Injector injector) {
         this(base.getName(), base.getDefaultValue(), base.getDestination(), serializer, injector);
     }
-    DefaultMethodParamConfig(String name, String defaultValue, Destination destination, Serializer serializer, Injector injector) {
+    DefaultMethodParamConfig(String name, String defaultValue, String destination, Serializer serializer, Injector injector) {
         super(name, defaultValue, destination);
         this.serializer = serializer;
         this.injector = injector;

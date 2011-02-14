@@ -302,9 +302,8 @@ public interface CRestProperty {
 
     /**
      * override the default destination {@link org.codegist.crest.config.MethodParamConfig#DEFAULT_DESTINATION}.
-     * <p>Expects a member of {@link org.codegist.crest.config.Destination}.
+     * <p>Expects a String
      *
-     * @see org.codegist.crest.config.Destination
      * @see org.codegist.crest.InterfaceContext#getProperties()
      */
     String CONFIG_PARAM_DEFAULT_DESTINATION = "config.param.default.destination";

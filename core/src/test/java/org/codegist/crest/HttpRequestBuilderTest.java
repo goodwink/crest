@@ -20,7 +20,6 @@
 
 package org.codegist.crest;
 
-import org.codegist.crest.config.Destination;
 import org.junit.Test;
 
 import java.io.UnsupportedEncodingException;
@@ -80,7 +79,7 @@ public class HttpRequestBuilderTest {
                     put("f3", "vf3");
                 }})
                 .addFormParam("f4", "vf4")
-                .addParam("f5", "vf5", Destination.FORM)
+                .addParam("f5", "vf5", HttpRequest.DEST_FORM)
 
                 .addQueryParams(new LinkedHashMap<String, String>() {{
                     put("dropped1", "value2");
@@ -95,7 +94,7 @@ public class HttpRequestBuilderTest {
                     put("f3", "vf3");
                 }})
                 .addQueryParam("f4", "vf4")
-                .addParam("f5", "vf5", Destination.QUERY)
+                .addParam("f5", "vf5", HttpRequest.DEST_QUERY)
 
                 .addPathParams(new LinkedHashMap<String, String>() {{
                     put("dropped1", "value2");
@@ -110,7 +109,7 @@ public class HttpRequestBuilderTest {
                     put("f3", "vf3");
                 }})
                 .addPathParam("f4", "vf4")
-                .addParam("f5", "vf5", Destination.PATH)
+                .addParam("f5", "vf5", HttpRequest.DEST_PATH)
 
                 .addHeaderParams(new LinkedHashMap<String, String>() {{
                     put("dropped1", "value2");
@@ -125,7 +124,7 @@ public class HttpRequestBuilderTest {
                     put("f3", "vf3");
                 }})
                 .addHeaderParam("f4", "vf4")
-                .addParam("f5", "vf5", Destination.HEADER);
+                .addParam("f5", "vf5", HttpRequest.DEST_HEADER);
 
         assertEquals(new LinkedHashMap<String, Object>() {{
             put("f1", "vf1");

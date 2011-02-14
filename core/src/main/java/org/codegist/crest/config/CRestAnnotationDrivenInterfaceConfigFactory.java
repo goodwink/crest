@@ -26,18 +26,17 @@ import org.codegist.crest.annotate.*;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * <p>Annotation based config factory of any possible interfaces given to the factory.
  * <p>The factory will lookup any annotation in package {@link org.codegist.crest.annotate} on to the given interface.
  * <p/>
  * <p>- Each config fallback from param to method to interface until one config is found, otherwise defaults to any respective default value ({@link org.codegist.crest.config.InterfaceConfig}, {@link MethodConfig}, {@link PropertiesDrivenInterfaceConfigFactory}).
+ *
+ * @author Laurent Gilles (laurent.gilles@codegist.org)
  * @see org.codegist.crest.config.InterfaceConfig
  * @see org.codegist.crest.annotate
- * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
 public class CRestAnnotationDrivenInterfaceConfigFactory implements InterfaceConfigFactory {
 
@@ -46,6 +45,7 @@ public class CRestAnnotationDrivenInterfaceConfigFactory implements InterfaceCon
     public CRestAnnotationDrivenInterfaceConfigFactory(boolean buildTemplates) {
         this.buildTemplates = buildTemplates;
     }
+
     public CRestAnnotationDrivenInterfaceConfigFactory() {
         this(false);
     }
@@ -73,25 +73,25 @@ public class CRestAnnotationDrivenInterfaceConfigFactory implements InterfaceCon
             Injector injector = interfaze.getAnnotation(Injector.class);
 
             ConfigBuilders.InterfaceConfigBuilder config = new ConfigBuilders.InterfaceConfigBuilder(interfaze, context.getProperties());
-            if(endPoint != null) config.setEndPoint(endPoint.value());
-            if(path != null) config.setPath(path.value());
-            if(encoding != null) config.setEncoding(encoding.value());
-            if(globalInterceptor != null) config.setGlobalInterceptor(globalInterceptor.value());
-            if(extraParams != null) {
-                for(ParamConfig c : extraParams){
-                    config.addMethodsExtraParam(c.getName(), c.getDefaultValue(),c.getDestination());
+            if (endPoint != null) config.setEndPoint(endPoint.value());
+            if (path != null) config.setPath(path.value());
+            if (encoding != null) config.setEncoding(encoding.value());
+            if (globalInterceptor != null) config.setGlobalInterceptor(globalInterceptor.value());
+            if (extraParams != null) {
+                for (ParamConfig c : extraParams) {
+                    config.addMethodsExtraParam(c.getName(), c.getDefaultValue(), c.getDestination());
                 }
             }
-            if(socketTimeout != null) config.setMethodsSocketTimeout(socketTimeout.value());
-            if(connectionTimeout != null) config.setMethodsConnectionTimeout(connectionTimeout.value());
-            if(interceptor != null) config.setMethodsRequestInterceptor(interceptor.value());
-            if(responseHandler != null) config.setMethodsResponseHandler(responseHandler.value());
-            if(errorHandler != null) config.setMethodsErrorHandler(errorHandler.value());
-            if(retryHandler != null) config.setMethodsRetryHandler(retryHandler.value());
-            if(httpMethod != null) config.setMethodsHttpMethod(httpMethod.value());
+            if (socketTimeout != null) config.setMethodsSocketTimeout(socketTimeout.value());
+            if (connectionTimeout != null) config.setMethodsConnectionTimeout(connectionTimeout.value());
+            if (interceptor != null) config.setMethodsRequestInterceptor(interceptor.value());
+            if (responseHandler != null) config.setMethodsResponseHandler(responseHandler.value());
+            if (errorHandler != null) config.setMethodsErrorHandler(errorHandler.value());
+            if (retryHandler != null) config.setMethodsRetryHandler(retryHandler.value());
+            if (httpMethod != null) config.setMethodsHttpMethod(httpMethod.value());
 
-            if(serializer != null) config.setParamsSerializer(serializer.value());
-            if(injector != null) config.setParamsInjector(injector.value());
+            if (serializer != null) config.setParamsSerializer(serializer.value());
+            if (injector != null) config.setParamsInjector(injector.value());
 
 
             for (Method meth : interfaze.getDeclaredMethods()) {
@@ -112,28 +112,28 @@ public class CRestAnnotationDrivenInterfaceConfigFactory implements InterfaceCon
 
                 ConfigBuilders.MethodConfigBuilder methodConfigBuilder = config.startMethodConfig(meth);
 
-                if(extraParams != null) {
-                    for(ParamConfig c : extraParams){
+                if (extraParams != null) {
+                    for (ParamConfig c : extraParams) {
                         methodConfigBuilder.startExtraParamConfig(c.getName())
                                 .setDefaultValue(c.getDefaultValue())
                                 .setDestination(c.getDestination())
                                 .endParamConfig();
                     }
                 }
-                if(path != null) methodConfigBuilder.setPath(path.value());
-                if(socketTimeout != null) methodConfigBuilder.setSocketTimeout(socketTimeout.value());
-                if(connectionTimeout != null) methodConfigBuilder.setConnectionTimeout(connectionTimeout.value());
-                if(interceptor != null) methodConfigBuilder.setRequestInterceptor(interceptor.value());
-                if(responseHandler != null) methodConfigBuilder.setResponseHandler(responseHandler.value());
-                if(errorHandler != null) methodConfigBuilder.setErrorHandler(errorHandler.value());
-                if(retryHandler != null) methodConfigBuilder.setRetryHandler(retryHandler.value());
-                if(httpMethod != null) methodConfigBuilder.setHttpMethod(httpMethod.value());
+                if (path != null) methodConfigBuilder.setPath(path.value());
+                if (socketTimeout != null) methodConfigBuilder.setSocketTimeout(socketTimeout.value());
+                if (connectionTimeout != null) methodConfigBuilder.setConnectionTimeout(connectionTimeout.value());
+                if (interceptor != null) methodConfigBuilder.setRequestInterceptor(interceptor.value());
+                if (responseHandler != null) methodConfigBuilder.setResponseHandler(responseHandler.value());
+                if (errorHandler != null) methodConfigBuilder.setErrorHandler(errorHandler.value());
+                if (retryHandler != null) methodConfigBuilder.setRetryHandler(retryHandler.value());
+                if (httpMethod != null) methodConfigBuilder.setHttpMethod(httpMethod.value());
 
-                if(serializer != null) methodConfigBuilder.setParamsSerializer(serializer.value());
-                if(injector != null) methodConfigBuilder.setParamsInjector(injector.value());
+                if (serializer != null) methodConfigBuilder.setParamsSerializer(serializer.value());
+                if (injector != null) methodConfigBuilder.setParamsInjector(injector.value());
 
-                for(int i = 0, max = meth.getParameterTypes().length; i < max ; i++){
-                    Map<Class<? extends Annotation>,Annotation> paramAnnotations = Methods.getParamsAnnotation(meth, i);
+                for (int i = 0, max = meth.getParameterTypes().length; i < max; i++) {
+                    Map<Class<? extends Annotation>, Annotation> paramAnnotations = Methods.getParamsAnnotation(meth, i);
                     //Class<? extends RequestInjector> typeInjector = RequestInjectors.getAnnotatedInjectorFor(meth.getParameterTypes()[i]);
                     ConfigBuilders.MethodParamConfigBuilder methodParamConfigBuilder = methodConfigBuilder.startParamConfig(i);
 
@@ -144,8 +144,8 @@ public class CRestAnnotationDrivenInterfaceConfigFactory implements InterfaceCon
                     serializer = (Serializer) paramAnnotations.get(Serializer.class);
                     injector = (Injector) paramAnnotations.get(Injector.class);
 
-                    if(serializer != null) methodParamConfigBuilder.setSerializer(serializer.value());
-                    if(injector != null) methodParamConfigBuilder.setInjector(injector.value());
+                    if (serializer != null) methodParamConfigBuilder.setSerializer(serializer.value());
+                    if (injector != null) methodParamConfigBuilder.setInjector(injector.value());
 
                     ParamConfig pconfig = getFirstExtraParamConfig(paramAnnotations.values().toArray(new Annotation[paramAnnotations.size()]));
                     methodParamConfigBuilder.setName(pconfig.getName());
@@ -166,57 +166,62 @@ public class CRestAnnotationDrivenInterfaceConfigFactory implements InterfaceCon
         }
     }
 
-    
-    private static ParamConfig getFirstExtraParamConfig(Annotation[] annotations){
+
+    private static ParamConfig getFirstExtraParamConfig(Annotation[] annotations) {
         Set<ParamConfig> config = getExtraParamConfigs(annotations);
-        if(config.isEmpty()) return new DefaultParamConfig(null,null,null);
+        if (config.isEmpty()) return new DefaultParamConfig(null, null, null);
         return config.iterator().next();// get the first
     }
-    private static Set<ParamConfig> getExtraParamConfigs(Annotation[] annotations){
-        Set<ParamConfig> params = new LinkedHashSet<ParamConfig>();
 
-        for(Annotation a : annotations){
-            if(a instanceof FormParam) {
-                FormParam p = (FormParam) a;
-                params.add(new DefaultParamConfig(p.value(), p.defaultValue(), org.codegist.crest.config.Destination.FORM));
-            }else if(a instanceof FormParams) {
-                FormParams ps = (FormParams) a;
-                for(FormParam p : ps.value()){
-                    params.add(new DefaultParamConfig(p.value(), p.defaultValue(), org.codegist.crest.config.Destination.FORM));
-                }
-            }else if(a instanceof PathParam) {
-                PathParam p = (PathParam) a;
-                params.add(new DefaultParamConfig(p.value(), p.defaultValue(), org.codegist.crest.config.Destination.PATH));
-            }else if(a instanceof PathParams) {
-                PathParams ps = (PathParams) a;
-                for(PathParam p : ps.value()){
-                    params.add(new DefaultParamConfig(p.value(), p.defaultValue(), org.codegist.crest.config.Destination.PATH));
-                }
-            }else if(a instanceof QueryParam) {
-                QueryParam p = (QueryParam) a;
-                params.add(new DefaultParamConfig(p.value(), p.defaultValue(), org.codegist.crest.config.Destination.QUERY));
-            }else if(a instanceof QueryParams) {
-                QueryParams ps = (QueryParams) a;
-                for(QueryParam p : ps.value()){
-                    params.add(new DefaultParamConfig(p.value(), p.defaultValue(), org.codegist.crest.config.Destination.QUERY));
-                }
-            }else if(a instanceof HeaderParam) {
-                HeaderParam p = (HeaderParam) a;
-                params.add(new DefaultParamConfig(p.value(), p.defaultValue(), org.codegist.crest.config.Destination.HEADER));
-            }else if(a instanceof HeaderParams) {
-                HeaderParams ps = (HeaderParams) a;
-                for(HeaderParam p : ps.value()){
-                    params.add(new DefaultParamConfig(p.value(), p.defaultValue(), org.codegist.crest.config.Destination.HEADER));
-                }
+    private static Set<ParamConfig> getExtraParamConfigs(Annotation[] annotations) {
+        Set<ParamConfig> params = new LinkedHashSet<ParamConfig>(getParam(annotations));
+
+        for (Annotation a : annotations) {
+            if (a instanceof FormParams) {
+                params.addAll(getParam(((FormParams) a).value()));
+            } else if (a instanceof PathParams) {
+                params.addAll(getParam(((PathParams) a).value()));
+            } else if (a instanceof QueryParams) {
+                params.addAll(getParam(((QueryParams) a).value()));
+            } else if (a instanceof HeaderParams) {
+                params.addAll(getParam(((HeaderParams) a).value()));
             }
         }
         return params;
     }
 
-    private static HttpMethod getHttpMethod(Annotation[] annotations, HttpMethod def){
-        for(Annotation a : annotations){
+    private static List<ParamConfig> getParam(Annotation... annotations) {
+        List<ParamConfig> params = new ArrayList<ParamConfig>();
+
+        for (Annotation a : annotations) {
+            Param param = a.annotationType().getAnnotation(Param.class);
+            if (param != null) {
+                String dest = param.value(), name = null, defaultValue = null;
+                if (a instanceof QueryParam) {
+                    name = ((QueryParam) a).value();
+                    defaultValue = ((QueryParam) a).defaultValue();
+                } else if (a instanceof PathParam) {
+                    name = ((PathParam) a).value();
+                    defaultValue = ((PathParam) a).defaultValue();
+                } else if (a instanceof FormParam) {
+                    name = ((FormParam) a).value();
+                    defaultValue = ((FormParam) a).defaultValue();
+                } else if (a instanceof HeaderParam) {
+                    name = ((HeaderParam) a).value();
+                    defaultValue = ((HeaderParam) a).defaultValue();
+                } else {
+                    throw new IllegalArgumentException("Unsupported param annotation:" + a);
+                }
+                params.add(new DefaultParamConfig(name, defaultValue, dest));
+            }
+        }
+        return params;
+    }
+
+    private static HttpMethod getHttpMethod(Annotation[] annotations, HttpMethod def) {
+        for (Annotation a : annotations) {
             HttpMethod meth = a.annotationType().getAnnotation(HttpMethod.class);
-            if(meth != null) return meth;
+            if (meth != null) return meth;
         }
         return def;
     }

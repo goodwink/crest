@@ -32,12 +32,12 @@ class DefaultParamConfig implements ParamConfig {
 
     private final String name;
     private final String defaultValue;
-    private final Destination destination;
+    private final String destination;
 
     DefaultParamConfig() {
         this(DEFAULT_NAME, DEFAULT_VALUE, DEFAULT_DESTINATION);
     }
-    DefaultParamConfig(String name, String defaultValue, Destination destination) {
+    DefaultParamConfig(String name, String defaultValue, String destination) {
         this.name = name;
         this.defaultValue = defaultValue;
         this.destination = destination;
@@ -51,7 +51,7 @@ class DefaultParamConfig implements ParamConfig {
         return defaultValue;
     }
 
-    public Destination getDestination() {
+    public String getDestination() {
         return destination;
     }
 

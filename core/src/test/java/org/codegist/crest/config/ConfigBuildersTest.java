@@ -21,6 +21,7 @@
 package org.codegist.crest.config;
 
 import org.codegist.crest.CRestProperty;
+import org.codegist.crest.HttpRequest;
 import org.codegist.crest.Stubs;
 import org.codegist.crest.TestUtils;
 import org.codegist.crest.handler.ErrorHandler;
@@ -52,7 +53,7 @@ import static org.junit.Assert.fail;
  */
 public class ConfigBuildersTest {
 
-    private static final ParamConfig[] PARAMs = new ParamConfig[]{new DefaultParamConfig("1","2", Destination.FORM)};
+    private static final ParamConfig[] PARAMs = new ParamConfig[]{new DefaultParamConfig("1","2", HttpRequest.DEST_FORM)};
 
     @Test
     public void testConfigBuildersInvalidPath(){
@@ -129,11 +130,11 @@ public class ConfigBuildersTest {
                 .endMethodConfig()
                 .build();
         assertArrayEquals(
-                new ParamConfig[]{new DefaultParamConfig("ddd", "bbb", Destination.FORM)},
+                new ParamConfig[]{new DefaultParamConfig("ddd", "bbb", HttpRequest.DEST_FORM)},
                 b.getMethodConfig(Interface.B).getExtraParams()
         );
         assertArrayEquals(
-                new ParamConfig[]{new DefaultParamConfig("ddd", "bbb", Destination.FORM), new DefaultParamConfig("aaa", "ccc", Destination.HEADER)},
+                new ParamConfig[]{new DefaultParamConfig("ddd", "bbb", HttpRequest.DEST_FORM), new DefaultParamConfig("aaa", "ccc", HttpRequest.DEST_HEADER)},
                 b.getMethodConfig(Interface.A).getExtraParams()
         );
     }
@@ -141,7 +142,7 @@ public class ConfigBuildersTest {
     public void testParamsNameKey2() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
         InterfaceConfig b = new ConfigBuilders.InterfaceConfigBuilder(Interface.class, new HashMap<String, Object>(){{
             put(CRestProperty.CONFIG_METHOD_DEFAULT_EXTRA_PARAMS, new ParamConfig[]{
-                    new DefaultParamConfig("ddd", "aaa", Destination.FORM),
+                    new DefaultParamConfig("ddd", "aaa", HttpRequest.DEST_FORM),
 
             });
         }})
@@ -158,11 +159,11 @@ public class ConfigBuildersTest {
                 .endMethodConfig()
                 .build();
         assertArrayEquals(
-                new ParamConfig[]{new DefaultParamConfig("ddd", "bbb", Destination.FORM)},
+                new ParamConfig[]{new DefaultParamConfig("ddd", "bbb", HttpRequest.DEST_FORM)},
                 b.getMethodConfig(Interface.B).getExtraParams()
         );
         assertArrayEquals(
-                new ParamConfig[]{new DefaultParamConfig("ddd", "bbb", Destination.FORM), new DefaultParamConfig("aaa", "ccc", Destination.HEADER)},
+                new ParamConfig[]{new DefaultParamConfig("ddd", "bbb", HttpRequest.DEST_FORM), new DefaultParamConfig("aaa", "ccc", HttpRequest.DEST_HEADER)},
                 b.getMethodConfig(Interface.A).getExtraParams()
         );
     }
@@ -214,7 +215,7 @@ public class ConfigBuildersTest {
                                     new DefaultMethodParamConfig(
                                             placeholders.get("my.place.holder.param-name"),
                                             placeholders.get("my.place.holder.param-def"),
-                                            Destination.valueOf(placeholders.get("my.place.holder.param-dest")),
+                                            placeholders.get("my.place.holder.param-dest"),
                                             (Serializer) Class.forName(placeholders.get("my.place.holder.param-seri")).newInstance(),
                                             (Injector) Class.forName(placeholders.get("my.place.holder.param-req-inject")).newInstance()
                                     )
@@ -235,21 +236,21 @@ public class ConfigBuildersTest {
                                     new DefaultMethodParamConfig(
                                             placeholders.get("my.place.holder.param-name"),
                                             placeholders.get("my.place.holder.param-def"),
-                                            Destination.valueOf(placeholders.get("my.place.holder.param-dest")),
+                                            placeholders.get("my.place.holder.param-dest"),
                                             (Serializer) Class.forName(placeholders.get("my.place.holder.param-seri")).newInstance(),
                                             (Injector) Class.forName(placeholders.get("my.place.holder.param-req-inject")).newInstance()
                                     ),
                                     new DefaultMethodParamConfig(
                                             placeholders.get("my.place.holder.param-name"),
                                             placeholders.get("my.place.holder.param-def"),
-                                            Destination.valueOf(placeholders.get("my.place.holder.param-dest")),
+                                            placeholders.get("my.place.holder.param-dest"),
                                             (Serializer) Class.forName(placeholders.get("my.place.holder.param-seri")).newInstance(),
                                             (Injector) Class.forName(placeholders.get("my.place.holder.param-req-inject")).newInstance()
                                     ),
                                     new DefaultMethodParamConfig(
                                             placeholders.get("my.place.holder.param-name"),
                                             placeholders.get("my.place.holder.param-def"),
-                                            Destination.valueOf(placeholders.get("my.place.holder.param-dest")),
+                                            placeholders.get("my.place.holder.param-dest"),
                                             (Serializer) Class.forName(placeholders.get("my.place.holder.param-seri")).newInstance(),
                                             (Injector) Class.forName(placeholders.get("my.place.holder.param-req-inject")).newInstance()
                                     )
@@ -318,7 +319,7 @@ public class ConfigBuildersTest {
         defaultOverrides.put(CONFIG_METHOD_DEFAULT_HTTP_METHOD, "HEAD");
         defaultOverrides.put(CONFIG_METHOD_DEFAULT_RESPONSE_HANDLER, new Stubs.ResponseHandler1());
         defaultOverrides.put(CONFIG_METHOD_DEFAULT_EXTRA_PARAMS, PARAMs);
-        defaultOverrides.put(CONFIG_PARAM_DEFAULT_DESTINATION, Destination.FORM);
+        defaultOverrides.put(CONFIG_PARAM_DEFAULT_DESTINATION, HttpRequest.DEST_FORM);
         defaultOverrides.put(CONFIG_PARAM_DEFAULT_INJECTOR, new Stubs.RequestParameterInjector1());
         defaultOverrides.put(CONFIG_PARAM_DEFAULT_SERIALIZER, new Stubs.Serializer1());
         defaultOverrides.put(CONFIG_PARAM_DEFAULT_NAME, "name");
@@ -344,7 +345,7 @@ public class ConfigBuildersTest {
                                     new DefaultMethodParamConfig(
                                             (String) defaultOverrides.get(CONFIG_PARAM_DEFAULT_NAME),
                                             (String) defaultOverrides.get(CONFIG_PARAM_DEFAULT_VALUE),
-                                            (Destination) defaultOverrides.get(CONFIG_PARAM_DEFAULT_DESTINATION),
+                                            (String) defaultOverrides.get(CONFIG_PARAM_DEFAULT_DESTINATION),
                                             (Serializer) defaultOverrides.get(CONFIG_PARAM_DEFAULT_SERIALIZER),
                                             (Injector) defaultOverrides.get(CONFIG_PARAM_DEFAULT_INJECTOR)
                                     )
@@ -365,21 +366,21 @@ public class ConfigBuildersTest {
                                     new DefaultMethodParamConfig(
                                             (String) defaultOverrides.get(CONFIG_PARAM_DEFAULT_NAME),
                                             (String) defaultOverrides.get(CONFIG_PARAM_DEFAULT_VALUE),
-                                            (Destination) defaultOverrides.get(CONFIG_PARAM_DEFAULT_DESTINATION),
+                                            (String) defaultOverrides.get(CONFIG_PARAM_DEFAULT_DESTINATION),
                                             (Serializer) defaultOverrides.get(CONFIG_PARAM_DEFAULT_SERIALIZER),
                                             (Injector) defaultOverrides.get(CONFIG_PARAM_DEFAULT_INJECTOR)
                                     ),
                                     new DefaultMethodParamConfig(
                                             (String) defaultOverrides.get(CONFIG_PARAM_DEFAULT_NAME),
                                             (String) defaultOverrides.get(CONFIG_PARAM_DEFAULT_VALUE),
-                                            (Destination) defaultOverrides.get(CONFIG_PARAM_DEFAULT_DESTINATION),
+                                            (String) defaultOverrides.get(CONFIG_PARAM_DEFAULT_DESTINATION),
                                             (Serializer) defaultOverrides.get(CONFIG_PARAM_DEFAULT_SERIALIZER),
                                             (Injector) defaultOverrides.get(CONFIG_PARAM_DEFAULT_INJECTOR)
                                     ),
                                     new DefaultMethodParamConfig(
                                             (String) defaultOverrides.get(CONFIG_PARAM_DEFAULT_NAME),
                                             (String) defaultOverrides.get(CONFIG_PARAM_DEFAULT_VALUE),
-                                            (Destination) defaultOverrides.get(CONFIG_PARAM_DEFAULT_DESTINATION),
+                                            (String) defaultOverrides.get(CONFIG_PARAM_DEFAULT_DESTINATION),
                                             (Serializer) defaultOverrides.get(CONFIG_PARAM_DEFAULT_SERIALIZER),
                                             (Injector) defaultOverrides.get(CONFIG_PARAM_DEFAULT_INJECTOR)
                                     )
@@ -534,7 +535,7 @@ public class ConfigBuildersTest {
                 .setEndPoint("http://server:8080")
                 .setParamsName("n")
                 .setMethodsPath("/test")
-                .addMethodsExtraParam("1", "2", Destination.FORM)
+                .addMethodsExtraParam("1", "2", HttpRequest.DEST_FORM)
                 .setMethodsHttpMethod("DELETE")
                 .setMethodsSocketTimeout(10l)
                 .setMethodsConnectionTimeout(11l)
@@ -617,7 +618,7 @@ public class ConfigBuildersTest {
         );
         InterfaceConfig config = new ConfigBuilders.InterfaceConfigBuilder(Interface.class).setEndPoint("http://server:8080").setParamsName("n")
                 .setMethodsPath("/test")
-                .addMethodsExtraParam("1", "2", Destination.FORM)
+                .addMethodsExtraParam("1", "2", HttpRequest.DEST_FORM)
                 .setMethodsHttpMethod("DELETE")
                 .setMethodsSocketTimeout(10l)
                 .setMethodsConnectionTimeout(11l)
@@ -666,7 +667,7 @@ public class ConfigBuildersTest {
                                     new DefaultMethodParamConfig(
                                             "name4",
                                             "def",
-                                            Destination.QUERY,
+                                            HttpRequest.DEST_QUERY,
                                             new Stubs.Serializer1(),
                                             new Stubs.RequestParameterInjector1()
                                     )
@@ -714,7 +715,7 @@ public class ConfigBuildersTest {
                 .setEndPoint("http://server:8080")
                 .setParamsName("n")
                 .setMethodsPath("/test")
-                .addMethodsExtraParam("1", "2", Destination.FORM)
+                .addMethodsExtraParam("1", "2", HttpRequest.DEST_FORM)
                 .setMethodsHttpMethod("DELETE")
                 .setMethodsSocketTimeout(10l)
                 .setMethodsConnectionTimeout(11l)
@@ -728,7 +729,7 @@ public class ConfigBuildersTest {
                 .startParamConfig(0)
                 .setName("name4")
                 .setDefaultValue("def")
-                .setDestination("QUERY")
+                .setDestination("query")
                 .setSerializer(new Stubs.Serializer1())
                 .setInjector(new Stubs.RequestParameterInjector1())
                 .endParamConfig()

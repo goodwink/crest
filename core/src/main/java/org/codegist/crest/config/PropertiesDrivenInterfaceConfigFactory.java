@@ -158,13 +158,13 @@ public class PropertiesDrivenInterfaceConfigFactory implements InterfaceConfigFa
                     .setParamsSerializer(getServiceProp(serviceAlias, "serializer"))
                     .setParamsInjector(getServiceProp(serviceAlias, "injector"));
 
-            Map<Destination, List<String[]>> params = getParams(serviceAlias);
-            for(Map.Entry<Destination, List<String[]>> paramDest : params.entrySet()){
-                Destination dest = paramDest.getKey();
+            Map<String, List<String[]>> params = getParams(serviceAlias);
+            for(Map.Entry<String, List<String[]>> paramDest : params.entrySet()){
+                String dest = paramDest.getKey();
                 for(String[] param : paramDest.getValue()){
                     String name = param[0];
                     String value = param[1];
-                    ricb.addMethodsExtraParam(name, value, dest.toString());
+                    ricb.addMethodsExtraParam(name, value, dest);
                 }
             }
 
@@ -179,9 +179,9 @@ public class PropertiesDrivenInterfaceConfigFactory implements InterfaceConfigFa
                     Method[] methods = Methods.getDeclaredMethodsThatMatches(interfaze, methPattern, true);
                     if (Arrays.asList(methods).contains(method)) {
 
-                        Map<Destination, List<String[]>> mparamPrefixes = getParams(serviceAlias, methAlias);
-                        for(Map.Entry<Destination, List<String[]>> paramDest : mparamPrefixes.entrySet()){
-                            Destination dest = paramDest.getKey();
+                        Map<String, List<String[]>> mparamPrefixes = getParams(serviceAlias, methAlias);
+                        for(Map.Entry<String, List<String[]>> paramDest : mparamPrefixes.entrySet()){
+                            String dest = paramDest.getKey();
                             for(String[] param : paramDest.getValue()){
                                 String name = param[0];
                                 String value = param[1];
@@ -287,23 +287,23 @@ public class PropertiesDrivenInterfaceConfigFactory implements InterfaceConfigFa
         return patterns.toArray(new String[patterns.size()][2]);
     }
 
-    private Map<Destination, List<String[]>> getParams(String serviceAlias) {
+    private Map<String, List<String[]>> getParams(String serviceAlias) {
         String prefix = getServiceParamPrefix(serviceAlias);
         return getParamsByPrefix(prefix);
     }
-    private Map<Destination, List<String[]>> getParams(String serviceAlias, String methodPrefix) {
+    private Map<String, List<String[]>> getParams(String serviceAlias, String methodPrefix) {
         String prefix = getMethodParamPrefix(serviceAlias, methodPrefix);
         return getParamsByPrefix(prefix);
     }
-    private Map<Destination,List<String[]>> getParamsByPrefix(String prefix){
+    private Map<String,List<String[]>> getParamsByPrefix(String prefix){
         Map<String,String> ps = Maps.extractByPattern(properties, Pattern.quote(prefix) + "\\.[a-z]+\\..*");
-        Map<Destination, List<String[]>> res = new HashMap<Destination, List<String[]>>();
+        Map<String, List<String[]>> res = new HashMap<String, List<String[]>>();
         for (Map.Entry<String, String> entry : ps.entrySet()) {
             String[] split = entry.getKey().split("\\.");
             String paramName = split[split.length - 1];
             String type = split[split.length - 2];
 
-            Destination dest = Destination.valueOf(type.toUpperCase());
+            String dest = type.toLowerCase();
             List<String[]> values = res.get(dest);
             if(values == null) {
                 res.put(dest, values = new ArrayList<String[]>());

@@ -20,9 +20,11 @@
 
 package org.codegist.crest;
 
-import org.codegist.common.lang.*;
+import org.codegist.common.lang.EqualsBuilder;
+import org.codegist.common.lang.HashCodeBuilder;
+import org.codegist.common.lang.ToStringBuilder;
+import org.codegist.common.lang.Validate;
 import org.codegist.common.net.Urls;
-import org.codegist.crest.config.Destination;
 
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
@@ -40,6 +42,12 @@ import java.util.regex.Pattern;
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
 public class HttpRequest {
+
+    public static final String DEST_QUERY = "query";
+    public static final String DEST_PATH = "path";
+    public static final String DEST_FORM = "form";
+    public static final String DEST_HEADER = "header";
+
     private final String meth;
     private final URI uri;
     private final Long socketTimeout;
@@ -211,12 +219,12 @@ public class HttpRequest {
             );
         }
 
-        private String buildBaseUriString(){
+        private String buildBaseUriString() {
             StringBuffer baseUri = new StringBuffer();
             Matcher m = SINGLE_PLACEHOLDER_PATTERN.matcher(this.baseUri);
-            while(m.find()){
+            while (m.find()) {
                 String placeHolder = m.group(1);
-                if(!pathParams.containsKey(placeHolder)){
+                if (!pathParams.containsKey(placeHolder)) {
                     throw new IllegalStateException("Not all path parameters have been provided for base uri '" + this.baseUri + "'! Missing param: " + placeHolder);
                 }
                 String value = pathParams.get(placeHolder);
@@ -239,7 +247,8 @@ public class HttpRequest {
             return pointsTo(uriString, encoding);
         }
 
-        /**                                                                                                  ²
+        /**
+         * ²
          * Sets the url the request will point to.
          * <p>Can contains a predefined query string
          * <p>This value can contain placeholders that points to method arguments. eg http://localhost:8080/my-path/{my-param-name}/{p2}.json
@@ -321,7 +330,7 @@ public class HttpRequest {
         /**
          * Adds a request header to the resulting request's headerParams
          *
-         * @param name   Header name
+         * @param name  Header name
          * @param value Header value
          * @return current builder
          */
@@ -355,18 +364,20 @@ public class HttpRequest {
         /**
          * Adds a parameter to the resulting request's path string
          * <p>Name is the path template placeholder where the given value will be merged.
-         * @param name path parameter name
+         *
+         * @param name  path parameter name
          * @param value path parameter value
          * @return current builder
          */
         public Builder addPathParam(String name, String value) {
-            this.pathParams.put(name,value);
+            this.pathParams.put(name, value);
             return this;
         }
 
         /**
          * Sets the resulting request's path parameters to the given map
          * <p>Keys are the path template placeholders where the given values will be merged.
+         *
          * @param params path parameters map
          * @return current builder
          */
@@ -378,6 +389,7 @@ public class HttpRequest {
         /**
          * Adds the given map to the resulting request's path parameters
          * <p>Keys are the path template placeholders where the given values will be merged.
+         *
          * @param params path parameters map
          * @return current builder
          */
@@ -388,7 +400,8 @@ public class HttpRequest {
 
         /**
          * Adds a parameter to the resulting request's query string.
-         * @param name query string parameter name or placeholder name
+         *
+         * @param name  query string parameter name or placeholder name
          * @param value query string parameter value or placeholder name
          * @return current builder
          */
@@ -422,7 +435,7 @@ public class HttpRequest {
         /**
          * Adds a body parameter to the resulting request's body parameters
          *
-         * @param name   query string parameter name
+         * @param name  query string parameter name
          * @param value query string parameter value
          * @return current builder
          */
@@ -455,18 +468,24 @@ public class HttpRequest {
 
         /**
          * Adds a parameter to the given destination in the final http request
-         * @param name name of the parameter
+         *
+         * @param name  name of the parameter
          * @param value value of the parameter
-         * @param dest parameter destination
+         * @param dest  parameter destination
          * @return current builder
          */
-        public Builder addParam(String name, Object value, Destination dest) {
-            switch(dest){
-                case FORM: return addFormParam(name, value);
-                case PATH: return addPathParam(name, value.toString());
-                case QUERY: return addQueryParam(name, value.toString());
-                case HEADER: return addHeaderParam(name, value.toString());
-                default: throw new IllegalStateException("shouldn't be here!");
+        public Builder addParam(String name, Object value, String dest) {
+            dest = dest.toLowerCase();
+            if (DEST_QUERY.equals(dest)) {
+                return addQueryParam(name, value.toString());
+            } else if (DEST_PATH.equals(dest)) {
+                return addPathParam(name, value.toString());
+            } else if (DEST_FORM.equals(dest)) {
+                return addFormParam(name, value);
+            } else if (DEST_HEADER.equals(dest)) {
+                return addHeaderParam(name, value.toString());
+            } else {
+                throw new IllegalStateException("Unsupported destination ! (dest=" + dest + ")");
             }
         }
 

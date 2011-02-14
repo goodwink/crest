@@ -22,7 +22,6 @@ package org.codegist.crest.delicious.injector;
 
 import org.codegist.crest.HttpRequest;
 import org.codegist.crest.ParamContext;
-import org.codegist.crest.config.Destination;
 import org.codegist.crest.delicious.model.Range;
 import org.codegist.crest.injector.Injector;
 
@@ -33,7 +32,7 @@ public class RangeInjector implements Injector<Range> {
     public void inject(HttpRequest.Builder builder, ParamContext<Range> context) {
         if (context.getRawValue() == null) return;
         Range r = context.getRawValue();
-        Destination dest = context.getParamConfig().getDestination();
+        String dest = context.getParamConfig().getDestination();
         builder.addParam("start", r.getStart(), dest)
                .addParam("results", r.getResults(), dest);
     }
