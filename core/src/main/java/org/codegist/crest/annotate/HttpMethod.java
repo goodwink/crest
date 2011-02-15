@@ -36,12 +36,5 @@ import java.lang.annotation.Target;
 @Target({ElementType.ANNOTATION_TYPE})
 public @interface HttpMethod {
 
-    String GET = "GET";
-    String POST = "POST";
-    String PUT = "PUT";
-    String DELETE = "DELETE";
-    String OPTIONS = "OPTIONS";
-    String HEAD = "HEAD";
-
     String value();
 }

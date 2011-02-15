@@ -36,7 +36,7 @@ class DefaultParamContext<V> extends DefaultRequestContext implements ParamConte
     }
 
     public boolean isForUrl() {
-        return "GET".equals(getMethodConfig().getHttpMethod())
+        return HttpRequest.HTTP_GET.equals(getMethodConfig().getHttpMethod())
                 || HttpRequest.DEST_PATH.equals(getParamConfig().getDestination())
                 || HttpRequest.DEST_QUERY.equals(getParamConfig().getDestination());
     }

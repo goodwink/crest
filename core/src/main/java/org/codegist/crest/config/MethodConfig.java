@@ -20,6 +20,7 @@
 
 package org.codegist.crest.config;
 
+import org.codegist.crest.HttpRequest;
 import org.codegist.crest.handler.*;
 import org.codegist.crest.interceptor.EmptyRequestInterceptor;
 import org.codegist.crest.interceptor.RequestInterceptor;
@@ -73,7 +74,7 @@ public interface MethodConfig {
      *
      * @see MethodConfig#getHttpMethod()
      */
-    String DEFAULT_HTTP_METHOD = "GET";
+    String DEFAULT_HTTP_METHOD = HttpRequest.HTTP_GET;
 
     /**
      * Default response handler applied when non specified.

@@ -83,7 +83,7 @@ public class DefaultRestService implements RestService {
             }
         }
 
-        if ("PUT".equals(request.getMeth()) || "POST".equals(request.getMeth())) {
+        if (HttpRequest.HTTP_PUT.equals(request.getMeth()) || HttpRequest.HTTP_POST.equals(request.getMeth())) {
             if (Params.isForUpload(request.getFormParams())) {
                 String boundary = Randoms.randomAlphaNumeric(16) + System.currentTimeMillis();
                 con.setRequestProperty("Content-Type", MULTIPART + boundary);

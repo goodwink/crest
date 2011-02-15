@@ -48,6 +48,13 @@ public class HttpRequest {
     public static final String DEST_FORM = "form";
     public static final String DEST_HEADER = "header";
 
+    public static final String HTTP_GET = "GET";
+    public static final String HTTP_POST = "POST";
+    public static final String HTTP_PUT = "PUT";
+    public static final String HTTP_DELETE = "DELETE";
+    public static final String HTTP_HEAD = "HEAD";
+    public static final String HTTP_OPTIONS = "OPTIONS";
+
     private final String meth;
     private final URI uri;
     private final Long socketTimeout;
@@ -172,7 +179,7 @@ public class HttpRequest {
     public static class Builder {
         private static final Pattern SINGLE_PLACEHOLDER_PATTERN = Pattern.compile("[\\{]([^/]+)[\\})]");
         static final String ENCODING = "utf-8";
-        static final String METH = "GET";
+        static final String METH = HttpRequest.HTTP_GET;
         private String meth = METH;
         private String baseUri;
         private Long socketTimeout = null;

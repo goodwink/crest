@@ -20,6 +20,8 @@
 
 package org.codegist.crest.annotate;
 
+import org.codegist.crest.HttpRequest;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -33,6 +35,6 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE,ElementType.METHOD})
-@HttpMethod(HttpMethod.GET)
+@HttpMethod(HttpRequest.HTTP_GET)
 public @interface GET {
 }

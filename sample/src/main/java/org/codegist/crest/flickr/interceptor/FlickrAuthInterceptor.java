@@ -88,6 +88,6 @@ public class FlickrAuthInterceptor extends RequestInterceptorAdapter {
     }
 
     private boolean isForBody(String meth) {
-        return "POST".equals(meth) || "PUT".equals(meth);
+        return HttpRequest.HTTP_POST.equals(meth) || HttpRequest.HTTP_PUT.equals(meth);
     }
 }

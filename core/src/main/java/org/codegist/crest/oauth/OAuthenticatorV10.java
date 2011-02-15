@@ -99,19 +99,19 @@ public class OAuthenticatorV10 implements OAuthenticator {
         if (Strings.isNotBlank((String) config.get(CONFIG_TOKEN_REQUEST_URL_METHOD)))
             requestTokenMeth = (String) config.get(CONFIG_TOKEN_REQUEST_URL_METHOD);
         else
-            requestTokenMeth = "POST";
+            requestTokenMeth = HttpRequest.HTTP_POST;
 
         this.accessTokenUrl = (String) config.get(CONFIG_TOKEN_ACCESS_URL);
         if (Strings.isNotBlank((String) config.get(CONFIG_TOKEN_ACCESS_URL_METHOD)))
             accessTokenMeth = (String) config.get(CONFIG_TOKEN_ACCESS_URL_METHOD);
         else
-            accessTokenMeth = "POST";
+            accessTokenMeth = HttpRequest.HTTP_POST;
 
         this.refreshAccessTokenUrl = (String) config.get(CONFIG_TOKEN_ACCESS_REFRESH_URL);
         if (Strings.isNotBlank((String) config.get(CONFIG_TOKEN_ACCESS_REFRESH_URL_METHOD)))
             refreshAccessTokenMeth = (String) config.get(CONFIG_TOKEN_ACCESS_REFRESH_URL_METHOD);
         else
-            refreshAccessTokenMeth = "POST";
+            refreshAccessTokenMeth = HttpRequest.HTTP_POST;
     }
 
     public OAuthenticatorV10(RestService restService, Token consumerToken, Map<String,Object> config) {
@@ -134,7 +134,7 @@ public class OAuthenticatorV10 implements OAuthenticator {
             String sign = generateSignature(new Token("",""), request, oauthParams);
             oauthParams.add(new Pair<String,String>("oauth_signature", sign));
 
-            if("GET".equals(requestTokenMeth)) {
+            if(HttpRequest.HTTP_GET.equals(requestTokenMeth)) {
                 request.addQueryParams(toParamMap(oauthParams));
             }else{
                 request.addFormParams((Map)toParamMap(oauthParams));
@@ -190,7 +190,7 @@ public class OAuthenticatorV10 implements OAuthenticator {
             String sign = generateSignature(requestToken, request, oauthParams);
             oauthParams.add(new Pair<String,String>("oauth_signature", sign));
 
-            if("GET".equals(meth)) {
+            if(HttpRequest.HTTP_GET.equals(meth)) {
                 request.addQueryParams(toParamMap(oauthParams));
             }else{
                 request.addFormParams((Map)toParamMap(oauthParams));

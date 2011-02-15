@@ -129,12 +129,12 @@ public class HttpClientRestService implements RestService, Disposable {
     }
 
     private static final Map<String, Class<? extends HttpUriRequest>> METH_MAP = new HashMap<String, Class<? extends HttpUriRequest>>();{
-        METH_MAP.put("GET", HttpGet.class);
-        METH_MAP.put("POST", HttpPost.class);
-        METH_MAP.put("PUT", HttpPut.class);
-        METH_MAP.put("DELETE", HttpDelete.class);
-        METH_MAP.put("HEAD", HttpHead.class);
-        METH_MAP.put("OPTIONS", HttpOptions.class);
+        METH_MAP.put(HttpRequest.HTTP_GET, HttpGet.class);
+        METH_MAP.put(HttpRequest.HTTP_POST, HttpPost.class);
+        METH_MAP.put(HttpRequest.HTTP_PUT, HttpPut.class);
+        METH_MAP.put(HttpRequest.HTTP_DELETE, HttpDelete.class);
+        METH_MAP.put(HttpRequest.HTTP_HEAD, HttpHead.class);
+        METH_MAP.put(HttpRequest.HTTP_OPTIONS, HttpOptions.class);
     }
 
     private static Map<String, List<String>> toHeaders(Header[] headers) {
