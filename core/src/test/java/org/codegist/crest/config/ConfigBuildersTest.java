@@ -44,9 +44,7 @@ import static org.codegist.crest.CRestProperty.*;
 import static org.codegist.crest.config.InterfaceConfig.DEFAULT_ENCODING;
 import static org.codegist.crest.config.MethodConfig.*;
 import static org.codegist.crest.config.MethodParamConfig.*;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 /**
  * @author Laurent Gilles (laurent.gilles@codegist.org)

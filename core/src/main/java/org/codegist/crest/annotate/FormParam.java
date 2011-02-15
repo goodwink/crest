@@ -22,7 +22,6 @@ package org.codegist.crest.annotate;
 
 import org.codegist.crest.HttpRequest;
 
-import java.io.Serializable;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

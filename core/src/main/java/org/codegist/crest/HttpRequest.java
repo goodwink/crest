@@ -170,7 +170,7 @@ public class HttpRequest {
      * <p>Will create an GET utf-8 HttpRequest object.
      */
     public static class Builder {
-        private static final Pattern SINGLE_PLACEHOLDER_PATTERN = Pattern.compile("[\\{\\(]([^/]+)[\\}\\)]");
+        private static final Pattern SINGLE_PLACEHOLDER_PATTERN = Pattern.compile("[\\{]([^/]+)[\\})]");
         static final String ENCODING = "utf-8";
         static final String METH = "GET";
         private String meth = METH;
@@ -260,9 +260,8 @@ public class HttpRequest {
          */
         public Builder pointsTo(String uriString, String encoding) throws URISyntaxException {
             Validate.isTrue(!Urls.hasQueryString(uriString), "Given uri contains a query string:" + uriString);
-            String fixed = SINGLE_PLACEHOLDER_PATTERN.matcher(uriString).replaceAll("\\($1\\)");
+            this.baseUri = Urls.normalizeSlashes(uriString);
             this.encoding = encoding;
-            this.baseUri = Urls.normalizeSlashes(fixed);
             return this;
         }
 
