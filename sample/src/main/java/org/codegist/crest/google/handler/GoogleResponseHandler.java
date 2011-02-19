@@ -20,32 +20,21 @@
 
 package org.codegist.crest.google.handler;
 
-import org.codegist.common.lang.Validate;
 import org.codegist.common.reflect.Types;
 import org.codegist.crest.CRestException;
 import org.codegist.crest.ResponseContext;
 import org.codegist.crest.handler.ResponseHandler;
-import org.codegist.crest.serializer.Deserializer;
 import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonProperty;
-
-import java.util.Map;
 
 /**
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
 public class GoogleResponseHandler implements ResponseHandler {
 
-    private final Deserializer deserializer;
-
-    public GoogleResponseHandler(Map<String, Object> parameters) {
-        this.deserializer = (Deserializer) parameters.get(Deserializer.class.getName());
-        Validate.notNull(this.deserializer, "No deserializer set, please construct CRest using either JSON or XML expected return type.");
-    }
-
     public final Object handle(ResponseContext context) {
         /* Marshall the response */
-        Response<?> res = deserializer.deserialize(context.getResponse().asReader(), Types.newType(Response.class, context.getExpectedGenericType()));
+        Response<?> res = context.getDeserializer().deserialize(context.getResponse().asReader(), Types.newType(Response.class, context.getExpectedGenericType()));
         /* Check for google OK status */
         if (res.status == 200) {
             return res.data; /* Returns the nested payload */

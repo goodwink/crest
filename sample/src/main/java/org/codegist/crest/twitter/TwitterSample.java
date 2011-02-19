@@ -55,7 +55,6 @@ public class TwitterSample implements Runnable {
     public void run() {
         /* Get the factory */
         CRest crest = new CRestBuilder()
-                .consumesJson().handledByJackson()
                 .usePreauthentifiedOAuth(consumerKey, consumerSecret, accessToken, accessTokenSecret)
                 .build();
 

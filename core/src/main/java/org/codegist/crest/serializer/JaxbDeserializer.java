@@ -22,6 +22,7 @@ package org.codegist.crest.serializer;
 
 import org.codegist.common.collect.Maps;
 import org.codegist.common.lang.Objects;
+import org.codegist.common.log.Logger;
 import org.codegist.crest.CRestProperty;
 
 import javax.xml.bind.JAXBContext;
@@ -38,6 +39,7 @@ import java.util.concurrent.TimeUnit;
  * @author laurent.gilles@codegist.org
  */
 public class JaxbDeserializer implements Deserializer {
+    private static final Logger LOG = Logger.getLogger(JaxbDeserializer.class);
     public static final String JAXB_UNMARSHALLER_POOL_RETRIEVAL_MAX_WAIT_PROP = JaxbDeserializer.class.getName() + "#jaxb-unmarshaller-pool.retrieval-max-wait";
     public static final String MODEL_CONTEXT_PATH_PROP = JaxbDeserializer.class.getName() + "#model-context-path";
     public static final String MODEL_CLASSES_BOUND_PROP = JaxbDeserializer.class.getName() + "#model-classes-bound";
@@ -79,7 +81,8 @@ public class JaxbDeserializer implements Deserializer {
         } else if (config.containsKey(USER_JAXB_CONTEXT_PROP)) {
             jaxb = (JAXBContext) config.get(USER_JAXB_CONTEXT_PROP);
         } else {
-            throw new IllegalArgumentException("Illegal jaxb config");
+            LOG.warn("No JAXB specific configuration found. Resulting JaxbDeserializer will behave as JAXB when instanciated as follow: JAXBContext.newInstance(). This can cause problem during deserialization process of user-specific model, please see JAXBContext documentation for more details. You can configure JAXB using CRestBuilder.deserializeXmlWithJaxb(...)");
+            jaxb = createJAXB();
         }
         int poolSize = Objects.defaultIfNull((Integer) config.get(CRestProperty.CREST_CONCURRENCY_LEVEL), DEFAULT_POOL_SIZE);
         long maxWait = Objects.defaultIfNull((Long) config.get(JAXB_UNMARSHALLER_POOL_RETRIEVAL_MAX_WAIT_PROP), DEFAULT_MAX_WAIT);
@@ -110,15 +113,16 @@ public class JaxbDeserializer implements Deserializer {
 abstract class JaxbUnmarshaller {
     abstract <T> T unmarshal(Reader reader);
 
-    static JaxbUnmarshaller newInstance(JAXBContext jaxb, int poolSize, long maxWait){
-        if(poolSize == 1) {
+    static JaxbUnmarshaller newInstance(JAXBContext jaxb, int poolSize, long maxWait) {
+        if (poolSize == 1) {
             return new DefaultJaxbUnmarshaller(jaxb);
-        }else{
+        } else {
             return new PooledJaxbUnmarshaller(jaxb, poolSize, maxWait);
         }
     }
 
 }
+
 class DefaultJaxbUnmarshaller extends JaxbUnmarshaller {
 
     private final Unmarshaller unmarshaller;
@@ -130,6 +134,7 @@ class DefaultJaxbUnmarshaller extends JaxbUnmarshaller {
             throw new DeserializerException(e);
         }
     }
+
     public <T> T unmarshal(Reader reader) {
         try {
             return (T) unmarshaller.unmarshal(reader);
@@ -138,6 +143,7 @@ class DefaultJaxbUnmarshaller extends JaxbUnmarshaller {
         }
     }
 }
+
 class PooledJaxbUnmarshaller extends JaxbUnmarshaller {
     private final BlockingQueue<Unmarshaller> unmarshallerPool;
     private final long maxWait;

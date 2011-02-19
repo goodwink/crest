@@ -20,7 +20,6 @@
 
 package org.codegist.crest.config;
 
-import org.codegist.crest.CRestContext;
 import org.codegist.crest.Stubs;
 import org.codegist.crest.TestUtils;
 import org.codegist.crest.annotate.Injector;
@@ -36,11 +35,8 @@ import java.io.InputStream;
 import java.lang.reflect.Method;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
 
 public class XmlDrivenInterfaceConfigFactoryTest extends AbstractInterfaceConfigFactoryTest {
-
-    private final CRestContext mockContext = mock(CRestContext.class);
 
     @Test
     public void testInterfaceOverridesTypeInjector() throws ConfigFactoryException, IOException, SAXException, ParserConfigurationException {
@@ -59,7 +55,7 @@ public class XmlDrivenInterfaceConfigFactoryTest extends AbstractInterfaceConfig
                 "\t</service>\n" +
                 "</crest-config>";
         XmlDrivenInterfaceConfigFactory factory = newFactory(new ByteArrayInputStream(xml.getBytes()), false);
-        InterfaceConfig cfg = factory.newConfig(InjectorTestInterface.class, mockContext);
+        InterfaceConfig cfg = factory.newConfig(InjectorTestInterface.class, MOCK_CONTEXT);
         assertEquals(Stubs.RequestParameterInjector3.class, cfg.getMethodConfig(InjectorTestInterface.M).getParamConfig(0).getInjector().getClass());
     }
 
@@ -78,7 +74,7 @@ public class XmlDrivenInterfaceConfigFactoryTest extends AbstractInterfaceConfig
                 "\t</service>\n" +
                 "</crest-config>";
         XmlDrivenInterfaceConfigFactory factory = newFactory(new ByteArrayInputStream(xml.getBytes()), false);
-        InterfaceConfig cfg = factory.newConfig(InjectorTestInterface.class, mockContext);
+        InterfaceConfig cfg = factory.newConfig(InjectorTestInterface.class, MOCK_CONTEXT);
         assertEquals(Stubs.RequestParameterInjector1.class, cfg.getMethodConfig(InjectorTestInterface.M).getParamConfig(0).getInjector().getClass());
     }
 
@@ -95,7 +91,7 @@ public class XmlDrivenInterfaceConfigFactoryTest extends AbstractInterfaceConfig
     @Test(expected = RuntimeException.class)
     public void testInvalidConfig() throws Exception {
         XmlDrivenInterfaceConfigFactory factory = newFactory("invalid-config.xml", false);
-        factory.newConfig(Interface.class, mockContext);
+        factory.newConfig(Interface.class, MOCK_CONTEXT);
     }
 
 
@@ -114,7 +110,7 @@ public class XmlDrivenInterfaceConfigFactoryTest extends AbstractInterfaceConfig
                 "\t</service>\n" +
                 "</crest-config>";
         XmlDrivenInterfaceConfigFactory factory = newFactory(new ByteArrayInputStream(xml.getBytes()), false);
-        factory.newConfig(Interface.class, mockContext);
+        factory.newConfig(Interface.class, MOCK_CONTEXT);
     }
     @Test(expected = IllegalArgumentException.class)
     public void testConfigMissingEndpoint() throws ConfigFactoryException, IOException, SAXException, ParserConfigurationException {
@@ -130,25 +126,25 @@ public class XmlDrivenInterfaceConfigFactoryTest extends AbstractInterfaceConfig
                 "\t</service>\n" +
                 "</crest-config>";
         XmlDrivenInterfaceConfigFactory factory = newFactory(new ByteArrayInputStream(xml.getBytes()), false);
-        factory.newConfig(Interface.class, mockContext);
+        factory.newConfig(Interface.class, MOCK_CONTEXT);
     }
 
     @Test
     public void testMinimalConfig() throws ConfigFactoryException {
         XmlDrivenInterfaceConfigFactory factory = newFactory("minimal-config.xml", false);
-        assertMinimalExpected(factory.newConfig(Interface.class, mockContext), Interface.class);
+        assertMinimalExpected(factory.newConfig(Interface.class, MOCK_CONTEXT), Interface.class);
     }
 
     @Test
     public void testPartialConfig() throws ConfigFactoryException {
         XmlDrivenInterfaceConfigFactory factory = newFactory("partial-config.xml", false);
-        assertPartialExpected(factory.newConfig(Interface.class, mockContext), Interface.class);
+        assertPartialExpected(factory.newConfig(Interface.class, MOCK_CONTEXT), Interface.class);
     }
 
     @Test
     public void testFullConfig() throws ConfigFactoryException {
         XmlDrivenInterfaceConfigFactory factory = newFactory("full-config.xml", false);
-        assertFullExpected(factory.newConfig(Interface.class, mockContext), Interface.class);
+        assertFullExpected(factory.newConfig(Interface.class, MOCK_CONTEXT), Interface.class);
     }
 
 
@@ -188,7 +184,7 @@ public class XmlDrivenInterfaceConfigFactoryTest extends AbstractInterfaceConfig
                 "\t</service>\n" +
                 "</crest-config>";
         XmlDrivenInterfaceConfigFactory factory = newFactory(new ByteArrayInputStream(serverConfig.getBytes()), false);
-        InterfaceConfig config = factory.newConfig(InjectorTestInterface.class, mockContext);
+        InterfaceConfig config = factory.newConfig(InjectorTestInterface.class, MOCK_CONTEXT);
         assertEquals("hello", config.getEndPoint());
     }
 

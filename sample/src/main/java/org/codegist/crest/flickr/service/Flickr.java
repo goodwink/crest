@@ -41,6 +41,7 @@ import java.util.Date;
 @GlobalInterceptor(FlickrAuthInterceptor.class)
 @ResponseHandler(FlickrResponseHandler.class)
 @POST
+@Consumes("application/xml")
 public interface Flickr {
 
     @Path("/rest")

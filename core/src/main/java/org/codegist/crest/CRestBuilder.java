@@ -100,6 +100,7 @@ public class CRestBuilder {
     private final Map<String,Object> jsonDeserializerConfig = new HashMap<String, Object>();
     private final Set<String> xmlMimes = new HashSet<String>(Arrays.asList(DEFAULT_XML_ACCEPT_HEADER));
     private final Set<String> jsonMimes = new HashSet<String>(Arrays.asList(DEFAULT_JSON_ACCEPT_HEADER));
+    private String customMime;
 
     private Map<String, String> properties = null;
     private Document document = null;
@@ -153,6 +154,21 @@ public class CRestBuilder {
         Maps.putIfNotPresent(customProperties, CRestProperty.CONFIG_PLACEHOLDERS_MAP, Maps.unmodifiable(placeholders));
         Maps.putIfNotPresent(customProperties, CRestProperty.CONFIG_METHOD_DEFAULT_EXTRA_PARAMS, this.extraParams.values().toArray(new ParamConfig[this.extraParams.size()]));
 
+        /* Defaults the deserializer for all methods */
+        switch(retType){
+            case RET_TYPE_JSON:
+                Maps.putIfNotPresent(customProperties, CRestProperty.CONFIG_METHOD_DEFAULT_DESERIALIZER, deserializerFactory.buildForMimeType(DEFAULT_JSON_ACCEPT_HEADER));
+                break;
+            case RET_TYPE_XML:
+                Maps.putIfNotPresent(customProperties, CRestProperty.CONFIG_METHOD_DEFAULT_DESERIALIZER, deserializerFactory.buildForMimeType(DEFAULT_XML_ACCEPT_HEADER));
+                break;
+            case RET_TYPE_CUSTOM:
+                Maps.putIfNotPresent(customProperties, CRestProperty.CONFIG_METHOD_DEFAULT_DESERIALIZER, deserializerFactory.buildForMimeType(customMime));
+                break;
+            case RET_TYPE_RAW:
+                break;
+        }
+
         return new DefaultCRestContext(restService, proxyFactory, configFactory, customProperties);
     }
 
@@ -193,6 +209,7 @@ public class CRestBuilder {
         }
         return deserializerBuilder.build();
     }
+
     private Class<? extends Deserializer> getXmlDeserializerClass(){
         switch(this.xmlDeserializer){
             case DESERIALIZER_XML_JAXB:
@@ -422,6 +439,20 @@ public class CRestBuilder {
     public CRestBuilder overrideDefaultConfigWith(InterfaceConfigFactory overridesFactory) {
         this.overridesFactory = overridesFactory;
         return this;
+    }
+
+
+    public CRestBuilder consumes(String mimeType, Deserializer deserializer) {
+        return consumes(mimeType, deserializer, true);
+    }
+
+    public CRestBuilder consumes(String mimeType, Deserializer deserializer, boolean addAcceptHeader) {
+        this.retType = RET_TYPE_CUSTOM;
+        this.customMime = mimeType;
+        if(addAcceptHeader) {
+           addGlobalParam("Accept", mimeType, HttpRequest.DEST_HEADER, false);
+        }
+        return bindDeserializer(deserializer, mimeType);
     }
 
     /**
@@ -692,7 +723,7 @@ public class CRestBuilder {
         this.xmlMimes.addAll(Arrays.asList(mimeTypes));
         return this;
     }
-    public CRestBuilder registerDeserializer(Deserializer deserializer, String... mimeTypes){
+    public CRestBuilder bindDeserializer(Deserializer deserializer, String... mimeTypes){
         this.deserializerBuilder.register(deserializer, mimeTypes);
         return this;
     }

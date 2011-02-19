@@ -25,6 +25,8 @@ import org.codegist.crest.interceptor.CompositeRequestInterceptor;
 import org.codegist.crest.interceptor.RequestInterceptor;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.HashSet;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -78,7 +80,7 @@ public class InterfaceConfigTestHelper {
                             ||  (expSize == testSize)
             );
             if(expMethCfg.getExtraParams() != null && testMethCfg.getExtraParams() != null) {
-                assertEquals(testMsg, Configs.toMap(expMethCfg.getExtraParams()), Configs.toMap(testMethCfg.getExtraParams()));
+                assertEquals(testMsg, new HashSet(Arrays.asList(expMethCfg.getExtraParams())), new HashSet(Arrays.asList(testMethCfg.getExtraParams())));
             }
 
             if (expMethCfg.getRequestInterceptor() instanceof CompositeRequestInterceptor) {

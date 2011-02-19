@@ -20,6 +20,8 @@
 
 package org.codegist.crest;
 
+import org.codegist.crest.serializer.Deserializer;
+
 import java.lang.reflect.Type;
 
 /**
@@ -30,6 +32,8 @@ import java.lang.reflect.Type;
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
 public interface ResponseContext {
+
+    Deserializer getDeserializer();
 
     RequestContext getRequestContext();
 

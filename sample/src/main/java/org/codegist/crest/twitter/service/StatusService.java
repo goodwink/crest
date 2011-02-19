@@ -31,6 +31,7 @@ import org.codegist.crest.twitter.model.User;
 @EndPoint("http://api.twitter.com")
 @Path("/1/statuses")
 @HeaderParam(value = "Accept-Encoding", defaultValue = "gzip")
+@Consumes("application/json")
 public interface StatusService {
 
     @POST

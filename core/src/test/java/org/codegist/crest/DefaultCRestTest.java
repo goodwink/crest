@@ -36,6 +36,7 @@ import org.codegist.crest.handler.MaxAttemptRetryHandler;
 import org.codegist.crest.handler.RetryHandler;
 import org.codegist.crest.injector.Injector;
 import org.codegist.crest.serializer.Deserializer;
+import org.codegist.crest.serializer.DeserializerFactory;
 import org.codegist.crest.serializer.Serializer;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -76,6 +77,9 @@ public class DefaultCRestTest {
     final String c2 = "c/c";
 
     private static final Deserializer mockDeserializer = mock(Deserializer.class);
+    private static final DeserializerFactory mockDeserializerFACTORY = mock(DeserializerFactory.class); static {
+        when(mockDeserializerFACTORY.buildForMimeType(anyString())).thenReturn(mockDeserializer);
+    }
     private ProxyFactory mockProxyFactory = TestUtils.mockProxyFactory();
 
     @BeforeClass
@@ -161,7 +165,7 @@ public class DefaultCRestTest {
         interfaze.doIt();
     }
     
-    @Test(expected = HttpException.class)
+    @Test(expected = CRestException.class)
     public void testFailureWithRetry(){
         int maxRetries = 3;
         int throwErrorsCount = 4;
@@ -263,14 +267,11 @@ public class DefaultCRestTest {
         assertEquals(MODEL_RESPONSE_JSON, IOs.toString(raw.testReader()));
         assertEquals(MODEL_RESPONSE_JSON, raw.testString());
 
-        Map<String,Object> customProperties = new HashMap<String, Object>() {{
-            put(Deserializer.class.getName(), mockDeserializer);
-        }};
         DefaultCRest jsonConfiguredFactory = new DefaultCRest(new DefaultCRestContext(
                 mockRestService,
                 mockProxyFactory,
-                new PreconfiguredInterfaceConfigFactory(new ConfigBuilders.InterfaceConfigBuilder(ModelInterface.class, customProperties).setEndPoint("http://test.com").build()),
-                customProperties
+                new PreconfiguredInterfaceConfigFactory(new ConfigBuilders.InterfaceConfigBuilder(ModelInterface.class).setEndPoint("http://test.com").setMethodsDeserializer(mockDeserializer).build()),
+                null
         ));
         ModelInterface model = jsonConfiguredFactory.build(ModelInterface.class);
         model.testVoid();
@@ -440,15 +441,13 @@ public class DefaultCRestTest {
             }
         });
 
-        Map<String,Object> customProperties = new HashMap<String, Object>() {{
-            put(Deserializer.class.getName(), mockDeserializer);
-        }};
-        InterfaceConfig CONFIG = new ConfigBuilders.InterfaceConfigBuilder(Rest.class, customProperties)
+        InterfaceConfig CONFIG = new ConfigBuilders.InterfaceConfigBuilder(Rest.class)
                 .setEndPoint("http://test-server:8080")
                 .setPath("/path")
                 .setMethodsSocketTimeout(15l)
                 .setMethodsConnectionTimeout(10l)
                 .setEncoding("utf-8")
+                .setMethodsDeserializer(mockDeserializer)
                 .startMethodConfig(Rest.AAA).setPath("/aaa")
                 .startParamConfig(0).setName("a").forQuery().endParamConfig()
                 .startParamConfig(1).setName("b").endParamConfig()
@@ -476,7 +475,7 @@ public class DefaultCRestTest {
                 mockRestService,
                 new JdkProxyFactory(),
                 new PreconfiguredInterfaceConfigFactory(CONFIG),
-                customProperties
+                null
         ));
 
         Rest restInterface = factory.build(Rest.class);

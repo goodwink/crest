@@ -65,7 +65,7 @@ public class DefaultCRest implements CRest, Disposable {
         try {
             return (T) context.getProxyFactory().createProxy(interfaze.getClassLoader(), new RestInterfacer(interfaze), new Class[]{interfaze});
         } catch (Exception e) {
-            throw CRestException.wrap(e);
+            throw CRestException.handle(e);
         }
     }
 
@@ -83,6 +83,14 @@ public class DefaultCRest implements CRest, Disposable {
 
         @Override
         protected Object doInvoke(Object proxy, Method method, Object[] args) throws Throwable {
+            try {
+                return doInvoke(method, args);
+            } catch (Throwable e) {
+                throw CRestException.handle(e);
+            }
+        }
+
+        private Object doInvoke(Method method, Object[] args) throws Throwable {
             MethodConfig mc = interfaceContext.getConfig().getMethodConfig(method);
             RequestContext requestContext = new DefaultRequestContext(interfaceContext, method, args);
 
@@ -141,12 +149,9 @@ public class DefaultCRest implements CRest, Disposable {
                     // otherwise, delegate to response handler
                     return mc.getResponseHandler().handle(responseContext);
                 }
-            } catch (CRestException e) {
-                closeResponse = true;
-                throw e;
             } catch (RuntimeException e) {
                 closeResponse = true;
-                throw new CRestException(e);
+                throw e;
             } finally {
                 if (closeResponse && response != null) {
                     response.close();

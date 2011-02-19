@@ -40,11 +40,11 @@ public class CRestException extends RuntimeException {
         super(cause);
     }
 
-    static CRestException wrap(Exception e) {
+    static CRestException handle(Throwable e) {
         if (e instanceof CRestException) {
             return (CRestException) e;
         } else {
-            return new CRestException(e);
+            return new CRestException(e.getMessage(), e);
         }
     }
 }

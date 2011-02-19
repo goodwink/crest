@@ -39,9 +39,7 @@ public class GoogleServicesSample implements Runnable {
 
     public void run() {
         /* Get the factory */
-        CRest crest = new CRestBuilder()
-                .consumesJson().handledByJackson()
-                .build();
+        CRest crest = new CRestBuilder().build();
 
         /* Build services instances */
         SearchService searchService = crest.build(SearchService.class);

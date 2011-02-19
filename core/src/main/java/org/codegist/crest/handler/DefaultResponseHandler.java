@@ -23,8 +23,6 @@ package org.codegist.crest.handler;
 import org.codegist.crest.ResponseContext;
 import org.codegist.crest.serializer.Deserializer;
 
-import java.util.Map;
-
 /**
  * Default response handler that either marshall the response or return server raw response following the rules below :
  * <p>- A method with a java.lang.String return type is considerer as expecting the raw server response only when no marshaller have been set in the custom properties. When conditions are met, the result will be the string representing the raw response.
@@ -36,18 +34,10 @@ import java.util.Map;
  */
 public class DefaultResponseHandler implements ResponseHandler {
 
-    private final Deserializer deserializer;
-
-    public DefaultResponseHandler() {
-        this.deserializer = null;
-    }
-    public DefaultResponseHandler(Map<String,Object> customProperties) {
-        this.deserializer = (Deserializer) customProperties.get(Deserializer.class.getName());
-    }
-
     public final Object handle(ResponseContext context) {
         if (context.getExpectedType().toString().equals("void")) return null;
 
+        Deserializer deserializer = context.getDeserializer();
         if (deserializer != null) {
             return deserializer.deserialize(context.getResponse().asReader(), context.getExpectedGenericType());
         }else{
@@ -55,7 +45,7 @@ public class DefaultResponseHandler implements ResponseHandler {
             if (String.class.equals(context.getExpectedType())) {
                 return context.getResponse().asString();
             } else {
-                throw new IllegalStateException("Marshaller hasn't been set and a method return type different than accepted raw types has been found.");
+                throw new IllegalStateException("Method do no have a Deserializer and its return type is not a valid raw type.");
             }
         }
     }

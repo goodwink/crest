@@ -20,7 +20,6 @@
 
 package org.codegist.crest.config;
 
-import org.codegist.crest.CRestContext;
 import org.codegist.crest.Stubs;
 import org.codegist.crest.TestUtils;
 import org.codegist.crest.annotate.*;
@@ -30,25 +29,24 @@ import org.junit.Test;
 import java.lang.reflect.Method;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
 
 public class CRestAnnotationDrivenInterfaceConfigFactoryTest extends AbstractInterfaceConfigFactoryTest {
 
     private final InterfaceConfigFactory configFactory = new CRestAnnotationDrivenInterfaceConfigFactory();
-    private final CRestContext mockContext = mock(CRestContext.class);
+
 
     @Test(expected = IllegalArgumentException.class)
     public void testInvalidConfig() throws ConfigFactoryException {
-        configFactory.newConfig(String.class, mockContext);
+        configFactory.newConfig(String.class, MOCK_CONTEXT);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testConfigMissingParamName() throws ConfigFactoryException {
-        configFactory.newConfig(MissingParamName.class, mockContext);
+        configFactory.newConfig(MissingParamName.class, MOCK_CONTEXT);
     }
     @Test(expected = IllegalArgumentException.class)
     public void testConfigMissingEndpoint() throws ConfigFactoryException {
-        configFactory.newConfig(MissingEndPoint.class, mockContext);
+        configFactory.newConfig(MissingEndPoint.class, MOCK_CONTEXT);
     }
 
     @EndPoint("http://localhost:8080")
@@ -74,29 +72,29 @@ public class CRestAnnotationDrivenInterfaceConfigFactoryTest extends AbstractInt
 
     @Test
     public void testMinimalConfig() throws ConfigFactoryException {
-        assertMinimalExpected(configFactory.newConfig(MinimallyAnnotatedInterface.class, mockContext), MinimallyAnnotatedInterface.class);
+        assertMinimalExpected(configFactory.newConfig(MinimallyAnnotatedInterface.class, MOCK_CONTEXT), MinimallyAnnotatedInterface.class);
     }
 
     @Test
     public void testPartialConfig() throws ConfigFactoryException {
-        assertPartialExpected(configFactory.newConfig(PartiallyAnnotatedInterface.class, mockContext), PartiallyAnnotatedInterface.class);
+        assertPartialExpected(configFactory.newConfig(PartiallyAnnotatedInterface.class, MOCK_CONTEXT), PartiallyAnnotatedInterface.class);
     }
 
     @Test
     public void testFullConfig() throws ConfigFactoryException {
-        assertFullExpected(configFactory.newConfig(FullyAnnotatedInterface.class, mockContext), FullyAnnotatedInterface.class);
+        assertFullExpected(configFactory.newConfig(FullyAnnotatedInterface.class, MOCK_CONTEXT), FullyAnnotatedInterface.class);
     }
 
     @Test
     public void realUseCaseTest() throws ConfigFactoryException {
-        InterfaceConfig cfg = configFactory.newConfig(Rest.class, mockContext);
+        InterfaceConfig cfg = configFactory.newConfig(Rest.class, MOCK_CONTEXT);
         InterfaceConfigTestHelper.assertExpected(cfg, Rest.CONFIG, Rest.class);
         InterfaceConfigTestHelper.assertExpected(Rest.CONFIG, cfg, Rest.class);
     }
 
     @Test
     public void testInterfaceOverridesTypeInjector() throws ConfigFactoryException {
-        InterfaceConfig cfg = configFactory.newConfig(RestInjectorOverrideInterface.class, mockContext);
+        InterfaceConfig cfg = configFactory.newConfig(RestInjectorOverrideInterface.class, MOCK_CONTEXT);
         assertEquals(Stubs.Serializer2.class, cfg.getMethodConfig(RestInjectorOverrideInterface.M).getParamConfig(0).getSerializer().getClass());
         assertEquals(Stubs.RequestParameterInjector2.class, cfg.getMethodConfig(RestInjectorOverrideInterface.M).getParamConfig(0).getInjector().getClass());
 
@@ -106,7 +104,7 @@ public class CRestAnnotationDrivenInterfaceConfigFactoryTest extends AbstractInt
 
     @Test
     public void testTypeInjectorIsRead() throws ConfigFactoryException {
-        InterfaceConfig cfg = configFactory.newConfig(TypeInjectorInterface.class, mockContext);
+        InterfaceConfig cfg = configFactory.newConfig(TypeInjectorInterface.class, MOCK_CONTEXT);
         assertEquals(Stubs.RequestParameterInjector1.class, cfg.getMethodConfig(TypeInjectorInterface.M).getParamConfig(0).getInjector().getClass());
         assertEquals(DefaultInjector.class, cfg.getMethodConfig(TypeInjectorInterface.M).getParamConfig(1).getInjector().getClass());
     }
@@ -163,10 +161,12 @@ public class CRestAnnotationDrivenInterfaceConfigFactoryTest extends AbstractInt
     @Path("/my-path")
     @Serializer(Stubs.Serializer1.class)
     @Injector(Stubs.RequestParameterInjector1.class)
+    @Consumes("mime1")
     interface PartiallyAnnotatedInterface extends Interface {
 
         @Path("/m1")
         @ResponseHandler(Stubs.ResponseHandler1.class)
+        @Consumes("mime2")
         Object m1();
 
         @Path("/m1")
@@ -178,6 +178,7 @@ public class CRestAnnotationDrivenInterfaceConfigFactoryTest extends AbstractInt
         Object m1(@FormParam(value ="d") String a, @QueryParam(value ="c", defaultValue = "444") int b);
 
         @Path("/m1") @Injector(Stubs.RequestParameterInjector2.class)
+        @Consumes("mime2")
         Object m1(@PathParam("f") String a, @QueryParam(value ="c") int[] b);
 
 
@@ -223,6 +224,7 @@ public class CRestAnnotationDrivenInterfaceConfigFactoryTest extends AbstractInt
     @Injector( Stubs.RequestParameterInjector1.class)
     @ErrorHandler( Stubs.ErrorHandler1.class)
     @RetryHandler(Stubs.RetryHandler1.class)
+    @Consumes("mime1")
     interface FullyAnnotatedInterface extends Interface {
 
 
@@ -240,6 +242,7 @@ public class CRestAnnotationDrivenInterfaceConfigFactoryTest extends AbstractInt
         @Injector ( Stubs.RequestParameterInjector2.class)
         @ErrorHandler ( Stubs.ErrorHandler2.class)
         @RetryHandler(Stubs.RetryHandler2.class)
+        @Consumes("mime2")
         Object m1();
 
         @Path("/m1")
@@ -251,6 +254,7 @@ public class CRestAnnotationDrivenInterfaceConfigFactoryTest extends AbstractInt
         @ResponseHandler(Stubs.ResponseHandler2.class)
         @Serializer(Stubs.Serializer2.class)
         @Injector(Stubs.RequestParameterInjector2.class)
+        @Consumes("mime3")
         Object m1(
                 @HeaderParam(value ="a", defaultValue = "deff")
                 @Serializer(Stubs.Serializer3.class)

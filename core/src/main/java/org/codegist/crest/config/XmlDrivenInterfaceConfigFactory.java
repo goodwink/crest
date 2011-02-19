@@ -63,6 +63,7 @@ import static org.codegist.common.lang.Strings.isBlank;
                 &lt;response-handler&gt;my.rest.interface.MyResponseHandler1&lt;/response-handler&gt;
                 &lt;error-handler&gt;my.rest.interface.MyErrorHandler1&lt;/error-handler&gt;
                 &lt;retry-handler&gt;my.rest.interface.MyRetryHandler1&lt;/retry-handler&gt;
+                &lt;consumes&gt;application/json&lt;/consumes&gt;
                 &lt;params&gt;
                     &lt;serializer&gt;my.rest.interface.MySerializer1&lt;/serializer&gt;
                     &lt;injector&gt;my.rest.interface.MyRequestParameterInjector1&lt;/injector&gt;
@@ -82,6 +83,7 @@ import static org.codegist.common.lang.Strings.isBlank;
             &lt;/default&gt;
             &lt;method match="m1\(\)" socket-timeout="3" connection-timeout="4" method="PUT"&gt;
                 &lt;path&gt;/m1&lt;/path&gt;
+                &lt;consumes&gt;application/xml&lt;/consumes&gt;
                 &lt;request-interceptor&gt;my.rest.interface.MyRequestInterceptor3&lt;/request-interceptor&gt;
                 &lt;response-handler&gt;my.rest.interface.MyResponseHandler1&lt;/response-handler&gt;
                 &lt;error-handler&gt;my.rest.interface.MyErrorHandler2&lt;/error-handler&gt;
@@ -159,8 +161,9 @@ public class XmlDrivenInterfaceConfigFactory implements InterfaceConfigFactory {
                     .setMethodsHttpMethod(getString(interfaceConfig, "methods/default/@method"))
                     .setMethodsResponseHandler(getString(interfaceConfig, "methods/default/response-handler"))
                     .setMethodsErrorHandler(getString(interfaceConfig, "methods/default/error-handler"))
-                    .setMethodsRetryHandler(getString(interfaceConfig, "methods/default/retry-handler"))
                     .setMethodsRequestInterceptor(getString(interfaceConfig, "methods/default/request-interceptor"))
+                    .setMethodsRetryHandler(getString(interfaceConfig, "methods/default/retry-handler"))
+                    .setMethodsConsumes(getString(interfaceConfig, "methods/default/consumes"))
 
                     .setParamsSerializer(getString(interfaceConfig, "methods/default/params/serializer"))
                     .setParamsInjector(getString(interfaceConfig, "methods/default/params/injector"));
@@ -208,6 +211,7 @@ public class XmlDrivenInterfaceConfigFactory implements InterfaceConfigFactory {
                                 .setResponseHandler(getString(methodNode, "response-handler"))
                                 .setErrorHandler(getString(methodNode, "error-handler"))
                                 .setRetryHandler(getString(methodNode, "retry-handler"))
+                                .setConsumes(getString(methodNode, "consumes"))
                                 .setParamsSerializer(getString(methodNode, "params/serializer"))
                                 .setParamsInjector(getString(methodNode, "params/injector"));
                         break;

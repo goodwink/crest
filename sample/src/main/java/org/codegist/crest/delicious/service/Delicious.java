@@ -33,6 +33,7 @@ import java.util.Date;
 @EndPoint("http://api.del.icio.us/v2")
 @RetryHandler(RefreshAuthentificationRetryHandler.class)
 @ResponseHandler(DeliciousResponseHandler.class)
+@Consumes("application/xml")
 public interface Delicious {
 
     @Path("/posts/delete")

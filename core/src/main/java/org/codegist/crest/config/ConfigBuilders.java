@@ -777,7 +777,8 @@ public abstract class ConfigBuilders {
         public MethodConfigBuilder setConsumes(String mimeType) {
             if (ignore(mimeType)) return this;
             if(deserializerFactory == null) throw new IllegalStateException("Can't lookup a deserializer by mime-type. Please provide a DeserializerFactory");
-            return setDeserializer(deserializerFactory.buildForMimeType(mimeType));
+            return addExtraHeaderParam("Accept", mimeType)
+                  .setDeserializer(deserializerFactory.buildForMimeType(mimeType));
         }
         public MethodConfigBuilder setDeserializer(Deserializer deserializer) {
             if (ignore(deserializer)) return this;

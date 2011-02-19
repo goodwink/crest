@@ -34,6 +34,7 @@ import org.codegist.crest.google.serializer.LangPairSerializer;
 @Path("/ajax/services/language")
 @QueryParam(value = "v", defaultValue = "1.0")
 @ResponseHandler(GoogleResponseHandler.class)
+@Consumes("application/json")
 public interface LanguageService {
 
     @Path("/detect")

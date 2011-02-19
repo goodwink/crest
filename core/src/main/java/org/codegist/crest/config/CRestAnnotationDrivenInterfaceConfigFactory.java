@@ -65,6 +65,7 @@ public class CRestAnnotationDrivenInterfaceConfigFactory implements InterfaceCon
             ResponseHandler responseHandler = interfaze.getAnnotation(ResponseHandler.class);
             ErrorHandler errorHandler = interfaze.getAnnotation(ErrorHandler.class);
             RetryHandler retryHandler = interfaze.getAnnotation(RetryHandler.class);
+            Consumes consumes = interfaze.getAnnotation(Consumes.class);
             HttpMethod httpMethod = getHttpMethod(interfaze.getAnnotations(), interfaze.getAnnotation(HttpMethod.class));
             Set<ParamConfig> extraParams = getExtraParamConfigs(interfaze.getAnnotations());
 
@@ -88,6 +89,7 @@ public class CRestAnnotationDrivenInterfaceConfigFactory implements InterfaceCon
             if (responseHandler != null) config.setMethodsResponseHandler(responseHandler.value());
             if (errorHandler != null) config.setMethodsErrorHandler(errorHandler.value());
             if (retryHandler != null) config.setMethodsRetryHandler(retryHandler.value());
+            if (consumes != null) config.setMethodsConsumes(consumes.value());
             if (httpMethod != null) config.setMethodsHttpMethod(httpMethod.value());
 
             if (serializer != null) config.setParamsSerializer(serializer.value());
@@ -104,6 +106,7 @@ public class CRestAnnotationDrivenInterfaceConfigFactory implements InterfaceCon
                 responseHandler = meth.getAnnotation(ResponseHandler.class);
                 errorHandler = meth.getAnnotation(ErrorHandler.class);
                 retryHandler = meth.getAnnotation(RetryHandler.class);
+                consumes = meth.getAnnotation(Consumes.class);
                 httpMethod = getHttpMethod(meth.getAnnotations(), meth.getAnnotation(HttpMethod.class));
 
                 /* Params defaults */
@@ -127,6 +130,7 @@ public class CRestAnnotationDrivenInterfaceConfigFactory implements InterfaceCon
                 if (responseHandler != null) methodConfigBuilder.setResponseHandler(responseHandler.value());
                 if (errorHandler != null) methodConfigBuilder.setErrorHandler(errorHandler.value());
                 if (retryHandler != null) methodConfigBuilder.setRetryHandler(retryHandler.value());
+                if (consumes != null) methodConfigBuilder.setConsumes(consumes.value());
                 if (httpMethod != null) methodConfigBuilder.setHttpMethod(httpMethod.value());
 
                 if (serializer != null) methodConfigBuilder.setParamsSerializer(serializer.value());

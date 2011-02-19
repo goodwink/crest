@@ -27,6 +27,7 @@
         <path>/my-path</path>
         <methods>
             <default>
+                <consumes>mime1</consumes>
                 <params>
                     <serializer>org.codegist.crest.Stubs$Serializer1</serializer>
                     <injector>org.codegist.crest.Stubs$RequestParameterInjector1</injector>
@@ -34,6 +35,7 @@
             </default>
             <method match="m1\(\)">
                 <path>/m1</path>
+                <consumes>mime2</consumes>
                 <response-handler>org.codegist.crest.Stubs$ResponseHandler1</response-handler>
             </method>
             <method match="m1\(java\.lang\.String\)" method="POST">
@@ -56,6 +58,7 @@
             </method>
             <method match="m1\(java\.lang\.String,int\[\]\)">
                 <path>/m1</path>
+                <consumes>mime2</consumes>
                 <params>
                     <injector>org.codegist.crest.Stubs$RequestParameterInjector2</injector>
                     <path index="0" name="f"/>

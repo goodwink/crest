@@ -59,7 +59,7 @@ public abstract class AbstractLanguageServiceIntegrationTest {
 
 
     protected static CRestBuilder getBaseCRestBuilder(){
-        return new CRestBuilder().consumesJson().handledByJackson();
+        return new CRestBuilder();
     }
 
 

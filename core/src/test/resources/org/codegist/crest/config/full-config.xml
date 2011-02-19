@@ -29,6 +29,7 @@
                 <response-handler>org.codegist.crest.Stubs$ResponseHandler1</response-handler>
                 <error-handler>org.codegist.crest.Stubs$ErrorHandler1</error-handler>
                 <retry-handler>org.codegist.crest.Stubs$RetryHandler1</retry-handler>
+                <consumes>mime1</consumes>
                 <params>
                     <serializer>org.codegist.crest.Stubs$Serializer1</serializer>
                     <injector>org.codegist.crest.Stubs$RequestParameterInjector1</injector>
@@ -52,6 +53,7 @@
                 <response-handler>org.codegist.crest.Stubs$ResponseHandler1</response-handler>
                 <error-handler>org.codegist.crest.Stubs$ErrorHandler2</error-handler>
                 <retry-handler>org.codegist.crest.Stubs$RetryHandler2</retry-handler>
+                <consumes>mime2</consumes>
                 <params>
                     <serializer>org.codegist.crest.Stubs$Serializer3</serializer>
                     <injector>org.codegist.crest.Stubs$RequestParameterInjector2</injector>
@@ -63,6 +65,7 @@
                 <path>/m1</path>
                 <request-interceptor>org.codegist.crest.Stubs$RequestInterceptor2</request-interceptor>
                 <response-handler>org.codegist.crest.Stubs$ResponseHandler2</response-handler>
+                <consumes>mime3</consumes>
                 <params>
                     <serializer>org.codegist.crest.Stubs$Serializer2</serializer>
                     <injector>org.codegist.crest.Stubs$RequestParameterInjector2</injector>

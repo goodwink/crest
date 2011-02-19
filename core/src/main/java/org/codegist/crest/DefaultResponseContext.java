@@ -20,6 +20,8 @@
 
 package org.codegist.crest;
 
+import org.codegist.crest.serializer.Deserializer;
+
 import java.lang.reflect.Type;
 
 /**
@@ -54,5 +56,9 @@ class DefaultResponseContext implements ResponseContext {
 
     public RequestContext getRequestContext() {
         return context;
+    }
+
+    public Deserializer getDeserializer() {
+        return context.getMethodConfig().getDeserializer();
     }
 }

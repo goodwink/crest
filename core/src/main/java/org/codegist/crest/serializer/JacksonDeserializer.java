@@ -20,7 +20,7 @@
 
 package org.codegist.crest.serializer;
 
-import org.codegist.common.collect.Maps;
+import org.codegist.common.lang.Validate;
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.type.TypeFactory;
@@ -45,11 +45,12 @@ public class JacksonDeserializer implements Deserializer {
     }
 
     public JacksonDeserializer(ObjectMapper jackson) {
+        Validate.notNull(jackson, "ObjectMapper must not be null");
         this.jackson = jackson;
     }
 
     public JacksonDeserializer(Map<String, Object> config) {
-        config = Maps.defaultsIfNull(config);
+        Validate.notNull(config, "Config must not be null");
         ObjectMapper mapper = null;
         if(config.containsKey(USER_OBJECT_MAPPER_PROP)) {
             mapper = (ObjectMapper) config.get(USER_OBJECT_MAPPER_PROP);

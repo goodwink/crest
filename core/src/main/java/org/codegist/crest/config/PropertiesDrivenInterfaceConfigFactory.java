@@ -49,6 +49,7 @@ import static org.codegist.common.lang.Strings.defaultIfBlank;
  * service.test.end-point=http://localhost:8080  #mandatory
  * service.test.path=/my-path/hello
  * service.test.encoding=utf-8
+ * service.test.consumes=application/json
  * service.test.global-interceptor=my.rest.interface.MyRequestInterceptor1
  * #default methods
  * service.test.params.form.form-param=form-value
@@ -77,6 +78,7 @@ import static org.codegist.common.lang.Strings.defaultIfBlank;
  * service.test.method.m1.pattern=m1\\(\\)
  * #methods specifices
  * service.test.method.m1.path=/m1
+ * service.test.method.m1.consumes=application/xml
  * service.test.method.m1.params.form.form-param=over-value1
  * service.test.method.m1.params.form.form-param3=new-value
  * service.test.method.m1.http-method=PUT
@@ -152,8 +154,9 @@ public class PropertiesDrivenInterfaceConfigFactory implements InterfaceConfigFa
                     .setMethodsSocketTimeout(getServiceProp(serviceAlias, "socket-timeout"))
                     .setMethodsResponseHandler(getServiceProp(serviceAlias, "response-handler"))
                     .setMethodsErrorHandler(getServiceProp(serviceAlias, "error-handler"))
-                    .setMethodsRetryHandler(getServiceProp(serviceAlias, "retry-handler"))
                     .setMethodsRequestInterceptor(getServiceProp(serviceAlias, "request-interceptor"))
+                    .setMethodsRetryHandler(getServiceProp(serviceAlias, "retry-handler"))
+                    .setMethodsConsumes(getServiceProp(serviceAlias, "consumes"))
                     .setMethodsHttpMethod(getServiceProp(serviceAlias, "http-method"))
                     .setParamsSerializer(getServiceProp(serviceAlias, "serializer"))
                     .setParamsInjector(getServiceProp(serviceAlias, "injector"));
@@ -201,6 +204,7 @@ public class PropertiesDrivenInterfaceConfigFactory implements InterfaceConfigFa
                                 .setResponseHandler(getMethodProp(serviceAlias, methAlias, "response-handler"))
                                 .setErrorHandler(getMethodProp(serviceAlias, methAlias, "error-handler"))
                                 .setRetryHandler(getMethodProp(serviceAlias, methAlias, "retry-handler"))
+                                .setConsumes(getMethodProp(serviceAlias, methAlias, "consumes"))
                                 .setParamsSerializer(getMethodProp(serviceAlias, methAlias, "serializer"))
                                 .setParamsInjector(getMethodProp(serviceAlias, methAlias, "injector"));
                         break;

@@ -21,8 +21,6 @@
 package org.codegist.crest.delicious.handler;
 
 import org.codegist.common.lang.Strings;
-import org.codegist.common.lang.Validate;
-import org.codegist.common.reflect.Types;
 import org.codegist.crest.CRestException;
 import org.codegist.crest.ResponseContext;
 import org.codegist.crest.delicious.model.Result;
@@ -30,22 +28,14 @@ import org.codegist.crest.handler.ResponseHandler;
 import org.codegist.crest.serializer.Deserializer;
 
 import java.lang.reflect.Type;
-import java.util.Map;
 
 /**
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
 public class DeliciousResponseHandler implements ResponseHandler {
 
-    private final Deserializer deserializer;
-
-    public DeliciousResponseHandler(Map<String, Object> properties) {
-        this.deserializer = (Deserializer) properties.get(Deserializer.class.getName());
-        Validate.notNull(this.deserializer, "No deserializer set, please construct CRest using either JSON or XML expected return type.");
-    }
-
     public Object handle(ResponseContext responseContext) throws CRestException {
-
+        Deserializer deserializer = responseContext.getDeserializer();
         Type expectedType = responseContext.getExpectedGenericType();
         if(responseContext.getExpectedType().isPrimitive()) {
             Result result = deserializer.deserialize(responseContext.getResponse().asReader(), Result.class);

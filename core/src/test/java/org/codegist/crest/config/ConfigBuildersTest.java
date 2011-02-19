@@ -42,16 +42,43 @@ import static org.codegist.crest.config.InterfaceConfig.DEFAULT_ENCODING;
 import static org.codegist.crest.config.MethodConfig.*;
 import static org.codegist.crest.config.MethodParamConfig.*;
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
 
 /**
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
 public class ConfigBuildersTest {
 
-    private static final ParamConfig[] PARAMs = new ParamConfig[]{new DefaultParamConfig("1","2", HttpRequest.DEST_FORM)};
+    private static final ParamConfig[] PARAMs = new ParamConfig[]{new DefaultParamConfig("1", "2", HttpRequest.DEST_FORM)};
 
     @Test
-    public void testConfigBuildersInvalidPath(){
+    public void testAcceptHeader() {
+        DeserializerFactory factory = mock(DeserializerFactory.class);
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put(DeserializerFactory.class.getName(), factory);
+        InterfaceConfig cfg = new ConfigBuilders.InterfaceConfigBuilder(Interface.class, map)
+                .setEndPoint("d")
+                .setParamsName("q")
+                .setMethodsConsumes("application/json")
+                .build();
+
+        for (Method m : cfg.getMethods()) {
+            ParamConfig[] ps = cfg.getMethodConfig(m).getExtraParams();
+            boolean found = false;
+
+            for (ParamConfig p : ps) {
+                if (p.getDestination().equals("header") && p.getName().equals("Accept") && p.getDefaultValue().equals("application/json")) {
+                    found = true;
+                    break;
+                }
+            }
+            assertTrue(found);
+
+        }
+    }
+
+    @Test
+    public void testConfigBuildersInvalidPath() {
         try {
             new ConfigBuilders.InterfaceConfigBuilder(Interface.class).setEndPoint("d").setPath("/fdf?dd").setParamsName("q").build();
             fail("shoud have failed");
@@ -76,21 +103,24 @@ public class ConfigBuildersTest {
     }
 
     @Test
-    public void testConfigBuildersPlaceholdersEmpty(){
-        ConfigBuilders cb = new ConfigBuilders(new HashMap<String, Object>()) {};
+    public void testConfigBuildersPlaceholdersEmpty() {
+        ConfigBuilders cb = new ConfigBuilders(new HashMap<String, Object>()) {
+        };
         assertEquals("http://my.end-point.server:my.end-point.port/bla/bla/my.end-point.server/bla",
                 cb.replacePlaceholders("http://my.end-point.server:my.end-point.port/bla/bla/my.end-point.server/bla"));
         assertEquals("http://{my.end-point.server}:{my.end-point.port}/bla/bla/{my.end-point.server}/bla",
                 cb.replacePlaceholders("http://{my.end-point.server}:{my.end-point.port}/bla/bla/{my.end-point.server}/bla"));
 
-        cb = new ConfigBuilders(null) {};
+        cb = new ConfigBuilders(null) {
+        };
         assertEquals("http://my.end-point.server:my.end-point.port/bla/bla/my.end-point.server/bla",
                 cb.replacePlaceholders("http://my.end-point.server:my.end-point.port/bla/bla/my.end-point.server/bla"));
         assertEquals("http://{my.end-point.server}:{my.end-point.port}/bla/bla/{my.end-point.server}/bla",
                 cb.replacePlaceholders("http://{my.end-point.server}:{my.end-point.port}/bla/bla/{my.end-point.server}/bla"));
     }
+
     @Test
-    public void testConfigBuildersPlaceholders(){
+    public void testConfigBuildersPlaceholders() {
         Map<String, String> placeholders = new HashMap<String, String>();
         placeholders.put("my.end-point.server", "127.0.0.1");
         placeholders.put("my.end-point.port", "8080");
@@ -98,7 +128,8 @@ public class ConfigBuildersTest {
         Map<String, Object> props = new HashMap<String, Object>();
         props.put(CRestProperty.CONFIG_PLACEHOLDERS_MAP, placeholders);
 
-        ConfigBuilders cb = new ConfigBuilders(props) {};
+        ConfigBuilders cb = new ConfigBuilders(props) {
+        };
         assertEquals("http://my.end-point.server:my.end-point.port/bla/bla/my.end-point.server/bla",
                 cb.replacePlaceholders("http://my.end-point.server:my.end-point.port/bla/bla/my.end-point.server/bla"));
 
@@ -133,9 +164,10 @@ public class ConfigBuildersTest {
                 b.getMethodConfig(Interface.A).getExtraParams()
         );
     }
+
     @Test
     public void testParamsNameKey2() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
-        InterfaceConfig b = new ConfigBuilders.InterfaceConfigBuilder(Interface.class, new HashMap<String, Object>(){{
+        InterfaceConfig b = new ConfigBuilders.InterfaceConfigBuilder(Interface.class, new HashMap<String, Object>() {{
             put(CRestProperty.CONFIG_METHOD_DEFAULT_EXTRA_PARAMS, new ParamConfig[]{
                     new DefaultParamConfig("ddd", "aaa", HttpRequest.DEST_FORM),
 
@@ -781,7 +813,7 @@ public class ConfigBuildersTest {
                             null, null, null, null, null, null, null, null, null,
                             new MethodParamConfig[]{
                                     new DefaultMethodParamConfig(null, null, null, null, null)
-                            },new ParamConfig[0]
+                            }, new ParamConfig[0]
                     ));
                     put(Interface.B, new DefaultMethodConfig(
                             Interface.B,
@@ -790,7 +822,7 @@ public class ConfigBuildersTest {
                                     new DefaultMethodParamConfig(null, null, null, null, null),
                                     new DefaultMethodParamConfig(null, null, null, null, null),
                                     new DefaultMethodParamConfig(null, null, null, null, null)
-                            },new ParamConfig[0]
+                            }, new ParamConfig[0]
                     ));
                 }}
         );

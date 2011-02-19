@@ -36,7 +36,6 @@ public class CRestBuilderFactory {
         final String accessToken = System.getProperty("crest.sample.twitter." + account + ".access-token");
         final String accessTokenSecret = System.getProperty("crest.sample.twitter." + account + ".access-token-secret");
         return new CRestBuilder()
-                .consumesJson().handledByJackson()
                 .usePreauthentifiedOAuth(consumerKey, consumerSecret, accessToken, accessTokenSecret);
     }
 

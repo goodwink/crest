@@ -20,14 +20,20 @@
 
 package org.codegist.crest.config;
 
+import org.codegist.crest.CRestContext;
 import org.codegist.crest.Stubs;
 import org.codegist.crest.TestUtils;
+import org.codegist.crest.serializer.DeserializerFactory;
 import org.junit.Test;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.util.Map;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Laurent Gilles (laurent.gilles@codegist.org)
@@ -87,6 +93,18 @@ public abstract class AbstractInterfaceConfigFactoryTest {
         Method METH_m2FSs = TestUtils.getMethod(Interface.class, "m2", float.class, String[].class);
     }
 
+    public static final DeserializerFactory DESERIALIZER_FACTORY = new DeserializerFactory.Builder()
+                .register(new Stubs.Deserializer1(), "mime1", "mime1bis")
+                .register(new Stubs.Deserializer2(), "mime2")
+                .register(new Stubs.Deserializer3(), "mime3")
+                .build();
+
+    public final CRestContext MOCK_CONTEXT = mock(CRestContext.class);{
+        Map<String,Object> mockProperties = mock(Map.class);
+        when(mockProperties.get(DeserializerFactory.class.getName())).thenReturn(DESERIALIZER_FACTORY);
+        when(MOCK_CONTEXT.getProperties()).thenReturn(mockProperties);
+    }
+
     public static final InterfaceConfig MINIMAL_EXPECTED_CONFIG;
 
     static {
@@ -125,9 +143,13 @@ public abstract class AbstractInterfaceConfigFactoryTest {
             PARTIAL_EXPECTED_CONFIG = new ConfigBuilders.InterfaceConfigBuilder(Interface.class)
                     .setEndPoint("http://localhost:8080")
                     .setPath("/my-path")
+                    .setMethodsDeserializer(new Stubs.Deserializer1())
+                    .addMethodsExtraHeaderParam("Accept", "mime1")
                     .setParamsSerializer(new Stubs.Serializer1())
                     .setParamsInjector(new Stubs.RequestParameterInjector1())
-                    .startMethodConfig(Interface.METH_m1).setPath("/m1").setResponseHandler(new Stubs.ResponseHandler1()).endMethodConfig()
+                    .startMethodConfig(Interface.METH_m1)
+                    .addExtraHeaderParam("Accept", "mime2")
+                    .setDeserializer(new Stubs.Deserializer2()).setPath("/m1").setResponseHandler(new Stubs.ResponseHandler1()).endMethodConfig()
                     .startMethodConfig(Interface.METH_m1S)
                     .setPath("/m1").setHttpMethod("POST")
                     .setParamsSerializer(new Stubs.Serializer2())
@@ -141,6 +163,8 @@ public abstract class AbstractInterfaceConfigFactoryTest {
                     .endMethodConfig()
                     .startMethodConfig(Interface.METH_m1SIs)
                     .setPath("/m1")
+                    .setDeserializer(new Stubs.Deserializer2())
+                    .addExtraHeaderParam("Accept", "mime2")
                     .setParamsInjector(new Stubs.RequestParameterInjector2())
                     .startParamConfig(0).forPath().setName("f").endParamConfig()
                     .startParamConfig(1).setName("c").endParamConfig()
@@ -180,8 +204,10 @@ public abstract class AbstractInterfaceConfigFactoryTest {
                     .addMethodsExtraPathParam("path-param", "path-value")
                     .addMethodsExtraPathParam("path-param1", "path-value1")
                     .addMethodsExtraPathParam("path-param2", "path-value2")
+                    .addMethodsExtraHeaderParam("Accept", "mime1")
                     .setMethodsSocketTimeout(1l)
                     .setMethodsConnectionTimeout(2l)
+                    .setMethodsDeserializer(Stubs.Deserializer1.class)
                     .setEncoding("utf-8")
                     .setGlobalInterceptor(new Stubs.RequestInterceptor1())
                     .setParamsSerializer(new Stubs.Serializer1())
@@ -193,6 +219,8 @@ public abstract class AbstractInterfaceConfigFactoryTest {
                     .setMethodsRequestInterceptor(new Stubs.RequestInterceptor1())
                     .setParamsInjector(new Stubs.RequestParameterInjector1())
                     .startMethodConfig(Interface.METH_m1)
+                    .addExtraHeaderParam("Accept", "mime2")
+                    .setDeserializer(Stubs.Deserializer2.class)
                     .setPath("/m1")
                     .addExtraFormParam("form-param","over-value1")
                     .addExtraFormParam("form-param3","new-value")
@@ -207,6 +235,8 @@ public abstract class AbstractInterfaceConfigFactoryTest {
                     .setParamsSerializer(new Stubs.Serializer3())
                     .endMethodConfig()
                     .startMethodConfig(Interface.METH_m1S)
+                    .addExtraHeaderParam("Accept", "mime3")
+                    .setDeserializer(Stubs.Deserializer3.class)
                     .addExtraPathParam("form-param","over-value1")
                     .setPath("/m1")
                     .setHttpMethod("POST")

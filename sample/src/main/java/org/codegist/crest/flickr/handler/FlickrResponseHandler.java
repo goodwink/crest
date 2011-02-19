@@ -20,7 +20,6 @@
 
 package org.codegist.crest.flickr.handler;
 
-import org.codegist.common.lang.Validate;
 import org.codegist.common.reflect.Types;
 import org.codegist.crest.CRestException;
 import org.codegist.crest.ResponseContext;
@@ -29,25 +28,15 @@ import org.codegist.crest.flickr.model.Payload;
 import org.codegist.crest.flickr.model.Response;
 import org.codegist.crest.flickr.model.SimplePayload;
 import org.codegist.crest.handler.ResponseHandler;
-import org.codegist.crest.serializer.Deserializer;
-
-import java.util.Map;
 
 /**
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
 public class FlickrResponseHandler implements ResponseHandler {
 
-    private final Deserializer deserializer;
-
-    public FlickrResponseHandler(Map<String, Object> properties) {
-        this.deserializer = (Deserializer) properties.get(Deserializer.class.getName());
-        Validate.notNull(this.deserializer, "No deserializer set, please construct CRest using either JSON or XML expected return type.");
-    }
-
     public final Object handle(ResponseContext context) {
         /* Marshall the response */
-        Response res = deserializer.deserialize(context.getResponse().asReader(), Types.newType(Response.class, Types.newType(SimplePayload.class, context.getExpectedGenericType())));
+        Response res = context.getDeserializer().deserialize(context.getResponse().asReader(), Types.newType(Response.class, Types.newType(SimplePayload.class, context.getExpectedGenericType())));
         /* Check for flickr OK status */
         if ("ok".equals(res.getStatus())) {
             /* Get the nested payload and returns it */

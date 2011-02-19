@@ -34,11 +34,16 @@ import org.codegist.crest.oauth.OAuthenticator;
 import org.codegist.crest.oauth.Token;
 import org.codegist.crest.security.AuthentificationManager;
 import org.codegist.crest.security.OAuthentificationManager;
-import org.codegist.crest.serializer.*;
+import org.codegist.crest.serializer.DeserializerFactory;
+import org.codegist.crest.serializer.JacksonDeserializer;
+import org.codegist.crest.serializer.JaxbDeserializer;
+import org.codegist.crest.serializer.Serializer;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
+import javax.xml.bind.JAXBContext;
 import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.HashMap;
@@ -46,7 +51,6 @@ import java.util.Map;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  * @author laurent.gilles@codegist.org
@@ -250,7 +254,43 @@ public class CRestBuilderTest {
     }
 
     @Test
-    public void testExpectsJson() {
+    public void testConsumesCustom() {
+        final CRestContext context = builder
+                .consumes("blabla", new Stubs.Deserializer1())
+                .buildContext();
+        assertContext(new ContextAdapter() {
+            @Override
+            public Map<String, Object> getProperties() {
+                return new HashMap<String, Object>() {{
+                    put(CRestProperty.CONFIG_METHOD_DEFAULT_DESERIALIZER, new Stubs.Deserializer1());
+                    put(CRestProperty.CONFIG_METHOD_DEFAULT_EXTRA_PARAMS, new ParamConfig[]{
+                            new ConfigBuilders.ParamConfigBuilder(null)
+                            .setName("Accept")
+                            .setDefaultValue("blabla")
+                            .setDestination(HttpRequest.DEST_HEADER)
+                            .build()
+                    });
+                }};
+            }
+        }, context);
+    }
+    @Test
+    public void testConsumesCustom2() {
+        final CRestContext context = builder
+                .consumes("blabla", new Stubs.Deserializer1(), false)
+                .buildContext();
+        assertContext(new ContextAdapter() {
+            @Override
+            public Map<String, Object> getProperties() {
+                return new HashMap<String, Object>() {{
+                    put(CRestProperty.CONFIG_METHOD_DEFAULT_DESERIALIZER, new Stubs.Deserializer1());
+                }};
+            }
+        }, context);
+    }
+
+    @Test
+    public void testConsumesJson() {
         final CRestContext context = builder
                 .consumesJson()
                 .buildContext();
@@ -258,6 +298,7 @@ public class CRestBuilderTest {
             @Override
             public Map<String, Object> getProperties() {
                 return new HashMap<String, Object>() {{
+                    put(CRestProperty.CONFIG_METHOD_DEFAULT_DESERIALIZER, new JacksonDeserializer(mock(ObjectMapper.class)));
                     put(CRestProperty.CONFIG_METHOD_DEFAULT_EXTRA_PARAMS, new ParamConfig[]{
                             new ConfigBuilders.ParamConfigBuilder(null)
                             .setName("Accept")
@@ -270,21 +311,35 @@ public class CRestBuilderTest {
         }, context);
     }
     @Test
-    public void testExpectsJson2() {
+    public void testConsumesJson2() {
         final CRestContext context = builder
                 .consumesJson(false)
                 .buildContext();
-        assertContext(new ContextAdapter() {}, context);
+        assertContext(new ContextAdapter() {
+            @Override
+            public Map<String, Object> getProperties() {
+            return new HashMap<String, Object>() {{
+                    put(CRestProperty.CONFIG_METHOD_DEFAULT_DESERIALIZER, new JacksonDeserializer(mock(ObjectMapper.class)));
+                }};
+            }
+        }, context);
     }
     @Test
-    public void testExpectsJson3() {
+    public void testConsumesJson3() {
         final CRestContext context = builder
                 .consumesJson(null)
                 .buildContext();
-        assertContext(new ContextAdapter() {}, context);
+        assertContext(new ContextAdapter() {
+            @Override
+            public Map<String, Object> getProperties() {
+            return new HashMap<String, Object>() {{
+                    put(CRestProperty.CONFIG_METHOD_DEFAULT_DESERIALIZER, new JacksonDeserializer(mock(ObjectMapper.class)));
+                }};
+            }
+        }, context);
     }
     @Test
-    public void testExpectsJson4() {
+    public void testConsumesJson4() {
         final CRestContext context = builder
                 .consumesJson("fff")
                 .buildContext();
@@ -292,6 +347,7 @@ public class CRestBuilderTest {
             @Override
             public Map<String, Object> getProperties() {
                 return new HashMap<String, Object>() {{
+                    put(CRestProperty.CONFIG_METHOD_DEFAULT_DESERIALIZER, new JacksonDeserializer(mock(ObjectMapper.class)));
                     put(CRestProperty.CONFIG_METHOD_DEFAULT_EXTRA_PARAMS, new ParamConfig[]{
                             new ConfigBuilders.ParamConfigBuilder(null)
                             .setName("Accept")
@@ -305,14 +361,16 @@ public class CRestBuilderTest {
     }
 
     @Test
-    public void testExpectsXml1() {
+    public void testConsumesXml1() {
         final CRestContext context = builder
+                .deserializeXmlWithJaxb(String.class)
                 .consumesXml()
                 .buildContext();
         assertContext(new ContextAdapter() {
             @Override
             public Map<String, Object> getProperties() {
                 return new HashMap<String, Object>() {{
+                    put(CRestProperty.CONFIG_METHOD_DEFAULT_DESERIALIZER, new JaxbDeserializer(mock(JAXBContext.class)));
                     put(CRestProperty.CONFIG_METHOD_DEFAULT_EXTRA_PARAMS, new ParamConfig[]{
                             new ConfigBuilders.ParamConfigBuilder(null)
                             .setName("Accept")
@@ -326,14 +384,16 @@ public class CRestBuilderTest {
     }
 
     @Test
-    public void testExpectsXml2() {
+    public void testConsumesXml2() {
         final CRestContext context = builder
+                .deserializeXmlWithJaxb(String.class)
                 .consumesXml()
                 .buildContext();
         assertContext(new ContextAdapter() {
             @Override
             public Map<String, Object> getProperties() {
                 return new HashMap<String, Object>() {{
+                    put(CRestProperty.CONFIG_METHOD_DEFAULT_DESERIALIZER, new JaxbDeserializer(mock(JAXBContext.class)));
                     put(CRestProperty.CONFIG_METHOD_DEFAULT_EXTRA_PARAMS, new ParamConfig[]{
                             new ConfigBuilders.ParamConfigBuilder(null)
                             .setName("Accept")
@@ -346,30 +406,48 @@ public class CRestBuilderTest {
         }, context);
     }
     @Test
-    public void testExpectsXml3() {
+    public void testConsumesXml3() {
         final CRestContext context = builder
+                .deserializeXmlWithJaxb(String.class)
                 .consumesXml(false)
                 .buildContext();
-        assertContext(new ContextAdapter(){}, context);
+        assertContext(new ContextAdapter(){
+            @Override
+            public Map<String, Object> getProperties() {
+            return new HashMap<String, Object>() {{
+                    put(CRestProperty.CONFIG_METHOD_DEFAULT_DESERIALIZER, new JaxbDeserializer(mock(JAXBContext.class)));
+                }};
+            }
+        }, context);
     }
 
     @Test
-    public void testExpectsXml4() {
+    public void testConsumesXml4() {
         final CRestContext context = builder
+                .deserializeXmlWithJaxb(String.class)
                 .consumesXml(null)
                 .buildContext();
-        assertContext(new ContextAdapter() {}, context);
+        assertContext(new ContextAdapter() {
+            @Override
+            public Map<String, Object> getProperties() {
+            return new HashMap<String, Object>() {{
+                    put(CRestProperty.CONFIG_METHOD_DEFAULT_DESERIALIZER, new JaxbDeserializer(mock(JAXBContext.class)));
+                }};
+            }
+        }, context);
     }
 
     @Test
-    public void testExpectsXml5() {
+    public void testConsumesXml5() {
         final CRestContext context = builder
+                .deserializeXmlWithJaxb(String.class)
                 .consumesXml("ddd")
                 .buildContext();
         assertContext(new ContextAdapter() {
             @Override
             public Map<String, Object> getProperties() {
                 return new HashMap<String, Object>() {{
+                    put(CRestProperty.CONFIG_METHOD_DEFAULT_DESERIALIZER, new JaxbDeserializer(mock(JAXBContext.class)));
                     put(CRestProperty.CONFIG_METHOD_DEFAULT_EXTRA_PARAMS, new ParamConfig[]{
                             new ConfigBuilders.ParamConfigBuilder(null)
                             .setName("Accept")
