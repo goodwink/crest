@@ -7,44 +7,16 @@ CREST
 * Should AuthentificationManager be at the RestService level instead than implemented as an RequestInterceptor?
   Pros: - adds authentification informations just before firing request, no one can possibly modify it after
   Cons: - What about the possibility of authentifying some methods and some not?
-* ******************DONE******************** Should deprecate @Param, @Name, @Destination and use instead:
-  ******************DONE************************ But what about @Serializer/@Injector then ?? ****
-  ******************DONE************************   @QueryParam(name="my-name",def="default value")
-  ******************DONE************************   @PathParam(name="my-name",def="default value")
-  ******************DONE************************   @FormParam(name="my-name",def="default value")
-  ******************DONE************************   @HeaderParam(name="my-name",def="default value")
-  ******************DONE************************   @QueryParams({
-  ******************DONE************************     @QueryParam(name="my-static-param",def="default value"),
-  ******************DONE************************     @QueryParam(name="my-static-param2",def="default value")
-  ******************DONE************************   })
-  ******************DONE************************   interface A {
-  ******************DONE************************         @Path("/{string}/")
-  ******************DONE************************         @HeaderParam(name="method-header",def="value")
-  ******************DONE************************         void m(
-  ******************DONE************************             @PathParam(name="string",def="stringvalue") String s,
-  ******************DONE************************             @QueryParam(name="count",def="10") int b);
-  ******************DONE************************         ----> /stringvalue/?count=10
-  ******************DONE************************   }
-* ******************DONE************************   NOT APPLICABLE ANYMORE Does it work to pass JSON in the HttpRequest.Builder.addQueryParam etc.. or should it be encoded ? Could conflict with placeholder syntax! escape placeholder syntax on add and unescape it on build!
-*   ******************DONE************************   Totally remove ability to put query string in @Path ? Scenarios as google translate (pair=en-fr) can be resolve by passing a LangPair object that way:
-    ******************DONE************************   translate(@Serializer(LangPairSerializer.class) @QueryParam("langpair") LangPair langpair)
-    ******************DONE************************   - pros: decrease HttpRequestBuilder complexity and processing time
-    ******************DONE************************   - cons: wouldn't be possible in a pure JAX-RS style, isn't? (or maybe with toString() on LangPair object,JAX-RS style, but that sucks)
-
-******************DONE************************    Write run-optional integration test for sample: ensuring that all changes are still compatible with sample apis is a good real-life usecase
-******************DONE************************    Placeholder in annotations
-******************DONE************************    Should it fail at Factory time or at runtime when configuration do not contains param name ? Param name are mandatory now...
-  -> make it fail at factory time!
-     - Remove Builders.buildTemlate() method, rename useDefaults flag to be buildTemplate, same behavior, but won't throw IllegalArgumentException when Param.name is not provided
-     - All ConfigFactory must have 2 constructors, an empty one that build normal configMethod and another one with the buildTemplate flag.
 * Finish JAX-RS integration
-
 * @Consume, @ConsumeJson, @ConsumeXml annotations ? 
 @ConsumeJson(contentType="application/json") contentType would be optional and ends up in the Accept Header.
----> Marshaller per Method
----> builder.expects[Json|Xml]() should have an optional default Accept Header value as well and specify
-
---> Config overrides should merge extra params instead of picking them all at once!
+---> Deserializer per Method
+---> remove builder.expects...
+---> builder.consumesJson|Xml]() should have an optional default Accept Header value as well and specify. They should set the MethodConfig.DEFAULT_DESERIAIZER to XML or JSON etc... to default all methods to this
+---> builder.deserializeXmlWithJaxb(...)
+---> builder.deserializeXmlWithSimpleXml(...)
+---> builder.deserializeMimeTypeWith(Deserializer)
+---> builder.use[Json|Xml]DeserializerFor(String mime)
 
 
 

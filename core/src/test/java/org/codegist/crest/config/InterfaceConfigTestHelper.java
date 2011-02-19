@@ -68,6 +68,7 @@ public class InterfaceConfigTestHelper {
             assertEquals(testMsg, TestUtils.getClass(expMethCfg.getErrorHandler()), TestUtils.getClass(testMethCfg.getErrorHandler()));
             assertEquals(testMsg, TestUtils.getClass(expMethCfg.getRetryHandler()), TestUtils.getClass(testMethCfg.getRetryHandler()));
             assertEquals(testMsg, TestUtils.getClass(expMethCfg.getResponseHandler()), TestUtils.getClass(testMethCfg.getResponseHandler()));
+            assertEquals(testMsg, TestUtils.getClass(expMethCfg.getDeserializer()), TestUtils.getClass(testMethCfg.getDeserializer()));
 
             int expSize = expMethCfg.getExtraParams() == null ? 0 : expMethCfg.getExtraParams().length;
             int testSize = testMethCfg.getExtraParams() == null ? 0 : testMethCfg.getExtraParams().length;

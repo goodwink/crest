@@ -45,6 +45,7 @@ import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.codegist.common.lang.Disposable;
+import org.codegist.common.lang.Objects;
 import org.codegist.common.log.Logger;
 
 import java.io.File;
@@ -205,7 +206,10 @@ public class HttpClientRestService implements RestService, Disposable {
         }
     }
 
-
+    public static RestService newRestService(Map<String,Object> customProperties) {
+        int concurrencyLevel = Objects.defaultIfNull((Integer) customProperties.get(CRestProperty.CREST_CONCURRENCY_LEVEL), 1);
+        return newRestService(concurrencyLevel, concurrencyLevel);
+    }
     public static RestService newRestService(int maxConcurrentConnection, int maxConnectionPerRoute) {
         DefaultHttpClient httpClient;
         if (maxConcurrentConnection > 1 || maxConnectionPerRoute > 1) {

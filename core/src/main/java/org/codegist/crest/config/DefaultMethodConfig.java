@@ -25,6 +25,7 @@ import org.codegist.crest.handler.ErrorHandler;
 import org.codegist.crest.handler.ResponseHandler;
 import org.codegist.crest.handler.RetryHandler;
 import org.codegist.crest.interceptor.RequestInterceptor;
+import org.codegist.crest.serializer.Deserializer;
 
 import java.lang.reflect.Method;
 
@@ -43,11 +44,12 @@ class DefaultMethodConfig implements MethodConfig {
     private final ResponseHandler responseHandler;
     private final ErrorHandler errorHandler;
     private final RetryHandler retryHandler;
+    private final Deserializer deserializer;
 
     private final ParamConfig[] extraParams;
     private final MethodParamConfig[] methodParamConfigs;
 
-    DefaultMethodConfig(Method method, String path, String httpMethod, Long socketTimeout, Long connectionTimeout, RequestInterceptor requestInterceptor, ResponseHandler responseHandler, ErrorHandler errorHandler, RetryHandler retryHandler, MethodParamConfig[] methodParamConfigs, ParamConfig[] extraParams) {
+    DefaultMethodConfig(Method method, String path, String httpMethod, Long socketTimeout, Long connectionTimeout, RequestInterceptor requestInterceptor, ResponseHandler responseHandler, ErrorHandler errorHandler, RetryHandler retryHandler, Deserializer deserializer, MethodParamConfig[] methodParamConfigs, ParamConfig[] extraParams) {
         this.method = method;
         this.path = path;
         this.httpMethod = httpMethod;
@@ -57,6 +59,7 @@ class DefaultMethodConfig implements MethodConfig {
         this.responseHandler = responseHandler;
         this.errorHandler = errorHandler;
         this.retryHandler = retryHandler;
+        this.deserializer = deserializer;
         this.methodParamConfigs = methodParamConfigs != null ? methodParamConfigs.clone() : null;
         this.extraParams = extraParams != null ? extraParams.clone() : null;
     }
@@ -94,6 +97,10 @@ class DefaultMethodConfig implements MethodConfig {
 
     public RetryHandler getRetryHandler() {
         return retryHandler;
+    }
+
+    public Deserializer getDeserializer() {
+        return deserializer;
     }
 
     public MethodParamConfig getParamConfig(int index) {

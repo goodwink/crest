@@ -25,6 +25,11 @@ import org.codegist.crest.handler.ResponseHandler;
 import org.codegist.crest.handler.RetryHandler;
 import org.codegist.crest.injector.Injector;
 import org.codegist.crest.interceptor.RequestInterceptorAdapter;
+import org.codegist.crest.serializer.Deserializer;
+import org.codegist.crest.serializer.DeserializerException;
+
+import java.io.Reader;
+import java.lang.reflect.Type;
 
 /**
  * @author Laurent Gilles (laurent.gilles@codegist.org)
@@ -95,6 +100,21 @@ public class Stubs {
     }
 
 
+    public static class Deserializer1 implements Deserializer {
+        public <T> T deserialize(Reader reader, Type type) throws DeserializerException {
+            return null;
+        }
+    }
+    public static class Deserializer2 implements Deserializer {
+        public <T> T deserialize(Reader reader, Type type) throws DeserializerException {
+            return null;
+        }
+    }
+    public static class Deserializer3 implements Deserializer {
+        public <T> T deserialize(Reader reader, Type type) throws DeserializerException {
+            return null;
+        }
+    }
     public static class RetryHandler1 implements RetryHandler {
        
         public boolean retry(ResponseContext response, Exception exception, int retryNumber) {

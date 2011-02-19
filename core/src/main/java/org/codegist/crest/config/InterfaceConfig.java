@@ -20,7 +20,7 @@
 
 package org.codegist.crest.config;
 
-import org.codegist.crest.interceptor.EmptyRequestInterceptor;
+import org.codegist.crest.interceptor.NoOpRequestInterceptor;
 import org.codegist.crest.interceptor.RequestInterceptor;
 
 import java.lang.reflect.Method;
@@ -67,7 +67,7 @@ public interface InterfaceConfig {
      *
      * @see org.codegist.crest.config.InterfaceConfig#getGlobalInterceptor()
      */
-    Class<? extends RequestInterceptor> DEFAULT_GLOBAL_INTERCEPTOR = EmptyRequestInterceptor.class;
+    Class<? extends RequestInterceptor> DEFAULT_GLOBAL_INTERCEPTOR = NoOpRequestInterceptor.class;
 
     /*##############################################################################*/
 

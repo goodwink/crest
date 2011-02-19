@@ -68,10 +68,6 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>org.codegist.crest</groupId>
-                <artifactId>codegist-crest</artifactId>
-            </dependency>
-            <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
                 <artifactId>httpclient</artifactId>
                 <version>4.1</version>

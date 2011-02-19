@@ -22,6 +22,7 @@ package org.codegist.crest.delicious.handler;
 
 import org.codegist.common.lang.Strings;
 import org.codegist.common.lang.Validate;
+import org.codegist.common.reflect.Types;
 import org.codegist.crest.CRestException;
 import org.codegist.crest.ResponseContext;
 import org.codegist.crest.delicious.model.Result;
@@ -44,10 +45,10 @@ public class DeliciousResponseHandler implements ResponseHandler {
     }
 
     public Object handle(ResponseContext responseContext) throws CRestException {
+
         Type expectedType = responseContext.getExpectedGenericType();
-        Object response = deserializer.deserialize(responseContext.getResponse().asReader(), expectedType);
-        if (response instanceof Result) {
-            Result result = (Result) response;
+        if(responseContext.getExpectedType().isPrimitive()) {
+            Result result = deserializer.deserialize(responseContext.getResponse().asReader(), Result.class);
             // Delicious Result response format is not consistent
             boolean done =
                     "done".equalsIgnoreCase(result.getCode())
@@ -65,7 +66,7 @@ public class DeliciousResponseHandler implements ResponseHandler {
                 throw new IllegalStateException("Should not reach here");
             }
         } else {
-            return response;
+            return deserializer.deserialize(responseContext.getResponse().asReader(), expectedType);
         }
     }
 }

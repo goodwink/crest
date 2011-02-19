@@ -37,9 +37,7 @@ import org.codegist.crest.serializer.*;
 import org.w3c.dom.Document;
 
 import java.lang.reflect.Type;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static org.codegist.crest.CRestProperty.*;
 
@@ -72,7 +70,8 @@ public class CRestBuilder {
 
     private final static int RET_TYPE_JSON = 0;
     private final static int RET_TYPE_XML = 1;
-    private final static int RET_TYPE_RAW = 2;
+    private final static int RET_TYPE_CUSTOM = 2;
+    private final static int RET_TYPE_RAW = 3;
 
     private final static int CFG_TYPE_ANNO = 0;
     private final static int CFG_TYPE_PROP = 1;
@@ -80,20 +79,31 @@ public class CRestBuilder {
 
     private final static int PROXY_TYPE_JDK = 0;
     private final static int PROXY_TYPE_CGLIB = 1;
+    
+    private final static int DESERIALIZER_XML_JAXB = 1;
+    private final static int DESERIALIZER_XML_SIMPLEXML = 2;
+    private final static int DESERIALIZER_XML_CUSTOM = 3;
+    
+    private final static int DESERIALIZER_JSON_JACKSON = 1;
+    private final static int DESERIALIZER_JSON_CUSTOM = 2;
 
     private int retType = RET_TYPE_RAW;
     private int configType = CFG_TYPE_ANNO;
     private int proxyType = PROXY_TYPE_JDK;
+    private int xmlDeserializer = DESERIALIZER_XML_JAXB;
+    private int jsonDeserializer = DESERIALIZER_JSON_JACKSON;
 
-
-    private JsonDeserializerChooser jsonChooser = new JsonDeserializerChooser();
-    private XmlDeserializerChooser xmlChooser = new XmlDeserializerChooser();
+    private Deserializer customXmlDeserializer;
+    private Deserializer customJsonDeserializer;
+    private final DeserializerFactory.Builder deserializerBuilder = new DeserializerFactory.Builder();
+    private final Map<String,Object> xmlDeserializerConfig = new HashMap<String, Object>();
+    private final Map<String,Object> jsonDeserializerConfig = new HashMap<String, Object>();
+    private final Set<String> xmlMimes = new HashSet<String>(Arrays.asList(DEFAULT_XML_ACCEPT_HEADER));
+    private final Set<String> jsonMimes = new HashSet<String>(Arrays.asList(DEFAULT_JSON_ACCEPT_HEADER));
 
     private Map<String, String> properties = null;
     private Document document = null;
     private InterfaceConfigFactory overridesFactory = null;
-    private String modelPackageName = null;
-    private Class<?> modelPackageFactory = null;
 
     private Map<String, Object> customProperties = new HashMap<String, Object>();
     private Map<String, String> placeholders = new HashMap<String, String>();
@@ -103,9 +113,6 @@ public class CRestBuilder {
     private RestService restService;
 
     private boolean useHttpClient = false;
-    private int maxConnections = 1;
-    private int maxConnectionsPerRoute = 1;
-
 
     public CRest build() {
         CRestContext context = buildContext();
@@ -121,8 +128,8 @@ public class CRestBuilder {
         ProxyFactory proxyFactory = buildProxyFactory();
         Maps.putIfNotPresent(customProperties, ProxyFactory.class.getName(), proxyFactory);
 
-        Deserializer deserializer = buildDeserializer();
-        Maps.putIfNotPresent(customProperties, Deserializer.class.getName(), deserializer);
+        DeserializerFactory deserializerFactory = buildDeserializerFactory();
+        Maps.putIfNotPresent(customProperties, DeserializerFactory.class.getName(), deserializerFactory);
 
         AuthentificationManager authentificationManager = buildAuthentificationManager(restService);
         Maps.putIfNotPresent(customProperties, AuthentificationManager.class.getName(), authentificationManager);
@@ -152,7 +159,7 @@ public class CRestBuilder {
     private RestService buildRestService() {
         if (restService == null) {
             if (useHttpClient) {
-                return HttpClientRestService.newRestService(maxConnections, maxConnectionsPerRoute);
+                return HttpClientRestService.newRestService(customProperties);
             } else {
                 return new DefaultRestService();
             }
@@ -171,14 +178,36 @@ public class CRestBuilder {
         }
     }
 
-    private Deserializer buildDeserializer() {
-        switch (retType) {
-            case RET_TYPE_JSON:
-                return jsonChooser.getDeserializer();
-            case RET_TYPE_XML:
-                return xmlChooser.getDeserializer();
+    private DeserializerFactory buildDeserializerFactory() {
+        Class<? extends Deserializer> jsonDeserializer = getJsonDeserializerClass();
+        Class<? extends Deserializer> xmlDeserializer = getXmlDeserializerClass();
+        if(jsonDeserializer != null) {
+            deserializerBuilder.register(jsonDeserializer, jsonDeserializerConfig, jsonMimes.toArray(new String[jsonMimes.size()]));
+        }else{
+            deserializerBuilder.register(customJsonDeserializer, jsonMimes.toArray(new String[jsonMimes.size()]));
+        }
+        if(xmlDeserializer != null) {
+            deserializerBuilder.register(xmlDeserializer, xmlDeserializerConfig, xmlMimes.toArray(new String[xmlMimes.size()]));
+        }else{
+            deserializerBuilder.register(customXmlDeserializer, xmlMimes.toArray(new String[xmlMimes.size()]));
+        }
+        return deserializerBuilder.build();
+    }
+    private Class<? extends Deserializer> getXmlDeserializerClass(){
+        switch(this.xmlDeserializer){
+            case DESERIALIZER_XML_JAXB:
+                return JaxbDeserializer.class;
+            case DESERIALIZER_XML_SIMPLEXML:
+                return JaxbDeserializer.class;
             default:
-            case RET_TYPE_RAW:
+                return null;
+        }
+    }
+    private Class<? extends Deserializer> getJsonDeserializerClass(){
+        switch(this.jsonDeserializer){
+            case DESERIALIZER_JSON_JACKSON:
+                return JacksonDeserializer.class;
+            default:
                 return null;
         }
     }
@@ -242,31 +271,6 @@ public class CRestBuilder {
      * @see org.codegist.crest.HttpClientRestService
      */
     public CRestBuilder useHttpClientRestService() {
-        return useHttpClientRestService(1);
-    }
-
-    /**
-     * Resulting CRest instance's RestService will be a multi-threaded instance of {@link org.codegist.crest.HttpClientRestService}.
-     *
-     * @param maxConnections max concurrent connections (includes max connection per route as well)
-     * @return current builder
-     * @see org.codegist.crest.HttpClientRestService
-     */
-    public CRestBuilder useHttpClientRestService(int maxConnections) {
-        return useHttpClientRestService(maxConnections, maxConnections);
-    }
-
-    /**
-     * Resulting CRest instance's RestService will be a multi-threaded instance of {@link org.codegist.crest.HttpClientRestService}.
-     *
-     * @param maxConnections         max concurrent connections
-     * @param maxConnectionsPerRoute max connection per route
-     * @return current builder
-     * @see org.codegist.crest.HttpClientRestService
-     */
-    public CRestBuilder useHttpClientRestService(int maxConnections, int maxConnectionsPerRoute) {
-        this.maxConnections = maxConnections;
-        this.maxConnectionsPerRoute = maxConnectionsPerRoute;
         this.useHttpClient = true;
         return this;
     }
@@ -280,6 +284,15 @@ public class CRestBuilder {
     public CRestBuilder setRestService(RestService restService) {
         this.restService = restService;
         return this;
+    }
+
+    /**
+     * Sets the concurrency level the interfaces built with the resulting CRest instance will support.
+     * @param maxThread Thread count
+     * @return current builder
+     */
+    public CRestBuilder setConcurrencyLevel(int maxThread){
+        return setProperty(CREST_CONCURRENCY_LEVEL, maxThread);
     }
 
     /**
@@ -418,8 +431,8 @@ public class CRestBuilder {
      *
      * @return current builder
      */
-    public JsonDeserializerChooser expectsJson() {
-        return expectsJson(true);
+    public CRestBuilder consumesJson() {
+        return consumesJson(true);
     }
 
     /**
@@ -430,12 +443,8 @@ public class CRestBuilder {
      * @param withAcceptHeader indicate to wether add or not the default accept header to all requests
      * @return current builder
      */
-    public JsonDeserializerChooser expectsJson(boolean withAcceptHeader) {
-        if (withAcceptHeader) {
-            return expectsJson(DEFAULT_JSON_ACCEPT_HEADER);
-        } else {
-            return expectsJson(null);
-        }
+    public CRestBuilder consumesJson(boolean withAcceptHeader) {
+        return consumesJson(withAcceptHeader ? DEFAULT_JSON_ACCEPT_HEADER : null);
     }
 
     /**
@@ -446,36 +455,11 @@ public class CRestBuilder {
      * @param acceptHeader accept header to add to all requests
      * @return current builder
      */
-    public JsonDeserializerChooser expectsJson(String acceptHeader) {
+    public CRestBuilder consumesJson(String acceptHeader) {
         this.retType = RET_TYPE_JSON;
-        addGlobalParam("Accept", acceptHeader, HttpRequest.DEST_HEADER, false);
-        return jsonChooser;
-    }
-
-
-    /**
-     * Resulting CRest instance will create interface instances that will return raw response.
-     * <p>Given interface methods return types must be either java.lang.String, java.io.Reader or java.io.InputStream
-     * <p>No Accept header is used
-     *
-     * @return current builder
-     */
-    public CRestBuilder returnRawResults() {
-        return returnRawResults(null);
-    }
-
-    /**
-     * Resulting CRest instance will create interface instances that will return raw response.
-     * <p>Given interface methods return types must be either java.lang.String, java.io.Reader or java.io.InputStream
-     * <p>The given accept header will be used for all requests.
-     *
-     * @param acceptHeader accept header to add to all requests
-     * @return current builder
-     */
-    public CRestBuilder returnRawResults(String acceptHeader) {
-        this.retType = RET_TYPE_RAW;
         return addGlobalParam("Accept", acceptHeader, HttpRequest.DEST_HEADER, false);
     }
+
 
     /**
      * Resulting CRest instance will create interface instances that will auto marshall the response from XML to user object model.
@@ -484,8 +468,8 @@ public class CRestBuilder {
      *
      * @return current builder
      */
-    public XmlDeserializerChooser expectsXml() {
-        return expectsXml(true);
+    public CRestBuilder consumesXml() {
+        return consumesXml(true);
     }
 
     /**
@@ -496,12 +480,8 @@ public class CRestBuilder {
      * @param withAcceptHeader indicate to wether add or not the default accept header to all requests
      * @return current builder
      */
-    public XmlDeserializerChooser expectsXml(boolean withAcceptHeader) {
-        if (withAcceptHeader) {
-            return expectsXml(DEFAULT_XML_ACCEPT_HEADER);
-        } else {
-            return expectsXml(null);
-        }
+    public CRestBuilder consumesXml(boolean withAcceptHeader) {
+        return consumesXml(withAcceptHeader ? DEFAULT_XML_ACCEPT_HEADER : null);
     }
 
     /**
@@ -512,10 +492,9 @@ public class CRestBuilder {
      * @param acceptHeader accept header to add to all requests
      * @return current builder
      */
-    public XmlDeserializerChooser expectsXml(String acceptHeader) {
+    public CRestBuilder consumesXml(String acceptHeader) {
         retType = RET_TYPE_XML;
-        addGlobalParam("Accept", acceptHeader, HttpRequest.DEST_HEADER, false);
-        return xmlChooser;
+        return addGlobalParam("Accept", acceptHeader, HttpRequest.DEST_HEADER, false);
     }
 
 
@@ -568,11 +547,11 @@ public class CRestBuilder {
      */
     public CRestBuilder usePreauthentifiedOAuth(String consumerKey, String consumerSecret, String accessToken, String accessTokenSecret, boolean authParamsInHeaders) {
         this.customProperties = Maps.defaultsIfNull(customProperties);
-        customProperties.put(OAUTH_CONSUMER_KEY, consumerKey);
-        customProperties.put(OAUTH_CONSUMER_SECRET, consumerSecret);
-        customProperties.put(OAUTH_ACCESS_TOKEN, accessToken);
-        customProperties.put(OAUTH_ACCESS_TOKEN_SECRET, accessTokenSecret);
-        customProperties.put(OAUTH_PARAM_DEST, authParamsInHeaders ? "header" : "url");
+        setProperty(OAUTH_CONSUMER_KEY, consumerKey);
+        setProperty(OAUTH_CONSUMER_SECRET, consumerSecret);
+        setProperty(OAUTH_ACCESS_TOKEN, accessToken);
+        setProperty(OAUTH_ACCESS_TOKEN_SECRET, accessTokenSecret);
+        setProperty(OAUTH_PARAM_DEST, authParamsInHeaders ? "header" : "url");
         return this;
     }
 
@@ -585,9 +564,7 @@ public class CRestBuilder {
      * @see CRestProperty#SERIALIZER_DATE_FORMAT
      */
     public CRestBuilder setDateSerializerFormat(String format) {
-        this.customProperties = Maps.defaultsIfNull(customProperties);
-        customProperties.put(SERIALIZER_DATE_FORMAT, format);
-        return this;
+        return setProperty(SERIALIZER_DATE_FORMAT, format);
     }
 
     /**
@@ -603,10 +580,8 @@ public class CRestBuilder {
      * @see CRestProperty#SERIALIZER_BOOLEAN_FALSE
      */
     public CRestBuilder setBooleanSerializer(String trueSerialized, String falseSerialized) {
-        this.customProperties = Maps.defaultsIfNull(customProperties);
-        customProperties.put(SERIALIZER_BOOLEAN_TRUE, trueSerialized);
-        customProperties.put(SERIALIZER_BOOLEAN_FALSE, falseSerialized);
-        return this;
+        return setProperty(SERIALIZER_BOOLEAN_TRUE, trueSerialized)
+                .setProperty(SERIALIZER_BOOLEAN_FALSE, falseSerialized);
     }
 
     /**
@@ -618,9 +593,7 @@ public class CRestBuilder {
      * @see CRestProperty#SERIALIZER_LIST_SEPARATOR
      */
     public CRestBuilder setListSerializerSeparator(String sep) {
-        this.customProperties = Maps.defaultsIfNull(customProperties);
-        customProperties.put(SERIALIZER_LIST_SEPARATOR, sep);
-        return this;
+        return setProperty(SERIALIZER_LIST_SEPARATOR, sep);
     }
 
     /**
@@ -710,103 +683,95 @@ public class CRestBuilder {
         return this;
     }
 
-    public class XmlDeserializerChooser {
 
-        private Deserializer deserializer;
-
-        public CRestBuilder handledByJaxB(String packageName) {
-            this.deserializer = new JaxbDeserializer(packageName);
-            return CRestBuilder.this;
-        }
-
-        public CRestBuilder handledByJaxB(Class<?> factoryClass) {
-            this.deserializer = new JaxbDeserializer(factoryClass);
-            return CRestBuilder.this;
-        }
-
-        public CRestBuilder handledByJaxB(Map<String, Object> config) {
-            this.deserializer = new JaxbDeserializer(config);
-            return CRestBuilder.this;
-        }
-
-        public CRestBuilder handledBySimpleXml() {
-            this.deserializer = new SimpleXmlDeserializer();
-            return CRestBuilder.this;
-        }
-
-        public CRestBuilder handledBySimpleXml(String dateFormat) {
-            return handledBySimpleXml(dateFormat, null, null, SimpleXmlDeserializer.DEFAULT_STRICT);
-        }
-
-        public CRestBuilder handledBySimpleXml(String trueVal, String falseVal) {
-            return handledBySimpleXml(null, trueVal, falseVal, SimpleXmlDeserializer.DEFAULT_STRICT);
-        }
-
-        public CRestBuilder handledBySimpleXml(String dateFormat, String trueVal, String falseVal, boolean strict) {
-            Map<String, Object> config = new HashMap<String, Object>();
-            if (Strings.isNotBlank(trueVal) && Strings.isNotBlank(falseVal)) {
-                config.put(SimpleXmlDeserializer.BOOLEAN_FORMAT_PROP, trueVal + ":" + falseVal);
-            }
-            if (Strings.isNotBlank(dateFormat)) {
-                config.put(SimpleXmlDeserializer.DATE_FORMAT_PROP, dateFormat);
-            }
-            config.put(SimpleXmlDeserializer.STRICT_PROP, strict);
-            return handledBySimpleXml(config);
-        }
-
-        public CRestBuilder handledBySimpleXml(Map<String, Object> config) {
-            this.deserializer = new SimpleXmlDeserializer(config);
-            return CRestBuilder.this;
-        }
-
-        public CRestBuilder handledBy(Deserializer deserializer) {
-            this.deserializer = deserializer;
-            return CRestBuilder.this;
-        }
-
-        Deserializer getDeserializer() {
-            return deserializer;
-        }
-
+    public CRestBuilder bindJsonDeserializerWith(String... mimeTypes){
+        this.jsonMimes.addAll(Arrays.asList(mimeTypes));
+        return this;
+    }
+    public CRestBuilder bindXmlDeserializerWith(String... mimeTypes){
+        this.xmlMimes.addAll(Arrays.asList(mimeTypes));
+        return this;
+    }
+    public CRestBuilder registerDeserializer(Deserializer deserializer, String... mimeTypes){
+        this.deserializerBuilder.register(deserializer, mimeTypes);
+        return this;
     }
 
-    public class JsonDeserializerChooser {
+    public CRestBuilder deserializeXmlWith(Deserializer deserializer){
+        this.xmlDeserializer = DESERIALIZER_XML_CUSTOM;
+        this.customXmlDeserializer = deserializer;
+        return this;
+    }
+    
+    public CRestBuilder deserializeXmlWithJaxb(){
+        this.xmlDeserializer = DESERIALIZER_XML_JAXB;
+        this.xmlDeserializerConfig.clear();
+        return this;
+    }
+    public CRestBuilder deserializeXmlWithJaxb(Class<?>... classToBeBound){
+        deserializeXmlWithJaxb();
+        this.xmlDeserializerConfig.put(JaxbDeserializer.MODEL_CLASSES_BOUND_PROP, classToBeBound);
+        return this;
+    }
+    public CRestBuilder deserializeXmlWithJaxb(String contextPath){
+        deserializeXmlWithJaxb();
+        this.xmlDeserializerConfig.put(JaxbDeserializer.MODEL_CONTEXT_PATH_PROP, contextPath);
+        return this;
+    }
+    public CRestBuilder deserializeXmlWithJaxb(Map<String,Object> jaxbConfig){
+        deserializeXmlWithJaxb();
+        this.xmlDeserializerConfig.clear();
+        this.xmlDeserializerConfig.putAll(jaxbConfig);
+        return this;
+    }
 
-        private Deserializer deserializer;
+    public CRestBuilder deserializeXmlWithSimpleXml() {
+        this.xmlDeserializer = DESERIALIZER_XML_SIMPLEXML;  
+        this.xmlDeserializerConfig.clear();
+        return this;
+    }
+    public CRestBuilder deserializeXmlWithSimpleXml(String dateFormat) {
+        deserializeXmlWithSimpleXml();
+        this.xmlDeserializerConfig.put(SimpleXmlDeserializer.DATE_FORMAT_PROP, dateFormat);
+        return this;
+    }
 
-        /**
-         * Json deserialization will be handled by Jackson
-         *
-         * @return current builder
-         */
-        public CRestBuilder handledByJackson() {
-            return handledByJackson(Collections.<String, Object>emptyMap());
-        }
+    public CRestBuilder deserializeXmlWithSimpleXml(String trueVal, String falseVal) {
+        deserializeXmlWithSimpleXml();
+        this.xmlDeserializerConfig.put(SimpleXmlDeserializer.BOOLEAN_FORMAT_PROP, trueVal + ":" + falseVal);
+        return this;
+    }
 
-        /**
-         * Json deserialization will be handled by Jackson
-         *
-         * @return current builder
-         */
-        public CRestBuilder handledByJackson(Map<String, Object> config) {
-            this.deserializer = new JacksonDeserializer(config);
-            return CRestBuilder.this;
-        }
+    public CRestBuilder deserializeXmlWithSimpleXml(String dateFormat, String trueVal, String falseVal, boolean strict) {
+        deserializeXmlWithSimpleXml();
+        this.xmlDeserializerConfig.put(SimpleXmlDeserializer.BOOLEAN_FORMAT_PROP, trueVal + ":" + falseVal);
+        this.xmlDeserializerConfig.put(SimpleXmlDeserializer.DATE_FORMAT_PROP, dateFormat);
+        this.xmlDeserializerConfig.put(SimpleXmlDeserializer.STRICT_PROP, strict);
+        return this;
+    }
 
-        /**
-         * Json deserialization will be handled by the given deserializer
-         *
-         * @param deserializer deserializer to use for json deserialization
-         * @return current builder
-         */
-        public CRestBuilder handledBy(Deserializer deserializer) {
-            this.deserializer = deserializer;
-            return CRestBuilder.this;
-        }
+    public CRestBuilder deserializeXmlWithSimpleXml(Map<String, Object> config) {
+        deserializeXmlWithSimpleXml();
+        this.xmlDeserializerConfig.clear();
+        this.xmlDeserializerConfig.putAll(config);
+        return this;
+    }
 
-        Deserializer getDeserializer() {
-            return deserializer;
-        }
+    public CRestBuilder deserializerJsonWith(Deserializer deserializer){
+        this.jsonDeserializer = DESERIALIZER_JSON_CUSTOM;
+        this.customJsonDeserializer = deserializer;
+        return this;
+    }
+    public CRestBuilder deserializerJsonWithJackson(){
+        this.jsonDeserializer = DESERIALIZER_JSON_JACKSON;
+        this.jsonDeserializerConfig.clear();
+        return this;
+    }
+    public CRestBuilder deserializerJsonWithJackson(Map<String,Object> config){
+        deserializerJsonWithJackson();
+        this.jsonDeserializerConfig.clear();
+        this.jsonDeserializerConfig.putAll(config);
+        return this;
     }
 
 }

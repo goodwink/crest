@@ -47,7 +47,7 @@ public class FlickrResponseHandler implements ResponseHandler {
 
     public final Object handle(ResponseContext context) {
         /* Marshall the response */
-        Response res = deserializer.deserialize(context.getResponse().asReader(), Types.newType(Response.class, context.getExpectedGenericType()));
+        Response res = deserializer.deserialize(context.getResponse().asReader(), Types.newType(Response.class, Types.newType(SimplePayload.class, context.getExpectedGenericType())));
         /* Check for flickr OK status */
         if ("ok".equals(res.getStatus())) {
             /* Get the nested payload and returns it */

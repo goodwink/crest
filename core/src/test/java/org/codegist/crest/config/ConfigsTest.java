@@ -30,6 +30,7 @@ import org.codegist.crest.handler.RetryHandler;
 import org.codegist.crest.injector.Injector;
 import org.codegist.crest.interceptor.CompositeRequestInterceptor;
 import org.codegist.crest.interceptor.RequestInterceptor;
+import org.codegist.crest.serializer.Deserializer;
 import org.codegist.crest.serializer.Serializer;
 import org.junit.Test;
 
@@ -399,6 +400,7 @@ public class ConfigsTest {
         private ResponseHandler responseHandler;
         private ErrorHandler errorHandler;
         private RetryHandler retryHandler;
+        private Deserializer deserializer;
 
         private MethodParamConfig[] methodParamConfigs;
         private ParamConfig[] extraParams;
@@ -500,6 +502,14 @@ public class ConfigsTest {
 
         public void setRetryHandler(RetryHandler retryHandler) {
             this.retryHandler = retryHandler;
+        }
+
+        public Deserializer getDeserializer() {
+            return deserializer;
+        }
+
+        public void setDeserializer(Deserializer deserializer) {
+            this.deserializer = deserializer;
         }
 
         public MethodParamConfig[] getParamConfigs() {

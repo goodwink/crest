@@ -34,10 +34,7 @@ import org.codegist.crest.oauth.OAuthenticator;
 import org.codegist.crest.oauth.Token;
 import org.codegist.crest.security.AuthentificationManager;
 import org.codegist.crest.security.OAuthentificationManager;
-import org.codegist.crest.serializer.Deserializer;
-import org.codegist.crest.serializer.JacksonDeserializer;
-import org.codegist.crest.serializer.JaxbDeserializer;
-import org.codegist.crest.serializer.Serializer;
+import org.codegist.crest.serializer.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -49,6 +46,7 @@ import java.util.Map;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * @author laurent.gilles@codegist.org
@@ -254,13 +252,12 @@ public class CRestBuilderTest {
     @Test
     public void testExpectsJson() {
         final CRestContext context = builder
-                .expectsJson().handledByJackson()
+                .consumesJson()
                 .buildContext();
         assertContext(new ContextAdapter() {
             @Override
             public Map<String, Object> getProperties() {
                 return new HashMap<String, Object>() {{
-                    put(Deserializer.class.getName(), new JacksonDeserializer());
                     put(CRestProperty.CONFIG_METHOD_DEFAULT_EXTRA_PARAMS, new ParamConfig[]{
                             new ConfigBuilders.ParamConfigBuilder(null)
                             .setName("Accept")
@@ -275,41 +272,26 @@ public class CRestBuilderTest {
     @Test
     public void testExpectsJson2() {
         final CRestContext context = builder
-                .expectsJson(false).handledByJackson()
+                .consumesJson(false)
                 .buildContext();
-        assertContext(new ContextAdapter() {
-            @Override
-            public Map<String, Object> getProperties() {
-                return new HashMap<String, Object>() {{
-                    put(Deserializer.class.getName(), new JacksonDeserializer());
-                }};
-            }
-        }, context);
+        assertContext(new ContextAdapter() {}, context);
     }
     @Test
     public void testExpectsJson3() {
         final CRestContext context = builder
-                .expectsJson(null).handledByJackson()
+                .consumesJson(null)
                 .buildContext();
-        assertContext(new ContextAdapter() {
-            @Override
-            public Map<String, Object> getProperties() {
-                return new HashMap<String, Object>() {{
-                    put(Deserializer.class.getName(), new JacksonDeserializer());
-                }};
-            }
-        }, context);
+        assertContext(new ContextAdapter() {}, context);
     }
     @Test
     public void testExpectsJson4() {
         final CRestContext context = builder
-                .expectsJson("fff").handledByJackson()
+                .consumesJson("fff")
                 .buildContext();
         assertContext(new ContextAdapter() {
             @Override
             public Map<String, Object> getProperties() {
                 return new HashMap<String, Object>() {{
-                    put(Deserializer.class.getName(), new JacksonDeserializer());
                     put(CRestProperty.CONFIG_METHOD_DEFAULT_EXTRA_PARAMS, new ParamConfig[]{
                             new ConfigBuilders.ParamConfigBuilder(null)
                             .setName("Accept")
@@ -325,13 +307,12 @@ public class CRestBuilderTest {
     @Test
     public void testExpectsXml1() {
         final CRestContext context = builder
-                .expectsXml().handledByJaxB(Object.class)
+                .consumesXml()
                 .buildContext();
         assertContext(new ContextAdapter() {
             @Override
             public Map<String, Object> getProperties() {
                 return new HashMap<String, Object>() {{
-                    put(Deserializer.class.getName(), new JaxbDeserializer());
                     put(CRestProperty.CONFIG_METHOD_DEFAULT_EXTRA_PARAMS, new ParamConfig[]{
                             new ConfigBuilders.ParamConfigBuilder(null)
                             .setName("Accept")
@@ -347,13 +328,12 @@ public class CRestBuilderTest {
     @Test
     public void testExpectsXml2() {
         final CRestContext context = builder
-                .expectsXml().handledByJaxB("org.codegist.crest")
+                .consumesXml()
                 .buildContext();
         assertContext(new ContextAdapter() {
             @Override
             public Map<String, Object> getProperties() {
                 return new HashMap<String, Object>() {{
-                    put(Deserializer.class.getName(), new JaxbDeserializer());
                     put(CRestProperty.CONFIG_METHOD_DEFAULT_EXTRA_PARAMS, new ParamConfig[]{
                             new ConfigBuilders.ParamConfigBuilder(null)
                             .setName("Accept")
@@ -368,43 +348,28 @@ public class CRestBuilderTest {
     @Test
     public void testExpectsXml3() {
         final CRestContext context = builder
-                .expectsXml(false).handledByJaxB("org.codegist.crest")
+                .consumesXml(false)
                 .buildContext();
-        assertContext(new ContextAdapter() {
-            @Override
-            public Map<String, Object> getProperties() {
-                return new HashMap<String, Object>() {{
-                    put(Deserializer.class.getName(), new JaxbDeserializer());
-                }};
-            }
-        }, context);
+        assertContext(new ContextAdapter(){}, context);
     }
 
     @Test
     public void testExpectsXml4() {
         final CRestContext context = builder
-                .expectsXml(null).handledByJaxB("org.codegist.crest")
+                .consumesXml(null)
                 .buildContext();
-        assertContext(new ContextAdapter() {
-            @Override
-            public Map<String, Object> getProperties() {
-                return new HashMap<String, Object>() {{
-                    put(Deserializer.class.getName(), new JaxbDeserializer());
-                }};
-            }
-        }, context);
+        assertContext(new ContextAdapter() {}, context);
     }
 
     @Test
     public void testExpectsXml5() {
         final CRestContext context = builder
-                .expectsXml("ddd").handledByJaxB("org.codegist.crest")
+                .consumesXml("ddd")
                 .buildContext();
         assertContext(new ContextAdapter() {
             @Override
             public Map<String, Object> getProperties() {
                 return new HashMap<String, Object>() {{
-                    put(Deserializer.class.getName(), new JaxbDeserializer());
                     put(CRestProperty.CONFIG_METHOD_DEFAULT_EXTRA_PARAMS, new ParamConfig[]{
                             new ConfigBuilders.ParamConfigBuilder(null)
                             .setName("Accept")
@@ -417,12 +382,6 @@ public class CRestBuilderTest {
         }, context);
     }
 
-
-    @Test
-    public void testExpectsRaw() {
-        final CRestContext context = builder.returnRawResults().buildContext();
-        assertContext(context);
-    }
 
     @Test
     public void testProxiesCGLib() {
@@ -446,7 +405,7 @@ public class CRestBuilderTest {
         CRestContext context = builder
                 .useHttpClientRestService()
                 .buildContext();
-        assertHttpClient(context);
+        assertHttpClient(context, 0);
         HttpClientRestService service = (HttpClientRestService) context.getRestService();
         assertTrue(service.getHttpClient().getConnectionManager() instanceof SingleClientConnManager);
     }
@@ -454,9 +413,10 @@ public class CRestBuilderTest {
     @Test
     public void testApacheHttpClient2() {
         CRestContext context = builder
-                .useHttpClientRestService(2)
+                .useHttpClientRestService()
+                .setConcurrencyLevel(2)
                 .buildContext();
-        assertHttpClient(context);
+        assertHttpClient(context, 2);
         HttpClientRestService service = (HttpClientRestService) context.getRestService();
         assertTrue(service.getHttpClient().getConnectionManager() instanceof ThreadSafeClientConnManager);
         assertEquals(2, ConnManagerParams.getMaxTotalConnections(service.getHttpClient().getParams()));
@@ -464,22 +424,17 @@ public class CRestBuilderTest {
 
     }
 
-    @Test
-    public void testApacheHttpClient3() {
-        CRestContext context = builder
-                .useHttpClientRestService(4, 2)
-                .buildContext();
-        assertHttpClient(context);
-        HttpClientRestService service = (HttpClientRestService) context.getRestService();
-        assertTrue(service.getHttpClient().getConnectionManager() instanceof ThreadSafeClientConnManager);
-        assertEquals(4, ConnManagerParams.getMaxTotalConnections(service.getHttpClient().getParams()));
-        assertEquals(2, ConnManagerParams.getMaxConnectionsPerRoute(service.getHttpClient().getParams()).getMaxForRoute(new HttpRoute(new HttpHost("127.0.0.1"))));
-
-    }
-
-    public void assertHttpClient(final CRestContext context) {
+    public void assertHttpClient(final CRestContext context, final int concurrencyLvl) {
         assertContext(
                 new ContextAdapter() {
+                    @Override
+                    public Map<String, Object> getProperties() {
+                        return new HashMap<String, Object>(){{
+                            if(concurrencyLvl > 0 )
+                            put(CRestProperty.CREST_CONCURRENCY_LEVEL, concurrencyLvl);
+                        }};
+                    }
+
                     @Override
                     public RestService getRestService() {
                         return new HttpClientRestService();
@@ -512,11 +467,11 @@ public class CRestBuilderTest {
         Map<String, Object> expectedProps = new HashMap<String, Object>() {{
             put(RestService.class.getName(), context.getRestService());
             put(ProxyFactory.class.getName(), context.getProxyFactory());
+            put(DeserializerFactory.class.getName(), new DeserializerFactory.Builder().build());
             put(InterfaceConfigFactory.class.getName(), context.getConfigFactory());
             put(CRestProperty.SERIALIZER_CUSTOM_SERIALIZER_MAP, Collections.emptyMap());
             put(CRestProperty.CONFIG_PLACEHOLDERS_MAP, Collections.emptyMap());
             put(AuthentificationManager.class.getName(), null);
-            put(Deserializer.class.getName(), null);
             put(CRestProperty.CONFIG_METHOD_DEFAULT_EXTRA_PARAMS, new ParamConfig[0]);
         }};
         if (expected != null && expected.getProperties() != null) {
@@ -541,8 +496,9 @@ public class CRestBuilderTest {
                 ParamConfig[] testv = (ParamConfig[]) test.get(entry.getKey());
 
                 assertArrayEquals(valv, testv);
-            } else {
-                assertEquals(val.getClass(), test.get(entry.getKey()).getClass());
+            } else{
+
+                assertEquals(TestUtils.getClass(val), TestUtils.getClass(test.get(entry.getKey())));
             }
         }
     }

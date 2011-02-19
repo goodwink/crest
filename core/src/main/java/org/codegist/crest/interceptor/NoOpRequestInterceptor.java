@@ -24,5 +24,5 @@ package org.codegist.crest.interceptor;
  * Empty request interceptor. Does nothing.
  * @author Laurent Gilles (laurent.gilles@codegist.org)
  */
-public class EmptyRequestInterceptor extends RequestInterceptorAdapter {
+public class NoOpRequestInterceptor extends RequestInterceptorAdapter {
 }

@@ -36,6 +36,7 @@ import static org.mockito.Mockito.withSettings;
 public class TestUtils {
 
     public static <T> T newInstance(Class<T> clazz){
+        if(clazz == null) return null;
         try {
             return clazz.newInstance();
         } catch (Exception e) {

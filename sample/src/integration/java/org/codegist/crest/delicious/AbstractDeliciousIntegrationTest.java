@@ -245,7 +245,7 @@ public abstract class AbstractDeliciousIntegrationTest {
         final String sessionHandle = System.getProperty("crest.sample.delicious.session-handle");
 
         return new CRestBuilder()
-                .expectsXml().handledByJaxB(DeliciousModelFactory.class)
+                .consumesXml().handledByJaxB(DeliciousModelFactory.class)
                 .setListSerializerSeparator(" ")
                 .setBooleanSerializer("yes", "no")
                 .usePreauthentifiedOAuth(consumerKey, consumerSecret, accessToken, accessTokenSecret)

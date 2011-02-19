@@ -24,7 +24,6 @@ import org.codegist.common.log.Logger;
 import org.codegist.crest.CRest;
 import org.codegist.crest.CRestBuilder;
 import org.codegist.crest.CRestProperty;
-import org.codegist.crest.delicious.model.DeliciousModelFactory;
 import org.codegist.crest.delicious.model.Posts;
 import org.codegist.crest.delicious.model.Range;
 import org.codegist.crest.delicious.service.Delicious;
@@ -56,7 +55,7 @@ public class DeliciousSample implements Runnable {
     public void run() {
         CRest crest = new CRestBuilder()
                 .useHttpClientRestService()
-                .expectsXml().handledByJaxB(DeliciousModelFactory.class)
+                .consumesXml().handledByJaxb()
                 .setListSerializerSeparator(" ")
                 .setBooleanSerializer("yes", "no")
                 .usePreauthentifiedOAuth(consumerKey, consumerSecret, accessToken, accessTokenSecret)

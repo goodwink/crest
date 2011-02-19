@@ -22,8 +22,9 @@ package org.codegist.crest.config;
 
 import org.codegist.crest.HttpRequest;
 import org.codegist.crest.handler.*;
-import org.codegist.crest.interceptor.EmptyRequestInterceptor;
+import org.codegist.crest.interceptor.NoOpRequestInterceptor;
 import org.codegist.crest.interceptor.RequestInterceptor;
+import org.codegist.crest.serializer.Deserializer;
 
 import java.lang.reflect.Method;
 
@@ -95,7 +96,7 @@ public interface MethodConfig {
      *
      * @see MethodConfig#getRequestInterceptor()
      */
-    Class<? extends RequestInterceptor> DEFAULT_REQUEST_INTERCEPTOR = EmptyRequestInterceptor.class;
+    Class<? extends RequestInterceptor> DEFAULT_REQUEST_INTERCEPTOR = NoOpRequestInterceptor.class;
 
     /**
      * Default retry handler applied when non specified.
@@ -103,6 +104,13 @@ public interface MethodConfig {
      * @see org.codegist.crest.config.MethodConfig#getRetryHandler()
      */
     Class<? extends RetryHandler> DEFAULT_RETRY_HANDLER = MaxAttemptRetryHandler.class;
+
+    /**
+     * Default response deserializer applied when non specified.
+     *
+     * @see org.codegist.crest.config.MethodConfig#getDeserializer()
+     */
+    Class<? extends Deserializer> DEFAULT_DESERIALIZER = null;
 
     /*##############################################################################*/
 
@@ -122,6 +130,8 @@ public interface MethodConfig {
     Long getConnectionTimeout();
 
     RetryHandler getRetryHandler();
+
+    Deserializer getDeserializer();
 
     /**
      * URL fragment specific to this methods.

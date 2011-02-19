@@ -29,10 +29,7 @@ import org.codegist.crest.handler.ResponseHandler;
 import org.codegist.crest.handler.RetryHandler;
 import org.codegist.crest.injector.Injector;
 import org.codegist.crest.interceptor.RequestInterceptor;
-import org.codegist.crest.serializer.ArraySerializer;
-import org.codegist.crest.serializer.DateSerializer;
-import org.codegist.crest.serializer.Serializer;
-import org.codegist.crest.serializer.ToStringSerializer;
+import org.codegist.crest.serializer.*;
 import org.junit.Test;
 
 import java.lang.reflect.Method;
@@ -182,6 +179,7 @@ public class ConfigBuildersTest {
         placeholders.put("my.place.holder.meth-co-to", "121");
         placeholders.put("my.place.holder.meth-error", Stubs.ErrorHandler1.class.getName());
         placeholders.put("my.place.holder.meth-retry", Stubs.RetryHandler1.class.getName());
+        placeholders.put("my.place.holder.meth-deser", Stubs.Deserializer1.class.getName());
         placeholders.put("my.place.holder.meth-http", "HEAD");
         placeholders.put("my.place.holder.meth-resp", Stubs.ResponseHandler1.class.getName());
         placeholders.put("my.place.holder.param-dest", "FORM");
@@ -209,6 +207,7 @@ public class ConfigBuildersTest {
                             (ResponseHandler) Class.forName(placeholders.get("my.place.holder.meth-resp")).newInstance(),
                             (ErrorHandler) Class.forName(placeholders.get("my.place.holder.meth-error")).newInstance(),
                             (RetryHandler) Class.forName(placeholders.get("my.place.holder.meth-retry")).newInstance(),
+                            (Deserializer) Class.forName(placeholders.get("my.place.holder.meth-deser")).newInstance(),
                             new MethodParamConfig[]{
                                     new DefaultMethodParamConfig(
                                             placeholders.get("my.place.holder.param-name"),
@@ -230,6 +229,7 @@ public class ConfigBuildersTest {
                             (ResponseHandler) Class.forName(placeholders.get("my.place.holder.meth-resp")).newInstance(),
                             (ErrorHandler) Class.forName(placeholders.get("my.place.holder.meth-error")).newInstance(),
                             (RetryHandler) Class.forName(placeholders.get("my.place.holder.meth-retry")).newInstance(),
+                            (Deserializer) Class.forName(placeholders.get("my.place.holder.meth-deser")).newInstance(),
                             new MethodParamConfig[]{
                                     new DefaultMethodParamConfig(
                                             placeholders.get("my.place.holder.param-name"),
@@ -271,6 +271,7 @@ public class ConfigBuildersTest {
                 .setMethodsRetryHandler("{my.place.holder.meth-retry}")
                 .setMethodsHttpMethod("{my.place.holder.meth-http}")
                 .setMethodsResponseHandler("{my.place.holder.meth-resp}")
+                .setMethodsDeserializer("{my.place.holder.meth-deser}")
                 .setParamsInjector("{my.place.holder.param-req-inject}")
                 .setParamsSerializer("{my.place.holder.param-seri}")
                 .startMethodConfig(Interface.A)
@@ -314,6 +315,7 @@ public class ConfigBuildersTest {
         defaultOverrides.put(CONFIG_METHOD_DEFAULT_CO_TIMEOUT, 121l);
         defaultOverrides.put(CONFIG_METHOD_DEFAULT_ERROR_HANDLER, new Stubs.ErrorHandler1());
         defaultOverrides.put(CONFIG_METHOD_DEFAULT_RETRY_HANDLER, new Stubs.RetryHandler1());
+        defaultOverrides.put(CONFIG_METHOD_DEFAULT_DESERIALIZER, new Stubs.Deserializer1());
         defaultOverrides.put(CONFIG_METHOD_DEFAULT_HTTP_METHOD, "HEAD");
         defaultOverrides.put(CONFIG_METHOD_DEFAULT_RESPONSE_HANDLER, new Stubs.ResponseHandler1());
         defaultOverrides.put(CONFIG_METHOD_DEFAULT_EXTRA_PARAMS, PARAMs);
@@ -339,6 +341,7 @@ public class ConfigBuildersTest {
                             (ResponseHandler) defaultOverrides.get(CONFIG_METHOD_DEFAULT_RESPONSE_HANDLER),
                             (ErrorHandler) defaultOverrides.get(CONFIG_METHOD_DEFAULT_ERROR_HANDLER),
                             (RetryHandler) defaultOverrides.get(CONFIG_METHOD_DEFAULT_RETRY_HANDLER),
+                            (Deserializer) defaultOverrides.get(CONFIG_METHOD_DEFAULT_DESERIALIZER),
                             new MethodParamConfig[]{
                                     new DefaultMethodParamConfig(
                                             (String) defaultOverrides.get(CONFIG_PARAM_DEFAULT_NAME),
@@ -360,6 +363,7 @@ public class ConfigBuildersTest {
                             (ResponseHandler) defaultOverrides.get(CONFIG_METHOD_DEFAULT_RESPONSE_HANDLER),
                             (ErrorHandler) defaultOverrides.get(CONFIG_METHOD_DEFAULT_ERROR_HANDLER),
                             (RetryHandler) defaultOverrides.get(CONFIG_METHOD_DEFAULT_RETRY_HANDLER),
+                            (Deserializer) defaultOverrides.get(CONFIG_METHOD_DEFAULT_DESERIALIZER),
                             new MethodParamConfig[]{
                                     new DefaultMethodParamConfig(
                                             (String) defaultOverrides.get(CONFIG_PARAM_DEFAULT_NAME),
@@ -410,6 +414,7 @@ public class ConfigBuildersTest {
                             TestUtils.newInstance(DEFAULT_RESPONSE_HANDLER),
                             TestUtils.newInstance(DEFAULT_ERROR_HANDLER),
                             TestUtils.newInstance(DEFAULT_RETRY_HANDLER),
+                            TestUtils.newInstance(DEFAULT_DESERIALIZER),
                             new MethodParamConfig[]{
                                     new DefaultMethodParamConfig(
                                             "n",
@@ -431,6 +436,7 @@ public class ConfigBuildersTest {
                             TestUtils.newInstance(DEFAULT_RESPONSE_HANDLER),
                             TestUtils.newInstance(DEFAULT_ERROR_HANDLER),
                             TestUtils.newInstance(DEFAULT_RETRY_HANDLER),
+                            TestUtils.newInstance(DEFAULT_DESERIALIZER),
                             new MethodParamConfig[]{
                                     new DefaultMethodParamConfig(
                                             "n",
@@ -481,6 +487,7 @@ public class ConfigBuildersTest {
                             new Stubs.ResponseHandler2(),
                             new Stubs.ErrorHandler2(),
                             new Stubs.RetryHandler2(),
+                            new Stubs.Deserializer2(),
                             new MethodParamConfig[]{
                                     new DefaultMethodParamConfig(
                                             "n",
@@ -502,6 +509,7 @@ public class ConfigBuildersTest {
                             new Stubs.ResponseHandler2(),
                             new Stubs.ErrorHandler2(),
                             new Stubs.RetryHandler2(),
+                            new Stubs.Deserializer2(),
                             new MethodParamConfig[]{
                                     new DefaultMethodParamConfig(
                                             "n",
@@ -541,6 +549,7 @@ public class ConfigBuildersTest {
                 .setMethodsResponseHandler(new Stubs.ResponseHandler2())
                 .setMethodsErrorHandler(new Stubs.ErrorHandler2())
                 .setMethodsRetryHandler(new Stubs.RetryHandler2())
+                .setMethodsDeserializer(new Stubs.Deserializer2())
                 .setParamsSerializer(new Stubs.Serializer2())
                 .setParamsInjector(new Stubs.RequestParameterInjector2())
                 .build();
@@ -566,6 +575,7 @@ public class ConfigBuildersTest {
                             new Stubs.ResponseHandler2(),
                             new Stubs.ErrorHandler2(),
                             new Stubs.RetryHandler1(),
+                            new Stubs.Deserializer1(),
                             new MethodParamConfig[]{
                                     new DefaultMethodParamConfig(
                                             "n",
@@ -587,6 +597,7 @@ public class ConfigBuildersTest {
                             new Stubs.ResponseHandler3(),
                             new Stubs.ErrorHandler3(),
                             new Stubs.RetryHandler2(),
+                            new Stubs.Deserializer2(),
                             new MethodParamConfig[]{
                                     new DefaultMethodParamConfig(
                                             "n",
@@ -624,6 +635,7 @@ public class ConfigBuildersTest {
                 .setMethodsResponseHandler(new Stubs.ResponseHandler2())
                 .setMethodsErrorHandler(new Stubs.ErrorHandler2())
                 .setMethodsRetryHandler(new Stubs.RetryHandler1())
+                .setMethodsDeserializer(new Stubs.Deserializer1())
                 .setParamsSerializer(new Stubs.Serializer2())
                 .setParamsInjector(new Stubs.RequestParameterInjector2())
                 .startMethodConfig(Interface.B)
@@ -635,6 +647,7 @@ public class ConfigBuildersTest {
                 .setResponseHandler(new Stubs.ResponseHandler3())
                 .setErrorHandler(new Stubs.ErrorHandler3())
                 .setRetryHandler(new Stubs.RetryHandler2())
+                .setDeserializer(new Stubs.Deserializer2())
                 .setParamsSerializer(new Stubs.Serializer3())
                 .setParamsInjector(new Stubs.RequestParameterInjector3())
                 .endMethodConfig()
@@ -661,6 +674,7 @@ public class ConfigBuildersTest {
                             new Stubs.ResponseHandler2(),
                             new Stubs.ErrorHandler2(),
                             new Stubs.RetryHandler2(),
+                            new Stubs.Deserializer2(),
                             new MethodParamConfig[]{
                                     new DefaultMethodParamConfig(
                                             "name4",
@@ -682,6 +696,7 @@ public class ConfigBuildersTest {
                             new Stubs.ResponseHandler3(),
                             new Stubs.ErrorHandler3(),
                             new Stubs.RetryHandler1(),
+                            new Stubs.Deserializer1(),
                             new MethodParamConfig[]{
                                     new DefaultMethodParamConfig(
                                             "n",
@@ -721,6 +736,7 @@ public class ConfigBuildersTest {
                 .setMethodsResponseHandler(new Stubs.ResponseHandler2())
                 .setMethodsErrorHandler(new Stubs.ErrorHandler2())
                 .setMethodsRetryHandler(new Stubs.RetryHandler2())
+                .setMethodsDeserializer(new Stubs.Deserializer2())
                 .setParamsSerializer(new Stubs.Serializer2())
                 .setParamsInjector(new Stubs.RequestParameterInjector2())
                 .startMethodConfig(Interface.A)
@@ -741,6 +757,7 @@ public class ConfigBuildersTest {
                 .setResponseHandler(new Stubs.ResponseHandler3())
                 .setErrorHandler(new Stubs.ErrorHandler3())
                 .setRetryHandler(new Stubs.RetryHandler1())
+                .setDeserializer(new Stubs.Deserializer1())
                 .setParamsSerializer(new Stubs.Serializer3())
                 .setParamsInjector(new Stubs.RequestParameterInjector3())
                 .startParamConfig(0)
@@ -761,14 +778,14 @@ public class ConfigBuildersTest {
                 new HashMap<Method, MethodConfig>() {{
                     put(Interface.A, new DefaultMethodConfig(
                             Interface.A,
-                            null, null, null, null, null, null, null, null,
+                            null, null, null, null, null, null, null, null, null,
                             new MethodParamConfig[]{
                                     new DefaultMethodParamConfig(null, null, null, null, null)
                             },new ParamConfig[0]
                     ));
                     put(Interface.B, new DefaultMethodConfig(
                             Interface.B,
-                            null, null, null, null, null, null, null, null,
+                            null, null, null, null, null, null, null, null, null,
                             new MethodParamConfig[]{
                                     new DefaultMethodParamConfig(null, null, null, null, null),
                                     new DefaultMethodParamConfig(null, null, null, null, null),

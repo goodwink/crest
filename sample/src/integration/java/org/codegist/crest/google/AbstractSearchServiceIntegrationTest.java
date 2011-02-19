@@ -48,6 +48,6 @@ public abstract class AbstractSearchServiceIntegrationTest {
     }
 
     protected static CRestBuilder getBaseCRestBuilder(){
-        return new CRestBuilder().expectsJson().handledByJackson();
+        return new CRestBuilder().consumesJson().handledByJackson();
     }
 }

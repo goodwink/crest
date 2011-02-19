@@ -343,17 +343,17 @@ public class DefaultCRestTest {
             }
         });
 
-        CRest crest = new CRestBuilder().expectsJson().handledByJackson().setRestService(mockRestService).build();
+        CRest crest = new CRestBuilder().consumesJson().setRestService(mockRestService).build();
         Int instance = crest.build(Int.class);
         instance.test("application/json");
         instance.test();
 
-        crest = new CRestBuilder().expectsJson(false).handledByJackson().setRestService(mockRestService).build();
+        crest = new CRestBuilder().consumesJson(false).setRestService(mockRestService).build();
         instance = crest.build(Int.class);
         instance.test(null);
         instance.test();
 
-        crest = new CRestBuilder().expectsJson("text/json").handledByJackson().setRestService(mockRestService).build();
+        crest = new CRestBuilder().consumesJson("text/json").setRestService(mockRestService).build();
         instance = crest.build(Int.class);
         instance.test("text/json");
         instance.test();

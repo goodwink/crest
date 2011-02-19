@@ -88,7 +88,7 @@ public class SimpleXmlDeserializer implements Deserializer {
     
     public <T> T deserialize(Reader reader, Type type) throws DeserializerException {
         try {
-            return serializer.read((Class<T>) Types.getClass(type), reader);
+            return serializer.read((Class<T>) Types.getClass(type), reader, strict);
         } catch (Exception e) {
             throw new DeserializerException(e);
         }

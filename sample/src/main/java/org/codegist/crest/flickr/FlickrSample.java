@@ -24,7 +24,6 @@ import org.codegist.common.log.Logger;
 import org.codegist.crest.CRest;
 import org.codegist.crest.CRestBuilder;
 import org.codegist.crest.flickr.interceptor.FlickrAuthInterceptor;
-import org.codegist.crest.flickr.model.FlickrModelFactory;
 import org.codegist.crest.flickr.model.Gallery;
 import org.codegist.crest.flickr.model.Uploader;
 import org.codegist.crest.flickr.service.Flickr;
@@ -50,7 +49,7 @@ public class FlickrSample implements Runnable {
         /* Get the factory */
         CRest crest = new CRestBuilder()
                 .useHttpClientRestService()
-                .expectsXml().handledByJaxB(FlickrModelFactory.class)
+                .consumesXml().handledByJaxb()
                 .setDateSerializerFormat("Seconds")
                 .setBooleanSerializer("1", "0")
                 .setProperty(FlickrAuthInterceptor.API_KEY_PROP, apiKey)

@@ -118,6 +118,7 @@ public final class Configs {
                 Objects.defaultIfNull(overrides.getResponseHandler(), base.getResponseHandler()),
                 Objects.defaultIfNull(overrides.getErrorHandler(), base.getErrorHandler()),
                 Objects.defaultIfNull(overrides.getRetryHandler(), base.getRetryHandler()),
+                Objects.defaultIfNull(overrides.getDeserializer(), base.getDeserializer()),
                 pl,
                 extras
         );

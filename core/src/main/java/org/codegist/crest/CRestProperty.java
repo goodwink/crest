@@ -39,6 +39,13 @@ public interface CRestProperty {
      */
     String CREST_URL_ADD_SLASHES = "crest.config.url.add-slashes";
 
+    /**
+     * Indicates the currency level, or number of threads, the different components CRest can handle.
+     * <p>Expects a Integer value
+     * <p>Default to 1
+     */
+    String CREST_CONCURRENCY_LEVEL = "crest.config.concurrency.level";
+
     /*********************************************************
      *********************************************************
      ****** Serializer properties 
@@ -292,6 +299,11 @@ public interface CRestProperty {
      * override the default method retry handler {@link org.codegist.crest.config.MethodConfig#DEFAULT_RETRY_HANDLER}.
      */
     String CONFIG_METHOD_DEFAULT_RETRY_HANDLER = "config.method.default.retry-handler";
+
+    /**
+     * override the default method response deserializer {@link org.codegist.crest.config.MethodConfig#DEFAULT_DESERIALIZER}.
+     */
+    String CONFIG_METHOD_DEFAULT_DESERIALIZER = "config.method.default.deserializer";
 
 
     /*********************************************************

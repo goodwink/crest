@@ -32,6 +32,8 @@ import org.codegist.crest.handler.ResponseHandler;
 import org.codegist.crest.handler.RetryHandler;
 import org.codegist.crest.injector.Injector;
 import org.codegist.crest.interceptor.RequestInterceptor;
+import org.codegist.crest.serializer.Deserializer;
+import org.codegist.crest.serializer.DeserializerFactory;
 import org.codegist.crest.serializer.Serializer;
 import org.codegist.crest.serializer.Serializers;
 
@@ -382,6 +384,36 @@ public abstract class ConfigBuilders {
             return this;
         }
 
+
+        public InterfaceConfigBuilder setMethodsConsumes(String mimeType) {
+            if (ignore(mimeType)) return this;
+            for (MethodConfigBuilder b : builderCache.values()) {
+                b.setConsumes(mimeType);
+            }
+            return this;
+        }
+        public InterfaceConfigBuilder setMethodsDeserializer(Deserializer deserializer) {
+            if (ignore(deserializer)) return this;
+            for (MethodConfigBuilder b : builderCache.values()) {
+                b.setDeserializer(deserializer);
+            }
+            return this;
+        }
+        public InterfaceConfigBuilder setMethodsDeserializer(String deserializerClassName) throws IllegalAccessException, InstantiationException, ClassNotFoundException {
+            if (ignore(deserializerClassName)) return this;
+            for (MethodConfigBuilder b : builderCache.values()) {
+                b.setDeserializer(deserializerClassName);
+            }
+            return this;
+        }
+        public InterfaceConfigBuilder setMethodsDeserializer(Class<? extends Deserializer> deserializerClassName) throws IllegalAccessException, InstantiationException {
+            if (ignore(deserializerClassName)) return this;
+            for (MethodConfigBuilder b : builderCache.values()) {
+                b.setDeserializer(deserializerClassName);
+            }
+            return this;
+        }
+
         public InterfaceConfigBuilder setMethodsPath(String path) {
             if (ignore(path)) return this;
             for (MethodConfigBuilder b : builderCache.values()) {
@@ -461,6 +493,7 @@ public abstract class ConfigBuilders {
         private final InterfaceConfigBuilder parent;
         private final Map<String, ParamConfigBuilder> extraParamBuilders = new LinkedHashMap<String, ParamConfigBuilder>();
         private final MethodParamConfigBuilder[] methodParamConfigBuilders;
+        private final DeserializerFactory deserializerFactory;
 
         private String path;
         private String meth;
@@ -470,6 +503,7 @@ public abstract class ConfigBuilders {
         private ResponseHandler responseHandler;
         private ErrorHandler errorHandler;
         private RetryHandler retryHandler;
+        private Deserializer deserializer;
 
         public MethodConfigBuilder(Method method) {
             this(method, null);
@@ -490,6 +524,7 @@ public abstract class ConfigBuilders {
 
         private MethodConfigBuilder(InterfaceConfigBuilder parent, Method method, Map<String, Object> customProperties) {
             super(customProperties);
+            this.deserializerFactory = getProperty(DeserializerFactory.class.getName());
             this.parent = parent;
             this.method = method;
             this.methodParamConfigBuilders = new MethodParamConfigBuilder[method.getParameterTypes().length];
@@ -561,6 +596,7 @@ public abstract class ConfigBuilders {
             ResponseHandler responseHandler = this.responseHandler;
             ErrorHandler errorHandler = this.errorHandler;
             RetryHandler retryHandler = this.retryHandler;
+            Deserializer deserializer = this.deserializer;
 
             if (!isTemplate) {
                 path = defaultIfUndefined(path, CRestProperty.CONFIG_METHOD_DEFAULT_PATH, MethodConfig.DEFAULT_PATH);
@@ -576,6 +612,7 @@ public abstract class ConfigBuilders {
                 responseHandler = defaultIfUndefined(responseHandler, CRestProperty.CONFIG_METHOD_DEFAULT_RESPONSE_HANDLER, newInstance(MethodConfig.DEFAULT_RESPONSE_HANDLER));
                 errorHandler = defaultIfUndefined(errorHandler, CRestProperty.CONFIG_METHOD_DEFAULT_ERROR_HANDLER, newInstance(MethodConfig.DEFAULT_ERROR_HANDLER));
                 retryHandler = defaultIfUndefined(retryHandler, CRestProperty.CONFIG_METHOD_DEFAULT_RETRY_HANDLER, newInstance(MethodConfig.DEFAULT_RETRY_HANDLER));
+                deserializer = defaultIfUndefined(deserializer, CRestProperty.CONFIG_METHOD_DEFAULT_DESERIALIZER, newInstance(MethodConfig.DEFAULT_DESERIALIZER));
 
                 if(validateConfig) {
                     if(Urls.hasQueryString(path))  throw new IllegalArgumentException("Path can't contain a query string! (path=" + path +")");
@@ -591,6 +628,7 @@ public abstract class ConfigBuilders {
                     responseHandler,
                     errorHandler,
                     retryHandler,
+                    deserializer,
                     pConfigMethod,
                     extraParams.values().toArray(new ParamConfig[extraParams.size()])
             );
@@ -734,6 +772,25 @@ public abstract class ConfigBuilders {
         public MethodConfigBuilder setRetryHandler(Class<? extends RetryHandler> retryHandlerClass) throws IllegalAccessException, InstantiationException {
             if (ignore(retryHandlerClass)) return this;
             return setRetryHandler(newInstance(retryHandlerClass));
+        }
+
+        public MethodConfigBuilder setConsumes(String mimeType) {
+            if (ignore(mimeType)) return this;
+            if(deserializerFactory == null) throw new IllegalStateException("Can't lookup a deserializer by mime-type. Please provide a DeserializerFactory");
+            return setDeserializer(deserializerFactory.buildForMimeType(mimeType));
+        }
+        public MethodConfigBuilder setDeserializer(Deserializer deserializer) {
+            if (ignore(deserializer)) return this;
+            this.deserializer = deserializer;
+            return this;
+        }
+        public MethodConfigBuilder setDeserializer(String deserializerClassName) throws IllegalAccessException, InstantiationException, ClassNotFoundException {
+            if (ignore(deserializerClassName)) return this;
+            return setDeserializer((Class<? extends Deserializer>) Class.forName(replacePlaceholders(deserializerClassName)));
+        }
+        public MethodConfigBuilder setDeserializer(Class<? extends Deserializer> deserializerClassName) throws IllegalAccessException, InstantiationException {
+            if (ignore(deserializerClassName)) return this;
+            return setDeserializer(newInstance(deserializerClassName));
         }
 
         public MethodConfigBuilder setParamsSerializer(Serializer paramSerializer) {
@@ -1103,6 +1160,10 @@ public abstract class ConfigBuilders {
         }
         str = str.replaceAll("\\\\\\{", "{").replaceAll("\\\\\\}", "}"); // replace escaped with non escaped
         return str;
+    }
+
+    <T> T getProperty(String key){
+        return (T) customProperties.get(key);
     }
 
     <T> T defaultIfUndefined(T value, String defProp, T def) {
